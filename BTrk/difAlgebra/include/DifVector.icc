@@ -1,0 +1,158 @@
+//--------------------------------------------------------------------------
+// File and Version Information:
+// 	$Id: DifVector.icc,v 1.10 2008/03/19 19:51:43 brownd Exp $
+//
+// Description:
+//	Class Implementation for |DifVector| 
+//      What do i do ?
+// Environment:
+//	Software developed for the BaBar Detector at the SLAC B-Factory.
+//
+// Author List:
+//	A. Snyder
+//
+// Copyright Information:
+//	Copyright (C) 1996	SLAC
+//
+//------------------------------------------------------------------------
+
+
+inline DifVector& DifVector::operator+=(const DifVector& v) { x+=v.x; y+=v.y; z+=v.z; return *this; }
+inline DifVector& DifVector::operator-=(const DifVector& v) { x-=v.x; y-=v.y; z-=v.z; return *this; }
+inline DifVector& DifVector::operator*=(const DifNumber& n) { x*=n; y*=n; z*=n; return *this; }
+inline DifVector& DifVector::operator*=(const double& n) { x*=n; y*=n; z*=n; return *this; }
+inline DifVector& DifVector::operator=(const DifVector& v) { x=v.x; y=v.y; z=v.z; return *this; }
+inline DifVector& DifVector::operator/=(const DifNumber& n) { x/=n; y/=n; z/=n; return *this; }
+inline DifVector& DifVector::operator/=(const double& n) { x/=n; y/=n; z/=n; return *this; }
+inline DifVector& DifVector::flipsign() { x.flipsign(); y.flipsign(); z.flipsign(); return *this; }
+inline DifVector& DifVector::zeroDerivatives() { x.zeroDerivatives(); y.zeroDerivatives(); z.zeroDerivatives(); return *this;}
+inline DifVector DifVector::operator-() const { return DifVector(*this).flipsign(); } // unary minus
+inline DifVector operator+(const DifVector& a,const DifVector& b) { return DifVector(a)+=b; }
+inline DifVector operator-(const DifVector& a,const DifVector& b) { return DifVector(a)-=b; }
+inline DifNumber operator*(const DifVector& a,const DifVector& b) { return DifVector(a).dot(b); }
+
+inline DifVector operator*(const DifVector& v,const DifNumber& n) { return DifVector(v)*=n; }
+inline DifVector operator*(const DifNumber& n,const DifVector& v) { return DifVector(v)*=n; }
+inline DifVector operator/(const DifVector& v,const DifNumber& n){ return DifVector(v)/=n; }
+inline DifVector operator*(const DifVector& v,const double& n) { return DifVector(v)*=n; }
+inline DifVector operator*(const double& n,const DifVector& v) { return DifVector(v)*=n; }
+inline DifVector operator/(const DifVector& v,const double& n){ return DifVector(v)/=n; }
+
+inline DifVector cross(const DifVector& a,const DifVector& b) {
+  DifNumber zp=a.x;
+  zp *= b.y;
+  DifNumber t = a.y;
+  t *= b.x;
+  zp -= t;
+
+  DifNumber xp=a.y;
+  xp *= b.z;
+  t = a.z;
+  t *= b.y;
+  xp -= t;
+
+  DifNumber yp=a.z;
+  yp *= b.x;
+  t = a.x;
+  t *= b.z;
+  yp -= t;
+  return DifVector(xp,yp,zp);
+}
+
+inline DifVector& DifVector::rotate(const DifVector& axis,const DifNumber& angle) 
+{ rotate(axis,cos(angle),sin(angle)); return *this; }
+inline DifVector& DifVector::rotate(const DifVector& axis,const double& angle) 
+{ rotate(axis,cos(angle),sin(angle)); return *this; }
+
+inline DifVector& DifVector::rotate
+(const DifVector& axis,const DifNumber& c,const DifNumber& s) {
+  DifVector zlocal=axis.unit();
+  DifVector temp(1.0,0.0,0.0);
+  DifVector ylocal=cross(temp,zlocal);
+  if(ylocal.length().number()==0.0) {
+    temp.x=0.0; temp.y=1.0;
+    ylocal=cross(temp,zlocal);
+  } //(ylocal.length().number()=0.0 
+  ylocal.normalize();
+  DifVector xlocal=cross(ylocal,zlocal);
+  DifNumber zcomp=dot(zlocal);
+  DifNumber xcomp=c*dot(xlocal)-s*dot(ylocal);
+  DifNumber ycomp=s*dot(xlocal)+c*dot(ylocal);
+  *this=xlocal*xcomp+ylocal*ycomp+zlocal*zcomp;
+  return *this;
+}
+inline DifVector& DifVector::rotate
+(const DifVector& axis,const double& c,const double& s) {
+  DifVector zlocal=axis.unit();
+  DifVector temp(1.0,0.0,0.0);
+  DifVector ylocal=cross(temp,zlocal);
+  if(ylocal.length().number()==0.0) {
+    temp.x=0.0; temp.y=1.0;
+    ylocal=cross(temp,zlocal);
+  } //(ylocal.length().number()=0.0 
+  ylocal.normalize();
+  DifVector xlocal=cross(ylocal,zlocal);
+  DifNumber zcomp=dot(zlocal);
+  DifNumber xcomp=c*dot(xlocal)-s*dot(ylocal);
+  DifNumber ycomp=s*dot(xlocal)+c*dot(ylocal);
+  *this=xlocal*xcomp+ylocal*ycomp+zlocal*zcomp;
+  return *this;
+}
+
+inline DifVector& DifVector::rotateX(const DifNumber& a) { rotateX(cos(a),sin(a)); return *this;}
+inline DifVector& DifVector::rotateY(const DifNumber& a) { rotateY(cos(a),sin(a)); return *this;}
+inline DifVector& DifVector::rotateZ(const DifNumber &a) { rotateZ(cos(a),sin(a)); return *this;}
+inline DifVector& DifVector::rotateZ(const DifNumber& c,const DifNumber& s) 
+{ x=DifNumber(c*x-s*y); y=DifNumber(s*x+c*y); return *this;}
+inline DifVector& DifVector::rotateY(const DifNumber& c,const DifNumber& s) 
+{ z=DifNumber(c*z-s*x); x=DifNumber(s*z+c*x); return *this;}
+inline DifVector& DifVector::rotateX(const DifNumber& c,const DifNumber& s) 
+{ y=DifNumber(c*y-s*z); z=DifNumber(s*y+c*z); return *this;}
+
+inline DifVector& DifVector::rotateX(const double& a) { rotateX(cos(a),sin(a)); return *this;}
+inline DifVector& DifVector::rotateY(const double& a) { rotateY(cos(a),sin(a)); return *this;}
+inline DifVector& DifVector::rotateZ(const double &a) { rotateZ(cos(a),sin(a)); return *this;}
+inline DifVector& DifVector::rotateZ(const double& c,const double& s) 
+{ x=DifNumber(c*x-s*y); y=DifNumber(s*x+c*y); return *this;}
+inline DifVector& DifVector::rotateY(const double& c,const double& s) 
+{ z=DifNumber(c*z-s*x); x=DifNumber(s*z+c*x); return *this;}
+inline DifVector& DifVector::rotateX(const double& c,const double& s) 
+{ y=DifNumber(c*y-s*z); z=DifNumber(s*y+c*z); return *this;}
+
+ 
+
+inline DifVector& DifVector::normalize() 
+{ DifNumber len=length(); x/=len; y/=len; z/=len; return *this;}
+inline DifVector DifVector::transverse(const DifVector &v)const{ return *this-(*this*v.unit())*v.unit(); }
+inline DifNumber DifVector::length()const {	return sqrt(lengthSq()); }
+inline DifNumber DifVector::lengthSq()const { 
+  DifNumber a=x;
+  a*=x;
+  DifNumber b=y;
+  b*=y;
+  a+=b;
+  b=z;
+  b*=z;
+  a+=b;
+  return a;}
+
+inline DifNumber DifVector::dot(const DifVector& v)const { 
+  //return x*v.x+y*v.y+z*v.z; 
+  DifNumber a=x;
+  a*=v.x;
+  DifNumber b=y;
+  b*=v.y;
+  a+=b;
+  b=z;
+  b*=v.z;
+  a+=b;
+  return a;}
+
+inline int DifVector::nPar()const {return x.nPar();}
+inline DifVector DifVector::unit()const{ return DifVector(*this).normalize();} 
+inline DifNumber DifVector::perp()const {return sqrt(perpSq());}
+inline DifNumber DifVector::perpSq()const {return x*x+y*y;}
+inline DifNumber DifVector::r()const {return length();}
+inline DifNumber DifVector::phi()const { return atan2(y,x); }
+inline DifNumber DifVector::cosTheta()const { return z/r(); }
+inline DifNumber DifVector::theta()const { return acos(cosTheta()); }

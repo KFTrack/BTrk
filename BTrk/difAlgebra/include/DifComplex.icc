@@ -1,0 +1,209 @@
+//--------------------------------------------------------------------------
+// File and Version Information:
+// 	$Id: DifComplex.icc,v 1.6 2004/09/17 18:41:36 snyder Exp $
+//
+// Description:
+//	Implements |DifComplex|
+//
+// Environment:
+//	Software developed for the BaBar Detector at the SLAC B-Factory.
+//
+// Author List:
+//	A. Snyder
+//
+// Copyright Information:
+//	Copyright (C) 1997	SLAC
+//
+//------------------------------------------------------------------------
+#include "BaBar/BaBar.hh"
+
+// #include <iostream.h>
+#include "difAlgebra/DifComplex.hh"
+
+inline DifComplex fromPolar(const DifNumber& mag,const DifNumber& phase){
+  DifNumber c=cos(phase);
+  DifNumber s=sin(phase);
+  c*=mag;
+  s*=mag;
+  return DifComplex(c,s);
+}
+
+
+inline DifComplex::DifComplex():
+  _r(0.0),
+  _i(0.0)
+{}
+
+inline DifComplex::DifComplex(const DifNumber& r):
+  _r(r),
+  _i(0)
+{}
+
+inline DifComplex::DifComplex(double r):
+  _r(r),
+  _i(0)
+{}
+
+inline DifComplex::DifComplex(const DifNumber& r,const DifNumber& i):
+  _r(r),
+  _i(i)
+{}
+
+inline DifComplex::DifComplex(double r,double i):
+  _r(r),
+  _i(i)
+{}
+
+inline DifComplex::DifComplex(const DifComplex& c):
+  _r(c.real()),
+  _i(c.imag())
+{}
+
+inline DifComplex& DifComplex::operator+=(const DifComplex& a) {
+  _r+=a.R();
+  _i+=a.I();
+  return *this;
+}
+
+inline DifComplex& DifComplex::operator-=(const DifComplex& a) {
+  _r-=a.R();
+  _i-=a.I();
+  return *this;
+}
+
+inline DifComplex& DifComplex::operator*=(const DifComplex& a){
+  DifNumber rp(_r);
+  DifNumber ip(_i);
+  DifNumber ra(a.R());
+  DifNumber ia(a.I());
+  _r=rp*ra-ip*ia;
+  _i=rp*ia+ra*ip;
+  return *this;
+}
+
+inline DifComplex& DifComplex::operator/=(const DifComplex& a){
+  DifComplex astar(a);
+  astar.conjugate();
+  *this*=astar;
+  *this/=astar.magsq();
+  return *this;
+}
+
+inline DifComplex& DifComplex::operator/=(const DifNumber& a){ _r/=a; _i/=a; return *this; }
+inline DifComplex& DifComplex::operator/=(const double& a){ _r/=a; _i/=a; return *this; }
+inline DifComplex& DifComplex::operator=(const DifComplex& a){ _r=a.R(); _i=a.I(); return *this; }
+inline DifComplex DifComplex::operator-()const{ return DifComplex(*this).flipsign(); }
+inline DifComplex& DifComplex::conjugate() { _i.flipsign(); return *this; }
+inline DifComplex& DifComplex::flipsign() { _r.flipsign(); _i.flipsign(); return *this;}
+inline DifComplex& DifComplex::inverse(){ conjugate(); *this/=magsq(); return *this;}
+
+inline DifComplex& DifComplex::takeLog(){
+  DifNumber m=mag();
+  DifNumber phase=arg();
+  _r=log(m);
+  _i=phase; 
+  return *this;
+}
+
+inline DifComplex& DifComplex::power(const DifComplex& p){
+  DifNumber m=mag();
+  DifNumber phase=arg();
+  m*=exp(-phase*p.I());
+  phase*=p.R();
+  *this=fromPolar(m,phase);
+  return *this;
+}
+
+inline DifComplex& DifComplex::power(const DifNumber& p){
+  DifNumber m=mag();
+  DifNumber phase=arg();
+  phase*=p;
+  *this=fromPolar(m,phase);
+  return *this;
+}
+
+inline DifNumber DifComplex::mag()const{ return sqrt(magsq()); }
+inline DifNumber DifComplex::magsq()const{ return _r*_r+_i*_i; }
+inline DifNumber DifComplex::arg()const{ return atan2(I(),R()); }
+
+inline DifComplex exp(const DifComplex& a){ return fromPolar(exp(a.R()),a.I()); }
+inline DifComplex sin(const DifComplex& a){ return (exp(DifComplex(0,1)*a)-exp(-DifComplex(0,1)*a))/(2.0*DifComplex(0,1)); }
+inline DifComplex cos(const DifComplex& a){ return (exp(DifComplex(0,1)*a)+exp(-DifComplex(0,1)*a))/2.0; }
+inline DifComplex tan(const DifComplex& a){ return sin(a)/cos(a); }
+inline DifComplex sec(const DifComplex &a){ return cos(a).inverse(); }
+inline DifComplex cosh(const DifComplex &a){ return (exp(a)+exp(-a))/2.0; }
+inline DifComplex sinh(const DifComplex &a){ return (exp(a)-exp(-a))/2.0; }
+inline DifComplex tanh(const DifComplex &a){ return sinh(a)/cosh(a); }
+inline DifComplex acos(const DifComplex& a){ return log(a+sqrt(a*a-1.0))/DifComplex(0,1); }
+inline DifComplex asin(const DifComplex& a){ return log(a+sqrt(a*a+1.0))/DifComplex(0,1); }
+
+inline DifComplex atan(const DifComplex &a){
+  DifComplex temp=(1.0+a)/(1.0-a);
+  return 0.5*log(temp)/DifComplex(0,1);
+}
+
+inline DifComplex atan2(const DifComplex& y,const DifComplex& x){
+  DifComplex r=sqrt(x*x+y*y);
+  DifComplex xn=x/r;
+  DifComplex yn=y/r;
+  DifComplex ax=xn+sqrt(xn*xn+1.0);
+  ax.takeLog();
+  DifComplex bx=xn-sqrt(xn*xn+1.0);
+  bx.takeLog();
+  DifComplex ay=yn+sqrt(yn*yn-1.0);
+  ay.takeLog();
+  DifComplex by=yn-sqrt(yn*yn-1.0);
+  by.takeLog();
+  double diff=(ax-ay).mag().number();
+  if(fabs(diff)<0.0001) {return ay/DifComplex(0,1);}
+  diff=(bx-ay).mag().number();
+  if(fabs(diff)<0.0001) {return ay/DifComplex(0,1);}
+  diff=(ax-by).mag().number();
+  if(fabs(diff)<0.0001) {return by/DifComplex(0,1);}
+  diff=(bx-by).mag().number();
+  if(fabs(diff)<0.0001) {return by/DifComplex(0,1);}
+  // cerr << "atan2 of |DifComplex| screwedup" << endl;
+  return 0.0;
+}
+
+inline DifComplex acosh(const DifComplex& a){ return a+sqrt(a*a-1.0); }
+inline DifComplex asinh(const DifComplex& a){ return a+sqrt(a*a+1.0); }
+
+
+inline DifComplex sqrt(const DifComplex& a){
+  DifNumber m=a.mag();
+  DifNumber phase=a.arg();
+  phase*=0.5;
+  return fromPolar(sqrt(m),phase);
+}
+
+inline DifComplex log(const DifComplex& a){ return DifComplex(log(a.mag()),a.arg()); }
+inline DifComplex pow(const DifComplex& a,const DifComplex& p){ return DifComplex(a).power(p); }
+inline DifComplex pow(const DifComplex& a,const DifNumber& p){ return DifComplex(a).power(p); }
+inline DifComplex cc(const DifComplex& a)
+{ return DifComplex(a).conjugate(); }
+
+
+inline DifComplex operator+(const DifComplex& a,const DifComplex& b){
+  DifComplex c(a);
+  c+=b;
+  return c;
+}
+
+inline DifComplex operator-(const DifComplex& a,const DifComplex& b) { return DifComplex(a)-=b; }
+inline DifComplex operator*(const DifComplex& a,const DifComplex& b) { return DifComplex(a)*=b; }
+inline DifComplex operator/(const DifComplex& a,const DifComplex& b) { return DifComplex(a)/=b; }
+
+inline bool operator==(const DifComplex& a,const DifComplex& b){
+  if(a.R()!=b.R()) {return false;}
+  if(a.I()!=b.I()) {return false;}
+  return true;
+}
+
+inline bool operator!=(const DifComplex& a,const DifComplex& b) { return !(a==b); }
+
+inline void DifComplex::print(std::ostream& o)const{
+  o << "real:" << real();
+  o << "imag:" << imag();
+}
+
