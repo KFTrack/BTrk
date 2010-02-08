@@ -1,0 +1,12 @@
+#ifdef __CINT__
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+#pragma link C++ class BbrAngle;
+#pragma link C++ class BbrDoubleErr;
+#pragma link C++ class BbrErrProjector;
+#pragma link C++ class BbrError;
+#pragma link C++ class BbrLorentzVectorErr;
+#pragma link C++ class BbrPointErr;
+#pragma link C++ class BbrVectorErr;
+#endif
