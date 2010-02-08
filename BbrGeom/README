@@ -1,0 +1,63 @@
+BbrGeom package README file
+
+
+Depends on:
+   gismo (for some implementations)
+   G4Geom (for some implementations)
+   CLHEP    (for utility classes, matrices and vectors)
+
+Depended on by:
+   lots of stuff, particularly AbsTrack
+
+
+Notes on Contents:
+    BbrAngle
+	encapsulates an angle as a double, but limits the 
+   	value to -pi to pi.  Also provides access to the
+     	value in degrees and over the 0 to 2pi range.
+
+	provides constants BbrAngle:pi, BbrAngle:twoPi to machine
+	precision
+
+   testBbrGeom is a simple test program, testBbrGeom.reference is
+        an output for comparison
+
+Tags & CHanges:
+
+Tue Aug 31 12:14:26 PDT 1999 - M. Kelsey
+	Change BbrErrProjector::localError to STATIC, hide ctor.  New
+	calling sequence is simpler:
+
+	HepSymMatrix errInPlane;
+	BbrErrProjector::Code code =
+	   BbrErrProjector::localError(sigma,direction,uHat,vHat,errInPlane);
+
+
+V00-03-10  Bob J, Mario Stanke, Gautier
+	Fix unary minus in *Err classes, fix rad <-> degree 
+	conversion, update tests for *Err
+
+
+Fri Jul 23 11:22:58 PDT 1999 - A. Snyder
+
+New utility class BbrErrProjector added. Purpose is to project
+errors on track position on to a plane, e.g., an RPC.
+
+Calling sequence:
+
+BbrErrProjector projector;
+
+HepSymMatrix errInPlane;
+
+BbrErrProjector::Code code=local(sigma,direction,uHat,vHat,errInPlane);
+
+where sigma is the error on the position of the track transverse to
+its direction evaluated at the intersection point, direction is the
+direction of the track and uHat and vHat are define the local coordinate
+system in the plane.
+
+This version of the function deals only with a simple uncorrelated
+error which is symmetrical around the track direction such as is typical
+of multiple scattering dominated errors. I can supply a more general
+purpose function in which sigma is replaced by a HepSymMatrix if a need
+for it develops.
