@@ -162,38 +162,12 @@ public:
 //******************************************
 // Constructors and such
 //******************************************
-// basic constructor from exchange parameters.  Assumes a helix
-  KalRep(const TrkExchangePar&, TrkRecoTrk*,
-         const KalContext& context,PdtPid::PidType hypo);
-  KalRep(const TrkExchangePar&,const TrkHotList&, TrkRecoTrk*,
-         const KalContext& context,PdtPid::PidType hypo);
-  KalRep(const TrkExchangePar&,TrkHotList&, TrkRecoTrk*,
-         const KalContext& context,PdtPid::PidType hypo, bool stealhots);
-  KalRep(const TrkExchangePar&,const TrkHotList*, TrkRecoTrk*,
-         const KalContext& context,PdtPid::PidType hypo);
-  KalRep(const TrkExchangePar&,TrkHotList*, TrkRecoTrk*,
-         const KalContext& context,PdtPid::PidType hypo, bool stealhotlist);
-//  A better (more general) constructor just taking a seed SimpTraj as input.
-// The momentum information will be extracted from the simptraj using the
-// TrkMomCalculator.  Providing a vector of bools (1/parameter) will allow
-// constraining the parameters according to the seed (at the specified flight length)
-  KalRep(const TrkSimpTraj&,
-	 TrkHotList* hots, TrkRecoTrk*,
-	 const KalContext& context,PdtPid::PidType hypo,
-	 double cfltlen=0.0,bool* cparams = 0,bool stealhots=false);
 // fast constructor taking DetIntersections from outside.
  KalRep(const TrkSimpTraj&,TrkHotList* hots,const std::vector<DetIntersection>& dlist,
  	TrkRecoTrk*,const KalContext& context,PdtPid::PidType hypo);
 // copy constructor to move rep to a new track
   KalRep(const KalRep&, TrkRecoTrk*);
 // copy constructor to add new mass hypo to existing track
-  KalRep(const KalRep&, PdtPid::PidType hypo); 
-// constructor without hots, based just on constraints.
-  KalRep(TrkRecoTrk* trk,PdtPid::PidType hypo,
-	 const TrkSimpTraj& seed,
-	 const KalContext& context,
-	 const TrkHotList& hots,
-	 const std::vector<TrkSimpTraj*>& extendedcache);
   virtual ~KalRep();
 // specific clone operation for this class
   KalRep* clone(TrkRecoTrk*) const; // covariant return
