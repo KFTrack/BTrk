@@ -76,47 +76,6 @@ struct FindMatBendSites {
       site->type() != KalSite::matSite; }
 };
 
-//
-//  construct without hots
-//
-KalRep::KalRep(const TrkExchangePar& expar,
-               TrkRecoTrk* trk, const KalContext& context,
-	       PdtPid::PidType hypo) :
-  TrkRep(trk,hypo,true), _maxdist(0),_maxfltdif(0),_niter(0),_ninter(0),
-  _ptraj(0),_reftraj(0),_integrator(0),
-  _kalcon(&context),_stopsite(0)
-{
-  init(expar);
-//  set valid (until there are hits)
-  setValid(true);
-}
-
-
-KalRep::KalRep(const TrkExchangePar& inPar,const TrkHotList& hotl,
-               TrkRecoTrk* trk, const KalContext& context,PdtPid::PidType hypo) :
-  TrkRep(hotl,trk,hypo), _maxdist(0),_maxfltdif(0),_niter(0),_ninter(0),
-  _ptraj(0),_reftraj(0),_integrator(0),
-  _kalcon(&context),_stopsite(0)
-{
-        init(inPar);
-}
-KalRep::KalRep(const TrkExchangePar& inPar,TrkHotList& hotl,
-               TrkRecoTrk* trk, const KalContext& context,PdtPid::PidType hypo,bool stealhots) :
-  TrkRep(hotl,trk,hypo,stealhots), _maxdist(0),_maxfltdif(0),_niter(0),_ninter(0),
-  _ptraj(0),_reftraj(0),_integrator(0),
-  _kalcon(&context),_stopsite(0)
-{
-        init(inPar);
-}
-
-KalRep::KalRep(const TrkExchangePar& inPar,TrkHotList* hotl,
-               TrkRecoTrk* trk, const KalContext& context,PdtPid::PidType hypo,bool stealhots) :
-  TrkRep(hotl,trk,hypo,stealhots), _maxdist(0),_maxfltdif(0),_niter(0),_ninter(0),
-  _ptraj(0),_reftraj(0),_integrator(0),
-  _kalcon(&context),_stopsite(0)
-{
-        init(inPar);
-}
 
 void
 KalRep::init(const TrkExchangePar& inPar)
@@ -189,31 +148,6 @@ KalRep::initSites() {
 //  On construction, the track is neither current or valid
 }
 
-// seed constructor: allows possibility of applying the seed as 
-// a constraint
-KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
-               TrkRecoTrk* trk, const KalContext& context,
-               PdtPid::PidType hypo,
-               double cfltlen,bool* cparams,bool stealhotlist) :
-  TrkRep(hotl,trk,hypo,stealhotlist), _maxdist(0),_maxfltdif(0),
-  _niter(0),_ninter(0),_ptraj(0),_reftraj(0),_integrator(0),
-  _kalcon(&context),
-  _seedtraj((TrkSimpTraj*)(seed.clone())),
-  _stopsite(0)
-{
-// build the constraint site and append it
-  if(cparams != 0) {
-    KalConstraint* csite = new KalConstraint(_reftraj,
-					     *_seedtraj->parameters(),
-					     cparams,
-					     cfltlen);
-    if(csite != 0){
-      _sites.push_back(csite);
-    }
-  }
-  initFromSeed();
-//  On construction, the track is neither current or valid
-}
 // construct from hots and intersections
 KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
 	const std::vector<DetIntersection>& dinters,
@@ -247,103 +181,6 @@ KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
   findHitSites();
 // create the end sites from the helix.  increase the smearing
   updateEndSites(_kalcon->smearFactor(),true);
-//  On construction, the track is neither current or valid
-}
-
-// constraint constructor with no hots.  This will create a KalRep which is valid
-// outside the found range, but not in it.
-KalRep::KalRep(TrkRecoTrk* trk,PdtPid::PidType hypo,
-               const TrkSimpTraj& seed,
-               const KalContext& context,
-               const TrkHotList& hots,
-               const std::vector<TrkSimpTraj*>& fits) :
-  TrkRep(hots.clone(this),trk,hypo,true),
-  _maxdist(0),_maxfltdif(0),  _niter(0), _ninter(0),
-  _ptraj(0),
-  _reftraj(0),
-  _integrator(0),_kalcon(&context),
-  _seedtraj(seed.clone()),
-  _stopsite(0),
-  _refmom(0.0),
-  _refmomfltlen(0.0),_charge(0)
-{
-  _sites.reserve(64);
-// require at least 1 constraint
-  if(fits.empty()){
-    ErrMsg(error) << "Cannot create constrained KalRep without at least 1 constraint" << endmsg;
-    return;
-  }
-// setup basics
-  setMultScat(true);   // in TrkFitStatus
-  _siteflag[trkIn] = _siteflag[trkOut] = false;
-  _chisq[trkIn] = _chisq[trkOut] = -1; // no chisq possible with constrained rep
-// find the initial range from the constraint trajs
-  _fitrange[0] = 9999.0;
-  _fitrange[1] = -9999.0;
-  typedef std::vector<TrkSimpTraj*>::const_iterator iter;
-  const iter end = fits.end();
-  for(iter ifit=fits.begin();ifit!=end;++ifit){
-// compare the range of this constraint with the found range
-    _fitrange[0] = std::min(_fitrange[0],(*ifit)->lowRange());
-    _fitrange[1] = std::max(_fitrange[1],(*ifit)->hiRange());
-  }
-// if the found range is useable, use it
-  double foundrange[2];
-  if(hotList()->nActive()>=2){
-    foundrange[0] = hotList()->startFoundRange();
-    foundrange[1] = hotList()->endFoundRange();
-  } else {
-// otherwise, just use the traj
-    foundrange[0] = _fitrange[0]+_fltepsilon;
-    foundrange[1] = _fitrange[1]-_fltepsilon;
-  }
-  double fmid = (foundrange[0]+foundrange[1])/2.0 + 0.1; // add a small buffer to break degeneracy
-// build the initial reference trajectory 
-  buildRefTraj();
-// Initialize _ptraj to _reftraj. This is needed
-// by UpdateFitStuff, which calls down to momentum(), which needs the traj
-  _ptraj = _reftraj;
-// compute the reference momentum from the first constraint
-  const TrkSimpTraj* first = fits.front();
-  _refmomfltlen = first->hiRange();
-  Hep3Vector momvec = TrkMomCalculator::vecMom(*first,parentTrack()->bField(),_refmomfltlen);
-  _refmom = momvec.mag();
-  _charge = TrkMomCalculator::charge(*first,parentTrack()->bField(),_refmomfltlen);
-// Build constraint sites out of the cached fits.  Only allow 1 constraint
-// on either side of the found range (take the first, it shouldn't matter)
-// This also defines extendibility based on where the constraints are
-  _extendable[trkIn] = _extendable[trkOut] = false;
-// record the range to compute passive corrections.  This must exclude the
-// entire cached fit trajectory range, not just to the midpoint
-  iter innertraj(end);
-  iter outertraj(end);
-  for(iter ifit=fits.begin();ifit!=end;++ifit){
-// compare the range of this constraint with the found range
-    double middle = ((*ifit)->lowRange()+(*ifit)->hiRange())/2.0;
-// take the 1st fits on the inner and outer ends as constraints
-    if((middle <= fmid && ! _extendable[trkIn]) ||
-       (middle > fmid && ! _extendable[trkOut]) ) {
-      _sites.push_back(new KalConstraint(_reftraj,*(*ifit)->parameters(),0,middle));
-      if(middle <= fmid){
-        _extendable[trkIn] = true;
-        _fitrange[0] = min(_fitrange[0],(*ifit)->lowRange());
-        innertraj = ifit;
-      } else {
-        _extendable[trkOut] = true;
-        _fitrange[1] = max(_fitrange[1],(*ifit)->hiRange());
-        outertraj = ifit;
-      }
-    }
-  }
-// build smear a site in the middle of the found range.  This  prevents any information from going
-// accross from inner to outer constraints.   Insert this _only_ if there are both inner and
-// outer constraints
-  if(_extendable[trkIn] && _extendable[trkOut])
-    _sites.push_back(new KalSmear(_reftraj,fmid,_kalcon->smearFactor()));
-// find the 'hits'
-  findHitSites();
-// extra smearing on input
-  updateEndSites(_kalcon->smearFactor());
 //  On construction, the track is neither current or valid
 }
 //
