@@ -1,0 +1,7 @@
+This package contains derived classes of BbrGeom/TrkGeomTraj; these are 
+purely geometric descriptions of particular trajectories.  It also contains 
+a visitor base class for the trajectories, and one concrete Visitor, 
+TrkTransformVisitor.
+
+Steve Schaffner
+12/17/98
