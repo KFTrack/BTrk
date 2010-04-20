@@ -17,8 +17,6 @@
 #include "TrkBase/TrkSimpTraj.hh"
 #include "TrkBase/TrkParams.hh"
 #include "TrkBase/HelixTraj.hh"
-#include "AbsEnv/AbsEnv.hh"
-#include "TrkEnv/TrkEnv.hh"
 #include "CLHEP/Matrix/Vector.h"
 using std::endl;
 using std::ostream;

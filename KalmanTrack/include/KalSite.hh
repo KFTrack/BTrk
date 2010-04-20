@@ -20,7 +20,7 @@
 #ifndef KALSITE_HH
 #define KALSITE_HH
 #include <iostream>
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "TrkBase/TrkDirection.hh"
 #include "TrkBase/TrkEnums.hh"
 #include "KalmanTrack/KalParams.hh"
