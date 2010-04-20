@@ -21,7 +21,6 @@ class TrkSimpTraj;
 class HelixTraj;
 class TrkCircleTraj;
 class NeutTraj;
-class TrkDifLineTraj;
 
 // Class interface //
 class TrkMomVisitor : public TrkVisitor {
@@ -39,7 +38,6 @@ public:
   const HelixTraj*      helix() const      {return _ht;}
   const TrkCircleTraj*  circle() const     {return _ct;}
   const NeutTraj*       neut() const       {return _nt;}   
-  const TrkDifLineTraj* line() const       {return _lt;}
 
   //********************************
   // The visitor functions:
@@ -48,14 +46,12 @@ public:
   virtual void trkVisitHelixTraj(const HelixTraj*);
   virtual void trkVisitCircleTraj(const TrkCircleTraj*);
   virtual void trkVisitNeutTraj(const NeutTraj*);
-  virtual void trkVisitLineTraj(const TrkDifLineTraj*);
 
 private:
 
   const HelixTraj*      _ht;
   const TrkCircleTraj*  _ct;
   const NeutTraj*       _nt;
-  const TrkDifLineTraj* _lt;
 
 };
 
