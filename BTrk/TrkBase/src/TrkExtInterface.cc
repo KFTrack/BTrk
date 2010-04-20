@@ -15,7 +15,6 @@
 #include "BaBar/BaBar.hh"
 #include "TrkBase/TrkExtInterface.hh"
 #include "TrkBase/TrkRep.hh"
-#include "ProxyDict/IfdIntKey.hh"
 #include "ErrLogger/ErrLog.hh"
 
 //------------------------------------------------------------------------

@@ -23,8 +23,7 @@
 
 #ifndef TRKFUNDHIT_HH
 #define TRKFUNDHIT_HH
-#include "AbsEvent/AbsEvtObj.hh"
-#include "TrkBase/TrkEnums.hh"
+ #include "TrkBase/TrkEnums.hh"
 #include "TrkBase/TrkHitOnTrkIter.hh"
 
 #include <vector>
@@ -36,7 +35,7 @@ class GTrack;
 #include <iosfwd>
 
 // Class interface //
-class TrkFundHit : public AbsEvtObj {
+class TrkFundHit  {
 
 public:
   typedef TrkHitOnTrkIter<TrkFundHit> hot_iterator;

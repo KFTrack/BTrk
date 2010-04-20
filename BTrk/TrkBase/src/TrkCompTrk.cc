@@ -8,8 +8,6 @@
 #include "TrkBase/NeutParams.hh"
 #include "TrkBase/TrkMomCalculator.hh"
 #include "AbsEnv/AbsEnv.hh"
-#include "ProxyDict/Ifd.hh"
-#include "ProxyDict/IfdStrKey.hh"
 #include "BField/BField.hh"
 #include "TrkBase/TrkExchangePar.hh"
 #include "TrkBase/TrkPoca.hh"

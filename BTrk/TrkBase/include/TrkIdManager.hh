@@ -12,10 +12,9 @@
 //------------------------------------------------------------------------
 #ifndef TRKIDMANAGER_HH
 #define TRKIDMANAGER_HH
-#include "AbsEvent/AbsEvtObj.hh"
 
 // Class interface //
-class TrkIdManager : public AbsEvtObj {
+class TrkIdManager  {
 
 public:
   TrkIdManager();
