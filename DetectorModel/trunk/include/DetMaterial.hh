@@ -23,7 +23,7 @@
 //  Babar includes
 //
 #include "BaBar/Constants.hh"
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "PDT/Pdt.hh"
 #include "DetectorModel/DetMtrProp.hh"
 #include <iostream>
