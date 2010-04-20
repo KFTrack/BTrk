@@ -15,7 +15,6 @@
 //------------------------------------------------------------------------------
 #include "BaBar/BaBar.hh"
 #include "DetectorModel/DetMaterial.hh"
-#include "GenEnv/PhysConst.hh"
 #include <iostream>
 #include <cfloat>
 #include <string>
