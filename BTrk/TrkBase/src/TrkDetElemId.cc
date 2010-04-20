@@ -52,20 +52,12 @@ extern "C" {
 // 		-- Static Data & Function Member Definitions --
 //		-----------------------------------------------
 
-const int TrkDetElemId::svtOffset(0);
-const int TrkDetElemId::dchOffset(10000);
 const int TrkDetElemId::nullElemID(-1);
 
 int TrkDetElemId::calcValue( const int& id, 
 			     TrkDetElemId::systemIndex sysInd ){
   int retVal(id);
   switch (sysInd) {
-  case TrkDetElemId::svt: 
-    retVal += TrkDetElemId::svtOffset;
-    return retVal;
-  case TrkDetElemId::dch: 
-    retVal += TrkDetElemId::dchOffset;
-    return retVal;
   default:
     break;
   }
