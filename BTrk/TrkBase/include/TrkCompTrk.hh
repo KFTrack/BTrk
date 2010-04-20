@@ -5,7 +5,6 @@
 #include <memory>
 
 #include <iosfwd>
-class IfdKey;
 class TrkExchangePar;
 class TrkVolume;
 class TrkDifTraj;

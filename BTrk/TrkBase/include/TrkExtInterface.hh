@@ -22,7 +22,6 @@
 #define TRKEXTINTERFACE_HH
 
 class TrkRep;
-class IfdKey;
 
 // Class interface //
 class TrkExtInterface {
@@ -37,7 +36,6 @@ public:
 protected:	
   TrkRep* myRep();
   const TrkRep* myConstRep() const;
-  virtual const IfdKey& myKey() const = 0;
   void setRep(const TrkRep*);
   void setRep(TrkRep*);
 private:	
