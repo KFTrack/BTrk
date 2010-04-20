@@ -21,7 +21,6 @@
 class HelixTraj;
 class TrkCircleTraj;
 class NeutTraj;
-class TrkDifLineTraj;
 
 // Class interface //
 class TrkVisitor {
@@ -38,7 +37,6 @@ public:
   virtual void trkVisitHelixTraj(const HelixTraj*) = 0;
   virtual void trkVisitCircleTraj(const TrkCircleTraj*) = 0;
   virtual void trkVisitNeutTraj(const NeutTraj*) = 0;
-  virtual void trkVisitLineTraj(const TrkDifLineTraj*) = 0;
 
 
 };
