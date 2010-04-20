@@ -23,10 +23,9 @@ class TrkView;
 #include "TrkBase/TrkHitOnTrkIter.hh"
 #include "TrkBase/TrkEnums.hh"
 #include "TrkBase/TrkFunctors.hh"
-#include "AbsEvent/AbsEvtObj.hh"
 
 // Class interface //
-class TrkHotList : public AbsEvtObj {
+class TrkHotList  {
 private:
   struct iterator_traits;
   struct const_iterator_traits;
