@@ -64,17 +64,6 @@ TrkMomVisitor::trkVisitNeutTraj(const NeutTraj* theTraj) {
   _lt = 0;
 }
 
-//------------------------------------------------------------------------
-void
-TrkMomVisitor::trkVisitLineTraj(const TrkDifLineTraj* theTraj) {
-//------------------------------------------------------------------------
-// set the "array"
-
-  _ht = 0;
-  _ct = 0;
-  _nt = 0;
-  _lt = theTraj;
-}
 
 
 
