@@ -2,7 +2,6 @@
 #define TRKCOMPTRK_HH
 
 #include "TrkBase/TrkAbsFit.hh"
-#include "AbsEvent/AbsEvtObj.hh"
 #include <memory>
 
 #include <iosfwd>
@@ -14,7 +13,7 @@ class TrkSimpTraj;
 class BField;
 
 
-class TrkCompTrk : public TrkAbsFit,public AbsEvtObj {
+class TrkCompTrk : public TrkAbsFit {
 public:
 
   //  friend class TrkCompMaker;

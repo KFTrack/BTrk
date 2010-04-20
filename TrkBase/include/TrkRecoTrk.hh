@@ -39,7 +39,6 @@
 #include <map>
 #include <set>
 #include "TrkBase/TrkId.hh"
-#include "AbsEvent/AbsEvtObj.hh"
 #include "PDT/PdtPid.hh"
 #include "TrkBase/TrkDirection.hh"
 #include "TrkBase/TrkHitList.hh"
@@ -62,7 +61,7 @@ class BField;
 class TrkIdManager;
 class TrkRecoTrkImpl;
 
-class TrkRecoTrk : public AbsEvtObj {
+class TrkRecoTrk  {
 public:
   typedef std::unary_function<TrkRecoTrk,bool> predicate_type;
   //*********************************
