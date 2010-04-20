@@ -38,7 +38,6 @@ class TrkExchangePar;
 class HepPoint;
 class TrkRecoTrk;
 class TrkVolume;
-class IfdKey;
 class TrkContext;
 
 // Class interface //
@@ -87,7 +86,6 @@ public:
   double                    endValidRange()   const;
   virtual double            startFoundRange() const;
   virtual double            endFoundRange()   const;
-  virtual const IfdKey&     myKey()           const;
   double                    trackT0()         const; 
 
   //******************************************
