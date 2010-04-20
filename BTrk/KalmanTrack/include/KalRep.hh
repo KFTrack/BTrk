@@ -298,8 +298,6 @@ public:
   int findNearestSite(double fltlen) const;
 // find the first site of a given type
   const KalSite* findSite(KalSite::siteType stype) const;
-// define identity for visitors
-  virtual const IfdKey& myKey() const;
 // config information
   const KalContext& kalContext() const { return *_kalcon; }
   void setKalContext(const KalContext* kalcon) { _kalcon = kalcon; }
