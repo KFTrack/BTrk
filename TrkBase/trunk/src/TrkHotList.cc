@@ -15,7 +15,7 @@
 #include "TrkBase/TrkHotList.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkView.hh"
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 #include <iostream>
 using std::endl;
 using std::ostream;

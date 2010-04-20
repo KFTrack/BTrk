@@ -28,7 +28,7 @@
 // Collaborating Class Headers --
 //-------------------------------
 
-#include "BbrStdUtils/BbrPairUtils.hh"
+#include "BaBar/BbrPairUtils.hh"
 #include "TrkBase/TrkFitTypeKey.hh"
 #include "TrkBase/TrkExpectedHotSet.hh"
 #include "TrkBase/TrkExpectedHot.hh"
