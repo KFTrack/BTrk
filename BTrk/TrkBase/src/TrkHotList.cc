@@ -33,8 +33,6 @@ TrkHotList::print(ostream& o) const
 {
        o << " hitCapable: " << (hitCapable()?"yes":"no")
          << " nActive: " << nActive()
-         << " nDch: " << nDch()
-         << " nSvt: " << nSvt()
          << " nHit: " << nHit()
          << " startFoundRange: " <<startFoundRange()
          << " endFoundRange: " << endFoundRange();
@@ -50,13 +48,6 @@ TrkHotList::printAll(ostream &o) const
         }
 }
 
-bool
-TrkHotList::hasSvtView(TrkEnums::TrkViewInfo view,int layer) const
-{
-        TrkView need(view);
-        TrkView have = svtView(layer);
-        return have.contains(need);
-}
 
 TrkHotList*
 TrkHotList::resetParent(TrkBase::Functors::setParent f)

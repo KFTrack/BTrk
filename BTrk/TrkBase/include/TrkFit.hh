@@ -27,8 +27,6 @@ public:
   void printType(std::ostream& ostr) const;
 
   virtual int                 nActive()                   const = 0;
-  virtual int                 nSvt()                      const = 0;
-  virtual int                 nDch()                      const = 0;
   virtual PdtPid::PidType     particleType()              const = 0;
   virtual TrkExchangePar    helix(double fltL)            const = 0;
   virtual double            arrivalTime(double fltL)      const = 0;

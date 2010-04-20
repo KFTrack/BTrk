@@ -59,9 +59,6 @@ public:
          PdtPid::PidType hypo);
   TrkRep(TrkHotList* inHots, TrkRecoTrk* trk,
          PdtPid::PidType hypo, bool takeownership=false);
-  // For reps w/o hits stored
-  TrkRep(TrkRecoTrk* trk, PdtPid::PidType hypo, int nAct, int nSvt,
-         int nDch, double startFoundRange, double endFoundRange);
 // rep without explicit hotlist
   TrkRep(TrkRecoTrk* trk, PdtPid::PidType hypo, bool createHotList=false);
   // copy ctor
@@ -77,8 +74,6 @@ public:
   //******************************************
   virtual ChisqConsistency    chisqConsistency() const;
   virtual int               nActive()      const;
-  virtual int               nSvt()         const;
-  virtual int               nDch()         const;
   virtual PdtPid::PidType   particleType() const;
   TrkRecoTrk*               parentTrack()                {return _parentTrack;}
   const TrkRecoTrk*         parentTrack()  const         {return _parentTrack;}

@@ -28,8 +28,6 @@
 using std::endl;
 using std::ostream;
 
-const DchHitOnTrack* TrkHitOnTrk::dchHitOnTrack() const {return 0;}
-const SvtHitOnTrack* TrkHitOnTrk::svtHitOnTrack() const {return 0;}
 
 TrkHitOnTrk::TrkHitOnTrk(const TrkFundHit* hit,double tolerance) :
   _parentRep(0),
@@ -133,9 +131,6 @@ TrkHitOnTrk::weight() const
 void
 TrkHitOnTrk::print(ostream& o) const
 {
-  o << (dchHitOnTrack()?"Dch":svtHitOnTrack()?"Svt":"Unknown")
-      << " HOT: hitlength: " << hitLen() << "  flightlength: "
-      << fltLen() << "  active: " << (isActive() != 0) << endl;
 }
 
 void
