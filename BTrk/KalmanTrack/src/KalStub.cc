@@ -21,11 +21,7 @@
 #include "KalmanTrack/KalBend.hh"
 #include "TrkBase/TrkHitUse.hh"
 #include "TrkBase/TrkVolume.hh"
-#include "TrkEnv/TrkEnv.hh"
-#include "GenEnv/GenEnv.hh"
-#include "AbsEnv/AbsEnv.hh"
 #include "DetectorModel/DetSet.hh"
-#include "BField/BFieldIntegrator.hh"
 #include "ErrLogger/ErrLog.hh"
 #include "BaBar/BbrCollectionUtils.hh"
 

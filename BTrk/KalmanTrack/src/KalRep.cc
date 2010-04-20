@@ -25,15 +25,13 @@
 #include "KalmanTrack/KalConstraint.hh"
 #include "KalmanTrack/KalStub.hh"
 #include "KalmanTrack/KalCodes.hh"
-#include "TrkEnv/TrkEnv.hh"
-#include "GenEnv/GenEnv.hh"
-#include "AbsEnv/AbsEnv.hh"
 #include "DetectorModel/DetSet.hh"
 #include "DetectorModel/DetMaterial.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkHotList.hh"
 #include "TrkBase/TrkHotListEmpty.hh"
 #include "BField/BField.hh"
+#include "BField/BFieldFixed.hh"
 #include "TrkBase/TrkDifTraj.hh"
 #include "TrkBase/TrkExchangePar.hh"
 #include "TrkBase/TrkVolume.hh"
@@ -320,7 +318,8 @@ KalRep::helix(double fltlen) const {
   double locflight;
   const TrkSimpTraj* ltraj = localTrajectory(fltlen,locflight);
 // make sure the reference point is at the origin
-  const HepPoint& origin(gblEnv->getTrk()->trkOrigin());
+// set origin to a nominal value DNB_RKK
+  static const HepPoint origin(0.0,0.0,0.0);
   if(ltraj->referencePoint() == origin){
     return TrkExchangePar(ltraj->parameters()->parameter(), 
 			  ltraj->parameters()->covariance());
@@ -1032,7 +1031,8 @@ KalRep::extendThrough(double newf) {
       if(piecerange[1] > piecerange[0]){
 	if(_kalcon->materialSites()){
 //  Get the top-level detector set
-	  const DetSet* trkmodel = gblEnv->getTrk()->trkDetSet();
+// For now, use an empty detector set.  In future, this should come from the geometry service DNB_RKK
+    static const DetSet* trkmodel = new DetSet("dummy",1);
 //  Find the material intersections, and create KalMaterial sites for them
 	  std::vector<DetIntersection> tlist; tlist.reserve(16);
 	  trkmodel->intersection(tlist,_reftraj,piecerange);
@@ -1257,7 +1257,8 @@ KalRep::buildMaterialSites(double range[2],std::vector<DetIntersection>& tlist) 
 // avoid a detmodel error
   if(range[1]>range[0]){
 //  Get the Tracking DetectorModel tree from TrkEnv
-    const DetSet* trkmodel = gblEnv->getTrk()->trkDetSet();
+// For now, use an empty detector set.  In future, this should come from the geometry service DNB_RKK
+    static const DetSet* trkmodel = new DetSet("dummy",1);
 // find the intersections with the reference trajectory, if no intersections provided
 		if(tlist.size() == 0)
     	trkmodel->intersection(tlist,_reftraj,range);
@@ -1381,33 +1382,41 @@ KalRep::createBendSites(double range[2], std::vector<KalSite*>& sites) const {
 Hep3Vector 
 KalRep::momentum(double fltL) const {
 //----------------------------------------------------------------------
-  const BField& theField = parentTrack()->bField();
+//  const BField& theField = parentTrack()->bField();
   //  const BField& theField = gblEnv->getTrk()->magneticField();
+  // kludge DNB_RKK
+  static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
-  return TrkMomCalculator::vecMom(*locTraj, theField, localFlt);
+  return TrkMomCalculator::vecMom(*locTraj, *theField, localFlt);
 }
 
 //----------------------------------------------------------------------
 double 
 KalRep::pt(double fltL) const {
 //----------------------------------------------------------------------
-  const BField& theField = parentTrack()->bField();
+//  const BField& theField = parentTrack()->bField();
   //  const BField& theField = gblEnv->getTrk()->magneticField();
+  // kludge DNB_RKK
+  static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
+  
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
-  return TrkMomCalculator::ptMom(*locTraj, theField, localFlt);
+  return TrkMomCalculator::ptMom(*locTraj, *theField, localFlt);
 }
 
 //----------------------------------------------------------------------
 BbrVectorErr 
 KalRep::momentumErr(double fltL) const {
 //----------------------------------------------------------------------
-  const BField& theField = parentTrack()->bField();
+//  const BField& theField = parentTrack()->bField();
   //  const BField& theField = gblEnv->getTrk()->magneticField();
+  // kludge DNB_RKK
+  static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
+  
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
-  return TrkMomCalculator::errMom(*locTraj, theField, localFlt);
+  return TrkMomCalculator::errMom(*locTraj, *theField, localFlt);
 }
 
 
@@ -2114,7 +2123,9 @@ KalRep::extendTraj(int startsite,trkDirection tdir) {
     break;
   }
   if(nsites > 0){
-    const HepPoint& origin(gblEnv->getTrk()->trkOrigin());
+// kludge DNB_RKK
+    static const HepPoint origin(0.0,0.0,0.0);
+//    const HepPoint& origin(gblEnv->getTrk()->trkOrigin());
 // loop over the new sites and build trajectory pieces from them
     int isite=startsite;
     while(nsites>0){
