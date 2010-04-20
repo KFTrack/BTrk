@@ -25,7 +25,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 using std::endl;
 using std::ends;
 using std::ostream;

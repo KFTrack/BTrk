@@ -18,7 +18,7 @@
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkView.hh"
 #include "ErrLogger/ErrLog.hh"
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 #include <assert.h>
 #include <algorithm>
 #include <functional>
