@@ -134,35 +134,6 @@ TrkHotListFull::hitCapable() const
   return true;
 }
 
-int
-TrkHotListFull::nDch(TrkEnums::TrkViewInfo view) const
-{
-  bool activeOnly(true);
-  TrkBase::Predicates::isDchHitOnTrack dch(activeOnly);
-  TrkBase::Predicates::hasView v(view);
-// FIXME: W6U1 doesn't have std::count (at least, not in the config used by BaBar!)
-// FIXME: std::compose2 is an SGI extension...
-//  return std::count(begin(),end(),std::compose2(std::logical_and<bool>(),dch,v);
-  int n = 0;
-  for (TrkHotList::hot_iterator i = begin();i!=end();++i)
-      if(dch(*i)&&v(*i)) ++n;
-  return n;
-}
-
-int
-TrkHotListFull::nSvt(TrkEnums::TrkViewInfo view) const
-{
-  bool activeOnly(true);
-  TrkBase::Predicates::isSvtHitOnTrack svt(activeOnly);
-  TrkBase::Predicates::hasView v(view);
-// FIXME: W6U1 doesn't have std::count (at least, not in the config used by BaBar!)
-// FIXME: std::compose2 is an SGI extension...
-//  return std::count(begin(),end(),std::compose2(std::logical_and<bool>(),svt,v);
-  int n = 0;
-  for (TrkHotList::hot_iterator i = begin();i!=end();++i)
-          if (svt(*i)&&v(*i)) ++n;
-  return n;
-}
 
 double
 TrkHotListFull::startFoundRange() const
@@ -197,43 +168,6 @@ TrkHotListFull::endFoundRange() const
 
 }
 
-
-TrkView
-TrkHotListFull::svtView(int layer) const
-{
-  TrkView retval;
-  bool activeOnly(true);
-  TrkBase::Predicates::isSvtHitOnTrack svt(activeOnly);
-  TrkBase::Predicates::isLayer l(layer);
-  // FIXME: std::compose2 is an SGI extension...
-  for(TrkHotList::hot_iterator i=begin();i!=end();++i)
-        if (svt(*i)&&l(*i)) retval.addView(i->whatView());
-  return retval;
-}
-
-unsigned
-TrkHotListFull::firstDchLayer() const
-{
-  unsigned firstlay(50);
-  bool activeOnly(true);
-  TrkBase::Predicates::isDchHitOnTrack dch(activeOnly);
-  for (TrkHotList::hot_iterator i = begin();i!=end();++i) {
-    if (dch(*i)) firstlay = std::min(firstlay,i->layerNumber());
-  }
-  return firstlay<50?firstlay:0;
-}
-
-unsigned
-TrkHotListFull::lastDchLayer() const
-{
-  unsigned lastlay(0);
-  bool activeOnly(true);
-  TrkBase::Predicates::isDchHitOnTrack dch(activeOnly);
-  for (TrkHotList::hot_iterator i = begin();i!=end();++i) {
-    if (dch(*i)) lastlay = std::max(lastlay,i->layerNumber());
-  }
-  return lastlay;
-}
 
 const std::vector<TrkHitOnTrk*>&
 TrkHotListFull::hotlist() const

@@ -38,12 +38,7 @@ public:
 
   virtual bool      hitCapable()      const;
   virtual int       nActive(TrkEnums::TrkViewInfo view=TrkEnums::bothView)         const;
-  virtual int       nDch(TrkEnums::TrkViewInfo view=TrkEnums::bothView)            const;
-  virtual int       nSvt(TrkEnums::TrkViewInfo view=TrkEnums::bothView)            const;
   virtual int       nHit(TrkEnums::TrkViewInfo view=TrkEnums::bothView)            const;
-  virtual TrkView   svtView(int layer) const;
-  virtual unsigned  firstDchLayer() const;
-  virtual unsigned  lastDchLayer() const;
   virtual double    startFoundRange() const;
   virtual double    endFoundRange()   const;
   virtual bool         isActive(unsigned ihot) const;

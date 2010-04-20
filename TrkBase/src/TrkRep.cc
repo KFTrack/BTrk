@@ -98,17 +98,6 @@ TrkRep::TrkRep(TrkHotList* hotlist, TrkRecoTrk* trk,
   }
 }
 
-// Ctor for reps without hits
-TrkRep::TrkRep(TrkRecoTrk* trk, PdtPid::PidType hypo, int nact, int nsv,
-               int ndc, double stFndRng, double endFndRng)
-  : _partHypo(hypo),
-    _parentTrack(trk),
-    _betainv(-999999.),
-   _hotList(new TrkHotListEmpty(nact, nsv, ndc, stFndRng, endFndRng))
-{
-  assert(parentTrack()!=0);
-}
-
 // copy ctor
 TrkRep::TrkRep(const TrkRep& oldRep, TrkRecoTrk* trk, PdtPid::PidType hypo) :
   TrkFitStatus(oldRep),
@@ -327,18 +316,6 @@ int
 TrkRep::nActive() const
 {
   return hotList()->nActive();
-}
-
-int
-TrkRep::nSvt() const
-{
-  return hotList()->nSvt();
-}
-
-int
-TrkRep::nDch() const
-{
-  return hotList()->nDch();
 }
 
 bool
