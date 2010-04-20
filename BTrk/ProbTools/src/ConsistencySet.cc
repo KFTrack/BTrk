@@ -20,7 +20,7 @@
 // This Class's Header --
 //-----------------------
 #include "ProbTools/ConsistencySet.hh"
-#include "BbrStdUtils/String.hh"
+#include "BaBar/BbrStringUtils.hh"
 
 #include <algorithm>
 
