@@ -37,7 +37,7 @@
 //  Local includes
 //
 #include "DetectorModel/DetType.hh"
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "TrkBase/TrkDirection.hh"
 //
 class TrkDifTraj;
