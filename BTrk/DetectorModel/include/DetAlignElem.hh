@@ -80,16 +80,5 @@ private:
   
   AlignAngles alignAngles( const HepRotation & r );
 
-  friend class  DchPlateAligCmpr;
-  friend class  DchGlobalAlignCmpr;
-  friend class  EmcGlobalAlignCmpr;
-  friend class  EmcGlobalAlignCmpr_001;
-  friend class SvtWaferAlignCmpr;
-  friend class SvtGlobalAlignCmpr;
-  friend class  DrcAlignElementCmpr; 
-  friend class DetAlignElemCdbR;
-  friend class TestDetectorModelCdb;
-  friend bool testCdb(const DetAlignElem*, const DetAlignElem*);
-
 };
 #endif
