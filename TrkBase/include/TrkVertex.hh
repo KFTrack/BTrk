@@ -19,7 +19,7 @@
 #include "BbrGeom/BbrLorentzVectorErr.hh"
 #include "TrkBase/TrkErrCode.hh"
 #include "ProbTools/ChisqConsistency.hh"
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include <vector>
 #include <map>
 

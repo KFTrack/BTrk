@@ -16,7 +16,7 @@
 #ifndef TRKREP_HH
 #define TRKREP_HH
 #include <memory>
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "TrkBase/TrkDirection.hh"
 #include "TrkBase/TrkFitStatus.hh"
 #include "TrkBase/TrkFit.hh"

@@ -14,7 +14,7 @@
 #ifndef TRKABSFIT_HH
 #define TRKABSFIT_HH
 
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 
 class HepPoint;
 #include "CLHEP/Matrix/Vector.h"

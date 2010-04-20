@@ -33,7 +33,7 @@
 #include "TrkBase/TrkRep.hh"
 #include "TrkBase/TrkContext.hh"
 #include "ErrLogger/ErrLog.hh"
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "boost/shared_ptr.hpp"
 #include <vector>
 using std::endl;
