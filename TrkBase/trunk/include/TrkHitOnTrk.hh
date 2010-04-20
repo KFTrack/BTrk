@@ -30,9 +30,6 @@
 #include <functional>
 
 class TrkFundHit;
-class DchHit;
-class DchHitOnTrack;
-class SvtHitOnTrack;
 #include "CLHEP/Matrix/Vector.h"
 class TrkRep;
 class TrkDifTraj;
@@ -76,9 +73,6 @@ public:
   TrkFundHit* hit()                                   {return _theHit;}
   const TrkDifTraj* trkTraj() const { return _trkTraj;}
 
-
-  virtual const DchHitOnTrack* dchHitOnTrack() const;
-  virtual const SvtHitOnTrack* svtHitOnTrack() const;
 
 
   inline bool isActive() const;    // false => leave out of current fit calc

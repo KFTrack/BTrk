@@ -43,39 +43,12 @@ namespace TrkBase { namespace Predicates {
        { return h.hasResidual(); }
   };
 
-  class isSvtHitOnTrack : public TrkHitOnTrk::predicate_type {
-  public:
-       isSvtHitOnTrack(bool activeOnly=false) : _activeOnly(activeOnly) { }
-       bool operator()(const TrkHitOnTrk& h) const
-       { return h.svtHitOnTrack()!=0 && ( !_activeOnly || h.isActive() ); }
-  private:
-       bool _activeOnly;
-  };
-
-  class isDchHitOnTrack : public TrkHitOnTrk::predicate_type {
-  public:
-       isDchHitOnTrack(bool activeOnly=false) : _activeOnly(activeOnly) { }
-       bool operator()(const TrkHitOnTrk& h) const
-       { return h.dchHitOnTrack()!=0 && ( !_activeOnly || h.isActive() ); }
-  private:
-       bool _activeOnly;
-  };
-
   class hasView : public TrkHitOnTrk::predicate_type {
   public:
        hasView(TrkEnums::TrkViewInfo view=TrkEnums::bothView) : _view(view) { }
        bool operator()(const TrkHitOnTrk& h) const
        {
-          if (_view==TrkEnums::bothView) return true;
-          TrkEnums::TrkViewInfo hotview = h.whatView();
-          if (h.svtHitOnTrack() != 0) {
-              return _view == hotview;
-          } else if (h.dchHitOnTrack() != 0) {
-// unfortunately the Dch calls stereo hits 'both view': I'm re-interpreting it here
-             return _view == TrkEnums::xyView && hotview == _view ||
-                    _view == TrkEnums::zView && ( hotview == TrkEnums::bothView || hotview == TrkEnums::zView);
-          }
-          return false;
+         return _view == h.whatView();
        }
   private:
        TrkEnums::TrkViewInfo _view;

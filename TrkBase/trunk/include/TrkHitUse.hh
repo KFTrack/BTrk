@@ -18,8 +18,6 @@
 class TrkFundHit;
 class TrkHitOnTrk;
 class TrkRep;
-class SvtHit;
-class DchHit;
 
 // Class interface //
 class TrkHitUse {
@@ -33,8 +31,6 @@ public:
   int                       isUsable() const                {return _isUsable;}
   double                    fltLen()   const                {return _fltLen;}
   const TrkFundHit&         hit()      const                {return _hit;}
-  virtual const DchHit*     dchHit()   const;
-  virtual const SvtHit*     svtHit()   const;
  
   virtual TrkHitOnTrk*      createHitOnTrk(const TrkRep&) const = 0;
   void                      setFltLen(double flt)           {_fltLen = flt;}
