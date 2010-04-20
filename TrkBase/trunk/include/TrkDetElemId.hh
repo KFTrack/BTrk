@@ -44,9 +44,7 @@ class TrkDetElemId {
 public:
 
   // Typedefs, consts, and enums
-  enum systemIndex { null=0,
-		     svt=1,
-		     dch=2 };
+  enum systemIndex { null=0};
 
   // functions
   static int calcValue( const int& id, 
@@ -54,8 +52,6 @@ public:
 
 private:
 
-  static const int svtOffset;
-  static const int dchOffset;
   static const int nullElemID;
 
 //--------------------
