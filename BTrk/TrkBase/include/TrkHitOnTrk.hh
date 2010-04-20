@@ -24,7 +24,7 @@
 
 #ifndef TRKHITONTRK_HH
 #define TRKHITONTRK_HH
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "TrkBase/TrkEnums.hh"
 #include <iostream>
 #include <functional>

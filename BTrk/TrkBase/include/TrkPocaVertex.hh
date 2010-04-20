@@ -17,7 +17,7 @@
 
 #include "TrkBase/TrkPoca.hh"
 #include "TrkBase/TrkVertex.hh"
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 
 class TrkRecoTrk ;
 

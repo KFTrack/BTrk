@@ -29,7 +29,7 @@ extern "C" {
 // C++ Headers --
 //---------------
 
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 class TrkRecoTrk;
 class TrkRep;
 class TrkFitTypeKey;

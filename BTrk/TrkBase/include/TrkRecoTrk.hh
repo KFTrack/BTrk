@@ -39,7 +39,7 @@
 #include <map>
 #include <set>
 #include "TrkBase/TrkId.hh"
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "TrkBase/TrkDirection.hh"
 #include "TrkBase/TrkHitList.hh"
 #include "TrkBase/TrkStoreHypo.hh"

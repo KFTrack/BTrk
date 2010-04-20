@@ -14,7 +14,7 @@
 #ifndef TRKSTOREHYPO_HH
 #define TRKSTOREHYPO_HH
 
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 
 class TrkStoreHypo {
 public:

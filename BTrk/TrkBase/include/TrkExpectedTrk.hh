@@ -39,7 +39,7 @@ extern "C" {
 // Collaborating Class Headers --
 //-------------------------------
 
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "TrkBase/TrkFitTypeKey.hh"
 
 //------------------------------------

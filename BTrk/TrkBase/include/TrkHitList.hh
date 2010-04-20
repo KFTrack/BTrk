@@ -20,7 +20,7 @@
 // Author(s): Steve Schaffner
 //------------------------------------------------------------------------
 
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "TrkBase/TrkHitOnTrkIter.hh"
 #include "TrkBase/TrkHotList.hh"
 

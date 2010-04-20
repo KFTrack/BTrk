@@ -18,7 +18,7 @@
 #ifndef TRKFITSUMMARY_HH
 #define TRKFITSUMMARY_HH
 
-#include "PDT/PdtPid.hh"
+#include "BaBar/PdtPid.hh"
 #include "TrkBase/TrkEnums.hh"
 
 class TrkSimpTraj;

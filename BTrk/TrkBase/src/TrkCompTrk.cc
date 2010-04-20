@@ -7,7 +7,6 @@
 #include "TrkBase/NeutTraj.hh"
 #include "TrkBase/NeutParams.hh"
 #include "TrkBase/TrkMomCalculator.hh"
-#include "AbsEnv/AbsEnv.hh"
 #include "BField/BField.hh"
 #include "TrkBase/TrkExchangePar.hh"
 #include "TrkBase/TrkPoca.hh"
