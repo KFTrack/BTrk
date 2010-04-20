@@ -16,7 +16,6 @@
 //------------------------------------------------------------------------------
 #ifndef DetAlignElem_HH
 #define DetAlignElem_HH
-#include "BaBar/BaBarODMGTypes.h" // Objy-safe types
 #include <string>
 #include <iostream>
 #include "CLHEP/Matrix/Vector.h"
@@ -72,10 +71,10 @@ private:
 //  classes which use these to describe the alignment value (see SVTGlobalAlign
 //  and SVTWaferAlign in the SvtTrack package).
 //
-  d_Long _ielem; // identify the element
-  d_Char _ename[NAMELENGTH]; // name, must be fixed length for Objy storage
-  d_Double _parvec[6]; // vector of parameters
-  d_Double _parcov[21]; // upper diagonal covariance matrix
+  long _ielem; // identify the element
+  char _ename[NAMELENGTH]; // name, must be fixed length for Objy storage
+  double _parvec[6]; // vector of parameters
+  double _parcov[21]; // upper diagonal covariance matrix
 
   float angle( float sina, float cosa );
   
