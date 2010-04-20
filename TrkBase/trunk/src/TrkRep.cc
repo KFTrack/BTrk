@@ -34,7 +34,6 @@
 #include "difAlgebra/DifVector.hh"
 #include "difAlgebra/DifIndepPar.hh"
 #include "ProbTools/ChisqConsistency.hh"
-#include "ProxyDict/IfdIntKey.hh"
 #include "ErrLogger/ErrLog.hh"
 #include "TrkBase/TrkExchangePar.hh"
 using std::cout;
@@ -315,15 +314,6 @@ PdtPid::PidType
 TrkRep::particleType() const
 {
   return _partHypo;
-}
-
-const IfdKey&
-TrkRep::myKey() const
-{
-  // This provides a default key (used to provide Rep-specific interfaces
-  //   to TrkRecoTrk consumers).
-  static IfdIntKey _theKey(0);
-  return _theKey;
 }
 
 void
