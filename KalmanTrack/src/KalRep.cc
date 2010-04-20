@@ -41,7 +41,6 @@
 #include "TrkBase/HelixTraj.hh"
 #include "CLHEP/Alist/AList.h"
 #include "CLHEP/Vector/ThreeVector.h"
-#include "ProxyDict/IfdIntKey.hh"
 #include "BField/BFieldIntegrator.hh"
 #include "TrkBase/TrkMomCalculator.hh"
 #include "TrkBase/TrkRecoTrk.hh"
@@ -51,7 +50,6 @@
 #include "TrkBase/TrkHitUse.hh"
 #include "ErrLogger/ErrLog.hh"
 #include "PDT/Pdt.hh"
-#include "BbrStdUtils/BbrCollectionUtils.hh"
 
 #include <vector>
 #include <deque>
@@ -312,13 +310,6 @@ KalRep::cloneNewHypo(PdtPid::PidType hypo) {
   }
   else
     return this;
-}
-
-//Returns arbitrary key, distinguishing KalRep from all other reps
-const IfdKey&
-KalRep::myKey() const {
-  static IfdIntKey _theKey(7261);
-  return _theKey;
 }
 
 //
