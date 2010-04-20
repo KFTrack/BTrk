@@ -27,7 +27,7 @@
 #include "DetectorModel/DetSet.hh"
 #include "BField/BFieldIntegrator.hh"
 #include "ErrLogger/ErrLog.hh"
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 
 
 KalStub::KalStub(const KalRep& seedrep,trkDirection extenddir,
