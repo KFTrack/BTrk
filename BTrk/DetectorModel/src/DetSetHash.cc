@@ -41,8 +41,8 @@ DetSetHash::DetSetHash(const DetSet& theSet,Ehash elemHash,elemSelFun esel,void*
   while ( iter != elemlist.end() ) {
     elem = *iter++;
     int elemnum = (*_ehash)(elem->elementNumber());
-    _maxindex = max(_maxindex,elemnum);
-    _minindex = min(_minindex,elemnum);
+    _maxindex = std::max(_maxindex,elemnum);
+    _minindex = std::min(_minindex,elemnum);
   }
 //
 //  Build the table
