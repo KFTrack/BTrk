@@ -22,7 +22,7 @@
 
 #include <assert.h>
 #include "difAlgebra/DifVector.hh"
-#include "CLHEP/HepPoint.h"
+#include "CLHEP/Geometry/HepPoint.h"
 
 class DifPoint:public DifVector {
 
