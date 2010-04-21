@@ -6,8 +6,6 @@
 #ifndef HELIXTRAJ_HH
 #define HELIXTRAJ_HH
 #include "TrkBase/TrkSimpTraj.hh"
-#include "CLHEP/Utilities/CLHEP.h"
-#include "CLHEP/Utilities/CLHEP.h"
 
 class TrkVisitor;
 #include "CLHEP/Matrix/Vector.h"
@@ -85,7 +83,7 @@ private:
   //  double y( const double& ) const;
   double z( const double& ) const;
   double dip() const {return atan(tanDip());}
-  double cosDip() const {return 1./sqrt(1.+sqr(tanDip())); }
+  double cosDip() const {return 1./sqrt(1.+(tanDip()*tanDip())); }
   double sinDip() const {return tanDip()*cosDip(); }
   double translen(const double& f) const {return cosDip()*f;}
   double arc( const double& f) const {return translen(f)*omega();}

@@ -13,7 +13,6 @@
 #include <assert.h>
 #include <functional>
 #include <algorithm>
-#include "CLHEP/Alist/AIterator.h"
 #include "TrkBase/TrkRecoTrk.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkFundHit.hh"

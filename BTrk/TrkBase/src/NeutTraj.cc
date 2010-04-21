@@ -6,7 +6,6 @@
 #include "CLHEP/Geometry/HepPoint.h"
 #include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Matrix/SymMatrix.h"
-#include "CLHEP/Utilities/CLHEP.h"
 #include "TrkBase/NeutTraj.hh"
 #include "TrkBase/TrkVisitor.hh"
 #include "difAlgebra/DifNumber.hh"
