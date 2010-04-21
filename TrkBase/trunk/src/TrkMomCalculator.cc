@@ -757,36 +757,6 @@ TrkMomCalculator::calcCurvAllCovs(const TrkSimpTraj& theTraj,
     d_pz_tanDip* (  d_pz_omega*m_tanDip_omega + d_pz_tanDip*m_tanDip_tanDip  )   ; 
   
 
-  // code added for testing...
- //  HepSymMatrix xxCovOld(3),ppCovOld(3);
-//   HepMatrix xpCovOld(3,3);
-
-//   calcCurvAllCovsOLD(theTraj,theField,fltlen,
-// 			xxCovOld,ppCovOld,xpCovOld);
-
-
-//   if (_HdiffCov==0){
-//     _manager = gblEnv->getGen()->ntupleManager();
-//     _HdiffCov = _manager->histogram("log10(|Diff|) old - new Cov",100,-20.,0.);
-//     _HfdiffCov = _manager->histogram("log10(|fDiff|) (old - new)/old Cov",100,-20.,0.);
-//   }
-
-//   for (int i=1;i<=3;i++){
-//     for (int j=i;j<=3;j++){
-//       _HdiffCov->accumulate(log10(fabs(xxCovOld(i,j)-xxCov(i,j))));
-//       _HdiffCov->accumulate(log10(fabs(ppCovOld(i,j)-ppCov(i,j))));
-//       _HfdiffCov->accumulate(log10 ( fabs( (xxCovOld(i,j)-xxCov(i,j))/xxCovOld(i,j)) ) );
-//       _HfdiffCov->accumulate(log10 ( fabs( (ppCovOld(i,j)-ppCov(i,j))/ppCovOld(i,j)) ) );
-//     }
-//   }
-//   for (int i=1;i<=3;i++){
-//     for (int j=1;j<=3;j++){
-//       _HdiffCov->accumulate(log10(fabs(xpCovOld(i,j)-xpCov(i,j))));
-//       _HfdiffCov->accumulate(log10 ( fabs( (xpCovOld(i,j)-xpCov(i,j))/xpCovOld(i,j)) ) );
-//     }
-//   }
-
-
 }
 
 //------------------------------------------------------------------------
@@ -1096,36 +1066,6 @@ TrkMomCalculator::calcCurvAllWeights(const TrkSimpTraj& theTraj,
   ppWeight(3,3) = 
     dinv_pz_z0* ( dinv_pz_z0*w_z0_z0 +dinv_pz_tanDip*w_tanDip_z0  )   + 
     dinv_pz_tanDip* ( dinv_pz_z0*w_tanDip_z0 +dinv_pz_tanDip*w_tanDip_tanDip  )   ; 
-
-  // code added for testing...
-//   HepVector posOld(3),momOld(3);
-//   HepSymMatrix xxWeightOld(3),ppWeightOld(3);
-//   HepMatrix xpWeightOld(3,3);
-
-//   calcCurvAllWeightsOLD(theTraj,theField,fltlen,
-// 			posOld,momOld,xxWeightOld,ppWeightOld,xpWeightOld);
-
-//   if (_Hdiff==0){
-//     _manager = gblEnv->getGen()->ntupleManager();
-//     _Hdiff = _manager->histogram("log10(|Diff|) old - new",100,-20.,0.);
-//     _Hfdiff = _manager->histogram("log10(|fDiff|) (old - new)/old",100,-20.,0.);
-//   }
-
-//   for (int i=1;i<=3;i++){
-//     for (int j=i;j<=3;j++){
-//       _Hdiff->accumulate(log10(fabs(xxWeightOld(i,j)-xxWeight(i,j))));
-//       _Hdiff->accumulate(log10(fabs(ppWeightOld(i,j)-ppWeight(i,j))));
-//       _Hfdiff->accumulate(log10 ( fabs( (xxWeightOld(i,j)-xxWeight(i,j))/xxWeightOld(i,j)) ) );
-//       _Hfdiff->accumulate(log10 ( fabs( (ppWeightOld(i,j)-ppWeight(i,j))/ppWeightOld(i,j)) ) );
-//     }
-//   }
-//   for (int i=1;i<=3;i++){
-//     for (int j=1;j<=3;j++){
-//       _Hdiff->accumulate(log10(fabs(xpWeightOld(i,j)-xpWeight(i,j))));
-//       _Hfdiff->accumulate(log10 ( fabs( (xpWeightOld(i,j)-xpWeight(i,j))/xpWeightOld(i,j)) ) );
-//     }
-//   }
-
 
 }
 
