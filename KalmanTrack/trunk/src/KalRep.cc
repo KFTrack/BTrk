@@ -1382,7 +1382,6 @@ Hep3Vector
 KalRep::momentum(double fltL) const {
 //----------------------------------------------------------------------
 //  const BField& theField = parentTrack()->bField();
-  //  const BField& theField = gblEnv->getTrk()->magneticField();
   // kludge DNB_RKK
   static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
   double localFlt = 0.;
@@ -1395,7 +1394,6 @@ double
 KalRep::pt(double fltL) const {
 //----------------------------------------------------------------------
 //  const BField& theField = parentTrack()->bField();
-  //  const BField& theField = gblEnv->getTrk()->magneticField();
   // kludge DNB_RKK
   static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
   
@@ -1409,7 +1407,6 @@ BbrVectorErr
 KalRep::momentumErr(double fltL) const {
 //----------------------------------------------------------------------
 //  const BField& theField = parentTrack()->bField();
-  //  const BField& theField = gblEnv->getTrk()->magneticField();
   // kludge DNB_RKK
   static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
   
@@ -2124,7 +2121,6 @@ KalRep::extendTraj(int startsite,trkDirection tdir) {
   if(nsites > 0){
 // kludge DNB_RKK
     static const HepPoint origin(0.0,0.0,0.0);
-//    const HepPoint& origin(gblEnv->getTrk()->trkOrigin());
 // loop over the new sites and build trajectory pieces from them
     int isite=startsite;
     while(nsites>0){
