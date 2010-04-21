@@ -221,13 +221,13 @@ DetCylinder::segmentMinMax(const HepPoint& p1,const HepPoint& p2,
   double mag1 = radial1.mag();
   double mag2 = radial2.mag();
 // maximum (signed!) distance is given by the maximum radius
-  maxdist = max(mag1,mag2) - radius();
+  maxdist = std::max(mag1,mag2) - radius();
 // minimum distance can be at a point or at the segment tangent
   if(mag1>0.0 && mag2>0.0){
     double theta = radial1.angle(radial2);
     double cost = cos(theta);
     if(mag1/mag2 <= cost || mag2/mag1 <= cost)
-      mindist = min(mag1,mag2) - radius();
+      mindist = std::min(mag1,mag2) - radius();
     else {
       double dist = (radial1-radial2).mag();
       if(dist>0.0)
