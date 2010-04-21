@@ -35,36 +35,41 @@ const double BbrAngle::toDegrees = Constants::radToDegrees;
 // The followings characters are used in DegString() 
 // for printout in degrees
 #ifdef HPUX
-const HepString BbrAngle::degChar = "°";
+const std::string BbrAngle::degChar = "°";
 #else
-const HepString BbrAngle::degChar = "^";
+const std::string BbrAngle::degChar = "^";
 #endif
 
-const HepString BbrAngle::deg1Char =  "'";
-const HepString BbrAngle::deg2Char = "\"";
+const std::string BbrAngle::deg1Char =  "'";
+const std::string BbrAngle::deg2Char = "\"";
 
 //		----------------------------------------
 // 		-- Public Function Member Definitions --
 //		----------------------------------------
 
-HepString BbrAngle::degString() const
+std::string BbrAngle::degString() const
 {
   float tmp;
+#define deglen 10
   int deg, deg_, deg__;
-  HepString sign = "";
+  char cdeg[deglen], cdeg_[deglen], cdeg__[deglen];
+  std::string sign = "";
   
   if ((tmp = this->deg()) < 0) 
   { sign = "-"; tmp = -tmp; };
   deg   = int(tmp);
   deg_  = int(tmp = 60*(tmp - deg));
   deg__ = int(60*(tmp - deg_));
-  
+
+  snprintf(cdeg,deglen,"%i",deg);
+  snprintf(cdeg_,deglen,"%i",deg_);
+  snprintf(cdeg__,deglen,"%i",deg__);
   return 
   (
     sign + 
-    HepString(deg)+degChar+
-    HepString(deg_)+deg1Char+
-    HepString(deg__)+deg2Char
+    std::string(cdeg)+degChar+
+    std::string(cdeg_)+deg1Char+
+    std::string(cdeg__)+deg2Char
   );
 }
 
