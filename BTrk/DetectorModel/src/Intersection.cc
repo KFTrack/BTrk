@@ -25,17 +25,17 @@ Intersection::intersect( double& fdist,
 //  First, establish the valid limits for the search; these are the combination of
 //  the explicit input range (if provided) and the trajectory limits.
 //
-  double f1 = tdir == trkOut ? max(fdist,-maxrange) : min(fdist,maxrange);
+  double f1 = tdir == trkOut ? std::max(fdist,-maxrange) : std::min(fdist,maxrange);
   double fmax(maxrange);
   double fmin(-maxrange);
   if(frange){
-    f1 = tdir == trkOut ? max(f1,frange[0]) : min(f1,frange[1]);
-    fmax = min(fmax,frange[1]);
-    fmin = max(fmin,frange[0]);
+    f1 = tdir == trkOut ? std::max(f1,frange[0]) : std::min(f1,frange[1]);
+    fmax = std::min(fmax,frange[1]);
+    fmin = std::max(fmin,frange[0]);
   } else {
-    f1 = tdir == trkOut ? max(f1,traj.lowRange()) : min(f1,traj.hiRange());
-    fmax = min(fmax,traj.hiRange());
-    fmin = max(fmin,traj.lowRange());
+    f1 = tdir == trkOut ? std::max(f1,traj.lowRange()) : std::min(f1,traj.hiRange());
+    fmax = std::min(fmax,traj.hiRange());
+    fmin = std::max(fmin,traj.lowRange());
   }
 // get an approximate intersection position that's forward of the
 // starting point
@@ -148,17 +148,17 @@ Intersection::oldintersect( double& f, SurfacePoint& uv,
 //  First, establish the valid limits for the search; these are the combination of
 //  the explicit input range (if provided) and the trajectory limits.
 //
-  double f1 = tdir == trkOut ? max(f,-maxrange) : min(f,maxrange);
+  double f1 = tdir == trkOut ? std::max(f,-maxrange) : std::min(f,maxrange);
   double fmax(maxrange);
   double fmin(-maxrange);
   if(frange){
-    f1 = tdir == trkOut ? max(f1,frange[0]) : min(f1,frange[1]);
-    fmax = min(fmax,frange[1]);
-    fmin = max(fmin,frange[0]);
+    f1 = tdir == trkOut ? std::max(f1,frange[0]) : std::min(f1,frange[1]);
+    fmax = std::min(fmax,frange[1]);
+    fmin = std::max(fmin,frange[0]);
   } else {
-    f1 = tdir == trkOut ? max(f1,traj.lowRange()) : min(f1,traj.hiRange());
-    fmax = min(fmax,traj.hiRange());
-    fmin = max(fmin,traj.lowRange());
+    f1 = tdir == trkOut ? std::max(f1,traj.lowRange()) : std::min(f1,traj.hiRange());
+    fmax = std::min(fmax,traj.hiRange());
+    fmin = std::max(fmin,traj.lowRange());
   }
   if( (tdir == trkOut ? f1 >= fmax : f1 <= fmin) ) return 
 					    TrkErrCode(TrkErrCode::fail,2);
@@ -175,11 +175,11 @@ Intersection::oldintersect( double& f, SurfacePoint& uv,
   double scurve = surf.curvature(uv);
   double sstep = (scurve > 0) ? 0.1*Constants::pi/scurve : tdist;
   double tstep = traj.distTo1stError(f,intolerance,tdir);
-  double delta = max(min(fabs(sstep),fabs(tstep)),tdist/maxit);
+  double delta = std::max(std::min(fabs(sstep),fabs(tstep)),tdist/maxit);
 //
 //  Arrange the step so that the full range is an integral number of steps
 //
-  int niter = max(1,(int)rint(tdist/delta));
+  int niter = std::max(1,(int)rint(tdist/delta));
   delta = tdir == trkOut ? (fmax-f1)/niter : (fmin-f1)/niter ;
 //
 //  Loop till we converge or exceed the valid range or run out of patience
@@ -298,7 +298,7 @@ Intersection::findProximity(double& flen,double fmin,double fmax,
     if(curve*range > rangle){
 // try stepping around the trajectory
       double rstep = rangle/curve;
-      double step = min(max(max(rstep,fabs(normdist)),range/1000.0),range);
+      double step = std::min(std::max(std::max(rstep,fabs(normdist)),range/1000.0),range);
       if(tdir==trkIn)step *= -1.0;
 // this loop allows the last step to be a little beyond the range
       while(tdir==trkOut ? flen<fmax : flen>fmin){
