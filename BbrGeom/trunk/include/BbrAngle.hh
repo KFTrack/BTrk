@@ -27,9 +27,8 @@
 // 22 Sep 1997  L.Lista     Removed pi, twoPi, toDegree
 //                          now taken from Constants
 //
-#include "CLHEP/Utilities/CLHEP.h"
-#include "CLHEP/String/Strings.h"
 #include "BaBar/Constants.hh"
+#include <string>
 
 class BbrAngle
 {
@@ -78,7 +77,7 @@ public:
   inline int sector(int max);
   inline int sector(int max, BbrAngle phi_0); 
    // convention : returns values [1..max]
-  HepString degString() const;
+  std::string degString() const;
   inline friend double sin(const BbrAngle);
   inline friend double cos(const BbrAngle);
   inline friend double tan(const BbrAngle);
@@ -94,7 +93,7 @@ public:
   // old names, forwarded for migration BobJ May 21 97
   inline double Rad() const { return rad(); }
   inline double Deg() const { return deg(); }
-  inline HepString DegString() const { return degString(); }
+  inline std::string DegString() const { return degString(); }
   inline int Sector(int max) { return sector(max); }
   inline int Sector(int max, BbrAngle phi_0) { return sector(max, phi_0); }
 
@@ -104,7 +103,7 @@ protected:
   inline static double normalize(double);
 
   static const double toDegrees;
-  static  const HepString degChar, deg1Char, deg2Char;
+  static  const std::string degChar, deg1Char, deg2Char;
 
 };
 
