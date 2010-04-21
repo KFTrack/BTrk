@@ -16,7 +16,6 @@
 #define EPSILON 1.0e-3 // test value for intersections
 #include "DetectorModel/DetElem.hh"
 #include "BbrGeom/Trajectory.hh"
-#include "CLHEP/config/CLHEP.h"
 //
 struct DetIntersection{
   const DetElem* delem; // the concerned detector element

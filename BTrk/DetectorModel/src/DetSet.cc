@@ -13,7 +13,6 @@
 #include <vector>
 #include "ErrLogger/ErrLog.hh"
 #include <assert.h>
-#include "CLHEP/Utilities/CLHEP.h"
 #include "DetectorModel/DetIntersection.hh"
 #include "DetectorModel/DetSet.hh"
 #include "DetectorModel/DetElem.hh"

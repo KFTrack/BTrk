@@ -8,7 +8,6 @@
 #include "BaBar/Constants.hh"
 #include "CLHEP/Geometry/HepPoint.h"
 #include "CLHEP/Vector/ThreeVector.h"
-#include "CLHEP/Utilities/CLHEP.h"
 using std::cerr;
 using std::cout;
 using std::endl;
