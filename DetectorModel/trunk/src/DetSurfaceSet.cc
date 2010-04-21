@@ -24,7 +24,6 @@
 #include "BbrGeom/Trajectory.hh"
 #include "DetectorModel/Intersection.hh"
 #include "CLHEP/Geometry/Transformation.h"
-#include "CLHEP/Utilities/CLHEP.h"
 
 #include <vector>
 #include <algorithm>

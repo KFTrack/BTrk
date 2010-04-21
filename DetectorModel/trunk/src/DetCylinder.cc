@@ -40,7 +40,6 @@
 #include "CLHEP/Geometry/HepPoint.h"
 #include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Geometry/Transformation.h"
-#include "CLHEP/Utilities/CLHEP.h"
 using std::endl;
 using std::ostream;
 //-----------------------------------------------------------------------

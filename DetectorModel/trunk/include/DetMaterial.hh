@@ -18,7 +18,6 @@
 
 #include <math.h>
 #include <algorithm>
-#include "CLHEP/Utilities/CLHEP.h"
 //
 //  Babar includes
 //
@@ -98,7 +97,7 @@ public:
   static double particleEnergy(double mom,PdtPid::PidType ipart)  {
 		return particleEnergy(mom,Pdt::mass(ipart)); }
 	static double particleEnergy(double mom,double mass) {
-		return sqrt(sqr(mom)+sqr(mass)); }
+		return sqrt(pow(mom,2)+pow(mass,2)); }
 
   static double particleMomentum(double energy,PdtPid::PidType ipart)  {
     return particleMomentum(energy,Pdt::mass(ipart)); }
@@ -108,7 +107,7 @@ public:
   static double particleMom2(double energy,PdtPid::PidType ipart)  {
     return particleMom2(energy,Pdt::mass(ipart)); }
 	static double particleMom2(double energy,double mass)  {
-		return std::max(sqr(energy)-sqr(mass),0.0); }
+		return std::max(pow(energy,2)-pow(mass,2),0.0); }
 
   static double particleBeta(double mom,PdtPid::PidType ipart) {
     return particleBeta(mom,Pdt::mass(ipart)); }
@@ -141,7 +140,7 @@ private:
 //  don't depend on the data members
 //
   static double _gamma(double beta)  {
-    return 1.0/sqrt(1-sqr(beta)); }
+    return 1.0/sqrt(1-pow(beta,2)); }
   static double _emax(double mom,double mass) ;
   double _xi(double beta,double pathlen) const;
 //

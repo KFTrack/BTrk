@@ -4,7 +4,6 @@
 #include "BaBar/BaBar.hh"
 #include "ErrLogger/ErrLog.hh"
 #include <math.h>
-#include "CLHEP/Utilities/CLHEP.h"
 #include "DetectorModel/DetSurfaceType.hh"
 #include "DetectorModel/DetSurface.hh"
 #include <vector>
