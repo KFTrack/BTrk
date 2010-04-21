@@ -21,7 +21,6 @@
 #define KALCONTEXT_HH
 
 #include <math.h>
-#include "BaBar/BaBarODMGTypes.h"
 #include "TrkEnv/TrkVolumeHandle.hh"
 #include "TrkBase/TrkDirection.hh"
 #include "TrkBase/TrkEnums.hh"
@@ -42,8 +41,8 @@ public:
   unsigned maxIterations() const { return _maxiter; }
   unsigned maxIntersections() const { return _maxinter; }
   double intersectionTolerance() const {return _intertol; }
-  d_Boolean materialSites() const {return _matsites; }
-  d_Boolean bendSites() const { return _bends; }
+  bool materialSites() const {return _matsites; }
+  bool bendSites() const { return _bends; }
   double smearFactor() const { return _smearfactor; }
   double maxSiteDMom() const { return _sitethresh; }
   double maxDMom() const { return _momthresh; }
@@ -65,8 +64,8 @@ public:
   unsigned minDOF(TrkEnums::TrkViewInfo view=TrkEnums::bothView) const { 
     return _mindof[view]; }
   double maxMomDiff() const { return _maxmomdiff; }
-  d_Boolean stopHots() const { return _stophots; }
-  d_Boolean forbidAmbigFlips() const { return _ambigflip; }
+  bool stopHots() const { return _stophots; }
+  bool forbidAmbigFlips() const { return _ambigflip; }
   double momUpdateFactor() const { return _momfac; }
 // Set functions
   void setMinGap(double mingap) { _mingap = mingap; }
@@ -77,10 +76,10 @@ public:
   void setIntersectionTolerance(double intertol)  {_intertol = intertol; }
   void setMaxIterations(unsigned maxiter)  { _maxiter = maxiter; }
   void setMaxIntersections(unsigned maxinter)  { _maxinter = maxinter; }
-  void setMaterialSites(d_Boolean matsites)  {_matsites = matsites; }
-  void setBendSites(d_Boolean bends)  { _bends = bends; }
-  void setStopHots(d_Boolean stop)  { _stophots = stop; }
-  void setForbidAmbigFlips(d_Boolean flip)  { _ambigflip = flip; }
+  void setMaterialSites(bool matsites)  {_matsites = matsites; }
+  void setBendSites(bool bends)  { _bends = bends; }
+  void setStopHots(bool stop)  { _stophots = stop; }
+  void setForbidAmbigFlips(bool flip)  { _ambigflip = flip; }
   void setMomUpdateFactor(double factor) { _momfac = fabs(factor); }
   void setSmearFactor(double smearfactor)  { _smearfactor = smearfactor; }
   void setMaxSiteDMom(double sitethresh)  { _sitethresh = sitethresh; }
@@ -109,35 +108,35 @@ public:
   void setMaxMomDiff(double momdiff) {
     _maxmomdiff = momdiff; }
 private:
-  d_Double _disttol; // tolerance on the maximum distance for iteration
-  d_Double _intertol; // tolerance on the maximum distance for re-intersection
-  d_Double _maxpardif[2]; // tolerance on parameter difference (each end)
-  d_ULong _maxiter; // maximum number of iterations allowed
-  d_ULong _maxinter; // maximum number of intersections allowed
-  d_Boolean _matsites; // use material sites
-  d_Boolean _bends; // use bend sites
-  d_Double _smearfactor; // initial covariance smearing factor
-  d_Double _sitethresh; // single site maximum momentum fraction before stopping a track
-  d_Double _momthresh; // minimum momentum fraction before stopping a track
-  d_Double _sitepfrac; // threshold on p-frac change to use local reference
-  d_Double _sitedflct; // threshold on deflection to use local reference
-  d_Double _mingap; // minimum gap between adjacent sites to build a new traj piece
-  d_Double _trajbuff; // trajectory piece merging buffer size
+  double _disttol; // tolerance on the maximum distance for iteration
+  double _intertol; // tolerance on the maximum distance for re-intersection
+  double _maxpardif[2]; // tolerance on parameter difference (each end)
+  ulong _maxiter; // maximum number of iterations allowed
+  ulong _maxinter; // maximum number of intersections allowed
+  bool _matsites; // use material sites
+  bool _bends; // use bend sites
+  double _smearfactor; // initial covariance smearing factor
+  double _sitethresh; // single site maximum momentum fraction before stopping a track
+  double _momthresh; // minimum momentum fraction before stopping a track
+  double _sitepfrac; // threshold on p-frac change to use local reference
+  double _sitedflct; // threshold on deflection to use local reference
+  double _mingap; // minimum gap between adjacent sites to build a new traj piece
+  double _trajbuff; // trajectory piece merging buffer size
   d_Long _volumes[2];  // Inner and out tracking volumes
-  d_Double _bintminstep; // BField integration parameters
-  d_Double _bintmaxstep;
-  d_Double _bintmaxfrac;
-  d_Double _binttolerance;
-  d_Double _bdivminstep; // BField track divider parameters
-  d_Double _bdivmaxstep;
-  d_Double _bdivmaxfrac;
-  d_Double _bdivtolerance;
-  d_ULong _defpid; // default PID to use in Kalman fit
-  d_ULong _mindof[3]; // minimum number of DOFs to allow fit to succeed (can be 0)
-  d_Double _maxmomdiff; // maximum momentum difference before forcing iteration
-  d_Boolean _stophots; // deactivate hots beyond the dE/dx stopping point
-  d_Boolean _ambigflip; // allow ambiguity flips when updating HOTs
-  d_Double _momfac; // factor for updating momentum on iteration; 0=full update,
+  double _bintminstep; // BField integration parameters
+  double _bintmaxstep;
+  double _bintmaxfrac;
+  double _binttolerance;
+  double _bdivminstep; // BField track divider parameters
+  double _bdivmaxstep;
+  double _bdivmaxfrac;
+  double _bdivtolerance;
+  ulong _defpid; // default PID to use in Kalman fit
+  ulong _mindof[3]; // minimum number of DOFs to allow fit to succeed (can be 0)
+  double _maxmomdiff; // maximum momentum difference before forcing iteration
+  bool _stophots; // deactivate hots beyond the dE/dx stopping point
+  bool _ambigflip; // allow ambiguity flips when updating HOTs
+  double _momfac; // factor for updating momentum on iteration; 0=full update,
 // infinity = don't update at all.  Scale is set by track momentum
 //disallow
   KalContext(const KalContext& other);
