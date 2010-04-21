@@ -19,7 +19,7 @@
 
 #include "difAlgebra/DifVector.hh"
 #include "difAlgebra/DifRotation.hh"
-#include "CLHEP/ThreeVector.h"
+#include "CLHEP/Vector/ThreeVector.h"
 using std::ostream;
 
 extern const DifVector xhat(1,0,0);
