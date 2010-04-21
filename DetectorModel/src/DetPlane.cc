@@ -150,8 +150,8 @@ DetPlane::segmentMinMax(const HepPoint& p1,const HepPoint& p2,
   Hep3Vector point2 = p2 - centerPoint();
   double dist1 = point1*axis();
   double dist2 = point2*axis();
-  mindist = min(dist1,dist2);
-  maxdist = max(dist1,dist2);
+  mindist = std::min(dist1,dist2);
+  maxdist = std::max(dist1,dist2);
 }
 
 void
