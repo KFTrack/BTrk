@@ -288,8 +288,8 @@ void DetCone::segmentMinMax(const HepPoint &pointOne, const HepPoint &pointTwo,
   double dist1 = normTo(pointOne, firstVect);
   double dist2 = normTo(pointTwo, secondVect);
 
-  mindist = min(dist1, dist2);
-  maxdist = max(dist1,dist2);
+  mindist = std::min(dist1, dist2);
+  maxdist = std::max(dist1,dist2);
 
 }
 
