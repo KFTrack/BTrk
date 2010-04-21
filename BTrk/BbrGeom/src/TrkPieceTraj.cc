@@ -14,7 +14,6 @@
 #include "BbrGeom/TrkPieceTraj.hh"
 #include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Geometry/HepPoint.h"
-#include "CLHEP/Utilities/CLHEP.h"
 #include "ErrLogger/ErrLog.hh"
 using std::cout;
 using std::endl;
