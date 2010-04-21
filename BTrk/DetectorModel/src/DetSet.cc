@@ -378,7 +378,7 @@ DetSet::intersection(std::vector<DetIntersection>& divec,
 	    break;
 // setup for the next intersectoin
   	  dinter.pathrange[0] = dinter.pathrange[1] + _epsilon;
-          dinter.pathrange[1] = max(dinter.pathrange[0] + _epsilon,range[1]);
+          dinter.pathrange[1] = std::max(dinter.pathrange[0] + _epsilon,range[1]);
 	} else {
 	  ErrMsg(error) << "DetSet: exit point comes before entrance in element interection." << endmsg;
 	  break;
