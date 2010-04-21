@@ -15,7 +15,6 @@
 #include "ErrLogger/ErrLog.hh"
 #include "DetectorModel/DetSetHash.hh"
 #include "DetectorModel/DetSet.hh"
-#include "CLHEP/Utilities/CLHEP.h"
 #include <assert.h>
 #include <iostream>
 
