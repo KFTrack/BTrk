@@ -21,7 +21,6 @@
 #define KALCONTEXT_HH
 
 #include <math.h>
-#include "TrkEnv/TrkVolumeHandle.hh"
 #include "TrkBase/TrkDirection.hh"
 #include "TrkBase/TrkEnums.hh"
 #include "BaBar/PdtPid.hh"
@@ -48,8 +47,6 @@ public:
   double maxDMom() const { return _momthresh; }
   double localSiteDMom() const { return _sitepfrac; }
   double localSiteDeflect() const { return _sitedflct; }
-// This function uses the _environment_ to provide the requested
-// Tracking Volume
   const TrkVolume* trkVolume(trkDirection trkdir) const;
   double bFieldIntMinStep() const { return _bintminstep; }
   double bFieldIntMaxStep() const { return _bintmaxstep; }
