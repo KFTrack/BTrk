@@ -15,9 +15,8 @@
 //      Dave Brown 3/15/97
 //------------------------------------------------------------------------
 #include "BaBar/BaBar.hh"
-#include "TrkEnv/KalContext.hh"
-#include "AbsEnv/AbsEnv.hh"
-#include "TrkEnv/TrkEnv.hh"
+#include "KalmanTrack/KalContext.hh"
+#include "TrkBase/TrkCentralVolume.hh"
 
 KalContext::KalContext() :
   _disttol(0.1), // spatial separation between trajs to continue iterating
@@ -48,8 +47,8 @@ KalContext::KalContext() :
 // max par diff in units chi^2 units: note trkOut=0, trkIn=1 !!!
   _maxpardif[0] = _maxpardif[1] = 1.0; // parameter pull difference for iteration convergence testing
 // default volumes span the global tracking volume
-  _volumes[trkIn] = TrkVolumeHandle::beampipe;
-  _volumes[trkOut] = TrkVolumeHandle::dch;
+  _volumes[trkIn] = 0;
+  _volumes[trkOut] = 0;
 // DOF requirements based on helix assumption
   _mindof[TrkEnums::xyView] = 3;
   _mindof[TrkEnums::zView] = 2;
@@ -60,8 +59,8 @@ KalContext::~KalContext(){}
 
 const TrkVolume*
 KalContext::trkVolume(trkDirection tdir) const {
-// cast to the enum
-  TrkVolumeHandle::trkvolumes vol = (TrkVolumeHandle::trkvolumes)_volumes[tdir];
-  return gblEnv->getTrk()->findTrkVolume(vol);
+// this needs a proper volume handler in future DNB_RKK
+  static const TrkCentralVolume* central = new TrkCentralVolume("mu2evol",100.0,-500,500);
+  return central;
 }
     
