@@ -17,7 +17,6 @@
 #include "KalmanTrack/KalRep.hh"
 #include "DetectorModel/DetElem.hh"
 #include "DetectorModel/DetMaterial.hh"
-#include "CLHEP/Utilities/CLHEP.h"
 #include "TrkBase/TrkDifPieceTraj.hh"
 #include "TrkBase/TrkParams.hh"
 #include <assert.h>
@@ -174,8 +173,8 @@ KalMaterial::updateCache(const TrkDifPieceTraj* reftraj){
     _pderiv = localTrajectory()->derivPFract(localLength());
 // Matrices to propagate effects into parameter space
 		static const HepSymMatrix unit(1,1);
-		HepSymMatrix eunit = unit*sqr(_pfractrms);
-		HepSymMatrix sunit = unit*sqr(_deflectrms);
+		HepSymMatrix eunit = unit*pow(_pfractrms,2);
+		HepSymMatrix sunit = unit*pow(_deflectrms,2);
 		_eloss = eunit.similarity(_pderiv);
 // if this is a thick material, compute the transverse displacement effect as well
 		static const double thickdeflect(0.01); // 100 microns average scattering in the material
