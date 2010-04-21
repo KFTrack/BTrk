@@ -16,7 +16,7 @@
 //
 //------------------------------------------------------------------------
 
-#include "CLHEP/ThreeVector.h"
+#include "CLHEP/Vector/ThreeVector.h"
 
 inline DifPoint::DifPoint(const HepPoint& p)  :
 	DifVector(Hep3Vector(p.x(),p.y(),p.z()))
