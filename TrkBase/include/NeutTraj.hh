@@ -6,7 +6,7 @@
 #define NEUTTRAJ_HH
 #include "TrkBase/TrkSimpTraj.hh"
 #include "TrkBase/NeutParams.hh"
-#include "CLHEP/Utilities/CLHEP.h"
+#include <algorithm>
 
 class TrkVisitor;
 class NeutParams;
@@ -81,7 +81,7 @@ private:
   inline double s0() const {return _np()->s0(); }
   inline double tanDip() const {  return _np()->tanDip(); }
   inline double dip() const {return atan(tanDip());}
-  inline double cosDip() const {return 1./sqrt(1.+sqr(tanDip())); }
+  inline double cosDip() const {return 1./sqrt(1.+std::sqr(tanDip())); }
   inline double sinDip() const {return tanDip()*cosDip(); }
   inline double translen(const double& f) const {return cosDip()*f;}
 // the real point translation function

@@ -9,7 +9,6 @@
 #include "CLHEP/Geometry/HepPoint.h"
 #include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Matrix/SymMatrix.h"
-#include "CLHEP/Utilities/CLHEP.h"
 #include "TrkBase/HelixTraj.hh"
 #include "TrkBase/TrkVisitor.hh"
 #include "difAlgebra/DifNumber.hh"
@@ -132,13 +131,13 @@ HelixTraj::delDirect( double fltLen ) const
 double
 HelixTraj::distTo1stError(double s, double tol, int pathDir) const
 {
-  return sqrt(2.*tol/fabs(omega())*(1.+sqr(tanDip())));
+  return sqrt(2.*tol/fabs(omega())*(1.+pow(tanDip(),2)));
 }
 
 double
 HelixTraj::distTo2ndError(double s, double tol, int pathDir) const
 {
-  return sqrt(1.+sqr(tanDip()))*cbrt(6.*tol/sqr(omega()));
+  return sqrt(1.+pow(tanDip(),2))*cbrt(6.*tol/pow(omega(),2));
 }
 
 void
@@ -387,10 +386,10 @@ HelixTraj::derivDeflect(double fltlen,deflectDirection idirect) const
   switch (idirect) {
   case theta1:
     ddflct(omegaIndex+1,1) = omeg*tand;
-    ddflct(tanDipIndex+1,1) = 1.0/sqr(cosd);
+    ddflct(tanDipIndex+1,1) = 1.0/pow(cosd,2);
     ddflct(d0Index+1,1) = (1-dx)*tand/omeg;
     ddflct(phi0Index+1,1) =  -dy*tand/(1+darc);
-    ddflct(z0Index+1,1) = - translen(fltlen) - sqr(tand)*dy/(omeg*(1+darc));
+    ddflct(z0Index+1,1) = - translen(fltlen) - pow(tand,2)*dy/(omeg*(1+darc));
     break;
   case theta2:
     ddflct(omegaIndex+1,1) = 0;
@@ -498,7 +497,7 @@ HelixTraj::curvature(double ) const
 //  of the position function with respect to the 3-d flight distance
 //
   double cosd = cosDip();
-  return sqr(cosd)*fabs(omega());
+  return pow(cosd,2)*fabs(omega());
 }
 
 double

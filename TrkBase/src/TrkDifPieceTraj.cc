@@ -16,7 +16,6 @@
 #include "CLHEP/Matrix/Matrix.h"
 #include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Geometry/HepPoint.h"
-#include "CLHEP/Utilities/CLHEP.h"
 #include "difAlgebra/DifPoint.hh"
 #include "difAlgebra/DifVector.hh"
 #include "TrkBase/TrkPoca.hh"
@@ -25,6 +24,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include <algorithm>
 #include "BaBar/BbrCollectionUtils.hh"
 using std::endl;
 using std::ends;
@@ -197,7 +197,7 @@ TrkDifPieceTraj::append(double glen,TrkSimpTraj* nexttraj,double& gap)
     double range[2];
     range[0] = nexttraj->lowRange();
     range[1] = nexttraj->hiRange();
-    double delta = max(hiRange() - glen,range[1]-range[0]);
+    double delta = std::max(hiRange() - glen,range[1]-range[0]);
     if(gap > _TOL){ // Don't invoke POCA if the point is too close
       TrkPoca endpoca(*nexttraj,nexttraj->lowRange(),endpoint,_TOL);
       if(endpoca.status().failure()){
@@ -239,7 +239,7 @@ TrkDifPieceTraj::prepend(double glen,TrkSimpTraj* nexttraj,double& gap)
     double range[2];
     range[0] = nexttraj->lowRange();
     range[1] = nexttraj->hiRange();
-    double delta = max(glen -lowRange(),range[1]-range[0]);
+    double delta = std::max(glen -lowRange(),range[1]-range[0]);
     if(gap > _TOL){ // Don't invoke POCA if the point is too close
       TrkPoca endpoca(*nexttraj,nexttraj->hiRange(),endpoint,_TOL);
       if(endpoca.status().failure()){
@@ -497,10 +497,10 @@ TrkDifPieceTraj::distTo1stError(double flightdist,double tol,int dir) const
   double dist = localdist;
   if (dir > 0){
     if(index < _localtraj.size()-1)
-      dist = min(localdist,_globalrange[index+1]-flightdist) + _STEPEPSILON;
+      dist = std::min(localdist,_globalrange[index+1]-flightdist) + _STEPEPSILON;
   } else {
     if(index > 0)
-      dist = min(localdist,flightdist - _globalrange[index]) + _STEPEPSILON;
+      dist = std::min(localdist,flightdist - _globalrange[index]) + _STEPEPSILON;
   }
   return dist;
 }
@@ -524,10 +524,10 @@ TrkDifPieceTraj::distTo2ndError(double flightdist,double tol,int dir) const
   double dist = localdist;
   if (dir > 0){
     if(index < _localtraj.size()-1)
-      dist = min(localdist,_globalrange[index+1]-flightdist) + _STEPEPSILON;
+      dist = std::min(localdist,_globalrange[index+1]-flightdist) + _STEPEPSILON;
   } else {
     if(index > 0)
-      dist = min(localdist,flightdist - _globalrange[index]) + _STEPEPSILON;
+      dist = std::min(localdist,flightdist - _globalrange[index]) + _STEPEPSILON;
   }
   return dist;
 }
