@@ -37,7 +37,6 @@
 #include "TrkBase/TrkVolume.hh"
 #include "TrkBase/TrkSimpTraj.hh"
 #include "TrkBase/HelixTraj.hh"
-#include "CLHEP/Alist/AList.h"
 #include "CLHEP/Vector/ThreeVector.h"
 #include "BField/BFieldIntegrator.hh"
 #include "TrkBase/TrkMomCalculator.hh"
@@ -48,7 +47,7 @@
 #include "TrkBase/TrkHitUse.hh"
 #include "ErrLogger/ErrLog.hh"
 #include "PDT/Pdt.hh"
-
+#include <algorithm>
 #include <vector>
 #include <deque>
 using std::endl;
@@ -780,7 +779,7 @@ KalRep::buildTraj(){
 // set the range on this trajectory
       double fltrng[2];
       fltrng[0] = thesite->localLength();
-      fltrng[1] = fltrng[0] + max(_fitrange[1] - sitelen,_minfltlen);
+      fltrng[1] = fltrng[0] + std::max(_fitrange[1] - sitelen,_minfltlen);
       straj->setFlightRange(fltrng);
 //  append this to the piecetraj
       double gap(0);
@@ -1056,7 +1055,7 @@ KalRep::extendThrough(double newf) {
 	  if(stopsite != 0 && trkdir == trkOut){
 // limit the track in this direction
 	    _stopsite = stopsite;
-	    _fitrange[1] = min(_fitrange[1],stopsite->globalLength());
+	    _fitrange[1] = std::min(_fitrange[1],stopsite->globalLength());
 	    _extendable[trkOut] = false;
 	    retval = TrkErrCode(TrkErrCode::fail,KalCodes::cannotfullyextend,"cannot fully extend");
 	  }
@@ -1083,8 +1082,8 @@ KalRep::extendThrough(double newf) {
 // if the extension was successfull, update the fit range
 // update fitrange
 	if(retval.success()){
-	  _fitrange[0] = min(_fitrange[0],newf-_fltepsilon);
-	  _fitrange[1] = max(_fitrange[1],newf+_fltepsilon);
+	  _fitrange[0] = std::min(_fitrange[0],newf-_fltepsilon);
+	  _fitrange[1] = std::max(_fitrange[1],newf+_fltepsilon);
 // update the range of the trajectory
 	  _ptraj->setFlightRange(_fitrange);
 	  _reftraj->setFlightRange(_fitrange);
@@ -1169,9 +1168,9 @@ KalRep::setFitRange(const Trajectory* traj) {
   const TrkVolume* invol = _kalcon->trkVolume(trkIn);
   const TrkVolume* outvol = _kalcon->trkVolume(trkOut);
   if( invol != 0 && invol->extendThrough( traj,range,trkIn))
-    _fitrange[0] = min(_fitrange[0],range);
+    _fitrange[0] = std::min(_fitrange[0],range);
   if(outvol != 0 && outvol->extendThrough( traj,range,trkOut))
-    _fitrange[1] = max(_fitrange[1],range);
+    _fitrange[1] = std::max(_fitrange[1],range);
 // use the seed to start the reference piece traj (initialy 1 piece)
 // require a non-zero flight range
   if( (_fitrange[1] - _fitrange[0]) < _minfltlen ){
@@ -1275,7 +1274,7 @@ KalRep::buildMaterialSites(double range[2],std::vector<DetIntersection>& tlist) 
 // rep and cleanup
     if(_stopsite != 0){
 // limit the track in this direction
-      _fitrange[1] = min(_fitrange[1],_stopsite->globalLength());
+      _fitrange[1] = std::min(_fitrange[1],_stopsite->globalLength());
       _extendable[trkOut] = false;
     }
   }
@@ -1528,9 +1527,9 @@ KalRep::append(KalStub& stub) {
     stubsites.clear();
 // extend the track range
     if(stub.direction() == trkOut)
-      _fitrange[1] = max(_fitrange[1],stub.hitRange(trkOut)+_fltepsilon);
+      _fitrange[1] = std::max(_fitrange[1],stub.hitRange(trkOut)+_fltepsilon);
     else
-      _fitrange[0] = min(_fitrange[0],stub.hitRange(trkIn)-_fltepsilon);
+      _fitrange[0] = std::min(_fitrange[0],stub.hitRange(trkIn)-_fltepsilon);
 // find the new hits
     findHitSites();
 // User is responsable for the refit
@@ -1667,7 +1666,7 @@ KalRep::findNearestSite(double fltlen) const {
   if(maxsite > 0 ){
     if(fltlen >= _sites[0]->globalLength() &&
        fltlen < _sites[maxsite]->globalLength() ) {
-      unsigned step = max(1,(int)maxsite/4);
+      unsigned step = std::max(1,(int)maxsite/4);
       int losite = (maxsite+1)/2;
       while(true){
 	if(fltlen < _sites[losite]->globalLength())
@@ -1677,7 +1676,7 @@ KalRep::findNearestSite(double fltlen) const {
 	  losite += step;
 	else
 	  break;
-	step = max(1,(int)min(step/2,step-1));
+	step = std::max(1,(int)std::min(step/2,step-1));
       }
       retsite = losite;
     } else if( fltlen >= _sites[maxsite]->globalLength() ) {
@@ -1815,13 +1814,13 @@ void
 KalRep::updateSites( int startindex,int endindex,
 		     double initialmom,trkDirection dedxdir) {
 // require a minimum momentum
-  double sitemom = max(initialmom,_minmom);
+  double sitemom = std::max(initialmom,_minmom);
   int step = dedxdir==trkOut ? 1 : -1;
   int nstep = dedxdir==trkOut ? endindex-startindex+1 : startindex-endindex+1;
   int iindex(startindex);
 // reset extendability (outwards)
   if(dedxdir == trkOut && !_extendable[dedxdir]){
-    _fitrange[1] = max(_fitrange[1],_sites.back()->globalLength()+_fltepsilon);
+    _fitrange[1] = std::max(_fitrange[1],_sites.back()->globalLength()+_fltepsilon);
     _extendable[dedxdir] = true;
   }
   while(nstep>0) {
@@ -1831,7 +1830,7 @@ KalRep::updateSites( int startindex,int endindex,
 // of the effect of this site)
     if(dedxdir == trkOut && thesite->isActive()){
       sitemom += thesite->momentumChange(dedxdir);
-      sitemom = max(sitemom,_minmom);
+      sitemom = std::max(sitemom,_minmom);
     }
     if( thesite->update(_reftraj,sitemom)){
 // note update resets the activity flag of the material
@@ -1842,7 +1841,7 @@ KalRep::updateSites( int startindex,int endindex,
         if(dedxdir==trkOut && stopsIn(mat)){
           _stopsite = mat;
           _extendable[dedxdir] = false;
-          _fitrange[1] = max(thesite->globalLength()+_fltepsilon,_fitrange[0]+ _minfltlen);
+          _fitrange[1] = std::max(thesite->globalLength()+_fltepsilon,_fitrange[0]+ _minfltlen);
         }
 // deactivate the materials past the stopping site
         if(_stopsite != 0 && _stopsite->globalLength() <= mat->globalLength())
@@ -1851,11 +1850,11 @@ KalRep::updateSites( int startindex,int endindex,
 // update momentum for inwards processing
       if(dedxdir == trkIn && thesite->isActive()){
         sitemom += thesite->momentumChange(dedxdir);
-        sitemom = max(sitemom,_minmom);
+        sitemom = std::max(sitemom,_minmom);
     }
 // check hot sites for flightlenght changes
       if(thesite->kalHit() != 0)
-	_maxfltdif = std::max(_maxfltdif,thesite->kalHit()->flightLengthChange());
+	_maxfltdif = std::std::max(_maxfltdif,thesite->kalHit()->flightLengthChange());
     }
 // move to the next site
     iindex +=step;
@@ -1915,8 +1914,8 @@ KalRep::createStub(const TrkVolume& extendvolume,
     while(willremove != firsthit && willremove->kalHit()==0 
 	  && willremove->nDof() == 0){
 // update the range
-      xrange[0] = min(xrange[0],willremove->globalLength());
-      xrange[1] = max(xrange[1],willremove->globalLength());
+      xrange[0] = std::min(xrange[0],willremove->globalLength());
+      xrange[1] = std::max(xrange[1],willremove->globalLength());
 // check if we've given away the stopping site, and if so, unset it
       if(willremove == _stopsite)
 	_stopsite = 0;
@@ -2089,10 +2088,10 @@ KalRep::buildTraj(trkDirection tdir) {
   double range[2];
   if(tdir == trkOut){
     range[0] = lastsite->globalLength()- _minfltlen;
-    range[1] = max(_fitrange[1],range[0]+ _minfltlen);
+    range[1] = std::max(_fitrange[1],range[0]+ _minfltlen);
   } else {
     range[1] = lastsite->globalLength()+ _minfltlen;
-    range[0] = min(_fitrange[0],range[1]- _minfltlen);
+    range[0] = std::min(_fitrange[0],range[1]- _minfltlen);
   }
   straj->setFlightRange(range);
 // build the new piece traj starting with this piece
@@ -2150,11 +2149,11 @@ KalRep::extendTraj(int startsite,trkDirection tdir) {
             switch(tdir){
             case trkIn:
               fltrng[0] = _fitrange[0];
-              fltrng[1] = max(sitelen,_fitrange[0]);
+              fltrng[1] = std::max(sitelen,_fitrange[0]);
               break;
               case trkOut:
                 fltrng[0] = thesite->localLength();
-                fltrng[1] = max(fltrng[0] + _fitrange[1] - sitelen,fltrng[0]);
+                fltrng[1] = std::max(fltrng[0] + _fitrange[1] - sitelen,fltrng[0]);
                 break;
             }
             straj->setFlightRange(fltrng);
@@ -2190,10 +2189,10 @@ KalRep::setExtendable(trkDirection idir) {
 // make sure the fit range covers the sites
   switch(idir) {
   case trkIn:
-    _fitrange[0] = min(_fitrange[0],_sites.front()->globalLength()-_fltepsilon);
+    _fitrange[0] = std::min(_fitrange[0],_sites.front()->globalLength()-_fltepsilon);
     break;
   case trkOut:
-    _fitrange[1] = max(_fitrange[1],_sites.back()->globalLength()+_fltepsilon);
+    _fitrange[1] = std::max(_fitrange[1],_sites.back()->globalLength()+_fltepsilon);
     break;
   }
 }
