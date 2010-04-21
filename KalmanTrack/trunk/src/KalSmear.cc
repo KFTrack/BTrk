@@ -11,7 +11,6 @@
 #include "BaBar/BaBar.hh"
 #include "KalmanTrack/KalSmear.hh"
 #include "KalmanTrack/KalRep.hh"
-#include "CLHEP/Utilities/CLHEP.h"
 #include "TrkBase/TrkDifPieceTraj.hh"
 #include "TrkBase/TrkParams.hh"
 #include <assert.h>

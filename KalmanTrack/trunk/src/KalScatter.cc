@@ -14,7 +14,6 @@
 #include "KalmanTrack/KalRep.hh"
 #include "DetectorModel/DetElem.hh"
 #include "DetectorModel/DetMaterial.hh"
-#include "CLHEP/Utilities/CLHEP.h"
 #include "TrkBase/TrkDifPieceTraj.hh"
 #include "TrkBase/TrkParams.hh"
 #include <assert.h>
@@ -87,8 +86,8 @@ KalScatter::updateCache(const TrkDifPieceTraj* reftraj,double fltlen){
     HepMatrix pderiv = localTrajectory()->derivPFract(localLength());
 // now create the effect matrices by expanding these into the parameter space
     HepSymMatrix unit(1,1);
-    double drms = sqr(_deflectrms);
-    double prms = sqr(_pfractrms);
+    double drms = pow(_deflectrms,2);
+    double prms = pow(_pfractrms,2);
     _scatter = unit.similarity(t1deflect)*drms + 
       unit.similarity(t2deflect)*drms + 
       unit.similarity(pderiv)*prms;
