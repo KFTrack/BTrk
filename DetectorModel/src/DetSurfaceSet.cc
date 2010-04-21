@@ -163,8 +163,8 @@ DetSurfaceSet::intersection(std::vector<DetIntersection>& divec,
 //  Set the range to be between the surfaces (up to the trajectory limits)
 //
       double finalrange[2];
-      finalrange[0] = min(flightdist[0],flightdist[1]);
-      finalrange[1] = min(max(flightdist[0],flightdist[1]),range[1]);
+      finalrange[0] = std::min(flightdist[0],flightdist[1]);
+      finalrange[1] = std::min(std::max(flightdist[0],flightdist[1]),range[1]);
 //
 //  Build the list of element candidates from the cells
 //
@@ -198,7 +198,7 @@ DetSurfaceSet::intersection(std::vector<DetIntersection>& divec,
 	      break;
 	    }
 	    dinter.pathrange[0] = dinter.pathrange[1] + _epsilon;
-	    dinter.pathrange[1] = max(dinter.pathrange[0]+_epsilon,finalrange[1]);
+	    dinter.pathrange[1] = std::max(dinter.pathrange[0]+_epsilon,finalrange[1]);
 	  } else
 	    break;
 //
@@ -215,7 +215,7 @@ DetSurfaceSet::intersection(std::vector<DetIntersection>& divec,
 //  Try re-intersecting the surfaces, to catch the loopers
 //
     double frange[2];
-    frange[0] = max(flightdist[0],flightdist[1]) + _epsilon;
+    frange[0] = std::max(flightdist[0],flightdist[1]) + _epsilon;
     flightdist[0] = flightdist[1] = frange[0];
     frange[1] = range[1];
     hitsurfs = (frange[0]<frange[1]) && surfaceIntersections(traj,surfinter,
@@ -265,8 +265,8 @@ DetSurfaceSet::firstIntersection(const Trajectory* traj,
 //
       double minpath = FLT_MAX;
       double finalrange[2];
-      finalrange[0] = max(min(flightdist[0],flightdist[1]),frange[0]);
-      finalrange[1] = min(max(flightdist[0],flightdist[1]),frange[1]);
+      finalrange[0] = std::max(std::min(flightdist[0],flightdist[1]),frange[0]);
+      finalrange[1] = std::min(std::max(flightdist[0],flightdist[1]),frange[1]);
 //
 //  Build the list of element candidates from the cells
 //
@@ -448,8 +448,8 @@ DetSurfaceSet::elemSurfaceOutline(std::vector<HepPoint>& hpvec,
     double segmin,segmax;
     _refsurface->segmentMinMax(hpvec[ipoint],hpvec[jpoint],
 			       segmin,segmax);
-    mindist = min(mindist,segmin);
-    maxdist = max(maxdist,segmax);
+    mindist = std::min(mindist,segmin);
+    maxdist = std::max(maxdist,segmax);
 //
 //  Get the surface coordinate of this point
 //
@@ -470,8 +470,8 @@ DetSurfaceSet::elemSurfaceOutline(std::vector<HepPoint>& hpvec,
 //
 //  Update the limts
 //
-      minsurf[icoord] = min(minsurf[icoord],surf[icoord]);
-      maxsurf[icoord] = max(maxsurf[icoord],surf[icoord]);
+      minsurf[icoord] = std::min(minsurf[icoord],surf[icoord]);
+      maxsurf[icoord] = std::max(maxsurf[icoord],surf[icoord]);
     }
 //
 //  Set the reference for the next point
@@ -554,11 +554,11 @@ DetSurfaceSet::globalLimits( DetElemList& allElemList) const {
 //
 //  Update the global limits
 //
-	limits(0,icoord) = min(limits(0,icoord),minsurf[icoord]);
-	limits(1,icoord) = max(limits(1,icoord),maxsurf[icoord]);
+	limits(0,icoord) = std::min(limits(0,icoord),minsurf[icoord]);
+	limits(1,icoord) = std::max(limits(1,icoord),maxsurf[icoord]);
       }
-      distlimits(0) = min(distlimits(0),mindist);
-      distlimits(1) = max(distlimits(1),maxdist);
+      distlimits(0) = std::min(distlimits(0),mindist);
+      distlimits(1) = std::max(distlimits(1),maxdist);
     }
   }
 //
@@ -689,10 +689,10 @@ DetSurfaceSet::interElements(SurfacePoint* surfinter,
 	  surfinter[1][icoord] -= Constants::twoPi;
       }
     }
-    ilim[0][icoord] = hashIndex(min(surfinter[0][icoord],
-				      surfinter[1][icoord]),icoord);
-    ilim[1][icoord] = hashIndex(max(surfinter[0][icoord],
-				    surfinter[1][icoord]),icoord);
+    ilim[0][icoord] = hashIndex(std::min(surfinter[0][icoord],
+                                         surfinter[1][icoord]),icoord);
+    ilim[1][icoord] = hashIndex(std::max(surfinter[0][icoord],
+                                         surfinter[1][icoord]),icoord);
   }
 //
 //  Now loop over the 2-D range, and build a list of elements
@@ -747,7 +747,7 @@ int
 DetSurfaceSet::hashIndex(double val,int icoord) const{
   int ihash = int(floor(_nbuckets[icoord]*(val-_limits[0][icoord])/_range[icoord]));
   if(!_wrapped[icoord])
-    ihash = min(max(ihash,0),_nbuckets[icoord]-1);
+    ihash = std::min(std::max(ihash,0),_nbuckets[icoord]-1);
   return ihash;
 }
 //
@@ -776,8 +776,8 @@ DetSurfaceSet::surfaceIntersections(const Trajectory* traj,
 // the surfaces.
   double pathlen = range[1] - range[0];
   if( (!startbetween) && (!endbetween) &&
-      (min(fabs(startdist[0]),fabs(startdist[1])) > pathlen ||
-       min(fabs(enddist[0]),fabs(enddist[1])) > pathlen) )
+      (std::min(fabs(startdist[0]),fabs(startdist[1])) > pathlen ||
+       std::min(fabs(enddist[0]),fabs(enddist[1])) > pathlen) )
     return false;
 //
 //  Try forward intersecting the traj with the surfaces
