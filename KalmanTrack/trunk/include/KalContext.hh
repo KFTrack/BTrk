@@ -83,8 +83,6 @@ public:
   void setMaxDMom(double momthresh)  { _momthresh = momthresh; }
   void setLocalSiteDMom(double sitepfrac)  { _sitepfrac = sitepfrac; }
   void setLocalSiteDeflect(double sitedflct)  { _sitedflct = sitedflct; }
-  void setVolume(TrkVolumeHandle::trkvolumes tvol,trkDirection trkdir){
-    _volumes[trkdir] = tvol; }
   void setBFieldIntegration(double minstep,double maxstep,
 			    double maxfrac,double tolerance,
 			    double divminstep,double divmaxstep,
@@ -119,7 +117,6 @@ private:
   double _sitedflct; // threshold on deflection to use local reference
   double _mingap; // minimum gap between adjacent sites to build a new traj piece
   double _trajbuff; // trajectory piece merging buffer size
-  d_Long _volumes[2];  // Inner and out tracking volumes
   double _bintminstep; // BField integration parameters
   double _bintmaxstep;
   double _bintmaxfrac;
