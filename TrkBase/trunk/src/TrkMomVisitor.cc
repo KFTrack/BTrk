@@ -37,7 +37,6 @@ TrkMomVisitor::trkVisitHelixTraj(const HelixTraj* theTraj) {
   _ht = theTraj;
   _ct = 0;
   _nt = 0;
-  _lt = 0;
 }
 
 //------------------------------------------------------------------------
@@ -49,7 +48,6 @@ TrkMomVisitor::trkVisitCircleTraj(const TrkCircleTraj* theTraj) {
   _ht = 0;
   _ct = theTraj;
   _nt = 0;
-  _lt = 0;
 }
 
 //------------------------------------------------------------------------
@@ -61,7 +59,6 @@ TrkMomVisitor::trkVisitNeutTraj(const NeutTraj* theTraj) {
   _ht = 0;
   _ct = 0;
   _nt = theTraj;
-  _lt = 0;
 }
 
 
