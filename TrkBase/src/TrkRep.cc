@@ -25,7 +25,6 @@
 #include "PDT/PdtEntry.hh"
 #include "TrkBase/TrkDifTraj.hh"
 #include "TrkBase/TrkHotListFull.hh"
-#include "TrkBase/TrkHotListEmpty.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkRecoTrk.hh"
 #include "TrkBase/TrkFunctors.hh"
