@@ -15,14 +15,12 @@
 #ifndef TRKID_HH
 #define TRKID_HH
 
-class TrkIdManager;
-
 // Class interface //
 class TrkId {
 
 public:
-  TrkId(long idNo, TrkIdManager* idMan);    // creates with input id number
-  TrkId(TrkIdManager* idMan);              // gets id number from idMan
+  TrkId(long idNo);    // creates with input id number
+  TrkId();              // gets id number from idMan
   TrkId(const TrkId &);                    // copies existing value
   TrkId&   operator= (const TrkId&);       // copies existing value
   bool operator<(const TrkId &) const;
@@ -30,13 +28,11 @@ public:
 
   void setNewValue(const TrkId&);    // gets next Id number and copies manager
   operator long() const {return _value;}  // automatic conversion to long
-  TrkIdManager* idManager() const;
-  void setIdManager(TrkIdManager* idMan);  // hack for making trks from db
   
 private:	
 
   int _value;
-  TrkIdManager* _idman;
+  static unsigned _maxval;
 };
 
 #endif
