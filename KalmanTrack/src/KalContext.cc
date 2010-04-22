@@ -46,9 +46,6 @@ KalContext::KalContext() :
 {
 // max par diff in units chi^2 units: note trkOut=0, trkIn=1 !!!
   _maxpardif[0] = _maxpardif[1] = 1.0; // parameter pull difference for iteration convergence testing
-// default volumes span the global tracking volume
-  _volumes[trkIn] = 0;
-  _volumes[trkOut] = 0;
 // DOF requirements based on helix assumption
   _mindof[TrkEnums::xyView] = 3;
   _mindof[TrkEnums::zView] = 2;
