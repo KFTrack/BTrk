@@ -17,6 +17,11 @@
 
 enum Severity {debugging=-1, trace=0, routine, warning, error, fatal};
 
+// Free function to inquire about the severity level.
+bool ErrLogging( Severity sev ){
+  return (sev >= warning);
+}
+
 class ErrMsg{
 
 public:
