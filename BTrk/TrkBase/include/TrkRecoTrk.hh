@@ -58,7 +58,6 @@ class TrkExtInterface;
 class TrkFitStatus;
 class TrkErrCode;
 class BField;
-class TrkIdManager;
 class TrkRecoTrkImpl;
 
 class TrkRecoTrk  {
@@ -197,11 +196,10 @@ protected:
   void addHypoTo(TrkRep* newRep, PdtPid::PidType hypo);
 // a couple of lame functions to limp past inconsistencies between the persistent
 // design and the tracking design.  Ugh
-  void setIdManager(TrkIdManager* idMan);
   void setBField(const BField* field);
 // Constructors are protected (construct through FitMaker)
   TrkRecoTrk(PdtPid::PidType defaultPart, const TrkContext&, double t0);
-// persistence constructor.  BField and IdManager must be set later
+// persistence constructor.  BField must be set later
   TrkRecoTrk(PdtPid::PidType defaultPart,long idnum,double t0);
 public:
   // Access to TrkRep, for testing only; use it at your peril

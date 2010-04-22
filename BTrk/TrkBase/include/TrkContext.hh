@@ -20,7 +20,6 @@
 #define TRKCONTEXT_HH
 
 class BField;
-class TrkIdManager;
 class TrkId;
 
 // Class interface //
