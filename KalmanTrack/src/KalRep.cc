@@ -14,6 +14,7 @@
 //------------------------------------------------------------------------
 
 #include "BaBar/BaBar.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 #include <math.h>
 #include <algorithm>
 #include "KalmanTrack/KalRep.hh"
@@ -29,7 +30,6 @@
 #include "DetectorModel/DetMaterial.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkHotList.hh"
-#include "TrkBase/TrkHotListEmpty.hh"
 #include "BField/BField.hh"
 #include "BField/BFieldFixed.hh"
 #include "TrkBase/TrkDifTraj.hh"
@@ -52,7 +52,6 @@
 #include <deque>
 using std::endl;
 using std::ostream;
-
 using std::min;
 using std::max;
 
@@ -1851,7 +1850,7 @@ KalRep::updateSites( int startindex,int endindex,
     }
 // check hot sites for flightlenght changes
       if(thesite->kalHit() != 0)
-	_maxfltdif = std::std::max(_maxfltdif,thesite->kalHit()->flightLengthChange());
+	_maxfltdif = std::max(_maxfltdif,thesite->kalHit()->flightLengthChange());
     }
 // move to the next site
     iindex +=step;
@@ -2244,29 +2243,6 @@ KalRep::validFlightLength(double fltL,double tolerance) const {
 // if there are no hots, include test on found range
   return retval;
 }
-
-void
-KalRep::reduce() {
-// only cleanup if necessary
-  if(hotList()->hitCapable()){
-    std::auto_ptr<TrkHotList> old( _hotList.release() );
-    _hotList.reset( new TrkHotListEmpty(*old) );
-// remove all the hot sites, as they now point to dead entries
-    int isite(0);
-    while(isite < _sites.size()){
-      KalSite* thesite = _sites[isite];
-      if(thesite->kalHit() != 0){
-        KalSite* removed = _sites[isite];
-	_sites.erase(_sites.begin()+isite);
-        delete removed;
-      } else
-        isite++;
-    }
-// reset the site status but -NOT- the fit status
-    _siteflag[trkIn] = _siteflag[trkOut] = false;
-  }
-}
-
 
 
 void
