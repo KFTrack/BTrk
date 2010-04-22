@@ -168,6 +168,8 @@ public:
 // copy constructor to move rep to a new track
   KalRep(const KalRep&, TrkRecoTrk*);
 // copy constructor to add new mass hypo to existing track
+  KalRep(const KalRep& other,PdtPid::PidType hypo);
+// destructor
   virtual ~KalRep();
 // specific clone operation for this class
   KalRep* clone(TrkRecoTrk*) const; // covariant return
@@ -303,8 +305,6 @@ public:
   void setKalContext(const KalContext* kalcon) { _kalcon = kalcon; }
 // access to integrator
   const BFieldIntegrator* fieldIntegrator() const { return _integrator; }
-// reduce the hotlist for mini storage
-  void reduce();
 //******************************************
 // access to KalSites
 //******************************************
