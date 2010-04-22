@@ -78,10 +78,10 @@ TrkRecoTrk::TrkRecoTrk(PdtPid::PidType defaultPart, const TrkContext& ctext,
   }
 }
 
-// persistence reconstitution.  This sets a nul value for BField and IdManager
+// persistence reconstitution.  This sets a nul value for BField and Id
 TrkRecoTrk::TrkRecoTrk(PdtPid::PidType defaultPart,long idnum,double t0) :
   _impl(new TrkRecoTrkImpl),
-  _id(idnum,0),
+  _id(idnum),
   _fitNumber(PdtPid::nPidType,(int)0),
   _defaultType(defaultPart),
   _trackT0(t0),
@@ -98,7 +98,7 @@ TrkRecoTrk::TrkRecoTrk(PdtPid::PidType defaultPart,long idnum,double t0) :
 //-- Copy constructor
 TrkRecoTrk::TrkRecoTrk(const TrkRecoTrk& rhs) :
   _impl(new TrkRecoTrkImpl),
-  _id(rhs._id.idManager()),
+  _id(rhs._id),
   _fitNumber(PdtPid::nPidType,(int)0),
   _storage(rhs._storage),
   _trackT0( rhs._trackT0),
@@ -434,11 +434,6 @@ TrkRecoTrk::addHypoTo(TrkRep* newRep, PdtPid::PidType hypo)
   _impl->_reps[hypo].reset( newRep );
 }
 
-void
-TrkRecoTrk::setIdManager(TrkIdManager* idMan)
-{
-  _id.setIdManager(idMan);
-}
 
 ostream&
 operator<<(ostream& os, const TrkRecoTrk& tk)
