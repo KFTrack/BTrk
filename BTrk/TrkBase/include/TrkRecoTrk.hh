@@ -54,7 +54,6 @@ class TrkFundHit;
 class TrkExchangePar;
 class TrkVolume;
 class TrkFit;
-class TrkExtInterface;
 class TrkFitStatus;
 class TrkErrCode;
 class BField;
@@ -116,14 +115,6 @@ public:
   const TrkFitStatus* status(PdtPid::PidType hypo) const;
   TrkFitStatus* status();
   TrkFitStatus* status(PdtPid::PidType hypo);
-
-
-  //********************************************************
-  // Attach an extended interface for a specific track representation; returns
-  //    false if this track doesn't have the right kind of TrkRep in it.
-  //********************************************************
-  bool attach(TrkExtInterface&, PdtPid::PidType hypo);
-  bool attach(TrkExtInterface&, PdtPid::PidType hypo) const;
 
 
   //**************************************************
@@ -207,8 +198,6 @@ public:
   friend class TrkFitMaker;
   friend class TrkHitOnTrk;
   friend class TrkHitList;
-  friend class KalMiniTrkK;
-  friend class TrkKalMiniCompositeK;
 };
 
 std::ostream& operator<<(std::ostream& os, const TrkRecoTrk& tk);

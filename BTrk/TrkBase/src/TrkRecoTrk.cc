@@ -19,7 +19,6 @@
 #include "TrkBase/TrkDifTraj.hh"
 #include "TrkBase/TrkExchangePar.hh"
 #include "TrkBase/TrkErrCode.hh"
-#include "TrkBase/TrkExtInterface.hh"
 #include "TrkBase/TrkFitStatus.hh"
 #include "TrkBase/TrkRepIter.hh"
 #include "CLHEP/Vector/ThreeVector.h"
@@ -126,7 +125,6 @@ TrkRecoTrk::operator=(const TrkRecoTrk &right)
   _defaultType = right.defaultType();
   copyReps(right);
   _bField = right._bField;
-  AbsEvtObj::operator=(right);
   _id.setNewValue(right._id);
   _storage = right._storage;
   return *this;
@@ -354,21 +352,6 @@ TrkRecoTrk::repointHypo(PdtPid::PidType hypo, PdtPid::PidType fit)
     return;
   }
   _impl->_reps[hypo] = _impl->_reps[fit];
-}
-
-bool
-TrkRecoTrk::attach(TrkExtInterface& interface, PdtPid::PidType hypo) const
-{
-  const TrkRep* rp = getRep(hypo);
-  return rp!=0?interface.attach(rp):0;
-}
-
-
-bool
-TrkRecoTrk::attach(TrkExtInterface& interface, PdtPid::PidType hypo)
-{
-  TrkRep* rp = getRep(hypo);
-  return rp!=0?interface.attach(rp):0;
 }
 
 TrkHitList*
