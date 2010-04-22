@@ -383,7 +383,10 @@ TrkMomCalculator::calcCurvErrMom(const TrkSimpTraj& theTraj,
 
     MomDif = DirDif * momMag;
 
-    if (ErrLogging(debugging) && 0) {
+    // RKK - commented this section out since it is already out at
+    // run time.  The syntax ErrMsg(severity) is not yet working.
+    /*
+    if (ErrMsg(debugging) && 0) {
       HepMatrix e1 = DirDif.errorMatrix(MomDif.x.indepPar()->covariance());
       double e2 = momMag.error(MomDif.x.indepPar()->covariance());
       HepMatrix e3 = MomDif.errorMatrix(MomDif.x.indepPar()->covariance());
@@ -426,6 +429,7 @@ TrkMomCalculator::calcCurvErrMom(const TrkSimpTraj& theTraj,
       
       << "End" << endl << endmsg; 
     }
+    */
   }
   BbrError  symErr(MomDif.errorMatrix(
                               MomDif.x.indepPar()->covariance()));
