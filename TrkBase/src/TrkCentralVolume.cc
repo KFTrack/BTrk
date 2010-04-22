@@ -19,7 +19,7 @@
 
 #include "BaBar/BaBar.hh"
 #include "ErrLogger/ErrLog.hh"
-#include "TrkGeom/TrkCentralVolume.hh"
+#include "TrkBase/TrkCentralVolume.hh"
 #include <assert.h>
 #include "BaBar/Constants.hh"
 #include "CLHEP/Vector/ThreeVector.h"
