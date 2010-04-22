@@ -16,17 +16,17 @@
 #include "BaBar/BaBar.hh"
 #include "TrkBase/TrkId.hh"
 #include <assert.h>
-#include "TrkBase/TrkIdManager.hh"
 
+unsigned TrkId::_maxval(0);
 
 // Ctors
 //------------------------------------------------------------------------
-TrkId::TrkId(long myval, TrkIdManager* man) : _value(myval), _idman(man) {
+TrkId::TrkId(long myval) : _value(myval) {
 //------------------------------------------------------------------------
 }
 
 //------------------------------------------------------------------------
-TrkId::TrkId(TrkIdManager* man) : _value(man->nextId()), _idman(man) {
+TrkId::TrkId() : _value(++_maxval)  {
 //------------------------------------------------------------------------
 }
 
@@ -39,7 +39,6 @@ TrkId::~TrkId() {
 //------------------------------------------------------------------------
 TrkId::TrkId(const TrkId &rhs) {
 //------------------------------------------------------------------------
-  _idman = rhs.idManager();
   _value = rhs._value;
 }
 
@@ -47,7 +46,6 @@ TrkId::TrkId(const TrkId &rhs) {
 TrkId& 
 TrkId::operator= (const TrkId& rhs) {
 //------------------------------------------------------------------------
-  _idman = rhs.idManager();
   _value = rhs._value;
   return *this;
 }
@@ -55,16 +53,7 @@ TrkId::operator= (const TrkId& rhs) {
 //------------------------------------------------------------------------
 bool
 TrkId::operator<(const TrkId& other) const {
-  if (*idManager() == *(other.idManager()) && _value < other._value) {
-    return true;
-  }
-  else {
-    if (idManager() < other.idManager()) {
-      return true;
-    }
-    else
-      return false;
-  }
+  return _value < other._value;
 }
 //------------------------------------------------------------------------
 
@@ -73,21 +62,5 @@ TrkId::operator<(const TrkId& other) const {
 void 
 TrkId::setNewValue(const TrkId& source) {
 //------------------------------------------------------------------------
-  _idman = source.idManager();
-  assert (_idman != 0);
-  _value = idManager()->nextId();
-}
-
-//------------------------------------------------------------------------
-TrkIdManager* 
-TrkId::idManager() const {
-//------------------------------------------------------------------------
-  return _idman;
-}
-
-//------------------------------------------------------------------------
-void 
-TrkId::setIdManager(TrkIdManager* idMan){
-//------------------------------------------------------------------------
-  _idman = idMan;
+  _value = source._value;
 }
