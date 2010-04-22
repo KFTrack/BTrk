@@ -10,15 +10,19 @@
 //
 
 #include "BaBar/PdtPid.hh"
+#include "BaBar/PdtEntry.hh"
 
 //#include "ConditionsService/inc/ConditionsHandle.hh"
 //#include "ConditionsService/inc/ParticleDataTable.hh"
 
 class Pdt{
 public:
+  static const PdtEntry* lookup(PdtPid::PidType){
+    return 0;
+  }
   static double mass(PdtPid::PidType){
     return 0.13956;
   }
-}
+};
 
 #endif
