@@ -1,5 +1,5 @@
-#ifndef BaBaR_Pdt_HH
-#define BaBaR_Pdt_HH
+#ifndef BaBaR_PdtEntry_HH
+#define BaBaR_PdtEntry_HH
 //
 // Wrapper around mu2e::ParticleDataTable class to make it look and feel
 // like the BaBaR PdtEntry class.
@@ -9,9 +9,12 @@
 // $Date:$
 //
 
+#include <string>
+
 class PdtEntry{
 public:
-  int dummy;
-}
+  std::string name()const;
+  double mass() const;
+};
 
 #endif
