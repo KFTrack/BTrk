@@ -33,17 +33,14 @@ class Constants {
 
   public:
 
-  // Initialization of these is done in the .cc file. Although this
-  // could be done here, it is not supported by the DEC C++ compiler
-  // and is a recent change to the language reference.
+  // Initialization of these is done in the .cc file.
+  // The C++ standard permits only static const integral types
+  // to be initialized in class.
   static const double pi;
   static const double twoPi;
   static const double radToDegrees;
 
   static const double c;
-
-  // small value, replacing the BABAR_EPSILON from BaBar.hh
-  static const double epsilon;
 
 };
 
