@@ -39,7 +39,9 @@ using std::endl;
 using std::fstream;
 using std::ostream;
 
-const double BField::cmTeslaToGeVc = Constants::c/1.0E13;
+// RKK: this is now badly named.
+// Units are now:  mm, ns, MeV, T
+const double BField::cmTeslaToGeVc = Constants::c/1.0E3;
 
 //		----------------------------------------
 // 		-- Public Function Member Definitions --
