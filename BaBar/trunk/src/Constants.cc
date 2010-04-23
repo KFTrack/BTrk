@@ -24,5 +24,5 @@ const double Constants::pi           = CLHEP::pi;
 const double Constants::twoPi        = CLHEP::twopi;
 const double Constants::radToDegrees = 180./Constants::pi;
 
-const double Constants::c  = CLHEP::c_light/CLHEP::centimeter*CLHEP::second;
+const double Constants::c  = CLHEP::c_light/CLHEP::mm*CLHEP::ns;
 
