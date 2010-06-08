@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <config>
+            <sect name="TrackReconstructor">
+                <param name="bend_sites"     type="bool"  > false</param>
+                <param name="material_sites" type="bool"  > true</param>
+                <param name="fastfit"       type="bool"  > false</param>
+                <param name="minsimhit"       type="int"  > 4</param>
+                <param name="minsvthit"       type="int"  > 0</param>
+                <param name="mindchhit"       type="int"  > 0</param>
+                <param name="minpt"       type="float"    > 0.02</param>    
+                <param name="hitchicut"     type="float" >   500. </param> 
+                <param name="trkchicut"     type="float" >   5. </param> 
+                <param name="weedhits"      type="bool"  > true </param> 
+                <param name="maxweed"       type="int"   >   10  </param>
+                <param name="seedsmear"       type="float"   >   1.0  </param>
+                <param name="momupdatefactor"       type="float"   >   1.0  </param>
+                <param name="maxiterations" type="int" > 3</param>
+                <param name="smearfactor" type="float"> 1e3</param>
+                <param name="minxydof" type="int" > 0</param>
+                <param name="minzdof" type="int" > 0</param>
+                <param name="mindof" type="int" > 1</param>
+                <param name="maxgap" type="float" > 0.98 </param>
+            </sect>
+
+            <sect name="PacSimulate">
+                <param name="maxgap" type="float" > 1000.0 </param> <!-- this is the maximum gap allowed between hits-->               
+            </sect>
+
+            <sect name="DetectorVolume">
+                <param name="rmax"    type="float"        >  200</param>
+                <param name="zmin"   type="float"         > -500</param>
+                <param name="zmax"    type="float"         >  500</param>
+            </sect>        
+            <sect name="General">
+                <param name="ConfigKey" type="int" > 1 </param>
+                <param name="ConfigName" type="string"> Test </param>
+            </sect>
+            <sect name="PacField">
+                <param name="B_nom"    type="float"         > -1.0</param>
+                <param name="DeltaB"   type="vector_double" > 0.0, 0.0, 0.0</param>
+                <param name="B_radius" type="float"         > 153.0</param>
+                <param name="B_zlow"   type="float"         > -500</param>
+                <param name="B_zhi"    type="float"         > 500 </param>
+            </sect>
+        </config>
+    </included>
+</edml>
