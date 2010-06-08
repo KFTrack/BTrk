@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+ 
+<!--
+This document is a part of the sample experiment description in a format
+which would eventually turn into EDML:
+ 
+  "Experiment Description Markup (or Modelling) Language"
+ 
+Right now we don't have any formal schema for EDML. Therefore
+the current implementation of a EDML parser would check both
+syntax and semantics of the model. Besides, introducing the formal
+XML schema for EDML may  result in some changes in a syntax
+of EDML.
+-->
+ 
+<edml>
+    
+  <config>
+
+    <!-- ROOT file to save results to -->
+    <param name="outputfile" type="string"> mu2e_trkreco.root</param>
+
+    <!-- Print event number for every printfreq -->
+    <param name="printfreq" type="long"> 1000</param>
+
+    <!-- Prints out Positon/Momentum/Parameter Info (make sure numtracks isn't large!!) -->
+    <param name="verbose" type="bool"> false</param>
+
+    <!-- Number of tracks to generate -->
+    <param name="numtracks" type="long"> 100000</param>
+
+    <!-- Flight length of generated particles -->
+    <param name="flightlen_min" type="long"> 80</param>
+    <param name="flightlen_max" type="long"> 320</param>
+    <param name="seedsigmas"    type="vector_double"> 1e-1, 1e-3, 1e-4, 1e-1, 1e-3</param>
+
+    <!-- Initial distance from z axis (phi symmetric) -->
+    <param name="r0_mean" type="double"> 0.0</param>
+    <param name="r0_sigma" type="double"> 6.0</param>
+    <!-- Initial distance from z=0 -->
+    <param name="z0_mean" type="double"> -285</param>
+    <param name="z0_sigma" type="double"> 30</param>
+
+    <!-- momentum range-->
+    <param name="p_min"  type="double"> 0.1051</param>
+    <param name="p_max" type="double"> 0.1051 </param>
+
+    <!-- polar angle range -->
+    <param name="cost_min"  type="double"> 0.3</param>
+    <param name="cost_max" type="double"> 0.6 </param>
+
+    <!-- positive electron -->
+    <param name="PdtPdg" type="long"> -11</param>
+
+  </config>
+</edml>
