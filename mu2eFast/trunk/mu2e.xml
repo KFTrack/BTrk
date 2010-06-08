@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <include file="PacSim/Material_simulation.xml" />
+    <include file="mu2e_config.xml" />
+    <include file="mu2e_target.xml" />
+    <include file="mu2e_Ttracker.xml" />
+</edml>
