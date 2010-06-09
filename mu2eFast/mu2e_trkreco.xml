@@ -18,7 +18,7 @@ of EDML.
   <config>
 
     <!-- ROOT file to save results to -->
-    <param name="outputfile" type="string"> mu2e_trkreco.root</param>
+<!--    <param name="outputfile" type="string"> mu2e_notarget.root</param> -->
 
     <!-- Print event number for every printfreq -->
     <param name="printfreq" type="long"> 1000</param>
@@ -39,7 +39,7 @@ of EDML.
     <param name="r0_sigma" type="double"> 6.0</param>
     <!-- Initial distance from z=0 -->
     <param name="z0_mean" type="double"> -285</param>
-    <param name="z0_sigma" type="double"> 30</param>
+    <param name="z0_sigma" type="double"> 15</param>
 
     <!-- momentum range-->
     <param name="p_min"  type="double"> 0.1051</param>
