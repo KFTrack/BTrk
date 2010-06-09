@@ -19,7 +19,7 @@ of EDML.
     <param name="displaytrack" type="bool"> true</param>
     <param name="printtrack" type="bool"> true</param>
 
-    <param name="displayfile" type="string" > mu2e.root</param>
+    <param name="displayfile" type="string" > mu2e_test.root</param>
     <param name="displayresolution" type="int" > 2000</param>
 
     <!-- Helix parameters -->
