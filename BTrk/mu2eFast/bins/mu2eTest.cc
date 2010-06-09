@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
   TRandom3 rng(RNGSEED + rndseed);
 
   //Create File		test.root
-  const char* outputfile = gconfig.get("outputfile", "testTrackReconstruction.root");
+  const char* outputfile = gconfig.get("outputfile", "mu2e_test.root");
   TFile file(outputfile,"RECREATE");
   //Create Tree to store track info
   TTree* trackT = new TTree("tracks","Tracks");

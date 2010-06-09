@@ -18,7 +18,7 @@ of EDML.
   <config>
 
     <!-- ROOT file to save results to -->
-<!--    <param name="outputfile" type="string"> mu2e_notarget.root</param> -->
+    <param name="outputfile" type="string"> mu2e_test.root</param> 
 
     <!-- Print event number for every printfreq -->
     <param name="printfreq" type="long"> 1000</param>
