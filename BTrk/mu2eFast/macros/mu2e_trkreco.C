@@ -25,7 +25,7 @@ Double_t splitgaus(Double_t *x, Double_t *par) {
 void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
   TString page(cpage);
   TCut rec("rec_ndof>0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=15&&rec_mom_err<0.0005");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0");
   
   TF1* sgau = new TF1("sgau",splitgaus,-100.,100.,4);
   if( page == "sim"){
@@ -250,5 +250,34 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     
     momr->Fit("sgau");
 
+  } else if (page == "mom"){
+    
+    TH1F* nhit = new TH1F("nhit","N hits",50,-0.5,49.5);
+    tree->Project("nhit","rec_nhit",rec+goodfit);
+    
+    TH1F* mome = new TH1F("mome","estimated fit mom error",100,0.00001,0.0006);
+    tree->Project("mome","rec_mom_err",rec+goodfit);
+    
+    TH1F* mompg = new TH1F("mompg","momentum pull",100,-10,10);
+    tree->Project("mompg","(rec_mom_mag-sim_mom_mag)/rec_mom_err",rec+goodfit);
+    
+    TH1F* momr = new TH1F("momp","momentum resolution",100,-0.0025,0.0025);
+    tree->Project("momp","rec_mom_mag-sim_mom_mag",rec+goodfit);
+    
+    can->Clear();
+    can->Divide(2,2);
+    can->cd(1);
+    nhit->Draw();
+    can->cd(2);
+    mome->Draw();
+    can->cd(3);
+    gPad->SetLogy();
+    mompg->Fit("gaus");
+    can->cd(4);
+    gPad->SetLogy();
+    double integral = momr->GetEntries()*momr->GetBinWidth(1);
+    sgau->SetParameters(integral,-0.0004,momr->GetRMS(),momr->GetRMS()/2.0);
+    momr->Fit("sgau");
+    
   }
 }
