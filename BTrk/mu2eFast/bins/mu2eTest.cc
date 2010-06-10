@@ -56,7 +56,8 @@
 #include "PacGeom/PacHelix.hh"
 #include "PacGeom/PacPieceTraj.hh"
 #include "PacGeom/PacMeasurement.hh"
-#include "PacTest/PacSimHitInfo.rdl"
+#include "mu2eFast/PacSimHitInfo.rdl"
+#include "mu2eFast/PacSimTrkSummary.rdl"
 
 #include "ProxyDict/Ifd.hh"
 #include "AbsEnv/AbsEnv.hh"
@@ -74,7 +75,8 @@ using namespace std;
 
 #define RNGSEED 9082459
 
-void fillSimHitInfo(const PacSimTrack* strk, PacSimHitInfo& sinfo, int& nmeas);
+void fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& sinfo);
+void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 
 int main(int argc, char* argv[]) {
   gconfig.verbose(true);
@@ -97,6 +99,9 @@ int main(int argc, char* argv[]) {
   // put the DetectorModel into the event 
   if(! Ifd< DetSet >::put( gblPEnv,const_cast<DetSet*>(detector->detectorModel()),"Tracking Set"))
     cout << "Can't put Detector Set" << endl;
+  
+  // config parameters
+  bool hittuple = gconfig.getbool("hittuple",false);
 
     // Read helix generation parameters 
   double p_min = double(gconfig["p_min"]);
@@ -172,8 +177,8 @@ int main(int argc, char* argv[]) {
   Float_t pull_z0;
   Float_t pull_tandip;
   
-  Int_t nsimhit,nmeas;
-  PacSimHitInfo sinfo;
+  std::vector<PacSimHitInfo> sinfo;
+  PacSimTrkSummary ssum;
   
   //Create TBranch to store track info
   trackT->Branch("itrack",&itrack,"itrack/I");
@@ -234,10 +239,11 @@ int main(int argc, char* argv[]) {
   trackT->Branch("pull_z0",&pull_z0,"pull_z0/F");
   trackT->Branch("pull_tandip",&pull_tandip,"pull_tandip/F");
   
-  trackT->Branch("nsimhit",&nsimhit,"nsimhit/I");  
-  trackT->Branch("nmeas",&nmeas,"nmeas/I");  
-// branch for individual simhit info
-  trackT->Branch("simhit",&sinfo.shi,PacSimHitInfo::rootnames());  
+// branch for individual simhit info (TClonesArray)
+  if(hittuple)
+    trackT->Branch("simhit",&sinfo);
+// branch for simtrack summary
+  trackT->Branch("simtrk",&ssum.nsimhit,PacSimTrkSummary::rootnames());    
 
   int tracknum = 1;
   const int printfreq = gconfig.getint("printfreq", 100);
@@ -291,9 +297,8 @@ int main(int argc, char* argv[]) {
     PacSimTrack* simtrk = sim.simulateGTrack(&gtrk);
 
     // global information about simtrk
-    nsimhit = simtrk->getHitList().size();
-    fillSimHitInfo(simtrk, sinfo, nmeas);
-    
+    if(hittuple)fillSimHitInfo(simtrk, sinfo);
+    fillSimTrkSummary(simtrk,ssum);
     // Timing information
         
     const PacPieceTraj* simtraj = simtrk->getTraj();
@@ -462,12 +467,12 @@ int main(int argc, char* argv[]) {
 }
 
 void
-fillSimHitInfo(const PacSimTrack* strk, PacSimHitInfo& sinfo, int& nmeas) {
+fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
   const std::vector<PacSimHit>& shs = strk->getHitList();
 // loop over the simhits
-  nmeas = 0;
   double radlenint(0);
   double intlenint(0);
+  PacSimHitInfo sinfo;
   for(int ish=0;ish<shs.size();ish++){
     sinfo.shi = ish;
     const PacSimHit& sh = shs[ish];
@@ -492,7 +497,6 @@ fillSimHitInfo(const PacSimTrack* strk, PacSimHitInfo& sinfo, int& nmeas) {
       // NA
       const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
       if( pelem != 0 && pelem->measurement()!= 0 ) {
-        nmeas++;
         sinfo.shmeastype =  (int)pelem->measurement()->measurementType();
       } else {
         sinfo.shmeastype = -1;
@@ -514,5 +518,50 @@ fillSimHitInfo(const PacSimTrack* strk, PacSimHitInfo& sinfo, int& nmeas) {
     intlenint += intlen;
     sinfo.shradlenint = radlenint;
     sinfo.shintlenint = intlenint;
+    svec.push_back(sinfo);
+  }
+}
+
+void
+fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
+// initialize
+  ssum = PacSimTrkSummary();
+  const std::vector<PacSimHit>& shs = strk->getHitList();
+  ssum.dmom = shs.back().momentumOut().mag() - shs.front().momentumIn().mag();
+  ssum.pathlen = shs.back().globalFlight() - shs.front().globalFlight();
+  ssum.nsimhit = shs.size();
+  
+  for(int ish=0;ish<shs.size();ish++){
+    const PacSimHit& sh = shs[ish];
+    if(sh.detEffect() == PacSimHit::normal)
+      ssum.nscatter++;
+    else if(sh.detEffect() == PacSimHit::brems)
+      ssum.nbrems++;
+    else if(sh.detEffect() == PacSimHit::shower)
+      ssum.nshower++;
+    else
+      ssum.nother++;
+    const DetIntersection& dinter = sh.detIntersection();
+    const DetElem* delem = dinter.delem;
+    if(delem != 0){
+      if(delem->elementName() == "straw")
+        ssum.nstraw++;
+      else if(delem->elementName() == "gas")
+        ssum.ngas++;
+      else if(delem->elementName() == "wire")
+        ssum.nwire++;
+      const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
+      if( pelem != 0 && pelem->measurement()!= 0 ) {
+        if(delem->elementName() == "gas")
+          ssum.nwiremeas++;
+        else
+          ssum.npadmeas++;
+      }
+      const DetMaterial* mat = &(delem->material(dinter));
+      if(mat != 0){
+        double pathlen = dinter.pathLength();
+        ssum.radlenint += mat->radiationFraction(pathlen);
+      }
+    }
   }
 }

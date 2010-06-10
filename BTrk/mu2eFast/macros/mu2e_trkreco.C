@@ -31,7 +31,7 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
   if( page == "sim"){
     TH1F* mom = new TH1F("mom","momentum",100,0.09,0.11);
     TH1F* td = new TH1F("td","tandip",100,0,1.4);
-    TH1F* z0 = new TH1F("z0","z position",100,-350,-250);
+    TH1F* z0 = new TH1F("z0","z position",100,-330,-240);
     TH1F* d0 = new TH1F("d0","transverse position",100,-25,25);
 
     tree->Project("mom","sim_mom_mag");
