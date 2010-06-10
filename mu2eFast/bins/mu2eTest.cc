@@ -528,6 +528,9 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
   ssum = PacSimTrkSummary();
   const std::vector<PacSimHit>& shs = strk->getHitList();
   ssum.dmom = shs.back().momentumOut().mag() - shs.front().momentumIn().mag();
+  Hep3Vector ddir = shs.back().momentumOut().unit() - shs.front().momentumIn().unit();
+  ssum.ddir = ddir.mag();
+  ssum.ddirphi= ddir.phi();
   ssum.pathlen = shs.back().globalFlight() - shs.front().globalFlight();
   ssum.nsimhit = shs.size();
   
