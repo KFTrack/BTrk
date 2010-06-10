@@ -19,6 +19,7 @@ of EDML.
 
     <!-- ROOT file to save results to -->
     <param name="outputfile" type="string"> mu2e_test.root</param> 
+    <param name="hittuple" type="bool"> false </param>
 
     <!-- Print event number for every printfreq -->
     <param name="printfreq" type="long"> 1000</param>
@@ -46,8 +47,8 @@ of EDML.
     <param name="p_max" type="double"> 0.1051 </param>
 
     <!-- polar angle range -->
-    <param name="cost_min"  type="double"> 0.3</param>
-    <param name="cost_max" type="double"> 0.6 </param>
+    <param name="cost_min"  type="double"> 0.5 </param>
+    <param name="cost_max" type="double"> 0.707107 </param>
 
     <!-- positive electron -->
     <param name="PdtPdg" type="long"> -11</param>
