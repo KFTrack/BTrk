@@ -22,12 +22,22 @@ Double_t splitgaus(Double_t *x, Double_t *par) {
   return retval;
 }
 
+Double_t doublegaus(Double_t *x, Double_t *par) {
+  Double_t retval;
+  Float_t xval = x[0];
+  retval = par[0]*0.398942*( par[4]*exp(-0.5*pow((xval-par[1])/par[2],2))/par[2] + 
+    (1.0-par[4])*exp(-0.5*pow((xval-par[1])/par[3],2))/par[3]);
+  return retval;
+}
+
+
 void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
   TString page(cpage);
   TCut rec("rec_ndof>0");
   TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0");
   
-  TF1* sgau = new TF1("sgau",splitgaus,-100.,100.,4);
+  TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,4);
+  TF1* dgau = new TF1("dgau",doublegaus,-1.,1.,5);
   if( page == "sim"){
     TH1F* mom = new TH1F("mom","momentum",100,0.09,0.11);
     TH1F* td = new TH1F("td","tandip",100,0,1.4);
@@ -279,5 +289,23 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     sgau->SetParameters(integral,-0.0004,momr->GetRMS(),momr->GetRMS()/2.0);
     momr->Fit("sgau");
     
+  } else if(page == "mat") {
+    gStyle->SetOptFit(1111);
+    
+    TH1F* dmom = new TH1F("dmom","momentum mag change",200,-0.00025,0.0001);
+    TH1F* dang = new TH1F("dang","momentum dir change",200,-0.05,0.05);
+    tree->Project("dmom","simtrk.dmom");
+    tree->Project("dang","simtrk.ddir*cos(simtrk.ddirphi)");
+    tree->Project("dang","simtrk.ddir*sin(simtrk.ddirphi)");
+    can->Clear();
+    can->Divide(2,1);
+    can->cd(1);
+    gPad->SetLogy();
+    dmom->Draw();
+    can->cd(2);
+    gPad->SetLogy();
+    double integral = dang->GetEntries()*dang->GetBinWidth(1);
+    dgau->SetParameters(integral,0.0,dang->GetRMS()*5.0,dang->GetRMS()/2.0,0.05);
+    dang->Fit("dgau");
   }
 }
