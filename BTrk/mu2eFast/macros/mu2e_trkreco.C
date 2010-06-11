@@ -256,7 +256,7 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(6);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
-    sgau->SetParameters(integral,-0.0004,momr->GetRMS(),momr->GetRMS()/2.0);
+    sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS());
     
     momr->Fit("sgau");
 
@@ -286,13 +286,13 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
-    sgau->SetParameters(integral,-0.0004,momr->GetRMS(),momr->GetRMS()/2.0);
+    sgau->SetParameters(integral,0,momr->GetRMS(),momr->GetRMS());
     momr->Fit("sgau");
     
   } else if(page == "mat") {
     gStyle->SetOptFit(1111);
     
-    TH1F* dmom = new TH1F("dmom","momentum mag change",200,-0.00025,0.0001);
+    TH1F* dmom = new TH1F("dmom","momentum mag change",200,-0.00015,0.00005);
     TH1F* dang = new TH1F("dang","momentum dir change",200,-0.05,0.05);
     tree->Project("dmom","simtrk.dmom");
     tree->Project("dang","simtrk.ddir*cos(simtrk.ddirphi)");
