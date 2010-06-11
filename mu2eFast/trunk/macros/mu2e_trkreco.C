@@ -1,4 +1,4 @@
-#include <rtypes.h>
+#include <Rtypes.h>
 #include <TF1.h>
 #include <TCanvas.h>
 #include <TH1F.h>
