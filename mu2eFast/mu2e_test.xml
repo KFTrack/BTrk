@@ -50,8 +50,8 @@ of EDML.
     <param name="cost_min"  type="double"> 0.5 </param>
     <param name="cost_max" type="double"> 0.707107 </param>
 
-    <!-- positive electron -->
-    <param name="PdtPdg" type="long"> -11</param>
+    <!-- negative electron -->
+    <param name="PdtPdg" type="long"> 11</param>
 
   </config>
 </edml>
