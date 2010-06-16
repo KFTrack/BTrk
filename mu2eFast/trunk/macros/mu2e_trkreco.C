@@ -43,13 +43,18 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     TH1F* td = new TH1F("td","tandip",100,0,1.4);
     TH1F* z0 = new TH1F("z0","z position",100,-330,-240);
     TH1F* d0 = new TH1F("d0","transverse position",100,-25,25);
+    TH2F* nvtd = new TH2F("nvtd","N planes vs tandip",51,0.5,1.1,51,-0.5,50.5);
+    TH2F* nvd0 = new TH2F("nvd0","N planes vs transverse position",51,-25.5,25.5,51,-0.5,50.5);
+    
 
     tree->Project("mom","sim_mom_mag");
     tree->Project("td","sim_tandip");
     tree->Project("z0","sim_z0");
     tree->Project("d0","sim_d0");
+    tree->Project("nvtd","simtrk.ngas:sim_tandip");
+    tree->Project("nvd0","simtrk.ngas:sim_d0");
     can->Clear();
-    can->Divide(2,2);
+    can->Divide(3,2);
     can->cd(1);
     mom->Draw();
     can->cd(2);
@@ -58,6 +63,11 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     z0->Draw();
     can->cd(4);
     d0->Draw();
+    can->cd(5);
+    nvtd->Draw("box");
+    can->cd(6);
+    nvd0->Draw("box");
+    
   } else if(page == "rec"){
 
     TH1F* ndof = new TH1F("ndof","N DOF",40,-0.5,39.5);
@@ -66,9 +76,6 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     TH1F* nhit = new TH1F("nhit","N hits",50,-0.5,49.5);
     tree->Project("nhit","rec_nhit");
 
-    TH1F* nactive = new TH1F("nactive","N active hits",50,-0.5,49.5);
-    tree->Project("nactive","rec_nactive");    
-
     TH1F* chindof = new TH1F("chindof","Chisquare/NDOF", 100,0.0, 10.0);
     tree->Project("chindof","rec_chisqr/rec_ndof",rec);
     
@@ -76,21 +83,16 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     tree->Project("fitprob","rec_fitprob",rec);
     
     can->Clear();
-    can->Divide(3,2);
+    can->Divide(2,2);
     can->cd(1);
     ndof->Draw();
     can->cd(2);
     nhit->Draw();
     can->cd(3);
-    nactive->Draw();
-
-    can->cd(4);
     chindof->Draw();
-    can->cd(5);
-    fitprob->Fit("pol1","","",0.05,1);
-    can->cd(6);
+    can->cd(4);
     gPad->SetLogy();
-    fitprob->Draw();
+    fitprob->Fit("pol1","","",0.05,1);
     
   } else if(page == "eff"){
 
@@ -261,7 +263,7 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     momr->Fit("sgau");
 
   } else if (page == "mom"){
-    
+    gStyle->SetOptFit(1111);
     TH1F* nhit = new TH1F("nhit","N hits",50,-0.5,49.5);
     tree->Project("nhit","rec_nhit",rec+goodfit);
     
@@ -286,7 +288,7 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
-    sgau->SetParameters(integral,0,momr->GetRMS(),momr->GetRMS());
+    sgau->SetParameters(integral,0.0001,momr->GetRMS()/1.5,momr->GetRMS()*1.5);
     momr->Fit("sgau");
     
   } else if(page == "mat") {
