@@ -20,6 +20,11 @@ of EDML.
     <!-- ROOT file to save results to -->
     <param name="outputfile" type="string"> mu2e_test.root</param> 
     <param name="hittuple" type="bool"> false </param>
+    
+    <param name="displaytrack" type="bool"> false</param>
+    <param name="displayfile" type="string" > mu2e_display.root</param>
+    <param name="displayresolution" type="int" > 2000</param>
+    
 
     <!-- Print event number for every printfreq -->
     <param name="printfreq" type="long"> 1000</param>
