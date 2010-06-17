@@ -56,10 +56,13 @@
 #include "PacGeom/PacHelix.hh"
 #include "PacGeom/PacPieceTraj.hh"
 #include "PacGeom/PacMeasurement.hh"
+#include "PacDisplay/PacEvtDisplay.hh"
 #include "mu2eFast/PacSimHitInfo.rdl"
 #include "mu2eFast/PacSimTrkSummary.rdl"
 
 #include "ProxyDict/Ifd.hh"
+#include "ProxyDict/IfdDataProxyUnowned.hh"
+
 #include "AbsEnv/AbsEnv.hh"
 #include "BField/BField.hh"
 #include "CLHEP/Random/Random.h"
@@ -95,10 +98,23 @@ int main(int argc, char* argv[]) {
   const BField* bfield = Ifd<BField>::get(gblPEnv,"Default");
   // build detector
   PacCylDetector* detector = new PacCylDetector();
-
-  // put the DetectorModel into the event 
-  if(! Ifd< DetSet >::put( gblPEnv,const_cast<DetSet*>(detector->detectorModel()),"Tracking Set"))
-    cout << "Can't put Detector Set" << endl;
+  /* put the DetectorModel into the event */
+  IfdDataProxyUnowned<DetSet>* dsproxy= new IfdDataProxyUnowned<DetSet>(const_cast<DetSet*>(detector->detectorModel()));
+	if(! Ifd< DetSet >::put( gblPEnv,dsproxy,"Tracking Set"))
+		cout << "Can't put Detector Set" << endl;
+		
+	if(! Ifd< PacDetector >::put( gblPEnv,detector,"Tracking Det"))
+  	cout << "Can't put Detector" << endl;
+	
+    
+  // if requested, setup display
+  PacEvtDisplay display;
+  bool disptrack = gconfig.getbool("displaytrack");
+	if(disptrack){
+    display.init(gconfig.getcstr("displayfile"),gconfig.getint("displayresolution"));
+    display.drawDetector();
+    display.reset();
+	}
   
   // config parameters
   bool hittuple = gconfig.getbool("hittuple",false);
@@ -112,7 +128,7 @@ int main(int argc, char* argv[]) {
   double r0_sigma = double(gconfig["r0_sigma"]);
   double z0_mean = double(gconfig["z0_mean"]);
   double z0_sigma = double(gconfig["z0_sigma"]);
-
+  
     // Prepare to construct tracks 
   int numtracks = int(gconfig["numtracks"]);
   const int rndseed = gconfig.getint("rndseed", 0);
@@ -300,6 +316,13 @@ int main(int argc, char* argv[]) {
     if(hittuple)fillSimHitInfo(simtrk, sinfo);
     fillSimTrkSummary(simtrk,ssum);
     // Timing information
+    
+    if(disptrack){
+       display.reset();
+       display.drawGTrack(&gtrk,simtrk->lastHit()->globalFlight(),bfield);
+       display.drawSimTrack(simtrk);
+       display.drawSimHits(simtrk,0);
+     }
         
     const PacPieceTraj* simtraj = simtrk->getTraj();
 
@@ -415,6 +438,9 @@ int main(int argc, char* argv[]) {
       rec_nactive = kalrep->hotList()->nActive();
       rec_nhit = kalrep->hotList()->nHit();
       
+      if(disptrack)
+        display.drawRecTrack(trk);
+      
     } else {
 // no track: fill with dummy parameters
       rec_lowrange	= -100;
@@ -455,6 +481,9 @@ int main(int argc, char* argv[]) {
     delete trk;
     delete simtrk;
     trackT->Fill();
+    
+    if(disptrack)
+      display.fillTrees();
     tracknum++;
   }//int m loop
 
@@ -462,6 +491,7 @@ int main(int argc, char* argv[]) {
   trackT->Write();
 //  delete trackT;
   file.Close();
+  display.finalize();
   cout << endl;
   return 0;
 }
