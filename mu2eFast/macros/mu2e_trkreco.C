@@ -19,6 +19,8 @@ Double_t splitgaus(Double_t *x, Double_t *par) {
     retval = exp(-0.5*pow((xval-par[1])/par[3],2));  
   }
   retval *= par[0]*0.398942/par[2];
+// add a tail Gaussian
+  retval += par[0]*par[4]*0.398942*exp(-0.5*pow((xval-par[5])/par[6],2))/par[6];
   return retval;
 }
 
@@ -36,7 +38,7 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0");
   
-  TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,4);
+  TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
   TF1* dgau = new TF1("dgau",doublegaus,-1.,1.,5);
   if( page == "sim"){
     TH1F* mom = new TH1F("mom","momentum",100,0.09,0.11);
@@ -258,8 +260,8 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(6);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
-    sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS());
-    
+    sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,0.0,2*momr->GetRMS());
+    sgau->SetParLimits(6,2*momr->GetRMS(),1.0);
     momr->Fit("sgau");
 
   } else if (page == "mom"){
@@ -273,7 +275,7 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     TH1F* mompg = new TH1F("mompg","momentum pull",100,-10,10);
     tree->Project("mompg","(rec_mom_mag-sim_mom_mag)/rec_mom_err",rec+goodfit);
     
-    TH1F* momr = new TH1F("momp","momentum resolution",100,-0.0025,0.0025);
+    TH1F* momr = new TH1F("momp","momentum resolution",100,-0.002,0.002);
     tree->Project("momp","rec_mom_mag-sim_mom_mag",rec+goodfit);
     
     can->Clear();
@@ -288,7 +290,8 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
-    sgau->SetParameters(integral,0.0001,momr->GetRMS()/1.5,momr->GetRMS()*1.5);
+    sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,0.0,2*momr->GetRMS());
+    sgau->SetParLimits(6,2*momr->GetRMS(),1.0);
     momr->Fit("sgau");
     
   } else if(page == "mat") {
