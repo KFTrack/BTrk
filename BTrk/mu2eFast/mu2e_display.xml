@@ -27,7 +27,7 @@ of EDML.
     <param name="initmom" type="vector_double" >   -0.088292039740638317 0.04658019079998453 0.032875698372423649 </param>
 
     <!-- e- -->
-    <param name="PdtPdg" type="int" > -11</param>
+    <param name="PdtPdg" type="int" > 11</param>
 
     <!-- initial track fit -->
     <param name="flightlen" type="double" > 2000. </param>
