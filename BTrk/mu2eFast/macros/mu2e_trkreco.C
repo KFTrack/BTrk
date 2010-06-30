@@ -12,15 +12,18 @@
 
 Double_t splitgaus(Double_t *x, Double_t *par) {
   Double_t retval;
+  Double_t core;
+  Double_t tail;
   Float_t xval = x[0];
   if(xval > par[1]) {
-    retval = exp(-0.5*pow((xval-par[1])/par[2],2));
+    core = exp(-0.5*pow((xval-par[1])/par[2],2))/par[2];
+    tail = par[4]*exp(-0.5*pow((xval-par[1])/par[5],2))/par[5];
   } else {
-    retval = exp(-0.5*pow((xval-par[1])/par[3],2));  
+    core = exp(-0.5*pow((xval-par[1])/par[3],2))/par[2];
+    tail = par[6]*exp(-0.5*pow((xval-par[1])/par[7],2))/par[7];
   }
-  retval *= par[0]*0.398942/par[2];
+  retval = par[0]*0.398942*(core+tail);
 // add a tail Gaussian
-  retval += par[0]*par[4]*0.398942*exp(-0.5*pow((xval-par[5])/par[6],2))/par[6];
   return retval;
 }
 
@@ -38,7 +41,15 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0");
   
-  TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
+  TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,8);
+  sgau->SetParName(0,"Norm");
+  sgau->SetParName(1,"Mean");
+  sgau->SetParName(2,"SigH");
+  sgau->SetParName(3,"SigL");
+  sgau->SetParName(4,"TFH");
+  sgau->SetParName(5,"TSigH");
+  sgau->SetParName(6,"TFL");
+  sgau->SetParName(7,"TSigL");
   TF1* dgau = new TF1("dgau",doublegaus,-1.,1.,5);
   if( page == "sim"){
     TH1F* mom = new TH1F("mom","momentum",100,0.09,0.11);
@@ -260,9 +271,10 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(6);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
-    sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,0.0,2*momr->GetRMS());
-    sgau->SetParLimits(6,2*momr->GetRMS(),1.0);
-    momr->Fit("sgau");
+    sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,2*momr->GetRMS(),0.01,2*momr->GetRMS());
+    sgau->SetParLimits(5,2*momr->GetRMS(),1.0);
+    sgau->SetParLimits(7,2*momr->GetRMS(),1.0);
+    momr->Fit("sgau","L");
 
   } else if (page == "mom"){
     gStyle->SetOptFit(1111);
@@ -290,9 +302,10 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
-    sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,0.0,2*momr->GetRMS());
-    sgau->SetParLimits(6,2*momr->GetRMS(),1.0);
-    momr->Fit("sgau");
+    sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,2*momr->GetRMS(),0.01,2*momr->GetRMS());
+    sgau->SetParLimits(5,2*momr->GetRMS(),1.0);
+    sgau->SetParLimits(7,2*momr->GetRMS(),1.0);
+    momr->Fit("sgau","L");
     
   } else if(page == "mat") {
     gStyle->SetOptFit(1111);
