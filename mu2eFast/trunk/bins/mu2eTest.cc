@@ -58,6 +58,7 @@
 #include "PacGeom/PacMeasurement.hh"
 #include "PacDisplay/PacEvtDisplay.hh"
 #include "mu2eFast/PacSimHitInfo.rdl"
+#include "mu2eFast/TrajDiff.rdl"
 #include "mu2eFast/PacSimTrkSummary.rdl"
 
 #include "ProxyDict/Ifd.hh"
@@ -67,6 +68,7 @@
 #include "BField/BField.hh"
 #include "CLHEP/Random/Random.h"
 #include "CLHEP/Random/RanecuEngine.h"
+#include "CLHEP/Vector/ThreeVector.h"
 
 #include "G3Data/GVertex.hh"
 #include "G3Data/GTrack.hh"
@@ -79,6 +81,7 @@ using namespace std;
 #define RNGSEED 9082459
 
 void fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& sinfo);
+void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff);
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 
 int main(int argc, char* argv[]) {
@@ -118,6 +121,7 @@ int main(int argc, char* argv[]) {
   
   // config parameters
   bool hittuple = gconfig.getbool("hittuple",false);
+  bool trajdiff = gconfig.getbool("trajdiff",false);
 
     // Read helix generation parameters 
   double p_min = double(gconfig["p_min"]);
@@ -194,6 +198,7 @@ int main(int argc, char* argv[]) {
   Float_t pull_tandip;
   
   std::vector<PacSimHitInfo> sinfo;
+  std::vector<TrajDiff> tdiff;
   PacSimTrkSummary ssum;
   
   //Create TBranch to store track info
@@ -258,6 +263,9 @@ int main(int argc, char* argv[]) {
 // branch for individual simhit info (TClonesArray)
   if(hittuple)
     trackT->Branch("simhit",&sinfo);
+// test of trajectory differences
+  if(trajdiff)
+    trackT->Branch("trajdiff",&tdiff);
 // branch for simtrack summary
   trackT->Branch("simtrk",&ssum.nsimhit,PacSimTrkSummary::rootnames());    
 
@@ -280,6 +288,9 @@ int main(int argc, char* argv[]) {
     itrack = itrk;
 // must clear the nasty statics
     simHotMap.Clear();
+// clear vectors
+    sinfo.clear();
+    tdiff.clear();
 // Generate track parameters; first, origin vertex
     double posphi =  rng.Uniform(0, 2*M_PI);
     double dx = rng.Gaus(0, r0_sigma);
@@ -438,6 +449,9 @@ int main(int argc, char* argv[]) {
       rec_nactive = kalrep->hotList()->nActive();
       rec_nhit = kalrep->hotList()->nHit();
       
+      // test of position difference between
+      if(trajdiff)fillTrajDiff(simtrk,recotraj,tdiff);
+      
       if(disptrack)
         display.drawRecTrack(trk);
       
@@ -491,7 +505,7 @@ int main(int argc, char* argv[]) {
   trackT->Write();
 //  delete trackT;
   file.Close();
-  display.finalize();
+  if(disptrack)display.finalize();
   cout << endl;
   return 0;
 }
@@ -598,3 +612,47 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
     }
   }
 }
+
+
+void
+fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff) {
+  static const unsigned npts(20);
+  const std::vector<PacSimHit>& shs = strk->getHitList();
+  const PacPieceTraj* straj = strk->getTraj();
+// loop over pairs of measurement simhits
+  TrajDiff td;
+  for(int ish=0;ish<shs.size();ish++){
+    const PacSimHit& sh1 = shs[ish];
+    const PacDetElem* pelem1 = dynamic_cast<const PacDetElem *>(sh1.detIntersection().delem);
+    if( pelem1 != 0 && pelem1->measurement()!= 0 ) {
+// find the next measurement
+      for(int jsh=ish+1;jsh<shs.size();jsh++){
+        const PacSimHit& sh2 = shs[jsh];
+        const PacDetElem* pelem2 = dynamic_cast<const PacDetElem *>(sh2.detIntersection().delem);
+        if( pelem2 != 0 && pelem2->measurement()!= 0 ) {
+          td.shi = ish;
+          td.shj = jsh;
+          td.startglen = sh1.globalFlight();
+          td.endglen = sh2.globalFlight();
+          td.ddiff = 0.0;
+          td.ddiff2 = 0.0;  
+          double step = (td.endglen-td.startglen)/(npts-1);
+          for(unsigned ipt=0;ipt<npts;ipt++){
+            double glen = td.startglen+ipt*step;
+            HepPoint spt = straj->position(glen);
+            TrkPoca tpoca(ptraj, glen, spt, 1e-12);
+            HepPoint rpt = ptraj.position(tpoca.flt1());
+            Hep3Vector diff = rpt - spt;
+            td.ddiff += diff.mag();
+            td.ddiff2 += diff.mag2();
+          }
+          td.ddiff /= npts;
+          td.ddiff2 /= npts;
+          tdiff.push_back(td);
+          break;
+        }
+      }
+    }
+  }
+}
+

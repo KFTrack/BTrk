@@ -325,5 +325,29 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     double integral = dang->GetEntries()*dang->GetBinWidth(1);
     dgau->SetParameters(integral,0.0,dang->GetRMS()*5.0,dang->GetRMS()/2.0,0.05);
     dang->Fit("dgau");
+  } else if(page == "trajdiff") {
+    TCut adjacent = ("trajdiff.endglen-trajdiff.startglen>20 && trajdiff.endglen-trajdiff.startglen<40");
+    TCut middle = ("trajdiff.endglen>700 && trajdiff.endglen < 800 && trajdiff.startglen> 550 && trajdiff.startglen< 650");
+    TCut early = ("trajdiff.startglen<600");
+    
+    TH2F* glen = new TH2F("glen","end vs start flightlen",100,400,1300,100,400,1300);
+    TH1F* dg = new TH1F("dg","global length difference",100,0,100);
+    TH1F* adiff = new TH1F("adiff","average traj diff, adjacent stations",100,0.0,0.5);
+    TH1F* mdiff = new TH1F("mdiff","average traj diff, middle of tracker",100,0.0,0.5);
+    tree->Project("glen","trajdiff.endglen:trajdiff.startglen");
+    tree->Project("dg","trajdiff.endglen-trajdiff.startglen");
+    tree->Project("adiff","trajdiff.ddiff",adjacent+rec+goodfit+early);
+    tree->Project("mdiff","trajdiff.ddiff",middle+rec+goodfit+early);
+    can->Clear();
+    can->Divide(2,2);
+    can->cd(1);
+    glen->Draw();
+//    tree->Draw("trajdiff.endglen:trajdiff.startglen>>glen");
+    can->cd(2);
+    dg->Draw();
+    can->cd(3);
+    adiff->Draw();
+    can->cd(4);
+    mdiff->Draw();
   }
 }
