@@ -2,8 +2,11 @@
 #ifdef __CINT__
 #include <vector>
 #include "mu2eFast/PacSimHitInfo.hh"
+#include "mu2eFast/TrajDiff.hh"
 #include "mu2eFast/PacSimTrkSummary.hh"
 #pragma link C++ class PacSimHitInfo;
+#pragma link C++ class TrajDiff;
 #pragma link C++ class PacSimTrkSummary;
 #pragma link C++ class vector<PacSimHitInfo>;
+#pragma link C++ class vector<TrajDiff>;
 #endif
