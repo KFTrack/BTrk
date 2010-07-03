@@ -346,8 +346,10 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(2);
     dg->Draw();
     can->cd(3);
+    gPad->SetLogy();
     adiff->Draw();
     can->cd(4);
+    gPad->SetLogy();
     mdiff->Draw();
   }
 }
