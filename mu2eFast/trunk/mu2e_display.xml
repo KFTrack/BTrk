@@ -30,7 +30,7 @@ of EDML.
     <param name="PdtPdg" type="int" > 11</param>
 
     <!-- initial track fit -->
-    <param name="flightlen" type="double" > 2000. </param>
+    <param name="flightlen" type="double" > 3000. </param>
     
 
     <sect name="TrackReconstructor">
