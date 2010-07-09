@@ -351,5 +351,27 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     gPad->SetLogy();
     mdiff->Draw();
+  } else if(page == "caloresid") {
+    gStyle->SetOptFit(1111);
+    TCut calor("simhit.shelemnum<100&&simhit.shtypenum>600&&simhit.shnhot>0");
+    TCut trans("abs(simhit.shx)<1.0");
+    TH1F* zpos = new TH1F("zpos","Z position",100,310,480);
+    TH1F* rpos = new TH1F("rpos","R position",100,35,80);
+    TH1F* zres = new TH1F("zres","Z calo resid",100,-3,3);
+    TH1F* rres = new TH1F("rres","R calo resid",100,-1,1);
+    tree->Project("zpos","simhit.shz",calor);
+    tree->Project("rpos","sqrt(simhit.shx^2+simhit.shy^2)",calor+trans);
+    tree->Project("zres","simhit.shdz",calor);
+    tree->Project("rres","simhit.shdy",calor+trans);
+    can->Clear();
+    can->Divide(2,2);
+    can->cd(1);
+    zpos->Draw();
+    can->cd(2);
+    rpos->Draw();
+    can->cd(3);
+    zres->Fit("gaus");
+    can->cd(4);
+    rres->Fit("gaus");
   }
 }
