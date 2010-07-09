@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <define>
+            <constant name="calothickness" value="14"></constant>
+            <constant name="caloz" value="394.5"></constant>
+            <constant name="calozsize" value="154"></constant>
+            <constant name="calorho" value="54"></constant>
+            <constant name="calorhosize" value="36"></constant>
+            <variable name="pvar" type="int"></variable>
+            <formula name="calophi" par0="pvar" formula="1.570796*[0]"></formula>
+        </define>
+
+        <measures>
+            <device name="dummy"
+                type="DriftChamber"
+                sensitiveTimeWindow="0.5e-6"
+                rms_par0="10.0"
+                rms_par1="0"
+                rms_par2="0"
+                rms_par3="0"
+                rms_par4="0"
+                rms_par5="0"
+                eff_par0="0.98"
+                eff_par1="1.00"	
+                cell_size="1.8"
+                trunc_frac="0.8"
+                dedx_par1="0.0013202"
+                dedx_par2="1"
+                dedx_par3="-0.5"
+                angle="0"  />
+        </measures>
+
+
+        <detector name="Mu2e">
+            <volume name="Calo">
+                <loop variable="pvar" count="4" startvalue="0" stepvalue="1">
+                    <rect name="calo1" id="pvar" orientation="1" centerrho="calorho" centerz="caloz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calozsize" thick="calothickness" mat="emc-LYSO" meas="dummy"/>
+                </loop>         
+            </volume>
+        </detector>
+    </included>
+</edml>
