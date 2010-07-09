@@ -84,6 +84,8 @@ void fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& sinfo);
 void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff);
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 
+PacTrkSimHotMap simHotMap; // used to access nasty statics  
+
 int main(int argc, char* argv[]) {
   gconfig.verbose(true);
   if(argc <= 1){
@@ -122,6 +124,7 @@ int main(int argc, char* argv[]) {
   // config parameters
   bool hittuple = gconfig.getbool("hittuple",false);
   bool trajdiff = gconfig.getbool("trajdiff",false);
+  bool calodiff = gconfig.getbool("calodiff",false);
 
     // Read helix generation parameters 
   double p_min = double(gconfig["p_min"]);
@@ -199,6 +202,7 @@ int main(int argc, char* argv[]) {
   
   std::vector<PacSimHitInfo> sinfo;
   std::vector<TrajDiff> tdiff;
+//  std::vector<TrajDiff> cdiff;
   PacSimTrkSummary ssum;
   
   //Create TBranch to store track info
@@ -266,6 +270,8 @@ int main(int argc, char* argv[]) {
 // test of trajectory differences
   if(trajdiff)
     trackT->Branch("trajdiff",&tdiff);
+//  if(calodiff)
+//    trackT->Branch("calodiff",&cdiff);
 // branch for simtrack summary
   trackT->Branch("simtrk",&ssum.nsimhit,PacSimTrkSummary::rootnames());    
 
@@ -279,7 +285,6 @@ int main(int argc, char* argv[]) {
   detector->setRandomEngine(engine);
 
   PacReconstructTrk trackreco(bfield,penv.getKalContext());
-  PacTrkSimHotMap simHotMap; // used to access nasty statics  
 
   for(int itrk = 0; itrk < numtracks; itrk++) {
     if(0 == (itrk+1)%printfreq) {
@@ -291,6 +296,7 @@ int main(int argc, char* argv[]) {
 // clear vectors
     sinfo.clear();
     tdiff.clear();
+//    cdiff.clear();
 // Generate track parameters; first, origin vertex
     double posphi =  rng.Uniform(0, 2*M_PI);
     double dx = rng.Gaus(0, r0_sigma);
@@ -324,7 +330,6 @@ int main(int argc, char* argv[]) {
     PacSimTrack* simtrk = sim.simulateGTrack(&gtrk);
 
     // global information about simtrk
-    if(hittuple)fillSimHitInfo(simtrk, sinfo);
     fillSimTrkSummary(simtrk,ssum);
     // Timing information
     
@@ -491,6 +496,8 @@ int main(int argc, char* argv[]) {
       rec_nhit	= -100;
       trknum = -100;
     }
+    if(hittuple)fillSimHitInfo(simtrk, sinfo);
+    
 // cleanup
     delete trk;
     delete simtrk;
@@ -562,6 +569,28 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     intlenint += intlen;
     sinfo.shradlenint = radlenint;
     sinfo.shintlenint = intlenint;
+// look for HOT info
+    std::vector<const TrkHitOnTrk*>hots = simHotMap.getHots(&sh);
+    sinfo.shnhot = hots.size();
+    if(hots.size() > 0){
+      const TrkHitOnTrk* hot= hots[0];
+      HepPoint trkpoint = hot->trkTraj()->position(hot->fltLen());
+      HepPoint hitpoint = hot->hitTraj()->position(hot->hitLen());
+      sinfo.shtresid = trkpoint.distanceTo(pos);
+      sinfo.shhresid = hitpoint.distanceTo(pos);
+      double thdist = trkpoint.distanceTo(hitpoint);
+      sinfo.shherr = hot->hitRms();
+      sinfo.shdx = trkpoint.x()-pos.x();
+      sinfo.shdy = trkpoint.y()-pos.y();
+      sinfo.shdz = trkpoint.z()-pos.z();
+    } else {
+      sinfo.shtresid = -1.;
+      sinfo.shhresid = -1.;
+      sinfo.shherr = -1.;
+      sinfo.shdx = -1.;
+      sinfo.shdy = -1.;
+      sinfo.shdz = -1.;
+    }
     svec.push_back(sinfo);
   }
 }

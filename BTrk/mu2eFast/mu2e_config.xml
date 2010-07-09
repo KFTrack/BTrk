@@ -17,7 +17,7 @@
                 <param name="seedsmear"       type="float"   >   1.0  </param>
                 <param name="momupdatefactor"       type="float"   >   1.0  </param>
                 <param name="maxiterations" type="int" > 3</param>
-                <param name="smearfactor" type="float"> 1e3</param>
+                <param name="smearfactor" type="float"> 1e4</param>
                 <param name="minxydof" type="int" > 0</param>
                 <param name="minzdof" type="int" > 0</param>
                 <param name="mindof" type="int" > 1</param>

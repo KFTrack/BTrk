@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
  
-<!--
-This document is a part of the sample experiment description in a format
-which would eventually turn into EDML:
- 
-  "Experiment Description Markup (or Modelling) Language"
- 
-Right now we don't have any formal schema for EDML. Therefore
-the current implementation of a EDML parser would check both
-syntax and semantics of the model. Besides, introducing the formal
-XML schema for EDML may  result in some changes in a syntax
-of EDML.
--->
- 
 <edml>
     
   <config>
