@@ -8,7 +8,8 @@
 #include <TLegend.h>
 #include <TString.h>
 #include <TStyle.h>
-
+#include <stdio.h>
+#include "Riostream.h"
 
 Double_t splitgaus(Double_t *x, Double_t *par) {
   Double_t retval;
@@ -272,9 +273,10 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
     sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,2*momr->GetRMS(),0.01,2*momr->GetRMS());
-    sgau->SetParLimits(5,2*momr->GetRMS(),1.0);
-    sgau->SetParLimits(7,2*momr->GetRMS(),1.0);
+    sgau->SetParLimits(5,1.2*momr->GetRMS(),1.0);
+    sgau->SetParLimits(7,1.2*momr->GetRMS(),1.0);
     momr->Fit("sgau","L");
+//    momr->Fit("sgau","M");
 
   } else if (page == "mom"){
     gStyle->SetOptFit(1111);
@@ -303,9 +305,10 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
     sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,2*momr->GetRMS(),0.01,2*momr->GetRMS());
-    sgau->SetParLimits(5,2*momr->GetRMS(),1.0);
-    sgau->SetParLimits(7,2*momr->GetRMS(),1.0);
+    sgau->SetParLimits(5,1.2*momr->GetRMS(),1.0);
+    sgau->SetParLimits(7,1.2*momr->GetRMS(),1.0);
     momr->Fit("sgau","L");
+//    momr->Fit("sgau","M");
     
   } else if(page == "mat") {
     gStyle->SetOptFit(1111);
