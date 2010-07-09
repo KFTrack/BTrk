@@ -46,7 +46,7 @@
                 dedx_par1="0.0013202"
                 dedx_par2="1"
                 dedx_par3="-0.5"
-                angle="0"  />
+                angle="1.57079633"  />
         </measures>
         
         <detector name="Mu2e">
