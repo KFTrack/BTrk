@@ -15,7 +15,7 @@
             <device name="dummy"
                 type="DriftChamber"
                 sensitiveTimeWindow="0.5e-6"
-                rms_par0="10.0"
+                rms_par0="1.0"
                 rms_par1="0"
                 rms_par2="0"
                 rms_par3="0"
