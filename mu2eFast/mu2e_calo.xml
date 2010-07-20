@@ -3,7 +3,7 @@
     <included>
         <define>
             <constant name="calothickness" value="14"></constant>
-            <constant name="caloz" value="394.5"></constant>
+            <constant name="caloz" value="250"></constant>
             <constant name="calozsize" value="154"></constant>
             <constant name="calorho" value="54"></constant>
             <constant name="calorhosize" value="36"></constant>
