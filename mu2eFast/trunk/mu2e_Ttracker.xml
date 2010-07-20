@@ -15,12 +15,12 @@
             <variable name="cvar" type="int"></variable>
             <variable name="svar" type="int"></variable>
 
-            <formula name="planestraw" par0="zvar" par1="svar" formula="[0]*17.0+1.25-3.0+[1]*1"></formula>
-            <formula name="planegas" par0="zvar" par1="svar" formula="[0]*17.0+1.5-3.0+[1]*1"></formula>
-            <formula name="planewire" par0="zvar" par1="svar" formula="[0]*17.0+1.75-3.0+[1]*1"></formula>
+            <formula name="planestraw" par0="zvar" par1="svar" formula="-144.5+[0]*17.0+1.25-3.0+[1]*1"></formula>
+            <formula name="planegas" par0="zvar" par1="svar" formula="-144.5+[0]*17.0+1.5-3.0+[1]*1"></formula>
+            <formula name="planewire" par0="zvar" par1="svar" formula="-144.5+[0]*17.0+1.75-3.0+[1]*1"></formula>
 
-            <formula name="zring1" par0="zvar" formula="[0]*17.0-1"></formula>
-            <formula name="zring2" par0="zvar" formula="[0]*17.0+1"></formula>
+            <formula name="zring1" par0="zvar" formula="-144.5+[0]*17.0-1"></formula>
+            <formula name="zring2" par0="zvar" formula="-144.5+[0]*17.0+1"></formula>
 
             <formula name="cenphi" par0="zvar" par1="cvar" par2="svar" formula="(50*[2]^3-225*[2]^2+235*[2]+30)*0.017453 +[1]*2.094395"></formula>
 
