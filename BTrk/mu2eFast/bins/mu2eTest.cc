@@ -21,6 +21,7 @@
 #include <TRandom3.h>
 
 #include "BField/BFieldFixed.hh"
+#include "BField/BFieldIntegrator.hh"
 #include "CLHEP/Matrix/SymMatrix.h"
 #include "CLHEP/Matrix/Vector.h"
 #include "CLHEP/Vector/Rotation.h"
@@ -60,6 +61,8 @@
 #include "mu2eFast/PacSimHitInfo.rdl"
 #include "mu2eFast/TrajDiff.rdl"
 #include "mu2eFast/PacSimTrkSummary.rdl"
+#include "mu2eFast/mu2eDSField.hh"
+
 
 #include "ProxyDict/Ifd.hh"
 #include "ProxyDict/IfdDataProxyUnowned.hh"
@@ -85,6 +88,11 @@ void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::ve
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 
 PacTrkSimHotMap simHotMap; // used to access nasty statics  
+
+// field integral test stuff
+BField* mecofield(0);
+BFieldIntegrator* fieldint(0);
+
 
 int main(int argc, char* argv[]) {
   gconfig.verbose(true);
@@ -268,8 +276,14 @@ int main(int argc, char* argv[]) {
   if(hittuple)
     trackT->Branch("simhit",&sinfo);
 // test of trajectory differences
-  if(trajdiff)
+  if(trajdiff){
     trackT->Branch("trajdiff",&tdiff);
+    double dfactor = gconfig.getfloat("distortionfactor",1.0);
+    std::string fmap = gconfig.get("fieldmap");
+    mecofield = new mu2eDSField(fmap,dfactor);
+    assert(mecofield != 0);
+    fieldint = new BFieldIntegrator(*mecofield);
+  }
 //  if(calodiff)
 //    trackT->Branch("calodiff",&cdiff);
 // branch for simtrack summary
@@ -664,7 +678,6 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
           td.startglen = sh1.globalFlight();
           td.endglen = sh2.globalFlight();
           td.ddiff = 0.0;
-          td.ddiff2 = 0.0;  
           double step = (td.endglen-td.startglen)/(npts-1);
           for(unsigned ipt=0;ipt<npts;ipt++){
             double glen = td.startglen+ipt*step;
@@ -673,10 +686,21 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
             HepPoint rpt = ptraj.position(tpoca.flt1());
             Hep3Vector diff = rpt - spt;
             td.ddiff += diff.mag();
-            td.ddiff2 += diff.mag2();
           }
           td.ddiff /= npts;
-          td.ddiff2 /= npts;
+      // integrate the meco field over this range to compute dp    
+          Hep3Vector tdp = fieldint->deltaMomentum(straj,td.startglen,td.endglen);
+          td.truedp = tdp.mag();
+          
+          HepPoint tstart = straj->position(td.startglen);
+          HepPoint tend = straj->position(td.endglen);
+          double pstart=td.startglen;
+          TrkPoca tspoca(ptraj, pstart, tstart, 1e-12);
+          double pend = td.endglen;
+          TrkPoca tepoca(ptraj, pend, tend, 1e-12);
+          Hep3Vector rdp = fieldint->deltaMomentum(&ptraj,tspoca.flt1(),tepoca.flt1());
+          td.recodp = rdp.mag();
+          td.deltadp = (tdp-rdp).mag();
           tdiff.push_back(td);
           break;
         }

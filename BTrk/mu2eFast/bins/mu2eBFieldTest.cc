@@ -6,10 +6,17 @@
 #include "CLHEP/Geometry/HepPoint.h"
 #include "mu2eFast/mu2eDSField.hh"
 #include "Framework/AppFileName.hh"
+#include "PacEnv/PacConfig.hh"
+
 #include <iostream>
 
-int  main(){
-  mu2eDSField dsfield("mu2eFast/DSMap_unfmt_rad100.dat");
+int main(int argc, char* argv[]) {
+  
+  gconfig.verbose(true);
+  gconfig.parseargs(argc, argv);
+  double dfactor = gconfig.getfloat("distortionfactor",1.0);
+  
+  mu2eDSField dsfield("mu2eFast/DSMap_unfmt_rad100.dat",dfactor);
   
   double bnom = dsfield.bFieldNominal();
   std::cout <<" nominal field = " << bnom << std::endl;
