@@ -355,6 +355,40 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     gPad->SetLogy();
     mdiff->Draw();
+  } else if(page == "bintdiff") {
+    TCut adjacent = ("trajdiff.endglen-trajdiff.startglen>20 && trajdiff.endglen-trajdiff.startglen<40");
+    TCut middle = ("trajdiff.endglen>700 && trajdiff.endglen < 800 && trajdiff.startglen> 550 && trajdiff.startglen< 650");
+    TCut early = ("trajdiff.startglen<600");
+
+    TH1F* tadiff = new TH1F("tadiff","True Delta P, adjacent stations",100,0,2e-3);
+    TH1F* tmdiff = new TH1F("tmdiff","True Delta P, middle of tracker",100,0,2e-3);
+    TH1F* radiff = new TH1F("radiff","Reco Delta P, adjacent stations",100,0,2e-3);
+    TH1F* rmdiff = new TH1F("rmdiff","Reco Delta P, middle of tracker",100,0,2e-3);
+    TH1F* dadiff = new TH1F("dadiff","Delta Delta P, adjacent stations",100,0,1e-4);
+    TH1F* dmdiff = new TH1F("dmdiff","Delta Delta P, middle of tracker",100,0,1e-4);
+    
+    tree->Project("tadiff","trajdiff.truedp",adjacent+rec+goodfit+early);
+    tree->Project("tmdiff","trajdiff.truedp",middle+rec+goodfit+early);
+    tree->Project("radiff","trajdiff.recodp",adjacent+rec+goodfit+early);
+    tree->Project("rmdiff","trajdiff.recodp",middle+rec+goodfit+early);
+    tree->Project("dadiff","trajdiff.deltadp",adjacent+rec+goodfit+early);
+    tree->Project("dmdiff","trajdiff.deltadp",middle+rec+goodfit+early);
+    can->Clear();
+    can->Divide(2,3);
+    can->cd(1);
+    tadiff->Draw();
+    can->cd(2);
+    tmdiff->Draw();
+    can->cd(3);
+    radiff->Draw();
+    can->cd(4);
+    rmdiff->Draw();    
+    can->cd(5);
+    gPad->SetLogy();
+    dadiff->Draw();
+    can->cd(6);
+    gPad->SetLogy();
+    dmdiff->Draw();    
   } else if(page == "caloresid") {
     gStyle->SetOptFit(1111);
     TCut calor("simhit.shelemnum<100&&simhit.shtypenum>600&&simhit.shnhot>0");

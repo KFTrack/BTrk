@@ -8,6 +8,10 @@
     <param name="outputfile" type="string"> mu2e_test.root</param>
     <param name="hittuple" type="bool"> false </param>
     <param name="trajdiff" type="bool"> false </param>
+    <!-- traj diff test parameters -->
+    <param name="fieldmap" type="string"> mu2eFast/DSMap_unfmt_rad100.dat</param>
+    <param name="distortionfactor" type="double"> 10.0 </param>
+    
     
     <param name="displaytrack" type="bool"> false</param>
     <param name="displayfile" type="string" > mu2e_display.root</param>

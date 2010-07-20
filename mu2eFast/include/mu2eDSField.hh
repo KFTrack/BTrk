@@ -15,8 +15,8 @@
 class mu2eDSField : public BField {
 
 public:
-  //construct
-  mu2eDSField(const std::string& mapfile);
+  //construct from file; optionally amplify the distortions by the given factor
+  mu2eDSField(const std::string& mapfile,double dfactor=1.0);
 public:
   //destroy
   virtual ~mu2eDSField();
@@ -42,6 +42,8 @@ private:
   // the actual field
   BFMap _fieldmap;
   double _bnom;
+  double _dfactor;
+  bool _distort;
 private:
   // Preempt copy constructor and operator=
   mu2eDSField&   operator= (const mu2eDSField&);

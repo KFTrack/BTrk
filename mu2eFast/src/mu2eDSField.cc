@@ -34,12 +34,12 @@ mu2eDSField::trackerCenterInMu2eCoordinates = Hep3Vector(-3904.,0.,10200.);
 Hep3Vector
 mu2eDSField::trackerCenterInFastSimCoordinates = Hep3Vector(0.0,0.0,0.0);
 
-mu2eDSField::mu2eDSField(const std::string& fname) {
+mu2eDSField::mu2eDSField(const std::string& fname,double dfactor) : _dfactor(dfactor){
   // parameters for the DS field map taken from geom_01.txt
   int nx = 50;
   int ny = 25;
   int nz = 438;
-  bool warnIfOutside = true;
+  bool warnIfOutside = false;
   std::string filename = AppFileName(fname.c_str()).pathname();
   std::string key("DS");
   // Create an empty map
@@ -50,11 +50,9 @@ mu2eDSField::mu2eDSField(const std::string& fname) {
   readGMCMap( filename, _fieldmap );
   
   // set nominal field
-  
-  _bnom = bFieldVect(HepPoint(trackerCenterInFastSimCoordinates.x(),
-    trackerCenterInFastSimCoordinates.y(),
-    trackerCenterInFastSimCoordinates.z())).z();
-    
+  _bnom = _fieldmap.getBField(trackerCenterInMu2eCoordinates).z();
+  // decide if we need to scale distortions
+  _distort = _dfactor != 1.0;
 }
 
 mu2eDSField::~mu2eDSField(){}
@@ -62,11 +60,17 @@ mu2eDSField::~mu2eDSField(){}
 // BaBar interface.  Note we have to change units here to the BaBar conventions
 Hep3Vector
 mu2eDSField::bFieldVect (const HepPoint &point)const {
+  static Hep3Vector nomfield(0.0,0.0,_bnom);
 // convert units (cm to mm) and origins to meco conventions
   Hep3Vector mecopoint(10*(point.x()-trackerCenterInFastSimCoordinates.x()) + trackerCenterInMu2eCoordinates.x(),
   10*(point.y()-trackerCenterInFastSimCoordinates.y()) + trackerCenterInMu2eCoordinates.y(),
   10*(point.z()-trackerCenterInFastSimCoordinates.z()) + trackerCenterInMu2eCoordinates.z());
-  return _fieldmap.getBField(mecopoint);
+  Hep3Vector mfield = _fieldmap.getBField(mecopoint);
+  if(_distort){
+// subtract out the nominal field, scale the difference, then add back the nominal
+    mfield = nomfield + _dfactor*(mfield-nomfield);
+  }
+  return mfield;
 }
   
 double
