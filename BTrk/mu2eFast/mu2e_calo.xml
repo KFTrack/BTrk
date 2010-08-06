@@ -3,7 +3,7 @@
     <included>
         <define>
             <constant name="calothickness" value="14"></constant>
-            <constant name="calofz" value="173.5"></constant>
+            <constant name="calofz" value="173.0"></constant>
             <constant name="caloz" value="250"></constant>
             <constant name="calozsize" value="154"></constant>
             <constant name="calorho" value="54"></constant>
@@ -49,7 +49,7 @@
         <detector name="Mu2e">
             <volume name="Calo">
                 <loop variable="pvar" count="4" startvalue="0" stepvalue="1">
-                    <rect name="calo_F" id="calofid" orientation="0" centerrho="calorho" centerz="calofz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calothickness" thick="1.0" mat="emc-LYSO"  meas="Calo"/>                       
+                    <rect name="calo_F" id="calofid" orientation="0" centerrho="calorho" centerz="calofz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calothickness" thick="10" mat="emc-LYSO"  meas="Calo"/>                       
                     <rect name="calo" id="calorid" orientation="1" centerrho="calorho" centerz="caloz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calozsize" thick="calothickness" mat="emc-LYSO" meas="Calo"/>
                 </loop>         
             </volume>
