@@ -2,23 +2,22 @@
 #define PacSimHitInfo_HH
 
 #include <Rtypes.h>
-#define STRINGSIZE 200
 
 struct PacSimHitInfo {
-  Int_t shi, sheffect,shelemnum,shtypenum, shmeastype, shnhot;
-  Float_t shgloblen, shpathlen, shradlen, shintlen, shradlenint, shintlenint;
-  Float_t shx, shy, shz, shmomin, shmomout, shtime;
-  Float_t shtresid, shhresid, shherr,shdx,shdy,shdz;
+  Int_t shi, sheffect,shelemnum,shtypenum, shmeastype, shnhot, hview, hlay;
+  Float_t shgloblen, shpathlen, sdot, shradlen, shintlen, shradlenint, shintlenint;
+  Float_t shx, shy, shz, shmomin, shmomout, sheinfrac, shtime;
+  Float_t resid, tresid, hresid, mdot, herr;
   
   virtual ~PacSimHitInfo() {}
-  PacSimHitInfo() : shi(-1),sheffect(-1),shelemnum(-1),shtypenum(-1),shmeastype(-1),shnhot(0),shgloblen(-1.),shpathlen(-1.),shradlen(-1.),shintlen(-1.),shradlenint(-1.),shintlenint(-1.),shx(0.),shy(0.),shz(0.),shmomin(0.),shmomout(0.),shtime(-1.),shtresid(-1.),shhresid(-1.),shherr(-1.),shdx(-1.),shdy(-1.),shdz(-1)
+  PacSimHitInfo() : shi(-1),sheffect(-1),shelemnum(-1),shtypenum(-1),shmeastype(-1),shnhot(0),hview(-1),hlay(-1),shgloblen(-1.),shpathlen(-1.),sdot(0),shradlen(-1.),shintlen(-1.),shradlenint(-1.),shintlenint(-1.),shx(0.),shy(0.),shz(0.),shmomin(0.),shmomout(0.),sheinfrac(-1.),shtime(-1.),resid(-1.),tresid(-1.),hresid(-1.),mdot(-1),herr(-1.)
   {}
 
-  PacSimHitInfo(const PacSimHitInfo& other) : shi(other.shi),sheffect(other.sheffect),shelemnum(other.shelemnum),shtypenum(other.shtypenum),shmeastype(other.shmeastype),shnhot(other.shnhot),shgloblen(other.shgloblen),shpathlen(other.shpathlen),shradlen(other.shradlen),shintlen(other.shintlen),shradlenint(other.shradlenint),shintlenint(other.shintlenint),shx(other.shx),shy(other.shy),shz(other.shz),shmomin(other.shmomin),shmomout(other.shmomout),shtime(other.shtime),shtresid(other.shtresid),shhresid(other.shhresid),shherr(other.shherr),shdx(other.shdx),shdy(other.shdy),shdz(other.shdz)
+  PacSimHitInfo(const PacSimHitInfo& other) : shi(other.shi),sheffect(other.sheffect),shelemnum(other.shelemnum),shtypenum(other.shtypenum),shmeastype(other.shmeastype),shnhot(other.shnhot),hview(other.hview),hlay(other.hlay),shgloblen(other.shgloblen),shpathlen(other.shpathlen),sdot(other.sdot),shradlen(other.shradlen),shintlen(other.shintlen),shradlenint(other.shradlenint),shintlenint(other.shintlenint),shx(other.shx),shy(other.shy),shz(other.shz),shmomin(other.shmomin),shmomout(other.shmomout),sheinfrac(other.sheinfrac),shtime(other.shtime),resid(other.resid),tresid(other.tresid),hresid(other.hresid),mdot(other.mdot),herr(other.herr)
   {}
   
   static const char* rootnames() {
-    return "shi/I:sheffect/I:shelemnum/I:shtypenum/I:shmeastype/I:shnhot/I:shgloblen/F:shpathlen/F:shradlen/F:shintlen/F:shradlenint/F:shintlenint/F:shx/F:shy/F:shz/F:shmomin/F:shmomout/F:shtime/F:shtresid/F:shhresid/F:shherr/F,shdx/F:shdy/F:shdz/F"; }
+    return "shi/I:sheffect/I:shelemnum/I:shtypenum/I:shmeastype/I:shnhot/I:hview/I:hlay/I:shgloblen/F:shpathlen/F:sdot/F:shradlen/F:shintlen/F:shradlenint/F:shintlenint/F:shx/F:shy/F:shz/F:shmomin/F:shmomout/F:sheinfrac/F:shtime/F:resid/F:tresid/F:hresid/F:mdot/F:herr/F"; }
     
     ClassDef(PacSimHitInfo,1)
 };

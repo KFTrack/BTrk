@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
   }
   
   std::cout << "micro z scan " << std::endl;
-  x = 90.;
+  x = 50.;
   y = 0.;
   for (int i = -50; i <=50; i+=1){
     double z = i;

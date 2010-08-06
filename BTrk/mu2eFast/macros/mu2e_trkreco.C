@@ -391,25 +391,41 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     dmdiff->Draw();    
   } else if(page == "caloresid") {
     gStyle->SetOptFit(1111);
-    TCut calor("simhit.shelemnum<100&&simhit.shtypenum>600&&simhit.shnhot>0");
-    TCut trans("abs(simhit.shx)<1.0");
-    TH1F* zpos = new TH1F("zpos","Z position",100,310,480);
-    TH1F* rpos = new TH1F("rpos","R position",100,35,80);
-    TH1F* zres = new TH1F("zres","Z calo resid",100,-3,3);
-    TH1F* rres = new TH1F("rres","R calo resid",100,-1,1);
-    tree->Project("zpos","simhit.shz",calor);
-    tree->Project("rpos","sqrt(simhit.shx^2+simhit.shy^2)",calor+trans);
-    tree->Project("zres","simhit.shdz",calor);
-    tree->Project("rres","simhit.shdy",calor+trans);
+    TCut calor("simhit.shelemnum>10008&&simhit.shnhot>0");
+    TCut calorf("simhit.shelemnum>9999&&simhit.shelemnum<10010&&simhit.shnhot>0");
+    TCut nopreshower("simhit.shmomin>0.1");
+    TCut xyhit("simhit.hview==0");
+    TCut zhit("simhit.hview==1");
+    TH1F* zpos = new TH1F("zpos","Z track position at calo",100,160,340);
+    TH1F* rpos = new TH1F("rpos","R track position at calo",100,30,80);
+    TH1F* zdir = new TH1F("zdir","Z track direction cosine at calo",100,-1.1,1.1);
+    TH1F* rdir = new TH1F("rdir","R track direction cosine at calo",100,-1.1,1.1);
+    TH1F* zres = new TH1F("zres","Z track residual at calo",100,-3,3);
+    TH1F* rres = new TH1F("rres","R track residual at calo",100,-1,1);
+    
+    
+    tree->Project("zpos","simhit.shz",goodfit+calor+xyhit);
+    tree->Project("rpos","sqrt(simhit.shx^2+simhit.shy^2)",goodfit+calor+nopreshower+xyhit);
+    // correct for sign convention (normal points in +phi)
+    tree->Project("zdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodfit+calor+nopreshower+zhit);
+    tree->Project("rdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodfit+calor+nopreshower+xyhit);
+    // correct for projection effect of residual (which is distance in space)
+    tree->Project("zres","simhit.tresid",goodfit+calor+nopreshower+zhit);
+    tree->Project("rres","simhit.tresid",goodfit+calor+nopreshower+xyhit);
+    
     can->Clear();
-    can->Divide(2,2);
+    can->Divide(3,2);
     can->cd(1);
     zpos->Draw();
     can->cd(2);
     rpos->Draw();
     can->cd(3);
-    zres->Fit("gaus");
+    zdir->Draw();
     can->cd(4);
+    rdir->Draw();
+    can->cd(5);
+    zres->Fit("gaus");
+    can->cd(6);
     rres->Fit("gaus");
   }
 }
