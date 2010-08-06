@@ -45,6 +45,7 @@
 #include "BbrGeom/TrkPieceTraj.hh"
 #include "DetectorModel/DetSet.hh"
 #include "DetectorModel/DetMaterial.hh"
+#include "DetectorModel/DetSurfaceElem.hh"
 
 #include "PacEnv/PacConfig.hh"
 #include "PacDetector/PacCylDetector.hh"
@@ -54,6 +55,7 @@
 #include "PacTrk/PacTrkSimHotMap.hh"
 #include "PacSim/PacSimTrack.hh"
 #include "PacSim/PacSimHit.hh"
+#include "PacSim/PacShowerInfo.hh"
 #include "PacGeom/PacHelix.hh"
 #include "PacGeom/PacPieceTraj.hh"
 #include "PacGeom/PacMeasurement.hh"
@@ -132,7 +134,7 @@ int main(int argc, char* argv[]) {
   // config parameters
   bool hittuple = gconfig.getbool("hittuple",false);
   bool trajdiff = gconfig.getbool("trajdiff",false);
-  bool calodiff = gconfig.getbool("calodiff",false);
+//  bool calodiff = gconfig.getbool("calodiff",false);
 
     // Read helix generation parameters 
   double p_min = double(gconfig["p_min"]);
@@ -544,16 +546,28 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     sinfo.shgloblen = sh.globalFlight();
     sinfo.sheffect = sh.detEffect();
     HepPoint pos = sh.position();
+    Hep3Vector sdir = sh.momentumIn().unit();
     sinfo.shx = pos.x();
     sinfo.shy = pos.y();
     sinfo.shz = pos.z();
     sinfo.shmomin = sh.momentumIn().mag();
     sinfo.shmomout = sh.momentumOut().mag();
+    if(sh.showerInfo() != 0){
+      sinfo.sheinfrac = sh.showerInfo()->fractionIn();
+    } else {
+      sinfo.sheinfrac = -1.;
+    }
     sinfo.shtime =  sh.time();
     const DetIntersection& dinter = sh.detIntersection();
     double pathlen = dinter.pathLength();
     sinfo.shpathlen = pathlen;
     const DetElem* delem = dinter.delem;
+    const DetSurfaceElem* selem = dynamic_cast<const DetSurfaceElem*>(delem);
+    Hep3Vector snorm(0,0,0);
+    if(selem != 0){
+      selem->surface()->normTo(pos,snorm);
+    }
+    sinfo.sdot = snorm.dot(sdir);
     const DetMaterial* mat(0);
     if(delem != 0){
       sinfo.shelemnum = delem->elementNumber();
@@ -586,26 +600,37 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
 // look for HOT info
     std::vector<const TrkHitOnTrk*>hots = simHotMap.getHots(&sh);
     sinfo.shnhot = hots.size();
+// save one entry/hot, or just 1 entry if there are no hots
     if(hots.size() > 0){
-      const TrkHitOnTrk* hot= hots[0];
-      HepPoint trkpoint = hot->trkTraj()->position(hot->fltLen());
-      HepPoint hitpoint = hot->hitTraj()->position(hot->hitLen());
-      sinfo.shtresid = trkpoint.distanceTo(pos);
-      sinfo.shhresid = hitpoint.distanceTo(pos);
-      double thdist = trkpoint.distanceTo(hitpoint);
-      sinfo.shherr = hot->hitRms();
-      sinfo.shdx = trkpoint.x()-pos.x();
-      sinfo.shdy = trkpoint.y()-pos.y();
-      sinfo.shdz = trkpoint.z()-pos.z();
+      for(unsigned ihot=0;ihot<hots.size();ihot++){
+        const TrkHitOnTrk* hot= hots[ihot];
+        sinfo.hview = hot->whatView();
+        sinfo.hlay = hot->layerNumber();
+        HepPoint trkpoint = hot->trkTraj()->position(hot->fltLen());
+        Hep3Vector trkdir = hot->trkTraj()->direction(hot->fltLen());
+        HepPoint hitpoint = hot->hitTraj()->position(hot->hitLen());
+        Hep3Vector hitdir = hot->hitTraj()->direction(hot->hitLen());
+        Hep3Vector pocadir = hitdir.cross(sdir);
+        sinfo.resid = trkpoint.distanceTo(hitpoint);
+        sinfo.hresid = (hitpoint - pos).dot(pocadir);
+        // find planar intersection of track
+        double sval = Hep3Vector(pos-trkpoint).dot(snorm)/trkdir.dot(snorm);
+        Hep3Vector mdir = hitdir.cross(snorm).unit();
+        sinfo.tresid = Hep3Vector(pos - (trkpoint+sval*trkdir)).dot(mdir);
+        sinfo.mdot = pocadir.dot(snorm);
+        sinfo.herr = hot->hitRms();
+        svec.push_back(sinfo);
+      }
     } else {
-      sinfo.shtresid = -1.;
-      sinfo.shhresid = -1.;
-      sinfo.shherr = -1.;
-      sinfo.shdx = -1.;
-      sinfo.shdy = -1.;
-      sinfo.shdz = -1.;
+      sinfo.hview = -1;
+      sinfo.hlay = -1;
+      sinfo.resid = -1.;
+      sinfo.tresid = -1.;
+      sinfo.hresid = -1.;
+      sinfo.mdot = -1.;
+      sinfo.herr = -1.;
+      svec.push_back(sinfo);
     }
-    svec.push_back(sinfo);
   }
 }
 
