@@ -1,5 +1,5 @@
 
-#include "BaBar/Babar.hh"
+#include "BaBar/BaBar.hh"
 #include "mu2eFast/BFMap.hh"
 #include "mu2eFast/DiskRecord.hh"
 #include "mu2eFast/Container3D.hh"
