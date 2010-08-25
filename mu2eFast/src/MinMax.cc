@@ -8,7 +8,7 @@
 //
 // Original author Rob Kutschke
 
-#include "BaBar/Babar.hh"
+#include "BaBar/BaBar.hh"
 #include "mu2eFast/MinMax.hh"
 
 #include <limits>
