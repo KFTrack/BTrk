@@ -393,7 +393,7 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     gStyle->SetOptFit(1111);
     TCut calor("simhit.shelemnum>10008&&simhit.shnhot>0");
     TCut calorf("simhit.shelemnum>9999&&simhit.shelemnum<10010&&simhit.shnhot>0");
-    TCut nopreshower("simhit.shmomin>0.1");
+    TCut nopreshower("simhit.shmomin>0.103");
     TCut xyhit("simhit.hview==0");
     TCut zhit("simhit.hview==1");
     TH1F* zpos = new TH1F("zpos","Z track position at calo",100,160,340);
