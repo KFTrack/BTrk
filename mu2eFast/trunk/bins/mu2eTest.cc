@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
 		
 	if(! Ifd< PacDetector >::put( gblPEnv,detector,"Tracking Det"))
   	cout << "Can't put Detector" << endl;
-	
+  cout << "Build PacCylDetector " << endl;
     
   // if requested, setup display
   PacEvtDisplay display;
