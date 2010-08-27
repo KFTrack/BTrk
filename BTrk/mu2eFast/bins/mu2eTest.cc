@@ -99,8 +99,8 @@ BFieldIntegrator* fieldint(0);
 int main(int argc, char* argv[]) {
   gconfig.verbose(true);
   if(argc <= 1){
-    gconfig.parsefile(AppFileName("PacTest/testTrackReconstruction.xml").pathname().c_str());
-    gconfig.parsefile(AppFileName("PacDetector/pacrat_SuperB.xml").pathname().c_str());
+    gconfig.parsefile(AppFileName("mu2eFast/mu2e.xml").pathname().c_str());
+    gconfig.parsefile(AppFileName("mu2eFast/mu2e_test.xml").pathname().c_str());
   }
   gconfig.parseargs(argc, argv);
 
