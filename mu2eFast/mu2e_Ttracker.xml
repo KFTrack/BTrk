@@ -64,5 +64,19 @@
                 </loop>
             </volume>
         </detector>
+<!-- now define the voxelization -->
+        <config>
+            <sect name="Tracker">
+                <param name="rbounds"    type="vector"        >
+                    37 45 53 61 69 77 85 93 101
+                </param>
+                <param name="nphivoxels"    type="vector"         >
+                    6 6 6 6 6 6 6 6
+                </param>
+                <param name="zbounds"   type="vector"         >
+                    -200 -140 -123 -106 -89 -72 -55 -38 -21 -4 13 30 47 64 81 98 115 132 149 166 200 
+                </param>
+            </sect>
+        </config>
     </included>
 </edml>
