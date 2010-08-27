@@ -36,7 +36,7 @@
     <param name="r0_mean" type="double"> 0.0</param>
     <param name="r0_sigma" type="double"> 6.0</param>
     <!-- Initial distance from z=0 -->
-    <param name="z0_mean" type="double"> -430</param>
+    <param name="z0_mean" type="double"> -250</param>
     <param name="z0_sigma" type="double"> 15</param>
 
     <!-- momentum range-->
