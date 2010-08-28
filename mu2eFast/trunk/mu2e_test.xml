@@ -6,7 +6,7 @@
 
     <!-- ROOT file to save results to -->
     <param name="outputfile" type="string"> mu2e_test.root</param>
-    <param name="hittuple" type="bool"> false </param>
+    <param name="hittuple" type="bool"> true </param>
     <param name="trajdiff" type="bool"> false </param>
     <!-- traj diff test parameters -->
     <param name="fieldmap" type="string"> mu2eFast/DSMap_unfmt_rad100.dat</param>
