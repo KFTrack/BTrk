@@ -10,7 +10,7 @@
             <constant name="calorhosize" value="36"></constant>
             <variable name="pvar" type="int"></variable>
 <!-- offset the phi slightly to keep elements off voxel boundaries -->
-            <formula name="calophi" par0="pvar" formula="1.570796327*[0] + 0.01"></formula>
+            <formula name="calophi" par0="pvar" formula="2.094395*[0] + 0.01"></formula>
             <formula name="calofid" par0="pvar" formula="10000+[0]"></formula>
             <formula name="calorid" par0="pvar" formula="10010+[0]"></formula>
         </define>
@@ -49,7 +49,7 @@
                 
         <detector name="Mu2e">
             <volume name="Calo">
-                <loop variable="pvar" count="4" startvalue="0" stepvalue="1">
+                <loop variable="pvar" count="3" startvalue="0" stepvalue="1">
                     <rect name="calo_F" id="calofid" orientation="0" centerrho="calorho" centerz="calofz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calothickness" thick="10" mat="emc-LYSO"  meas="Calo"/>                       
                     <rect name="calo" id="calorid" orientation="1" centerrho="calorho" centerz="caloz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calozsize" thick="calothickness" mat="emc-LYSO" meas="Calo"/>
                 </loop>         
@@ -59,7 +59,7 @@
         <config>
             <sect name="Calo">
                 <param name="rbounds"    type="vector"        > 35  76  </param>
-                <param name="nphivoxels"    type="vector"         >  8  </param>
+                <param name="nphivoxels"    type="vector"         >  12  </param>
                 <param name="zbounds"   type="vector"         > 172 175 330 </param>
             </sect>
         </config>
