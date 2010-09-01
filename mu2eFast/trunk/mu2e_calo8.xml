@@ -10,7 +10,7 @@
             <constant name="calorhosize" value="36"></constant>
             <variable name="pvar" type="int"></variable>
 <!-- offset the phi slightly to keep elements off voxel boundaries -->
-            <formula name="calophi" par0="pvar" formula="0.785398*[0] + 0.1"></formula>
+            <formula name="calophi" par0="pvar" formula="0.785398*[0] + 0.01"></formula>
             <formula name="calofid" par0="pvar" formula="10000+[0]"></formula>
             <formula name="calorid" par0="pvar" formula="10010+[0]"></formula>
         </define>
