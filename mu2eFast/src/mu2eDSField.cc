@@ -44,7 +44,7 @@ mu2eDSField::mu2eDSField(const std::string& fname,double dfactor) : _dfactor(dfa
   std::string key("DS");
   // Create an empty map
   Hep3Vector maporigin;
-  _fieldmap = BFMap(key,maporigin,nx,ny,nz,warnIfOutside);
+  _fieldmap = mu2e::BFMap(key,maporigin,nx,ny,nz,warnIfOutside);
   
   // Fill the map.
   readGMCMap( filename, _fieldmap );
@@ -91,132 +91,118 @@ mu2eDSField::bFieldNominal()const {
 //      Fill the 3D array from the image in memory.
 //
 void
-mu2eDSField::readGMCMap( const string& filename,
-		 BFMap& bfmap ){
+mu2eDSField::readGMCMap( const string& filename, mu2e::BFMap& bfmap ){
 
-  // Open the input file.
-  int fd = open( filename.c_str(), O_RDONLY );
+// Open the input file.
+  int fd                                    = open( filename.c_str(), O_RDONLY );
   if ( !fd ) {
-    cout 
+    cerr 
       << "Could not open file containing the magnetic filed map for: "
       << bfmap.getKey() << "\n"
       << "Filename: " 
       << filename
-      << "\n";
-    assert(2==1);
+      << "\n" << endl;
   }
 
-  // Compute number of records in the input file.
-  const int nrecords = computeArraySize(fd,filename);
+     // Compute number of records in the input file.
+  const int nrecords                        = computeArraySize(fd,filename);
 
-  // Image of the file in memory.
+     // Image of the file in memory.
   vector<DiskRecord> data(nrecords, DiskRecord());
 
-  // Read file into memory.
-  const int nbytes = nrecords*sizeof(DiskRecord);
-  ssize_t s = read( fd, &data[0], nbytes );
+     // Read file into memory.
+  const int nbytes                          = nrecords*sizeof(DiskRecord);
+  ssize_t s                                 = read( fd, &data[0], nbytes );
   if ( s != nbytes ) {
     if ( s == -1 ){
-      cout 
-	<< "Error reading magnetic field map: " 
-	<< bfmap.getKey() << "\n"
-	<< "Filename: " 
-	<< filename
-	<< "\n";
-      assert(2==1);
+      cerr
+        << "Error reading magnetic field map: " 
+        << bfmap.getKey() << "\n"
+        << "Filename: " 
+        << filename
+        << "\n";
     } else{
-      cout
-	<< "Wrong number of bytes read from magnetic field map: " 
-	<< bfmap.getKey() << "\n"
-	<< "Filename: " 
-	<< filename
-	<< "\n";
-      assert(2==1);
+      cerr
+        << "Wrong number of bytes read from magnetic field map: " 
+        << bfmap.getKey() << "\n"
+        << "Filename: " 
+        << filename
+        << "\n";
     }
   }
 
-  // Tool to find min and max values of grid points.
+     // Tool to find min and max values of grid points.
   MinMax mmX, mmY, mmZ;
 
-  // Offset needed to put this map into the Mu2e coordinate system.
-  // ( Origin at center of TS ).
-  const Hep3Vector& offset = bfmap.origin();
+     // Offset needed to put this map into the Mu2e coordinate system.
+     // ( Origin at center of TS ).
+  const CLHEP::Hep3Vector& offset           = bfmap.origin();
 
-  // Collect distinct values of (X,Y,Z) on the grid points.
+     // Collect distinct values of (X,Y,Z) on the grid points.
   set<float> X, Y, Z;
 
-  // Multiply by this factor to convert from kilogauss to tesla.
-  double ratio = kilogauss/tesla;
+     // Multiply by this factor to convert from kilogauss to tesla.
+  double ratio                              = CLHEP::kilogauss/CLHEP::tesla;
 
-  // For the image in memory:
-  //   1) Transform into the correct set of units.
-  //   2) Find min/max of each dimension.
-  //   3) Collect unique values of (X,Y,Z) of the grid points.
-  for ( vector<DiskRecord>::iterator i=data.begin();
-	i != data.end(); ++i ){
+     // For the image in memory:
+     //   1) Transform into the correct set of units.
+     //   2) Find min/max of each dimension.
+     //   3) Collect unique values of (X,Y,Z) of the grid points.
+  for ( vector<DiskRecord>::iterator i      = data.begin();
+  i != data.end(); ++i ){
 
-    // Modify in place.
-    DiskRecord& r = *i;
+       // Modify in place.
+    DiskRecord& r                           = *i;
 
-    // Unit conversion: from (cm, kG) to (mm,T).
-    r.x  *= cm; 
-    r.y  *= cm; 
-    r.z  *= cm;
-
+       // Unit conversion: from (cm, kG) to (mm,T).
+    r.x  *= CLHEP::cm; 
+    r.y  *= CLHEP::cm; 
+    r.z  *= CLHEP::cm;
     r.bx *= ratio; 
     r.by *= ratio; 
     r.bz *= ratio; 
 
- 
-    /* some useful debugging lines.  Dump everything.
-   cout << "\n" << endl;
-    cout << "x,y,z " << r.x << " " << r.y << " " << r.z << endl;
-    cout << "bx,by,bz " << r.bx << " " << r.by << " " << r.bz << endl;
-    */
-
-    // Re-centering. - not sure if we really want this here?
+       // Re-centering. - not sure if we really want this here?
     r.x += offset.x(); 
     r.y += offset.y(); 
     r.z += offset.z();
 
- 
-    // The one check I can do.
+       // The one check I can do.
     if ( r.head != r.tail ){
-      cout
-	<< "Error reading magnetic field map.  "
-	<< "Mismatched head and tail byte counts at record: " << data.size() << "\n"
-	<< "Could not open file containing the magnetic filed map for: "
-	<< bfmap.getKey() << "\n"
-	<< "Filename: " 
-	<< filename
-	<< "\n";
-      assert(2==1);
+      cerr
+        << "Error reading magnetic field map.  "
+        << "Mismatched head and tail byte counts at record: " << data.size() << "\n"
+        << "Could not open file containing the magnetic filed map for: "
+        << bfmap.getKey() << "\n"
+        << "Filename: " 
+        << filename
+        << "\n";
     }
 
-    // Update min/max information.
+       // Update min/max information.
     mmX.compare(r.x);
     mmY.compare(r.y);
     mmZ.compare(r.z);
 
-    // Populate the set of all unique grid values.
+       // Populate the set of all unique grid values.
     X.insert(r.x);
     Y.insert(r.y);
     Z.insert(r.z);
   }
 
-  // Expected grid dimentsions.
-  const unsigned int nx = bfmap.nx();
-  const unsigned int ny = bfmap.ny();
-  const unsigned int nz = bfmap.nz();
+     // Expected grid dimentsions.
+  const int nx                              = bfmap.nx();
+  const int ny                              = bfmap.ny();
+  const int nz                              = bfmap.nz();
 
-  // Cross-check that the grid read from the file has the size we expected.
-  // This is not really a perfect check since there could be round off error
-  // in the computation of the grid points.  But the MECO GMC files were written 
-  // in a way that this test works.
+     // Cross-check that the grid read from the file has the size we expected.
+     // This is not really a perfect check since there could be round off error
+     // in the computation of the grid points.  But the MECO GMC files were written 
+     // in a way that this test works.
   if ( X.size() != nx ||
-       Y.size() != ny ||
-       Z.size() != nz     ){
-    cout 
+    Y.size() != ny ||
+  Z.size() != nz     ){
+    cerr
       << "Mismatch in expected and observed number of grid points for BField map: " 
       << bfmap.getKey() << "\n"
       << "From file: " 
@@ -225,42 +211,41 @@ mu2eDSField::readGMCMap( const string& filename,
       << "Expected/Observed x: " << nx << " " << X.size() << "\n"
       << "Expected/Observed y: " << ny << " " << Y.size() << "\n"
       << "Expected/Observed z: " << nz << " " << Z.size() << "\n";
-    assert(2==1);
   }
 
-  // Cross-check that we did not find more data than we have room for.
+     // Cross-check that we did not find more data than we have room for.
   if ( data.size() > nx*ny*nz-1){
-    cout
+    cerr
       << "Too many values read into the field map: " 
       << bfmap.getKey() << "\n"
       << "From file: " 
       << filename
       << "\n"
       << "Expected/Observed size: " << nx*ny*nz << " " << data.size() << "\n";
-    assert(2==1);
   }
 
-  // Tell the magnetic field map what its limits are.
+     // Tell the magnetic field map what its limits are.
   bfmap.setLimits( mmX.min(), mmX.max(),
-		   mmY.min(), mmY.max(),
-		   mmZ.min(), mmZ.max() );
+    mmY.min(), mmY.max(),
+    mmZ.min(), mmZ.max() );
 
-  // Store grid points and field values into 3D arrays
-  for (vector<DiskRecord>::const_iterator i=data.begin(), e=data.end();
-       i != e; ++i){
+     // Store grid points and field values into 3D arrays
+  for (vector<DiskRecord>::const_iterator i = data.begin(), e=data.end();
+  i != e; ++i){
 
     DiskRecord const& r(*i);
-      
-    // Find indices corresponding to this grid point.
-    // By construction the indices must be in bounds ( we set the limits above ).
-    std::size_t ix = bfmap.iX(r.x);
-    std::size_t iy = bfmap.iY(r.y);
-    std::size_t iz = bfmap.iZ(r.z);
-      
-    // Store the information into the 3d arrays.
-    bfmap.grid().set (ix, iy, iz, Hep3Vector(r.x,r.y,r.z));
-    bfmap.field().set(ix, iy, iz, Hep3Vector(r.bx,r.by,r.bz));
 
+       // Find indices corresponding to this grid point.
+       // By construction the indices must be in bounds ( we set the limits above ).
+    std::size_t ix                          = bfmap.iX(r.x);
+    std::size_t iy                          = bfmap.iY(r.y);
+    std::size_t iz                          = bfmap.iZ(r.z);
+
+       // Store the information into the 3d arrays.
+    bfmap.grid().set (ix, iy, iz, CLHEP::Hep3Vector(r.x,r.y,r.z));
+    bfmap.field().set(ix, iy, iz, CLHEP::Hep3Vector(r.bx,r.by,r.bz));
+    bfmap.setDefined(ix, iy, iz, true);
+    
   }
 
   return;

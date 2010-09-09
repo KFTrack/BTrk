@@ -702,8 +702,15 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
           td.shj = jsh;
           td.startglen = sh1.globalFlight();
           td.endglen = sh2.globalFlight();
+          td.startrho = sh1.position().perp();
+          td.startz = sh1.position().z();
+          td.endrho = sh2.position().perp();
+          td.endz = sh2.position().z();
           td.ddiff = 0.0;
           double step = (td.endglen-td.startglen)/(npts-1);
+          Hep3Vector startdir = ptraj.direction(sh1.globalFlight());
+          Hep3Vector enddir = ptraj.direction(sh2.globalFlight());
+          Hep3Vector average = (startdir + enddir).unit();
           for(unsigned ipt=0;ipt<npts;ipt++){
             double glen = td.startglen+ipt*step;
             HepPoint spt = straj->position(glen);
@@ -726,6 +733,7 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
           Hep3Vector rdp = fieldint->deltaMomentum(&ptraj,tspoca.flt1(),tepoca.flt1());
           td.recodp = rdp.mag();
           td.deltadp = (tdp-rdp).mag();
+          td.deltadpmag = (tdp-rdp).dot(average);
           tdiff.push_back(td);
           break;
         }

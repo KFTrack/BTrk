@@ -28,7 +28,7 @@ public:
   virtual double bFieldNominal()const;
 protected:
   // Read a MECO GMC format map.
-  void readGMCMap( const std::string& filename, BFMap& bfmap );
+  void readGMCMap( const std::string& filename, mu2e::BFMap& bfmap );
 
   // Compute the size of the array needed to hold the raw data of the field map.
   
@@ -40,7 +40,7 @@ private:
   static Hep3Vector trackerCenterInMu2eCoordinates;
   static Hep3Vector trackerCenterInFastSimCoordinates;
   // the actual field
-  BFMap _fieldmap;
+  mu2e::BFMap _fieldmap;
   double _bnom;
   double _dfactor;
   bool _distort;
