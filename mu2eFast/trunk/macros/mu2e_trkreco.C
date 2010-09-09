@@ -338,10 +338,10 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     TH1F* dg = new TH1F("dg","global length difference",100,0,100);
     TH1F* adiff = new TH1F("adiff","average traj diff, adjacent stations",100,0.0,0.5);
     TH1F* mdiff = new TH1F("mdiff","average traj diff, middle of tracker",100,0.0,0.5);
-    tree->Project("glen","trajdiff.endglen:trajdiff.startglen");
-    tree->Project("dg","trajdiff.endglen-trajdiff.startglen");
-    tree->Project("adiff","trajdiff.ddiff",adjacent+rec+goodfit+early);
-    tree->Project("mdiff","trajdiff.ddiff",middle+rec+goodfit+early);
+    tree->Project("glen","trajdiff.endglen:trajdiff.startglen",rec+goodfit);
+    tree->Project("dg","trajdiff.endglen-trajdiff.startglen",rec+goodfit);
+    tree->Project("adiff","trajdiff.ddiff",adjacent+rec+goodfit);
+    tree->Project("mdiff","trajdiff.ddiff",middle+rec+goodfit);
     can->Clear();
     can->Divide(2,2);
     can->cd(1);
@@ -358,21 +358,28 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
   } else if(page == "bintdiff") {
     TCut adjacent = ("trajdiff.endglen-trajdiff.startglen>20 && trajdiff.endglen-trajdiff.startglen<40");
     TCut middle = ("trajdiff.endglen>700 && trajdiff.endglen < 800 && trajdiff.startglen> 550 && trajdiff.startglen< 650");
-    TCut early = ("trajdiff.startglen<600");
+    TCut early = ("trajdiff.startglen<1200");
 
     TH1F* tadiff = new TH1F("tadiff","True Delta P, adjacent stations",100,0,2e-3);
     TH1F* tmdiff = new TH1F("tmdiff","True Delta P, middle of tracker",100,0,2e-3);
     TH1F* radiff = new TH1F("radiff","Reco Delta P, adjacent stations",100,0,2e-3);
     TH1F* rmdiff = new TH1F("rmdiff","Reco Delta P, middle of tracker",100,0,2e-3);
-    TH1F* dadiff = new TH1F("dadiff","Delta Delta P, adjacent stations",100,0,1e-4);
-    TH1F* dmdiff = new TH1F("dmdiff","Delta Delta P, middle of tracker",100,0,1e-4);
+    TH1F* dadiff = new TH1F("dadiff","Reco-True Delta P mag, adjacent stations",200,-1e-4,1e-4);
+    TH1F* dmdiff = new TH1F("dmdiff","Reco-True Delta P mag, middle of tracker",200,-1e-4,1e-4);
+    
+    tadiff->GetXaxis()->SetTitle("GeV");
+    tmdiff->GetXaxis()->SetTitle("GeV");
+    radiff->GetXaxis()->SetTitle("GeV");
+    rmdiff->GetXaxis()->SetTitle("GeV");
+    dadiff->GetXaxis()->SetTitle("GeV");
+    dmdiff->GetXaxis()->SetTitle("GeV");
     
     tree->Project("tadiff","trajdiff.truedp",adjacent+rec+goodfit+early);
     tree->Project("tmdiff","trajdiff.truedp",middle+rec+goodfit+early);
     tree->Project("radiff","trajdiff.recodp",adjacent+rec+goodfit+early);
     tree->Project("rmdiff","trajdiff.recodp",middle+rec+goodfit+early);
-    tree->Project("dadiff","trajdiff.deltadp",adjacent+rec+goodfit+early);
-    tree->Project("dmdiff","trajdiff.deltadp",middle+rec+goodfit+early);
+    tree->Project("dadiff","trajdiff.deltadpmag",adjacent+rec+goodfit+early);
+    tree->Project("dmdiff","trajdiff.deltadpmag",middle+rec+goodfit+early);
     can->Clear();
     can->Divide(2,3);
     can->cd(1);
