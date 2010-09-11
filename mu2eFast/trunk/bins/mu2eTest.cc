@@ -717,7 +717,9 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
             TrkPoca tpoca(ptraj, glen, spt, 1e-12);
             HepPoint rpt = ptraj.position(tpoca.flt1());
             Hep3Vector diff = rpt - spt;
-            td.ddiff += diff.mag();
+            Hep3Vector dir = straj->direction(glen);
+            Hep3Vector dtrans = diff - dir*diff.dot(dir);
+            td.ddiff += dtrans.mag();
           }
           td.ddiff /= npts;
       // integrate the meco field over this range to compute dp    
