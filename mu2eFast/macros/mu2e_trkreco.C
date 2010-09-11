@@ -8,6 +8,7 @@
 #include <TLegend.h>
 #include <TString.h>
 #include <TStyle.h>
+#include <TProfile.h>
 #include <stdio.h>
 #include "Riostream.h"
 
@@ -338,12 +339,22 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     TH1F* dg = new TH1F("dg","global length difference",100,0,100);
     TH1F* adiff = new TH1F("adiff","average traj diff, adjacent stations",100,0.0,0.5);
     TH1F* mdiff = new TH1F("mdiff","average traj diff, middle of tracker",100,0.0,0.5);
+    TProfile* dprof = new TProfile("dprof","average reco, true transverse separation vs Z (WRT tracker center)",40,-170,170,0,0.3);
+    TH2F* d2d = new TH2F("d2d","reco, true transverse separation vs Z (WRT tracker center)",50,-170,170,50,0,1.0);
     tree->Project("glen","trajdiff.endglen:trajdiff.startglen",rec+goodfit);
     tree->Project("dg","trajdiff.endglen-trajdiff.startglen",rec+goodfit);
     tree->Project("adiff","trajdiff.ddiff",adjacent+rec+goodfit);
     tree->Project("mdiff","trajdiff.ddiff",middle+rec+goodfit);
+    tree->Project("dprof","trajdiff.ddiff:0.5*(trajdiff.startz+trajdiff.endz)",rec+goodfit);
+    tree->Project("d2d","trajdiff.ddiff:0.5*(trajdiff.startz+trajdiff.endz)",rec+goodfit);
+
+
+    dprof->GetXaxis()->SetTitle("cm");
+    dprof->GetYaxis()->SetTitle("cm");
+    dprof->SetStats(false);
+    
     can->Clear();
-    can->Divide(2,2);
+    can->Divide(2,3);
     can->cd(1);
     glen->Draw();
 //    tree->Draw("trajdiff.endglen:trajdiff.startglen>>glen");
@@ -355,6 +366,11 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     gPad->SetLogy();
     mdiff->Draw();
+//    can->Divide(1,3);
+    can->cd(5);
+    d2d->Draw();
+    can->cd(6);
+    dprof->Draw();
   } else if(page == "bintdiff") {
     TCut adjacent = ("trajdiff.endglen-trajdiff.startglen>20 && trajdiff.endglen-trajdiff.startglen<40");
     TCut middle = ("trajdiff.endglen>700 && trajdiff.endglen < 800 && trajdiff.startglen> 550 && trajdiff.startglen< 650");
