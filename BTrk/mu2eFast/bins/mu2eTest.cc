@@ -86,7 +86,7 @@ using namespace std;
 #define RNGSEED 9082459
 
 void fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& sinfo);
-void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff);
+void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff,PacSimTrkSummary& ssum);
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 
 PacTrkSimHotMap simHotMap; // used to access nasty statics  
@@ -471,7 +471,7 @@ int main(int argc, char* argv[]) {
       rec_nhit = kalrep->hotList()->nHit();
       
       // test of position difference between
-      if(trajdiff)fillTrajDiff(simtrk,recotraj,tdiff);
+      if(trajdiff)fillTrajDiff(simtrk,recotraj,tdiff,ssum);
       
       if(disptrack)
         display.drawRecTrack(trk);
@@ -683,12 +683,14 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
 
 
 void
-fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff) {
+fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff,PacSimTrkSummary& ssum) {
   static const unsigned npts(20);
   const std::vector<PacSimHit>& shs = strk->getHitList();
   const PacPieceTraj* straj = strk->getTraj();
 // loop over pairs of measurement simhits
   TrajDiff td;
+  Hep3Vector binttru;
+  Hep3Vector bintrec;
   for(int ish=0;ish<shs.size();ish++){
     const PacSimHit& sh1 = shs[ish];
     const PacDetElem* pelem1 = dynamic_cast<const PacDetElem *>(sh1.detIntersection().delem);
@@ -710,7 +712,6 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
           double step = (td.endglen-td.startglen)/(npts-1);
           Hep3Vector startdir = ptraj.direction(sh1.globalFlight());
           Hep3Vector enddir = ptraj.direction(sh2.globalFlight());
-          Hep3Vector average = (startdir + enddir).unit();
           for(unsigned ipt=0;ipt<npts;ipt++){
             double glen = td.startglen+ipt*step;
             HepPoint spt = straj->position(glen);
@@ -725,6 +726,7 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
       // integrate the meco field over this range to compute dp    
           Hep3Vector tdp = fieldint->deltaMomentum(straj,td.startglen,td.endglen);
           td.truedp = tdp.mag();
+          td.truedpp = tdp.perp();
           
           HepPoint tstart = straj->position(td.startglen);
           HepPoint tend = straj->position(td.endglen);
@@ -734,13 +736,18 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
           TrkPoca tepoca(ptraj, pend, tend, 1e-12);
           Hep3Vector rdp = fieldint->deltaMomentum(&ptraj,tspoca.flt1(),tepoca.flt1());
           td.recodp = rdp.mag();
+          td.recodpp = rdp.perp();
           td.deltadp = (tdp-rdp).mag();
-          td.deltadpmag = (tdp-rdp).dot(average);
           tdiff.push_back(td);
+          
+          binttru += tdp;
+          bintrec += rdp;
           break;
         }
       }
     }
   }
+  ssum.binttru = binttru.mag();
+  ssum.bintrec = bintrec.mag();
 }
 
