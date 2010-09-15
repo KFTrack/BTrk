@@ -376,12 +376,12 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     TCut middle = ("trajdiff.endglen>700 && trajdiff.endglen < 800 && trajdiff.startglen> 550 && trajdiff.startglen< 650");
     TCut early = ("trajdiff.startglen<1200");
 
-    TH1F* tadiff = new TH1F("tadiff","True Delta P, adjacent stations",100,0,2e-3);
-    TH1F* tmdiff = new TH1F("tmdiff","True Delta P, middle of tracker",100,0,2e-3);
-    TH1F* radiff = new TH1F("radiff","Reco Delta P, adjacent stations",100,0,2e-3);
-    TH1F* rmdiff = new TH1F("rmdiff","Reco Delta P, middle of tracker",100,0,2e-3);
-    TH1F* dadiff = new TH1F("dadiff","Reco-True Delta P mag, adjacent stations",200,-1e-4,1e-4);
-    TH1F* dmdiff = new TH1F("dmdiff","Reco-True Delta P mag, middle of tracker",200,-1e-4,1e-4);
+    TH1F* tadiff = new TH1F("tadiff","True Delta P perp, adjacent stations",100,0,2e-3);
+    TH1F* tmdiff = new TH1F("tmdiff","True Delta P perp, middle of tracker",100,0,2e-3);
+    TH1F* radiff = new TH1F("radiff","Reco Delta P perp, adjacent stations",100,0,2e-3);
+    TH1F* rmdiff = new TH1F("rmdiff","Reco Delta P perp, middle of tracker",100,0,2e-3);
+    TH1F* dadiff = new TH1F("dadiff","Reco-True Delta P perp, adjacent stations",200,-2e-4,2e-4);
+    TH1F* dmdiff = new TH1F("dmdiff","Reco-True Delta P perp, middle of tracker",200,-1e-4,1e-4);
     
     tadiff->GetXaxis()->SetTitle("GeV");
     tmdiff->GetXaxis()->SetTitle("GeV");
@@ -390,12 +390,12 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     dadiff->GetXaxis()->SetTitle("GeV");
     dmdiff->GetXaxis()->SetTitle("GeV");
     
-    tree->Project("tadiff","trajdiff.truedp",adjacent+rec+goodfit+early);
-    tree->Project("tmdiff","trajdiff.truedp",middle+rec+goodfit+early);
-    tree->Project("radiff","trajdiff.recodp",adjacent+rec+goodfit+early);
-    tree->Project("rmdiff","trajdiff.recodp",middle+rec+goodfit+early);
-    tree->Project("dadiff","trajdiff.deltadpmag",adjacent+rec+goodfit+early);
-    tree->Project("dmdiff","trajdiff.deltadpmag",middle+rec+goodfit+early);
+    tree->Project("tadiff","trajdiff.truedpp",adjacent+rec+goodfit+early);
+    tree->Project("tmdiff","trajdiff.truedpp",middle+rec+goodfit+early);
+    tree->Project("radiff","trajdiff.recodpp",adjacent+rec+goodfit+early);
+    tree->Project("rmdiff","trajdiff.recodpp",middle+rec+goodfit+early);
+    tree->Project("dadiff","trajdiff.recodpp-trajdiff.truedpp",adjacent+rec+goodfit+early);
+    tree->Project("dmdiff","trajdiff.recodpp-trajdiff.truedpp",middle+rec+goodfit+early);
     can->Clear();
     can->Divide(2,3);
     can->cd(1);
@@ -411,7 +411,28 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     dadiff->Draw();
     can->cd(6);
     gPad->SetLogy();
-    dmdiff->Draw();    
+    dmdiff->Draw();
+  } else if(page == "binttrk") {
+    TH1F* tbint = new TH1F("tbint","Field correction integral, entire track, true trajectory",100,0,0.005);
+    TH1F* rbint = new TH1F("rbint","Field correction integral, entire track, reco trajectory",100,0,0.005);
+    TH2F* cint = new TH2F("cint","Field correction integeral, entire track, reco vs true",50,0,0.005,50,0,0.005);
+    TH1F* dint = new TH1F("dint","Field correction integral, entire track, reco - true trajectory",200,-1e-4,1e-4);
+    tree->Project("tbint","simtrk.binttru",rec+goodfit);
+    tree->Project("rbint","simtrk.bintrec",rec+goodfit);
+    tree->Project("cint","simtrk.bintrec:simtrk.binttru",rec+goodfit);
+    tree->Project("dint","simtrk.bintrec-simtrk.binttru",rec+goodfit);
+    can->Clear();
+    can->Divide(2,2);
+    can->cd(1);
+    cint->Draw();
+    can->cd(2);
+    rbint->Draw();
+    can->cd(3);
+    tbint->Draw();
+    can->cd(4);
+    dint->Draw();
+    
+  
   } else if(page == "caloresid") {
     gStyle->SetOptFit(1111);
     TCut calor("simhit.shelemnum>10008&&simhit.shnhot>0");

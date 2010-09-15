@@ -142,8 +142,8 @@ int main(int argc, char* argv[]) {
     //
   if(argc <= 1){
     cout << "reading standard config file" << endl;
-    gconfig.parsefile(AppFileName("PacTest/testOneTrack.xml").pathname().c_str());
-    gconfig.parsefile(AppFileName("PacDetector/pacrat_SuperB.xml").pathname().c_str());
+    gconfig.parsefile(AppFileName("mu2eFast/mu2e.xml").pathname().c_str());
+    gconfig.parsefile(AppFileName("mu2eFast/mu2e_display.xml").pathname().c_str());
   } else {
     cout << "reading config from arguments ";
     for(unsigned iarg=1;iarg<argc;iarg++){
