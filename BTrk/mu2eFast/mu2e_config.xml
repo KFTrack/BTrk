@@ -44,6 +44,9 @@
                 <param name="B_zlow"   type="float"         > -500</param>
                 <param name="B_zhi"    type="float"         > 500 </param>
             </sect>
+            <sect name="Materials">
+                <param name="materials" type="string" > mu2eFast/MaterialsList.data</param>
+            </sect>
         </config>
     </included>
 </edml>

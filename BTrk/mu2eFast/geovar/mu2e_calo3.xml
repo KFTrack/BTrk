@@ -10,7 +10,7 @@
             <constant name="calorhosize" value="36"></constant>
             <variable name="pvar" type="int"></variable>
 <!-- offset the phi slightly to keep elements off voxel boundaries -->
-            <formula name="calophi" par0="pvar" formula="1.047197*[0] + 0.01"></formula>
+            <formula name="calophi" par0="pvar" formula="2.094395*[0] + 0.01"></formula>
             <formula name="calofid" par0="pvar" formula="10000+[0]"></formula>
             <formula name="calorid" par0="pvar" formula="10010+[0]"></formula>
         </define>
@@ -49,9 +49,9 @@
                 
         <detector name="Mu2e">
             <volume name="Calo">
-                <loop variable="pvar" count="6" startvalue="0" stepvalue="1">
-                    <rect name="calo_F" id="calofid" orientation="0" centerrho="calorho" centerz="calofz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calothickness" thick="10" mat="emc-LYSO"  meas="Calo"/>                       
-                    <rect name="calo" id="calorid" orientation="1" centerrho="calorho" centerz="caloz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calozsize" thick="calothickness" mat="emc-LYSO" meas="Calo"/>
+                <loop variable="pvar" count="3" startvalue="0" stepvalue="1">
+                    <rect name="calo_F" id="calofid" orientation="0" centerrho="calorho" centerz="calofz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calothickness" thick="10" mat="LYSO"  meas="Calo"/>                       
+                    <rect name="calo" id="calorid" orientation="1" centerrho="calorho" centerz="caloz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calozsize" thick="calothickness" mat="LYSO" meas="Calo"/>
                 </loop>         
             </volume>
         </detector>
