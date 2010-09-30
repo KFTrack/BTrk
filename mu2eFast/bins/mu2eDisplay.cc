@@ -154,11 +154,6 @@ int main(int argc, char* argv[]) {
 	}
 //  gconfig.dump();
   
-// test
-  TF1* formula = new TF1("formula","cos([0])");
-  formula->SetParameter(0,2.5);
-  cout << "Formula " << formula->GetName() << " value for x=2.5 = " << formula->Eval(0.0) << endl;
-  
 // build environment.  This creates the BField, PID tables, materials, etc.
 	PacBuildEnv penv;
 	penv.buildCore();
