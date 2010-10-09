@@ -604,22 +604,25 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     if(hots.size() > 0){
       for(unsigned ihot=0;ihot<hots.size();ihot++){
         const TrkHitOnTrk* hot= hots[ihot];
-        sinfo.hview = hot->whatView();
-        sinfo.hlay = hot->layerNumber();
-        HepPoint trkpoint = hot->trkTraj()->position(hot->fltLen());
-        Hep3Vector trkdir = hot->trkTraj()->direction(hot->fltLen());
-        HepPoint hitpoint = hot->hitTraj()->position(hot->hitLen());
-        Hep3Vector hitdir = hot->hitTraj()->direction(hot->hitLen());
-        Hep3Vector pocadir = hitdir.cross(sdir);
-        sinfo.resid = trkpoint.distanceTo(hitpoint);
-        sinfo.hresid = (hitpoint - pos).dot(pocadir);
+        if(hot->isActive()){
+          sinfo.hview = hot->whatView();
+          sinfo.hlay = hot->layerNumber();
+          HepPoint trkpoint = hot->trkTraj()->position(hot->fltLen());
+          Hep3Vector trkdir = hot->trkTraj()->direction(hot->fltLen());
+          HepPoint hitpoint = hot->hitTraj()->position(hot->hitLen());
+          Hep3Vector hitdir = hot->hitTraj()->direction(hot->hitLen());
+          Hep3Vector pocadir = hitdir.cross(sdir);
+          sinfo.resid = trkpoint.distanceTo(hitpoint);
+//        sinfo.hresid = (hitpoint - pos).dot(pocadir);
+          sinfo.hresid = hitpoint.distanceTo(pos);
         // find planar intersection of track
-        double sval = Hep3Vector(pos-trkpoint).dot(snorm)/trkdir.dot(snorm);
-        Hep3Vector mdir = hitdir.cross(snorm).unit();
-        sinfo.tresid = Hep3Vector(pos - (trkpoint+sval*trkdir)).dot(mdir);
-        sinfo.mdot = pocadir.dot(snorm);
-        sinfo.herr = hot->hitRms();
-        svec.push_back(sinfo);
+          double sval = Hep3Vector(pos-trkpoint).dot(snorm)/trkdir.dot(snorm);
+          Hep3Vector mdir = hitdir.cross(snorm).unit();
+          sinfo.tresid = Hep3Vector(pos - (trkpoint+sval*trkdir)).dot(mdir);
+          sinfo.mdot = pocadir.dot(snorm);
+          sinfo.herr = hot->hitRms();
+          svec.push_back(sinfo);
+        }
       }
     } else {
       sinfo.hview = -1;
