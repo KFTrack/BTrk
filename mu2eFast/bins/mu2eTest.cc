@@ -62,9 +62,9 @@
 #include "PacDisplay/PacEvtDisplay.hh"
 #include "mu2eFast/PacSimHitInfo.rdl"
 #include "mu2eFast/TrajDiff.rdl"
+#include "mu2eFast/BDiff.rdl"
 #include "mu2eFast/PacSimTrkSummary.rdl"
 #include "mu2eFast/mu2eDSField.hh"
-
 
 #include "ProxyDict/Ifd.hh"
 #include "ProxyDict/IfdDataProxyUnowned.hh"
@@ -86,7 +86,8 @@ using namespace std;
 #define RNGSEED 9082459
 
 void fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& sinfo);
-void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff,PacSimTrkSummary& ssum);
+void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff,
+  std::vector<BDiff>& bdiff,PacSimTrkSummary& ssum);
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 
 PacTrkSimHotMap simHotMap; // used to access nasty statics  
@@ -212,7 +213,7 @@ int main(int argc, char* argv[]) {
   
   std::vector<PacSimHitInfo> sinfo;
   std::vector<TrajDiff> tdiff;
-//  std::vector<TrajDiff> cdiff;
+  std::vector<BDiff> bdiff;
   PacSimTrkSummary ssum;
   
   //Create TBranch to store track info
@@ -280,6 +281,7 @@ int main(int argc, char* argv[]) {
 // test of trajectory differences
   if(trajdiff){
     trackT->Branch("trajdiff",&tdiff);
+    trackT->Branch("bdiff",&bdiff);
     double dfactor = gconfig.getfloat("distortionfactor",1.0);
     std::string fmap = gconfig.get("fieldmap");
     mecofield = new mu2eDSField(fmap,dfactor);
@@ -471,7 +473,7 @@ int main(int argc, char* argv[]) {
       rec_nhit = kalrep->hotList()->nHit();
       
       // test of position difference between
-      if(trajdiff)fillTrajDiff(simtrk,recotraj,tdiff,ssum);
+      if(trajdiff)fillTrajDiff(simtrk,recotraj,tdiff,bdiff,ssum);
       
       if(disptrack)
         display.drawRecTrack(trk);
@@ -686,12 +688,14 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
 
 
 void
-fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff,PacSimTrkSummary& ssum) {
+fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj,
+  std::vector<TrajDiff>& tdiff,std::vector<BDiff>& bdiff,PacSimTrkSummary& ssum) {
   static const unsigned npts(20);
   const std::vector<PacSimHit>& shs = strk->getHitList();
   const PacPieceTraj* straj = strk->getTraj();
 // loop over pairs of measurement simhits
   TrajDiff td;
+  BDiff bd;
   Hep3Vector binttru;
   Hep3Vector bintrec;
   for(int ish=0;ish<shs.size();ish++){
@@ -724,6 +728,21 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<
             Hep3Vector dir = straj->direction(glen);
             Hep3Vector dtrans = diff - dir*diff.dot(dir);
             td.ddiff += dtrans.mag();
+            bd.tx = spt.x();
+            bd.ty = spt.y();
+            bd.tz = spt.z();
+            bd.rx = rpt.x();
+            bd.ry = rpt.y();
+            bd.rz = rpt.z();
+            Hep3Vector tb = mecofield->bFieldVect(spt);
+            bd.tbx = tb.x();
+            bd.tby = tb.y();
+            bd.tbz = tb.z();
+            Hep3Vector rb = mecofield->bFieldVect(rpt);
+            bd.tbx = rb.x();
+            bd.tby = rb.y();
+            bd.tbz = rb.z();
+            bdiff.push_back(bd);
           }
           td.ddiff /= npts;
       // integrate the meco field over this range to compute dp    

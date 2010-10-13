@@ -180,6 +180,7 @@ int main(int argc, char* argv[]) {
 	if(disptrack){
     display.init(gconfig.getcstr("displayfile"),gconfig.getint("displayresolution"));
     display.drawDetector();
+    display.drawVoxels();
     display.reset();
 	}
 
