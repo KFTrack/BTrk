@@ -84,10 +84,10 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     
   } else if(page == "rec"){
 
-    TH1F* ndof = new TH1F("ndof","N DOF",40,-0.5,39.5);
+    TH1F* ndof = new TH1F("ndof","N DOF",80,-0.5,79.5);
     tree->Project("ndof","rec_ndof");
     
-    TH1F* nhit = new TH1F("nhit","N hits",50,-0.5,49.5);
+    TH1F* nhit = new TH1F("nhit","N hits",80,-0.5,79.5);
     tree->Project("nhit","rec_nhit");
 
     TH1F* chindof = new TH1F("chindof","Chisquare/NDOF", 100,0.0, 10.0);
