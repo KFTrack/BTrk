@@ -1,0 +1,28 @@
+// struct to compare trajectories
+
+#ifndef BDiff_HH
+#define BDiff_HH
+
+#include <Rtypes.h>
+#define STRINGSIZE 200
+
+struct BDiff {
+
+  Float_t tbx,tby,tbz,rbx,rby,rbz;
+  Float_t tx,ty,tz,rx,ry,rz;
+  
+  virtual ~BDiff() {}
+  BDiff() : tbx(0),tby(0),tbz(0),rbx(0),rby(0),rbz(0),tx(0),ty(0),tz(0),rx(0),ry(0),rz(0)  {}
+
+  BDiff(const BDiff& other) :
+ tbx(other.tbx),tby(other.tby),tbz(other.tbz),rbx(other.rbx),rby(other.rby),rbz(other.rbz),
+ tx(other.tx),ty(other.ty),tz(other.tz),rx(other.rx),ry(other.ry),rz(other.rz)
+     {}
+  
+  static const char* rootnames() {
+    return "tbx/F:tby/F:tbz/F:rbx/F:rby/F:rz/F:tx/F:ty/F:tz/F:rx/F:ry/F:rz/F"; }
+    
+    ClassDef(BDiff,1)
+};
+
+#endif
