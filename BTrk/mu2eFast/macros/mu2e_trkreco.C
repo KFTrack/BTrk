@@ -281,17 +281,19 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
 
   } else if (page == "mom"){
     gStyle->SetOptFit(1111);
-    TH1F* nhit = new TH1F("nhit","N hits",70,-0.5,69.5);
+    TH1F* nhit = new TH1F("nhit","N hits",80,-0.5,79.5);
     tree->Project("nhit","rec_nhit",rec+goodfit);
     
-    TH1F* mome = new TH1F("mome","estimated fit mom error",100,0.00001,0.0006);
-    tree->Project("mome","rec_mom_err",rec+goodfit);
+    TH1F* mome = new TH1F("mome","estimated fit mom error",100,0.01,0.6);
+    tree->Project("mome","1000*rec_mom_err",rec+goodfit);
+    mome->GetXaxis()->SetTitle("MeV");
     
     TH1F* mompg = new TH1F("mompg","momentum pull",100,-10,10);
     tree->Project("mompg","(rec_mom_mag-sim_mom_mag)/rec_mom_err",rec+goodfit);
     
-    TH1F* momr = new TH1F("momp","momentum resolution",200,-0.002,0.002);
-    tree->Project("momp","rec_mom_mag-sim_mom_mag",rec+goodfit);
+    TH1F* momr = new TH1F("momp","momentum resolution",200,-2,2);
+    tree->Project("momp","1000*(rec_mom_mag-sim_mom_mag)",rec+goodfit);
+    momr->GetXaxis()->SetTitle("MeV");
     
     can->Clear();
     can->Divide(2,2);
