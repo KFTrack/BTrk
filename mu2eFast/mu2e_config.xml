@@ -24,10 +24,6 @@
                 <param name="maxgap" type="float" > 0.98 </param>
             </sect>
 
-            <sect name="PacSimulate">
-                <param name="maxgap" type="float" > 1000.0 </param> <!-- this is the maximum gap allowed between hits-->               
-            </sect>
-
             <sect name="DetectorVolume">
                 <param name="rmax"    type="float"        >  200</param>
                 <param name="zmin"   type="float"         > -500</param>
