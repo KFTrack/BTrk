@@ -1,9 +1,9 @@
 {
 
-  TCut cal("simhit.shelemnum>=9990&&simhit.shnhot>0&&simhit.hview==1");
+  TCut calo("simhit.shelemnum>=9990&&simhit.shnhot>0&&simhit.hview==1");
   TCut calor("simhit.shelemnum>=10010&&simhit.shnhot>0&&simhit.hview==1");
   TCut calorf("simhit.shelemnum>=10000&&simhit.shelemnum<10010&&simhit.shnhot>0&&simhit.hview==1");
-  TCut calorr("simhit.shelemnum>=9990&&simhit.shelemnum>=10000&&simhit.shnhot>0&&simhit.hview==1");
+  TCut calorr("simhit.shelemnum>=9990&&simhit.shelemnum<10000&&simhit.shnhot>0&&simhit.hview==1");
   TCut nopreshower("simhit.shmomin>0.103");
   TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0");
   
@@ -66,7 +66,7 @@
   c6->Project("calrz6","shz",calorr+nopreshower+goodfit);
   c8->Project("calrz8","shz",calorr+nopreshower+goodfit);
   
-  TLegend* leg = new TLegend(0.7,0.9,0.6,0.9);
+  TLegend* leg = new TLegend(0.5,0.4,0.8,0.7);
   leg->AddEntry(calz3,"Face","L");
   leg->AddEntry(calfz3,"Front edge","L");
   leg->AddEntry(calrz3,"Radial edge","L");
@@ -78,7 +78,6 @@
   calz3->Draw();
   calfz3->Draw("same");
   calrz3->Draw("same");
-  leg->Draw();
   can->cd(2);
   calz4->Draw();
   calfz4->Draw("same");
@@ -91,6 +90,7 @@
   calz8->Draw();
   calfz8->Draw("same");
   calrz8->Draw("same");
+  leg->Draw();
   
   TH2F* cal3 = new TH2F("cal3","Calorimeter hit R vs Z, 3 vanes",100,165,340,100,35,75);
   TH2F* cal4 = new TH2F("cal4","Calorimeter hit R vs Z, 4 vanes",100,165,340,100,35,75);
