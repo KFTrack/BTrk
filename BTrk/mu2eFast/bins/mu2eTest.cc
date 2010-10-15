@@ -606,9 +606,11 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     if(hots.size() > 0){
       for(unsigned ihot=0;ihot<hots.size();ihot++){
         const TrkHitOnTrk* hot= hots[ihot];
-//        if(hot->isActive()){
+        if(hot->trkTraj() != 0){
           sinfo.hview = hot->whatView();
           sinfo.hlay = hot->layerNumber();
+          sinfo.active = hot->isActive();
+          
           HepPoint trkpoint = hot->trkTraj()->position(hot->fltLen());
           Hep3Vector trkdir = hot->trkTraj()->direction(hot->fltLen());
           HepPoint hitpoint = hot->hitTraj()->position(hot->hitLen());
@@ -624,7 +626,7 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
           sinfo.mdot = pocadir.dot(snorm);
           sinfo.herr = hot->hitRms();
           svec.push_back(sinfo);
-//        }
+        }
       }
     } else {
       sinfo.hview = -1;
