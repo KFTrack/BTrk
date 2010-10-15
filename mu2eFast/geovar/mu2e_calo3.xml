@@ -7,12 +7,15 @@
             <constant name="caloz" value="250"></constant>
             <constant name="calozsize" value="154"></constant>
             <constant name="calorho" value="54"></constant>
+            <constant name="calofrho" value="36"></constant>
             <constant name="calorhosize" value="36"></constant>
             <variable name="pvar" type="int"></variable>
 <!-- offset the phi slightly to keep elements off voxel boundaries -->
             <formula name="calophi" par0="pvar" formula="2.094395*[0] + 0.01"></formula>
+            <formula name="calorphi" par0="pvar" formula="2.094395*[0] + 1.570596 + 0.01"></formula>
             <formula name="calofid" par0="pvar" formula="10000+[0]"></formula>
-            <formula name="calorid" par0="pvar" formula="10010+[0]"></formula>
+            <formula name="calorid" par0="pvar" formula="9990+[0]"></formula>
+            <formula name="caloid" par0="pvar" formula="10010+[0]"></formula>
         </define>
 
         <measures>
@@ -50,8 +53,9 @@
         <detector name="Mu2e">
             <volume name="Calo">
                 <loop variable="pvar" count="3" startvalue="0" stepvalue="1">
-                    <rect name="calo_F" id="calofid" orientation="0" centerrho="calorho" centerz="calofz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calothickness" thick="10" mat="LYSO"  meas="Calo"/>                       
-                    <rect name="calo" id="calorid" orientation="1" centerrho="calorho" centerz="caloz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calozsize" thick="calothickness" mat="LYSO" meas="Calo"/>
+                    <rect name="calo_F" id="calofid" orientation="0" centerrho="calorho" centerz="calofz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calothickness" thick="10" mat="LYSO"  meas="Calo"/>
+                    <rect name="calo_R" id="calorid" orientation="1" centerrho="calofrho" centerz="caloz" centerphi="calophi" axisphi="calorphi" usize="calothickness" vsize="calozsize" thick="10" mat="LYSO"  meas="Calo"/>
+                    <rect name="calo" id="caloid" orientation="1" centerrho="calorho" centerz="caloz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calozsize" thick="calothickness" mat="LYSO" meas="Calo"/>
                 </loop>         
             </volume>
         </detector>
