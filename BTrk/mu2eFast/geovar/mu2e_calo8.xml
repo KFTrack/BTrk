@@ -16,7 +16,6 @@
             <formula name="calofid" par0="pvar" formula="10000+[0]"></formula>
             <formula name="calorid" par0="pvar" formula="9990+[0]"></formula>
             <formula name="caloid" par0="pvar" formula="10010+[0]"></formula>
-formula>
         </define>
 
         <measures>
