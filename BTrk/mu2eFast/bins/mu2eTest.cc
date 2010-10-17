@@ -89,6 +89,8 @@ void fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& sinfo);
 void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff,
   std::vector<BDiff>& bdiff,PacSimTrkSummary& ssum);
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
+void countHits(const PacSimTrack* strk,  Int_t& nsingle, Int_t& nsingle_ge, Int_t& ndouble, Int_t& ndouble_ge,
+Int_t& ntriple, Int_t& ntriple_ge, Int_t& nquad, Int_t& nquad_ge);
 
 PacTrkSimHotMap simHotMap; // used to access nasty statics  
 
@@ -160,6 +162,8 @@ int main(int argc, char* argv[]) {
   //Variables to store track information
   Int_t    itrack;
   Int_t    trknum;
+  
+  Int_t sim_nsingle, sim_nsingle_ge, sim_ndouble, sim_ndouble_ge, sim_ntriple, sim_ntriple_ge, sim_nquad, sim_nquad_ge;
   Float_t sim_d0;
   Float_t sim_phi0;
   Float_t sim_omega;
@@ -240,6 +244,15 @@ int main(int argc, char* argv[]) {
   trackT->Branch("sim_inipos_x",&sim_inipos_x,"sim_inipos_x/F");
   trackT->Branch("sim_inipos_y",&sim_inipos_y,"sim_inipos_y/F");
   trackT->Branch("sim_inipos_z",&sim_inipos_z,"sim_inipos_z/F");
+  
+  trackT->Branch("sim_nsingle",&sim_nsingle,"sim_nsingle/I");
+  trackT->Branch("sim_nsingle_ge",&sim_nsingle_ge,"sim_nsingle_ge/I");
+  trackT->Branch("sim_ndouble",&sim_ndouble,"sim_ndouble/I");
+  trackT->Branch("sim_ndouble_ge",&sim_ndouble_ge,"sim_ndouble_ge/I");
+  trackT->Branch("sim_ntriple",&sim_ntriple,"sim_ntriple/I");
+  trackT->Branch("sim_ntriple_ge",&sim_ntriple_ge,"sim_ntriple_ge/I");
+  trackT->Branch("sim_nquad",&sim_nquad,"sim_nquad/I");
+  trackT->Branch("sim_nquad_ge",&sim_nquad_ge,"sim_nquad_ge/I");
 
   trackT->Branch("rec_d0",&rec_d0,"rec_d0/F");
   trackT->Branch("rec_phi0",&rec_phi0,"rec_phi0/F");
@@ -394,8 +407,11 @@ int main(int argc, char* argv[]) {
     sim_hirange		= simtraj->hiRange();
     sim_poca		= simpoca.flt1();
     sim_doca		= simpoca.doca();
+    
+    // count the number of measurements per station.
+    countHits(simtrk,sim_nsingle, sim_nsingle_ge, sim_ndouble, sim_ndouble_ge, sim_ntriple, sim_ntriple_ge, sim_nquad, sim_nquad_ge);
 
-      // Reconstruct the track with KalmanTrack (using the list of hits) 
+    // Reconstruct the track with KalmanTrack (using the list of hits) 
     TrkRecoTrk* trk = trackreco.makeTrack(simtrk);
     if(trk != 0){
         //Get Reconstructed Track data
@@ -534,6 +550,23 @@ int main(int argc, char* argv[]) {
   cout << endl;
   return 0;
 }
+
+void
+countHits(const PacSimTrack* strk,  Int_t& nsingle, Int_t& nsingle_ge, Int_t& ndouble, Int_t& ndouble_ge,
+Int_t& ntriple, Int_t& ntriple_ge, Int_t& nquad, Int_t& nquad_ge) {
+// initialize
+  nsingle = nsingle_ge = ndouble = ndouble_ge = ntriple = ntriple_ge = nquad = nquad_ge = 0;
+  const std::vector<PacSimHit>& shs = strk->getHitList();
+// loop over the simhits
+  for(int ish=0;ish<shs.size();ish++){
+    const PacSimHit& sh = shs[ish];
+    const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
+    if( pelem != 0 && pelem->measurement()!= 0 ) {
+      sinfo.shmeastype =  (int)pelem->measurement()->measurementType();
+    
+  } 
+}
+
 
 void
 fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
