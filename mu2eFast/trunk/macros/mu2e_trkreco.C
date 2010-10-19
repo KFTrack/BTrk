@@ -159,6 +159,90 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
 
     can->cd(4);
     pvtd_g->Draw("box");
+  } else if(page =="count"){
+    TH1F* nhit = new TH1F("nhit","N wire hits",81,-0.5,80.5);
+    TH1F* ndlay = new TH1F("ndlay","N double-layers",41,-0.5,40.5);
+    TH1F* nstation = new TH1F("nstation","N stations",21,-0.5,20.5);
+    TH1F* nsingle = new TH1F("nsingle","N single hits",15,-0.5,14.5);
+    TH1F* ndouble = new TH1F("ndouble","N double hits",15,-0.5,14.5);
+    TH1F* ntriple = new TH1F("ntriple","N triple hits",15,-0.5,14.5);
+    TH1F* ntriplege = new TH1F("ntriplege","N >=triple hits",15,-0.5,14.5);
+    TH1F* nquad = new TH1F("nquad","N >=quad hits",15,-0.5,14.5);
+    nhit->SetLineColor(kBlue);
+    ndlay->SetLineColor(kBlue);
+    nstation->SetLineColor(kBlue);
+    ndouble->SetLineColor(kBlue);
+    nsingle->SetLineColor(kBlue);
+    ntriple->SetLineColor(kBlue);
+    ntriplege->SetLineColor(kBlue);
+    nquad->SetLineColor(kBlue);
+
+    TH1F* nhits = new TH1F("nhits","N wire hits",81,-0.5,80.5);
+    TH1F* ndlays = new TH1F("ndlays","N double-layers",41,-0.5,40.5);
+    TH1F* nstations = new TH1F("nstations","N double-layers",21,-0.5,20.5);
+    TH1F* nsingles = new TH1F("nsingles","N single hits",15,-0.5,14.5);
+    TH1F* ndoubles = new TH1F("ndoubles","N double hits",15,-0.5,14.5);
+    TH1F* ntriples = new TH1F("ntriples","N triple hits",15,-0.5,14.5);
+    TH1F* ntripleges = new TH1F("ntripleges","N >=triple hits",15,-0.5,14.5);
+    TH1F* nquads = new TH1F("nquads","N >=quad hits",15,-0.5,14.5);
+    nhits->SetLineColor(kRed);
+    ndlays->SetLineColor(kRed);
+    nstations->SetLineColor(kRed);
+    nsingles->SetLineColor(kRed);
+    ndoubles->SetLineColor(kRed);
+    ntriples->SetLineColor(kRed);
+    ntripleges->SetLineColor(kRed);
+    nquads->SetLineColor(kRed);
+
+    tree->Project("nhit","simtrk.nwiremeas");
+    tree->Project("nhits","simtrk.nwiremeas",rec+goodfit);
+    tree->Project("ndlay","sim_ndlayer");
+    tree->Project("ndlays","sim_ndlayer",rec+goodfit);
+    tree->Project("nstation","sim_nstation");
+    tree->Project("nstations","sim_nstation",rec+goodfit);
+    tree->Project("nsingle","sim_nsingle");
+    tree->Project("nsingles","sim_nsingle",rec+goodfit);
+    tree->Project("ndouble","sim_ndouble");
+    tree->Project("ndoubles","sim_ndouble",rec+goodfit);
+    tree->Project("ntriple","sim_ntriple");
+    tree->Project("ntriples","sim_ntriple",rec+goodfit);
+    tree->Project("ntriplege","sim_ntriple_ge");
+    tree->Project("ntripleges","sim_ntriple_ge",rec+goodfit);
+    tree->Project("nquad","sim_nquad_ge");
+    tree->Project("nquads","sim_nquad_ge",rec+goodfit);
+    
+    TLegend* leg = new TLegend(0.5,0.6,0.8,0.8);
+    leg->AddEntry(nhit,"No Cuts","L");
+    leg->AddEntry(nhits,"Good Trackfit","L");
+    
+    
+    can->Clear();
+    can->Divide(3,3);
+    can->cd(1);
+    nhit->Draw();
+    nhits->Draw("same");
+    can->cd(2);
+    ndlay->Draw();
+    ndlays->Draw("same");
+    can->cd(3);
+    nstation->Draw();
+    nstations->Draw("same");
+    can->cd(4);
+    nsingle->Draw();
+    nsingles->Draw("same");
+    can->cd(5);
+    ndouble->Draw();
+    ndoubles->Draw("same");
+    can->cd(6);
+    ntriple->Draw();
+    ntriples->Draw("same");
+    can->cd(7);
+    ntriplege->Draw();
+    ntripleges->Draw("same");
+    can->cd(8);
+    nquad->Draw();
+    nquads->Draw("same");
+    leg->Draw();
     
   } else if (page == "pull"){
     gStyle->SetOptFit(1111);
