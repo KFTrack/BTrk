@@ -85,12 +85,33 @@ using namespace std;
 
 #define RNGSEED 9082459
 
+const size_t ncount(5);
+struct HitCount{
+  Int_t nhit[ncount];
+  Int_t nhit_ge[ncount];
+  Int_t nstation;
+  Int_t ndlayer;
+  HitCount() { reset();}
+  void reset(){
+    nstation = ndlayer = 0;
+    for(unsigned icount=0;icount<ncount;icount++){
+      nhit[icount] = 0;
+      nhit_ge[icount] = 0;
+    }
+  }
+  void increment(unsigned nhits){
+    nstation++;
+    if(nhits<ncount)nhit[nhits]++;
+    for(unsigned icount=0;icount <= std::min(nhits,(unsigned)ncount-1);icount++)
+      nhit_ge[icount]++;
+  }
+};
+
 void fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& sinfo);
 void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff,
   std::vector<BDiff>& bdiff,PacSimTrkSummary& ssum);
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
-void countHits(const PacSimTrack* strk,  Int_t& nsingle, Int_t& nsingle_ge, Int_t& ndouble, Int_t& ndouble_ge,
-Int_t& ntriple, Int_t& ntriple_ge, Int_t& nquad, Int_t& nquad_ge);
+void countHits(const PacSimTrack* strk,  HitCount& icount);
 
 PacTrkSimHotMap simHotMap; // used to access nasty statics  
 
@@ -163,7 +184,9 @@ int main(int argc, char* argv[]) {
   Int_t    itrack;
   Int_t    trknum;
   
-  Int_t sim_nsingle, sim_nsingle_ge, sim_ndouble, sim_ndouble_ge, sim_ntriple, sim_ntriple_ge, sim_nquad, sim_nquad_ge;
+  Int_t sim_nzero, sim_nsingle, sim_ndouble, sim_ntriple, sim_nquad;
+  Int_t sim_nzero_ge, sim_nsingle_ge, sim_ndouble_ge, sim_ntriple_ge, sim_nquad_ge;
+  Int_t sim_nstation, sim_ndlayer;
   Float_t sim_d0;
   Float_t sim_phi0;
   Float_t sim_omega;
@@ -245,14 +268,18 @@ int main(int argc, char* argv[]) {
   trackT->Branch("sim_inipos_y",&sim_inipos_y,"sim_inipos_y/F");
   trackT->Branch("sim_inipos_z",&sim_inipos_z,"sim_inipos_z/F");
   
+  trackT->Branch("sim_nzero",&sim_nzero,"sim_nzero/I");
   trackT->Branch("sim_nsingle",&sim_nsingle,"sim_nsingle/I");
-  trackT->Branch("sim_nsingle_ge",&sim_nsingle_ge,"sim_nsingle_ge/I");
   trackT->Branch("sim_ndouble",&sim_ndouble,"sim_ndouble/I");
-  trackT->Branch("sim_ndouble_ge",&sim_ndouble_ge,"sim_ndouble_ge/I");
   trackT->Branch("sim_ntriple",&sim_ntriple,"sim_ntriple/I");
-  trackT->Branch("sim_ntriple_ge",&sim_ntriple_ge,"sim_ntriple_ge/I");
   trackT->Branch("sim_nquad",&sim_nquad,"sim_nquad/I");
+  trackT->Branch("sim_nzero_ge",&sim_nzero_ge,"sim_nzero_ge/I");
+  trackT->Branch("sim_nsingle_ge",&sim_nsingle_ge,"sim_nsingle_ge/I");
+  trackT->Branch("sim_ndouble_ge",&sim_ndouble_ge,"sim_ndouble_ge/I");
+  trackT->Branch("sim_ntriple_ge",&sim_ntriple_ge,"sim_ntriple_ge/I");
   trackT->Branch("sim_nquad_ge",&sim_nquad_ge,"sim_nquad_ge/I");
+  trackT->Branch("sim_nstation",&sim_nstation,"sim_nstation/I");
+  trackT->Branch("sim_ndlayer",&sim_ndlayer,"sim_ndlayer/I");
 
   trackT->Branch("rec_d0",&rec_d0,"rec_d0/F");
   trackT->Branch("rec_phi0",&rec_phi0,"rec_phi0/F");
@@ -409,7 +436,20 @@ int main(int argc, char* argv[]) {
     sim_doca		= simpoca.doca();
     
     // count the number of measurements per station.
-    countHits(simtrk,sim_nsingle, sim_nsingle_ge, sim_ndouble, sim_ndouble_ge, sim_ntriple, sim_ntriple_ge, sim_nquad, sim_nquad_ge);
+    HitCount hcount;
+    countHits(simtrk,hcount);  
+    sim_nzero = hcount.nhit[0];
+    sim_nzero_ge = hcount.nhit_ge[0];
+    sim_nsingle = hcount.nhit[1];
+    sim_nsingle_ge = hcount.nhit_ge[1];
+    sim_ndouble = hcount.nhit[2];
+    sim_ndouble_ge = hcount.nhit_ge[2];
+    sim_ntriple = hcount.nhit[3];
+    sim_ntriple_ge = hcount.nhit_ge[3];
+    sim_nquad = hcount.nhit[4];
+    sim_nquad_ge = hcount.nhit_ge[4];
+    sim_nstation = hcount.nstation;
+    sim_ndlayer = hcount.ndlayer;
 
     // Reconstruct the track with KalmanTrack (using the list of hits) 
     TrkRecoTrk* trk = trackreco.makeTrack(simtrk);
@@ -552,19 +592,34 @@ int main(int argc, char* argv[]) {
 }
 
 void
-countHits(const PacSimTrack* strk,  Int_t& nsingle, Int_t& nsingle_ge, Int_t& ndouble, Int_t& ndouble_ge,
-Int_t& ntriple, Int_t& ntriple_ge, Int_t& nquad, Int_t& nquad_ge) {
-// initialize
-  nsingle = nsingle_ge = ndouble = ndouble_ge = ntriple = ntriple_ge = nquad = nquad_ge = 0;
-  const std::vector<PacSimHit>& shs = strk->getHitList();
+countHits(const PacSimTrack* strk, HitCount& count) {
+// storage for station hit counts;
+  std::map<unsigned,unsigned> stations;
+  std::vector<unsigned> elements;
 // loop over the simhits
+  const std::vector<PacSimHit>& shs = strk->getHitList();
   for(int ish=0;ish<shs.size();ish++){
     const PacSimHit& sh = shs[ish];
+    const DetElem* delem = sh.detIntersection().delem;
     const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
     if( pelem != 0 && pelem->measurement()!= 0 ) {
-      sinfo.shmeastype =  (int)pelem->measurement()->measurementType();
-    
-  } 
+// don't count hits with identical layer numbers
+      if(std::find(elements.begin(),elements.end(),delem->elementNumber()) == elements.end()){
+// extract the 'station number' from the element ID
+        div_t idiv = div(delem->elementNumber(),100);
+        unsigned station = idiv.rem;
+        stations[station]++;
+        elements.push_back(delem->elementNumber());
+      } else {
+// double layer: increment taht
+        count.ndlayer++;
+      }
+    }
+  }
+// fill the struct
+  for(std::map<unsigned,unsigned>::const_iterator istat=stations.begin();istat!= stations.end();istat++){
+    count.increment(istat->second);
+  }
 }
 
 
@@ -707,7 +762,7 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
         ssum.nwire++;
       const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
       if( pelem != 0 && pelem->measurement()!= 0 ) {
-        if(delem->elementName() == "gas")
+        if(delem->elementName() == "straw")
           ssum.nwiremeas++;
         else
           ssum.npadmeas++;
