@@ -111,19 +111,19 @@
   can2->Divide(2,2);
   can2->cd(1);
   c3->Draw("sqrt(shx^2+shy^2):shz>>cal3",calo+nopreshower+goodfit);
-  cout << "3 vanes, front : lower radius : face " << calfz3.GetEntries() << " : " 
+  cout << "3 vanes, front edge : inner radius : face " << calfz3.GetEntries() << " : " 
     << calrz3.GetEntries() << " : " << calz3.GetEntries() << endl;
   can2->cd(2);
   c4->Draw("sqrt(shx^2+shy^2):shz>>cal4",calo+nopreshower+goodfit);
-  cout << "4 vanes, front : lower radius : face " << calfz4.GetEntries() << " : " 
+  cout << "4 vanes, front edge : inner radius : face " << calfz4.GetEntries() << " : " 
     << calrz4.GetEntries() << " : " << calz4.GetEntries() << endl;
   can2->cd(3);
   c6->Draw("sqrt(shx^2+shy^2):shz>>cal6",calo+nopreshower+goodfit);
-  cout << "6 vanes, front : lower radius : face " << calfz6.GetEntries() << " : " 
+  cout << "6 vanes, front edge : inner radius : face " << calfz6.GetEntries() << " : " 
     << calrz6.GetEntries() << " : " << calz6.GetEntries() << endl;
   can2->cd(4);
   c8->Draw("sqrt(shx^2+shy^2):shz>>cal8",calo+nopreshower+goodfit);  
-  cout << "8 vanes, front : lower radius : face " << calfz8.GetEntries() << " : " 
+  cout << "8 vanes, front edge : inner radius : face " << calfz8.GetEntries() << " : " 
     << calrz8.GetEntries() << " : " << calz8.GetEntries() << endl;
   
 }
