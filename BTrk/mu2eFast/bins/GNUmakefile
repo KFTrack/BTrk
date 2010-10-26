@@ -7,6 +7,8 @@ LIBREMOVEFILES :=
 LIBTMPLFILES :=
 LIBDDLORDERED :=
 
+NOFWKMAIN := yes
+
 #################################################################
 #++ extra binary products	[not in production, build it with extrabin]
 
