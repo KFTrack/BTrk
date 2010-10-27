@@ -21,6 +21,6 @@ straw-wire    19.300000    0.   0.   +1    100.0e-2    Tungsten   0    6.75500  
 # 80:20 (by volume) Argon:CO2
 straw-gas        0.0016980   0. 0. +2   0.78304 Argon 0 0.21696 CO2 1 -10 -20 -30  20.0    1.0    gas 
 straw-wall       1.48    0.   0.   +3    97.0e-2   Mylar  1 2.0e-2 Copper 0 1.0e-2 Aluminum 0 -10     -20     -30     20.0    1.0    solid
-cathode       8.960000    0.   0.   +1    100.0e-2    Copper     0   12.86000   134.90000    -30     20.0    1.0    solid
+cathode       5.2 0.   0.   +2    86.4e-2    Copper 0 13.6e-2 straw-wall 1   -10 -20 -30     20.0    1.0    solid
 # effective straw wall + gas material, assuming uniform mass distribution
 straw 1.923e-2 0.0 0.0 2 91.3e-2 straw-wall 1 8.7e-2 straw-gas 1 -10 -20 -30 20.0 1.0 solid
