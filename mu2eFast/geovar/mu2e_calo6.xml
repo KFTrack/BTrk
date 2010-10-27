@@ -63,8 +63,9 @@
         <config>
             <sect name="Calo">
                 <param name="rbounds"    type="vector"        > 35  76  </param>
-                <param name="nphivoxels"    type="vector"         >  12  </param>
+                <param name="nphivoxels"    type="vector"         >  6  </param>
                 <param name="zbounds"   type="vector"         > 172 175 330 </param>
+                <param name="phioffset"   type="double"         > 0.5236 </param>
             </sect>
         </config>
     </included>
