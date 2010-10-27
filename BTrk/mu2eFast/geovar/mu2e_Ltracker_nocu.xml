@@ -4,7 +4,6 @@
         <define>
             <constant name="strawthickness" value="0.39741"></constant>
             <constant name="wirethickness" value="0.001963"></constant>
-            <constant name="caththickness" value="0.005"></constant>
             <constant name="kapthickness" value="0.0025"></constant>
             <constant name="usize" value="29.083941"></constant>
             <constant name="vsize" value="289.0"></constant>
@@ -93,15 +92,16 @@
                         <loop variable="bvar" count="2" startvalue="0" stepvalue="1">      
                             <loop variable="cvar" count="8" startvalue="0" stepvalue="1">
 
-                                <rect name="cath1" id="cathindex" orientation="1" centerrho="cathcenterrho1" centerz="centerz" centerphi="cathcenphi1" axisphi="aphi" usize="usize" vsize="vsize" thick="caththickness" mat="cathode" meas="cathode"/>            
+
+                                <rect name="kap1" id="cathindex" orientation="1" centerrho="kapcenterrho1" centerz="centerz" centerphi="kapcenphi1" axisphi="aphi" usize="usize" vsize="vsize" thick="kapthickness" mat="straw-wall" /> 
 
                                 <loop variable="avar" count="3" startvalue="0" stepvalue="1">
                                     <rect name="straw" id="index" orientation="1" centerrho="strawcenterrho" centerz="centerz" centerphi="strawcenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw" gap="strawgap" meas="MWPC1" />
                                     <rect name="wire" id="index" orientation="1" centerrho="wirecenterrho" centerz="centerz" centerphi="wirecenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="wirethickness" mat="straw-wire" gap="wiregap" />
                                 </loop>
 
-                                <rect name="cath2" id="cathindex" orientation="1" centerrho="cathcenterrho2" centerz="centerz" centerphi="cathcenphi2" axisphi="aphi" usize="usize" vsize="vsize" thick="caththickness" mat="cathode" meas="cathode"/>
 
+                                <rect name="kap2" id="cathindex" orientation="1" centerrho="kapcenterrho2" centerz="centerz" centerphi="kapcenphi2" axisphi="aphi" usize="usize" vsize="vsize" thick="kapthickness" mat="straw-wall" /> 			    
                             </loop>
                         </loop>
 
