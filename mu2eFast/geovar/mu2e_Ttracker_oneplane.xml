@@ -2,7 +2,7 @@
 <edml>
     <included>
         <define>
-            <constant name="strawthickness" value="0.00781510"></constant>
+            <constant name="strawthickness" value="4.7124-3"></constant>
             <constant name="gasthickness" value="0.392689"></constant>
             <constant name="wirethickness" value="0.001963"></constant>
             <constant name="usize" value="126.2261"></constant>
