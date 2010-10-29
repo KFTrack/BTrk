@@ -38,7 +38,7 @@ Double_t doublegaus(Double_t *x, Double_t *par) {
 }
 
 
-void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
+void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TString page(cpage);
   TCut rec("rec_ndof>0");
   TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0");
@@ -160,89 +160,85 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     pvtd_g->Draw("box");
   } else if(page =="count"){
-    TH1F* nhit = new TH1F("nhit","N wire hits",81,-0.5,80.5);
-    TH1F* ndlay = new TH1F("ndlay","N double-layers",41,-0.5,40.5);
-    TH1F* nstation = new TH1F("nstation","N stations",21,-0.5,20.5);
-    TH1F* nsingle = new TH1F("nsingle","N single hits",15,-0.5,14.5);
-    TH1F* ndouble = new TH1F("ndouble","N double hits",15,-0.5,14.5);
-    TH1F* ntriple = new TH1F("ntriple","N triple hits",15,-0.5,14.5);
-    TH1F* ntriplege = new TH1F("ntriplege","N >=triple hits",15,-0.5,14.5);
-    TH1F* nquad = new TH1F("nquad","N >=quad hits",15,-0.5,14.5);
-    nhit->SetLineColor(kBlue);
-    ndlay->SetLineColor(kBlue);
-    nstation->SetLineColor(kBlue);
+    
+    TH1F* nhit = new TH1F("nhit","N layer hits",81,-0.5,80.5);
+    TH1F* nlay = new TH1F("nlay","N panel hits",45,-0.5,44.5);
+    TH1F* nslay = new TH1F("nslay","N panel hits",45,-0.5,44.5);
+    TH1F* ndlay = new TH1F("ndlay","N panel hits",45,-0.5,44.5);
+    TH1F* nstation = new TH1F("nstation","N station hits",18,-0.5,17.5);
+    TH1F* nsingle = new TH1F("nsingle","N station hits",18,-0.5,17.5);
+    TH1F* ndouble = new TH1F("ndouble","N station hits",18,-0.5,17.5);
+    TH1F* ntriple = new TH1F("ntriple","N plane hits",18,-0.5,17.5);
+    TH2F* n3v2 = new TH2F("n3v2","N triple vs double",15,-0.5,14.5,15,-0.5,14.5);
+    
+    nhit->SetLineColor(kBlack);
+    nlay->SetLineColor(kBlack);
+    nslay->SetLineColor(kBlue);
+    ndlay->SetLineColor(kRed);
+    nstation->SetLineColor(kBlack);
+    nsingle->SetLineColor(kGreen);
     ndouble->SetLineColor(kBlue);
-    nsingle->SetLineColor(kBlue);
-    ntriple->SetLineColor(kBlue);
-    ntriplege->SetLineColor(kBlue);
-    nquad->SetLineColor(kBlue);
-
-    TH1F* nhits = new TH1F("nhits","N wire hits",81,-0.5,80.5);
-    TH1F* ndlays = new TH1F("ndlays","N double-layers",41,-0.5,40.5);
-    TH1F* nstations = new TH1F("nstations","N double-layers",21,-0.5,20.5);
-    TH1F* nsingles = new TH1F("nsingles","N single hits",15,-0.5,14.5);
-    TH1F* ndoubles = new TH1F("ndoubles","N double hits",15,-0.5,14.5);
-    TH1F* ntriples = new TH1F("ntriples","N triple hits",15,-0.5,14.5);
-    TH1F* ntripleges = new TH1F("ntripleges","N >=triple hits",15,-0.5,14.5);
-    TH1F* nquads = new TH1F("nquads","N >=quad hits",15,-0.5,14.5);
-    nhits->SetLineColor(kRed);
-    ndlays->SetLineColor(kRed);
-    nstations->SetLineColor(kRed);
-    nsingles->SetLineColor(kRed);
-    ndoubles->SetLineColor(kRed);
-    ntriples->SetLineColor(kRed);
-    ntripleges->SetLineColor(kRed);
-    nquads->SetLineColor(kRed);
-
-    tree->Project("nhit","simtrk.nwiremeas");
-    tree->Project("nhits","simtrk.nwiremeas",rec+goodfit);
-    tree->Project("ndlay","sim_ndlayer");
-    tree->Project("ndlays","sim_ndlayer",rec+goodfit);
-    tree->Project("nstation","sim_nstation");
-    tree->Project("nstations","sim_nstation",rec+goodfit);
-    tree->Project("nsingle","sim_nsingle");
-    tree->Project("nsingles","sim_nsingle",rec+goodfit);
-    tree->Project("ndouble","sim_ndouble");
-    tree->Project("ndoubles","sim_ndouble",rec+goodfit);
-    tree->Project("ntriple","sim_ntriple");
-    tree->Project("ntriples","sim_ntriple",rec+goodfit);
-    tree->Project("ntriplege","sim_ntriple_ge");
-    tree->Project("ntripleges","sim_ntriple_ge",rec+goodfit);
-    tree->Project("nquad","sim_nquad_ge");
-    tree->Project("nquads","sim_nquad_ge",rec+goodfit);
+    ntriple->SetLineColor(kRed);
     
-    TLegend* leg = new TLegend(0.5,0.6,0.8,0.8);
-    leg->AddEntry(nhit,"No Cuts","L");
-    leg->AddEntry(nhits,"Good Trackfit","L");
+    nlay->SetStats(0);
+    nslay->SetStats(0);
+    ndlay->SetStats(0);
     
+    nstation->SetStats(0);
+    nsingle->SetStats(0);
+    ndouble->SetStats(0);
+    ntriple->SetStats(0);
+  
+    nhit->SetLineWidth(2);
+    nlay->SetLineWidth(2);
+    nslay->SetLineWidth(2);
+    ndlay->SetLineWidth(2);
+    nstation->SetLineWidth(2);
+    nsingle->SetLineWidth(2);
+    ndouble->SetLineWidth(2);
+    ntriple->SetLineWidth(2);
+    n3v2->SetLineWidth(2);
+
+    tree->Project("nhit","simtrk.nwiremeas",rec+goodfit);
+    tree->Project("nlay","simtrk.nwiremeas-sim_ndlayer",rec+goodfit);
+    tree->Project("nslay","simtrk.nwiremeas-2*sim_ndlayer",rec+goodfit);
+    tree->Project("ndlay","sim_ndlayer",rec+goodfit);
+
+    tree->Project("nstation","sim_nstation",rec+goodfit);
+    tree->Project("nsingle","sim_nsingle",rec+goodfit);
+    tree->Project("ndouble","sim_ndouble",rec+goodfit);
+    tree->Project("ntriple","sim_ntriple_ge",rec+goodfit);
+
+    tree->Project("n3v2","sim_ntriple_ge:sim_ndouble",rec+goodfit);
+    
+    TLegend* legl = new TLegend(0.6,0.7,1.0,0.9);
+    legl->AddEntry(nlay,"All","L");
+    legl->AddEntry(nslay,"Single Layer","L");
+    legl->AddEntry(ndlay,"Double Layer","L");
+    
+    TLegend* legs = new TLegend(0.6,0.6,1.0,0.9);
+    legs->AddEntry(nstation,"All","L");
+    legs->AddEntry(nsingle,"Single Plane","L");
+    legs->AddEntry(ndouble,"Double Plane","L");
+    legs->AddEntry(ntriple,">=Triple Plane","L");
     
     can->Clear();
-    can->Divide(3,3);
+    can->Divide(2,2);
     can->cd(1);
     nhit->Draw();
-    nhits->Draw("same");
     can->cd(2);
-    ndlay->Draw();
-    ndlays->Draw("same");
+    nslay->Draw();
+    nlay->Draw("same");
+    ndlay->Draw("same");
+    legl->Draw();
     can->cd(3);
-    nstation->Draw();
-    nstations->Draw("same");
-    can->cd(4);
     nsingle->Draw();
-    nsingles->Draw("same");
-    can->cd(5);
-    ndouble->Draw();
-    ndoubles->Draw("same");
-    can->cd(6);
-    ntriple->Draw();
-    ntriples->Draw("same");
-    can->cd(7);
-    ntriplege->Draw();
-    ntripleges->Draw("same");
-    can->cd(8);
-    nquad->Draw();
-    nquads->Draw("same");
-    leg->Draw();
+    nstation->Draw("same");
+    ndouble->Draw("same");
+    ntriple->Draw("same");
+    legs->Draw();
+    can->cd(4);
+    n3v2->Draw("box");
     
   } else if (page == "pull"){
     gStyle->SetOptFit(1111);
@@ -394,7 +390,7 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     sgau->SetParameters(integral,0.0,0.8*momr->GetRMS(),0.8*momr->GetRMS(),0.01,1.5*momr->GetRMS(),1.5*momr->GetRMS());
     sgau->SetParLimits(5,1.0*momr->GetRMS(),1.0);
     sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
-    sgau->SetParLimits(4,0.0,0.1);
+    sgau->SetParLimits(4,0.0,0.3);
     momr->Fit("sgau","L");
 //    momr->Fit("sgau","M");
     
@@ -528,34 +524,39 @@ void mu2e_trkreco(TCanvas* can, TTree* tree, const char* cpage="rec" ) {
     TCut zhit("simhit.hview==1");
     TH1F* zpos = new TH1F("zpos","Z track position at calo",100,160,340);
     TH1F* rpos = new TH1F("rpos","R track position at calo",100,30,80);
-    TH1F* zdir = new TH1F("zdir","Z track direction cosine at calo",100,-1.1,1.1);
-    TH1F* rdir = new TH1F("rdir","R track direction cosine at calo",100,-1.1,1.1);
+//    TH1F* zdir = new TH1F("zdir","Z track direction cosine at calo",100,-1.1,1.1);
+//    TH1F* rdir = new TH1F("rdir","R track direction cosine at calo",100,-1.1,1.1);
     TH1F* zres = new TH1F("zres","Z track residual at calo",100,-3,3);
     TH1F* rres = new TH1F("rres","R track residual at calo",100,-1,1);
     
+    zpos->GetXaxis()->SetTitle("cm");
+    rpos->GetXaxis()->SetTitle("cm");
     
-    tree->Project("zpos","simhit.shz",goodfit+calor+xyhit);
+    zres->GetXaxis()->SetTitle("cm");
+    rres->GetXaxis()->SetTitle("cm");
+    
+    tree->Project("zpos","simhit.shz",goodfit+calor+nopreshower+xyhit);
     tree->Project("rpos","sqrt(simhit.shx^2+simhit.shy^2)",goodfit+calor+nopreshower+xyhit);
     // correct for sign convention (normal points in +phi)
-    tree->Project("zdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodfit+calor+nopreshower+zhit);
-    tree->Project("rdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodfit+calor+nopreshower+xyhit);
+//    tree->Project("zdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodfit+calor+nopreshower+zhit);
+//    tree->Project("rdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodfit+calor+nopreshower+xyhit);
     // correct for projection effect of residual (which is distance in space)
     tree->Project("zres","simhit.tresid",goodfit+calor+nopreshower+zhit);
     tree->Project("rres","simhit.tresid",goodfit+calor+nopreshower+xyhit);
     
     can->Clear();
-    can->Divide(3,2);
+    can->Divide(2,2);
     can->cd(1);
     zpos->Draw();
     can->cd(2);
     rpos->Draw();
     can->cd(3);
-    zdir->Draw();
-    can->cd(4);
-    rdir->Draw();
-    can->cd(5);
+//    zdir->Draw();
+//    can->cd(4);
+//    rdir->Draw();
+//    can->cd(5);
     zres->Fit("gaus");
-    can->cd(6);
+    can->cd(4);
     rres->Fit("gaus");
   }
 }
