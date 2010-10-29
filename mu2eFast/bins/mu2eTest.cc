@@ -692,6 +692,9 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     sinfo.shnhot = hots.size();
 // save one entry/hot, or just 1 entry if there are no hots
     if(hots.size() > 0){
+// find track trajectory
+      const TrkDifTraj& ttraj = hots[0]->getParentRep()->traj();
+      
       for(unsigned ihot=0;ihot<hots.size();ihot++){
         const TrkHitOnTrk* hot= hots[ihot];
         if(hot->trkTraj() != 0){
@@ -699,8 +702,8 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
           sinfo.hlay = hot->layerNumber();
           sinfo.active = hot->isActive();
           
-          HepPoint trkpoint = hot->trkTraj()->position(hot->fltLen());
-          Hep3Vector trkdir = hot->trkTraj()->direction(hot->fltLen());
+          HepPoint trkpoint = ttraj.position(hot->fltLen());
+          Hep3Vector trkdir = ttraj.direction(hot->fltLen());
           HepPoint hitpoint = hot->hitTraj()->position(hot->hitLen());
           Hep3Vector hitdir = hot->hitTraj()->direction(hot->hitLen());
           Hep3Vector pocadir = hitdir.cross(sdir);
@@ -719,6 +722,7 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     } else {
       sinfo.hview = -1;
       sinfo.hlay = -1;
+      sinfo.active = false;
       sinfo.resid = -1.;
       sinfo.tresid = -1.;
       sinfo.hresid = -1.;
