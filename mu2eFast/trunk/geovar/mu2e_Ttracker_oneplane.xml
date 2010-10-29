@@ -2,8 +2,7 @@
 <edml>
     <included>
         <define>
-            <constant name="strawthickness" value="4.7124-3"></constant>
-            <constant name="gasthickness" value="0.392689"></constant>
+            <constant name="strawthickness" value="0.3942"></constant>
             <constant name="wirethickness" value="0.001963"></constant>
             <constant name="usize" value="126.2261"></constant>
             <constant name="vsize" value="30.0"></constant>
@@ -58,8 +57,7 @@
                     <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="0.5" mat="CFiber" />
                     <loop variable="svar" count="4" startvalue="0" stepvalue="1">
                         <loop variable="cvar" count="3" startvalue="0" stepvalue="1">
-                            <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw-wall" />
-                            <rect name="gas" id="index" orientation="0" centerrho="centerrho" centerz="planegas" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="gasthickness" mat="straw-gas" meas="MWPC1" gap="gasgap" />
+                            <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw_25um" meas="MWPC1" gap="gasgap"/>
                             <rect name="wire" id="index" orientation="0" centerrho="centerrho" centerz="planewire" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="wirethickness" mat="straw-wire" gap="wiregap" />
                         </loop>
                     </loop>
