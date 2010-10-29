@@ -691,7 +691,7 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     std::vector<const TrkHitOnTrk*>hots = simHotMap.getHots(&sh);
     sinfo.shnhot = hots.size();
 // save one entry/hot, or just 1 entry if there are no hots
-    if(hots.size() > 0){
+    if(hots.size() > 0 && hots[0]->getParentRep() != 0){
 // find track trajectory
       const TrkDifTraj& ttraj = hots[0]->getParentRep()->traj();
       

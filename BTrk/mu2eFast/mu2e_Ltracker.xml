@@ -2,9 +2,9 @@
 <edml>
     <included>
         <define>
-            <constant name="strawthickness" value="0.39741"></constant>
+            <constant name="strawthickness" value="0.39742"></constant>
             <constant name="wirethickness" value="0.001963"></constant>
-            <constant name="caththickness" value="0.005"></constant>
+            <constant name="caththickness" value="0.00005"></constant>
             <constant name="kapthickness" value="0.0025"></constant>
             <constant name="usize" value="29.083941"></constant>
             <constant name="vsize" value="289.0"></constant>
@@ -96,7 +96,7 @@
                                 <rect name="cath1" id="cathindex" orientation="1" centerrho="cathcenterrho1" centerz="centerz" centerphi="cathcenphi1" axisphi="aphi" usize="usize" vsize="vsize" thick="caththickness" mat="cathode" meas="cathode"/>            
 
                                 <loop variable="avar" count="3" startvalue="0" stepvalue="1">
-                                    <rect name="straw" id="index" orientation="1" centerrho="strawcenterrho" centerz="centerz" centerphi="strawcenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw" gap="strawgap" meas="MWPC1" />
+                                    <rect name="straw" id="index" orientation="1" centerrho="strawcenterrho" centerz="centerz" centerphi="strawcenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw_25um" gap="strawgap" meas="MWPC1" />
                                     <rect name="wire" id="index" orientation="1" centerrho="wirecenterrho" centerz="centerz" centerphi="wirecenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="wirethickness" mat="straw-wire" gap="wiregap" />
                                 </loop>
 
