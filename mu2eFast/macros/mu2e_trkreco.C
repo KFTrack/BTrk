@@ -518,14 +518,11 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   } else if(page == "caloresid") {
     gStyle->SetOptFit(1111);
     TCut calor("simhit.shelemnum>10008&&simhit.shnhot>0");
-    TCut calorf("simhit.shelemnum>9999&&simhit.shelemnum<10010&&simhit.shnhot>0");
     TCut nopreshower("simhit.shmomin>0.103");
     TCut xyhit("simhit.hview==0");
     TCut zhit("simhit.hview==1");
     TH1F* zpos = new TH1F("zpos","Z track position at calo",100,160,340);
-    TH1F* rpos = new TH1F("rpos","R track position at calo",100,30,80);
-//    TH1F* zdir = new TH1F("zdir","Z track direction cosine at calo",100,-1.1,1.1);
-//    TH1F* rdir = new TH1F("rdir","R track direction cosine at calo",100,-1.1,1.1);
+    TH1F* rpos = new TH1F("rpos","R track position at calo",100,30,75);
     TH1F* zres = new TH1F("zres","Z track residual at calo",100,-3,3);
     TH1F* rres = new TH1F("rres","R track residual at calo",100,-1,1);
     
@@ -558,5 +555,36 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     zres->Fit("gaus");
     can->cd(4);
     rres->Fit("gaus");
+  } else if(page == "calores") {
+    gStyle->SetOptFit(1111);
+    TCut calor("simhit.shelemnum>10008&&simhit.shnhot>0");
+    TCut nopreshower("simhit.shmomin>0.103");
+    TCut xyhit("simhit.hview==0");
+    TCut zhit("simhit.hview==1");
+
+    TH2F* zrvz = new TH2F("zrvz","Z track calo res. vs Z",50,160,340,50,-3,3);
+    TH2F* rrvz = new TH2F("rrvz","R track calo res. vs Z",50,160,340,50,-1,1);
+    TH2F* zrvr = new TH2F("zrvr","Z track calo res. vs R",50,30,75,50,-3,3);
+    TH2F* rrvr = new TH2F("rrvr","R track calo res. vs R",50,30,75,50,-1,1);
+
+    zrvz->GetXaxis()->SetTitle("cm");
+    rrvz->GetXaxis()->SetTitle("cm");
+
+    tree->Project("zrvz","tresid:shz",goodfit+calor+nopreshower+zhit);
+    tree->Project("rrvz","tresid:shz",goodfit+calor+nopreshower+xyhit);
+    tree->Project("zrvr","tresid:sqrt(shx^2+shy^2)",goodfit+calor+nopreshower+zhit);
+    tree->Project("rrvr","tresid:sqrt(shx^2+shy^2)",goodfit+calor+nopreshower+xyhit);
+
+    can->Clear();
+    can->Divide(2,2);
+    can->cd(1);
+    zrvz->Draw("box");
+    can->cd(2);
+    rrvz->Draw("box");
+    can->cd(3);
+    zrvr->Draw("box");
+    can->cd(4);
+    rrvr->Draw("box");
   }
+
 }
