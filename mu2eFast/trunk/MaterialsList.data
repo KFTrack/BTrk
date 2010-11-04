@@ -25,3 +25,11 @@ cathode       5.2 0.   0.   +2    86.4e-2    Copper 0 13.6e-2 straw-wall 1   -10
 # effective straw wall + gas material, assuming uniform mass distribution
 straw_15um 1.927e-2 0.0 0.0 +2 91.3e-2 straw-wall 1 8.7e-2 straw-gas 1 -10 -20 -30 20.0 1.0 solid
 straw_25um 3.068e-2 0.0 0.0 +2 94.6e-2 straw-wall 1 5.4e-2 straw-gas 1 -10 -20 -30 20.0 1.0 solid
+#ITracker materials
+CF4  0.00279 0. 0. -2 1 Carbon 0 4 Fluorine 0 -10 -20 -30 20.0 1.0 gas
+#IT-gas1  0.0004284   0. 0. +2   0.29045 Helium 0.70955 CF4 1 -10 -20 -30  20.0    1.0    gas 
+IT-gas1  0.0004284   6.67636 13.9662 0 41.747 -20 -30  20.0    1.0    gas 
+IT-Swire 10.737810  0.  0.  +2  0.893774  Molybdenum  0  0.106226  Gold  0  -10  -20  -30  20.0  1.0  solid
+IT-Fwire  2.932245  0.  0.  +2  0.893379  Aluminum  0  0.106621  Silver  0  -10  -20  -30  20.0  1.0  solid
+IT-Aluminum  2.700000  0.  0.  +1  100.0e-2  Aluminum  0  24.01000  106.40000  -30  20.0  1.0  solid
+IT-Graphite     2.230000    0.   0.   +1    100.0e-2    Carbon     0    42.70000   86.30000    -30     20.0    1.0    solid
