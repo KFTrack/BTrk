@@ -41,7 +41,7 @@
                 dedx_par1="0.0013202"
                 dedx_par2="1"
                 dedx_par3="-0.5"
-                angle="0.15"  />
+                angle="0.3"  />
             <device name="Stereo-"
                 type="DriftChamber"
                 sensitiveTimeWindow="0.5e-6"
@@ -58,7 +58,7 @@
                 dedx_par1="0.0013202"
                 dedx_par2="1"
                 dedx_par3="-0.5"
-                angle="-0.15"  />
+                angle="-0.3"  />
                 
             </measures>
 
@@ -71,8 +71,8 @@
                                 <cyl name="SenseWire" id="index" zmin="wirezmin" zmax="wirezmax" radius="senserad" thick="0.001571" gap="0.998" mat="IT-Swire" />
                                 <cyl name="FieldWire" id="index" zmin="wirezmin" zmax="wirezmax" radius="fieldrad" thick="0.003141" gap="0.98" mat="IT-Fwire" />
                             </loop>
-                            <cyl name="Stereo+" id="index" zmin="wirezmin" zmax="wirezmax" radius="splusrad" thick="0.822" mat="HeCF4" meas="Stereo+"/>
-                            <cyl name="Stereo-" id="index" zmin="wirezmin" zmax="wirezmax" radius="sminusrad" thick="0.822" mat="HeCF4" meas="Stereo-"/>
+                            <cyl name="Stereo+" id="index" zmin="wirezmin" zmax="wirezmax" radius="splusrad" thick="0.822" mat="IT-gas1" meas="Stereo+"/>
+                            <cyl name="Stereo-" id="index" zmin="wirezmin" zmax="wirezmax" radius="sminusrad" thick="0.822" mat="IT-gas1" meas="Stereo-"/>
                         </loop>
                         <cyl name="CylWall" id="102" zmin="wirezmin" zmax="wirezmax" radius="outerrad" thick="0.04" mat="CFiber" />
                         <ring name="Endplate" id="12" z="wirezmax" lowradius="innerrad" hiradius="outerrad" thick="0.061" mat="CFiber" />
