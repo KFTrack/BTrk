@@ -14,10 +14,12 @@ CsI          4.530000    0.   0.   -2      1         Cesium     0    1         I
 LSO          7.400000    0.   0.   -3      2         Lutetium   0    1         Silicon     0    5    Oxygen    0    8.4400   155.000   -30   20.0   1.0   solid
 LYSO         7.400000    0.   0.   -4      9       Lutetium   0    1       Yttrium     0     5         Silicon     0    25    Oxygen    0    8.4400   155.000   -30   20.0   1.0   solid
 CO2  0.001842 0. 0. -2 1 Carbon 0 2 Oxygen 0 -10 -20 -30 20.0 1.0 gas
+# 90:10 by volume
+HeCF4  0.0005331 0. 0. 2 0.334 Helium 0 0.666 CF4 1 -10 -20 -30 20.0 1.0 gas
 Kapton       1.4300    0.   0.   -4    37    Carbon     0 6 Oxygen 0 2 Nitrogen 0 6 Hydrogen 0    -10     -20     -30     20.0    1.0    solid
 Mylar       1.4    0.   0.   -3    10    Carbon     0 8 Oxygen 0 4 Hydrogen 0    -10     -20     -30     20.0    1.0    solid
 # specific mu2e materials
-straw-wire    19.300000    0.   0.   +1    100.0e-2    Tungsten   0    6.75500   198.79000    -30     20.0    1.0    solid
+straw-wire    19.300000    0.   0.   +1    100.0e-2    Tungsten   0    -10 -20 -30     20.0    1.0    solid
 # 80:20 (by volume) Argon:CO2
 straw-gas        0.0016980   0. 0. +2   0.78304 Argon 0 0.21696 CO2 1 -10 -20 -30  20.0    1.0    gas 
 straw-wall       1.48    0.   0.   +3    97.0e-2   Mylar  1 2.0e-2 Copper 0 1.0e-2 Aluminum 0 -10     -20     -30     20.0    1.0    solid
@@ -26,6 +28,7 @@ cathode       5.2 0.   0.   +2    86.4e-2    Copper 0 13.6e-2 straw-wall 1   -10
 straw_15um 1.927e-2 0.0 0.0 +2 91.3e-2 straw-wall 1 8.7e-2 straw-gas 1 -10 -20 -30 20.0 1.0 solid
 straw_25um 3.068e-2 0.0 0.0 +2 94.6e-2 straw-wall 1 5.4e-2 straw-gas 1 -10 -20 -30 20.0 1.0 solid
 #ITracker materials
+#CF4  0.00372 0. 0. -2 1 Carbon 0 4 Fluorine 0 -10 -20 -30 20.0 1.0 gas
 CF4  0.00279 0. 0. -2 1 Carbon 0 4 Fluorine 0 -10 -20 -30 20.0 1.0 gas
 #IT-gas1  0.0004284   0. 0. +2   0.29045 Helium 0.70955 CF4 1 -10 -20 -30  20.0    1.0    gas 
 IT-gas1  0.0004284   6.67636 13.9662 0 41.747 -20 -30  20.0    1.0    gas 
