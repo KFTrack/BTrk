@@ -664,7 +664,7 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
       sinfo.shtypenum = delem->detectorType()->typeNumber();
       mat = &(delem->material(dinter));
       // NA
-      const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
+      const PacDetElem* pelem = sh.detElem();
       if( pelem != 0 && pelem->measurement()!= 0 ) {
         sinfo.shmeastype =  (int)pelem->measurement()->measurementType();
       } else {
@@ -744,7 +744,7 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
   ssum.ddirphi= ddir.phi();
   ssum.pathlen = shs.back().globalFlight() - shs.front().globalFlight();
   ssum.nsimhit = shs.size();
-  
+  ssum.ilasthit = -1;
   for(int ish=0;ish<shs.size();ish++){
     const PacSimHit& sh = shs[ish];
     if(sh.detEffect() == PacSimHit::normal)
@@ -777,6 +777,10 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
         ssum.radlenint += mat->radiationFraction(pathlen);
       }
     }
+// record the last hit
+    const PacDetElem* pelem = sh.detElem();
+    if( pelem != 0 && pelem->measurement()!= 0 && pelem->measurement()->measurementType() == PacMeasurement::TrkHit)
+      ssum.ilasthit = ish;
   }
 }
 
