@@ -784,7 +784,7 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
 // record the last hit
     const PacDetElem* pelem = sh.detElem();
     if( pelem != 0 && pelem->measurement()!= 0 && pelem->measurement()->measurementType() == PacMeasurement::TrkHit){
-      if(ssum.ifirsthit<0)ssum.ifirsthit==ish;
+      if(ssum.ifirsthit<0)ssum.ifirsthit=ish;
       ssum.ilasthit = ish;      
     }
   }
