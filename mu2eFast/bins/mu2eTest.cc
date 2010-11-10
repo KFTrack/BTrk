@@ -744,6 +744,7 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
   ssum.ddirphi= ddir.phi();
   ssum.pathlen = shs.back().globalFlight() - shs.front().globalFlight();
   ssum.nsimhit = shs.size();
+  ssum.ifirsthit = -1;
   ssum.ilasthit = -1;
   for(int ish=0;ish<shs.size();ish++){
     const PacSimHit& sh = shs[ish];
@@ -756,31 +757,36 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
     else
       ssum.nother++;
     const DetIntersection& dinter = sh.detIntersection();
+    double pathlen = dinter.pathLength();
     const DetElem* delem = dinter.delem;
     if(delem != 0){
-      if(delem->elementName() == "straw")
-        ssum.nstraw++;
-      else if(delem->elementName() == "gas")
-        ssum.ngas++;
-      else if(delem->elementName() == "wire")
-        ssum.nwire++;
-      const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
-      if( pelem != 0 && pelem->measurement()!= 0 ) {
-        if(delem->elementName() == "straw")
-          ssum.nwiremeas++;
-        else
-          ssum.npadmeas++;
-      }
+      double density(-1.);
       const DetMaterial* mat = &(delem->material(dinter));
       if(mat != 0){
-        double pathlen = dinter.pathLength();
+        density = mat->density();
         ssum.radlenint += mat->radiationFraction(pathlen);
+      }  
+      const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
+      assert(pelem != 0);
+      if(density < 0.01)
+        ssum.ngas++;
+      else if(density > 2.8)
+        ssum.nwire++;
+      else
+        ssum.nstraw++;
+      if( pelem->measurement()!= 0 ) {
+        if(delem->elementName().find("cath")!=string::npos)
+          ssum.npadmeas++;
+        else
+          ssum.nwiremeas++;
       }
     }
 // record the last hit
     const PacDetElem* pelem = sh.detElem();
-    if( pelem != 0 && pelem->measurement()!= 0 && pelem->measurement()->measurementType() == PacMeasurement::TrkHit)
-      ssum.ilasthit = ish;
+    if( pelem != 0 && pelem->measurement()!= 0 && pelem->measurement()->measurementType() == PacMeasurement::TrkHit){
+      if(ssum.ifirsthit<0)ssum.ifirsthit==ish;
+      ssum.ilasthit = ish;      
+    }
   }
 }
 
