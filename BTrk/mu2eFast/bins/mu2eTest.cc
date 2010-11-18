@@ -695,7 +695,7 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
 // find track trajectory
       const TrkDifTraj& ttraj = hots[0]->getParentRep()->traj();
       
-      for(unsigned ihot=0;ihot<hots.size();ihot++){
+      for(unsigned ihot=0;ihot<std::min((size_t)1,hots.size());ihot++){
         const TrkHitOnTrk* hot= hots[ihot];
         if(hot->trkTraj() != 0){
           sinfo.hview = hot->whatView();
