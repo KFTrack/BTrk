@@ -35,7 +35,7 @@
                 rms_par4="0"
                 rms_par5="0"
                 eff_par0="0.99"
-                eff_par1="1.00"
+                eff_par1="1.00"	
                 cell_size="0.8"
                 trunc_frac="0.8"
                 dedx_par1="0.0013202"
@@ -64,8 +64,11 @@
 
                 <detector name="Mu2e">
                     <volume name="Tracker">
-                        <cyl name="CylWall" id="230" zmin="wirezmin" zmax="wirezmax" radius="innerrad" thick="0.0266" mat="IT-Graphite" />
-                        <ring name="Endplate" id="232," z="wirezmin" lowradius="innerrad" hiradius="outerrad" thick="0.0445" mat="IT-Aluminum" />
+                        <cyl name="CylWall" id="230" zmin="wirezmin" zmax="wirezmax" radius="innerrad" thick="0.04" mat="CFiber" />
+                        <ring name="Endplate" id="232" z="wirezmin" lowradius="innerrad" hiradius="outerrad" thick="0.061" mat="CFiber" />
+                        
+<!--                        <cyl name="CylWall" id="230" zmin="wirezmin" zmax="wirezmax" radius="innerrad" thick="0.0266" mat="IT-Graphite" />
+                        <ring name="Endplate" id="232," z="wirezmin" lowradius="innerrad" hiradius="outerrad" thick="0.0445" mat="IT-Aluminum" /> -->
                         <loop variable="islay" count="18" startvalue="0" stepvalue="1">
                             <loop variable="ilay" count="2" startvalue="0" stepvalue="1">
                                 <cyl name="SenseWire" id="index" zmin="wirezmin" zmax="wirezmax" radius="senserad" thick="0.001571" gap="0.998" mat="IT-Swire" />
@@ -74,8 +77,11 @@
                             <cyl name="Stereo+" id="index" zmin="wirezmin" zmax="wirezmax" radius="splusrad" thick="0.822" mat="IT-gas1" meas="Stereo+"/>
                             <cyl name="Stereo-" id="index" zmin="wirezmin" zmax="wirezmax" radius="sminusrad" thick="0.822" mat="IT-gas1" meas="Stereo-"/>
                         </loop>
-                        <cyl name="CylWall" id="231" zmin="wirezmin" zmax="wirezmax" radius="outerrad" thick="0.0266" mat="IT-Graphite" />
-                        <ring name="Endplate" id="233" z="wirezmax" lowradius="innerrad" hiradius="outerrad" thick="0.0445" mat="IT-Aluminum" />
+                        <cyl name="CylWall" id="231" zmin="wirezmin" zmax="wirezmax" radius="outerrad" thick="0.04" mat="CFiber" />
+                        <ring name="Endplate" id="233" z="wirezmax" lowradius="innerrad" hiradius="outerrad" thick="0.061" mat="CFiber" />
+                        
+<!--                        <cyl name="CylWall" id="231" zmin="wirezmin" zmax="wirezmax" radius="outerrad" thick="0.0266" mat="IT-Graphite" />
+                        <ring name="Endplate" id="233" z="wirezmax" lowradius="innerrad" hiradius="outerrad" thick="0.0445" mat="IT-Aluminum" /> -->
                     </volume>
                 </detector>
                 <!-- now define the voxelization -->
@@ -91,7 +97,7 @@
                             1 1 1 1 1 1 1 1
                         </param>
                         <param name="zbounds"   type="vector"         >
-                            -51 -49.9 49.9 51 
+                            -51 -49.9 49.4 51 
                         </param>
                     </sect>
                 </config>        
