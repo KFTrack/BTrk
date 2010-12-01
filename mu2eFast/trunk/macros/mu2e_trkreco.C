@@ -364,7 +364,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     sgau->SetParameters(integral,0.0,momr->GetRMS(),momr->GetRMS(),0.01,2*momr->GetRMS(),2*momr->GetRMS());
     sgau->SetParLimits(5,1.0*momr->GetRMS(),1.0);
     sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
-    sgau->SetParLimits(4,0.0,0.1);
+    sgau->SetParLimits(4,0.0,0.8);
     momr->Fit("sgau","L");
 //    momr->Fit("sgau","M");
 
@@ -399,7 +399,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     sgau->SetParameters(integral,0.0,0.8*momr->GetRMS(),0.8*momr->GetRMS(),0.01,1.5*momr->GetRMS(),1.5*momr->GetRMS());
     sgau->SetParLimits(5,1.0*momr->GetRMS(),1.0);
     sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
-    sgau->SetParLimits(4,0.0,0.3);
+    sgau->SetParLimits(4,0.0,0.8);
     momr->Fit("sgau","L");
 //    momr->Fit("sgau","M");
     
