@@ -370,7 +370,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
 
   } else if (page == "mom"){
     gStyle->SetOptFit(1111);
-    TH1F* nhit = new TH1F("nhit","N hits",160,-0.5,159.5);
+    TH1F* nhit = new TH1F("nhit","N hits",200,-0.5,199.5);
     tree->Project("nhit","rec_nhit",rec+goodfit);
     
     TH1F* mome = new TH1F("mome","estimated fit mom error",100,0.01,0.6);
