@@ -602,7 +602,7 @@ countHits(const PacSimTrack* strk, HitCount& count) {
     const PacSimHit& sh = shs[ish];
     const DetElem* delem = sh.detIntersection().delem;
     const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
-    if( pelem != 0 && pelem->measurement()!= 0 ) {
+    if( pelem != 0 && pelem->measurementDevices().size()!= 0 ) {
 // don't count hits with identical layer numbers
       if(std::find(elements.begin(),elements.end(),delem->elementNumber()) == elements.end()){
 // extract the 'station number' from the element ID
@@ -665,8 +665,8 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
       mat = &(delem->material(dinter));
       // NA
       const PacDetElem* pelem = sh.detElem();
-      if( pelem != 0 && pelem->measurement()!= 0 ) {
-        sinfo.shmeastype =  (int)pelem->measurement()->measurementType();
+      if( pelem != 0 && pelem->measurementDevices().size()!= 0 ) {
+        sinfo.shmeastype =  (int)pelem->measurementDevices()[0]->measurementType();
       } else {
         sinfo.shmeastype = -1;
       }
@@ -774,7 +774,7 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
         ssum.nwire++;
       else
         ssum.nstraw++;
-      if( pelem->measurement()!= 0 ) {
+      if( pelem->measurementDevices().size()!= 0 ) {
         if(delem->elementName().find("cath")!=string::npos)
           ssum.npadmeas++;
         else
@@ -783,9 +783,15 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
     }
 // record the last hit
     const PacDetElem* pelem = sh.detElem();
-    if( pelem != 0 && pelem->measurement()!= 0 && pelem->measurement()->measurementType() == PacMeasurement::TrkHit){
-      if(ssum.ifirsthit<0)ssum.ifirsthit=ish;
-      ssum.ilasthit = ish;      
+    if( pelem != 0 && pelem->measurementDevices().size()!= 0){
+      for(std::vector<const PacMeasurement*>::const_iterator imdev = pelem->measurementDevices().begin();
+      imdev != pelem->measurementDevices().end();imdev++){
+        const PacMeasurement* meas = *imdev;
+        if( meas->measurementType() == PacMeasurement::TrkHit){
+          if(ssum.ifirsthit<0)ssum.ifirsthit=ish;
+          ssum.ilasthit = ish;
+        }
+      }
     }
   }
 }
@@ -805,12 +811,12 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj,
   for(int ish=0;ish<shs.size();ish++){
     const PacSimHit& sh1 = shs[ish];
     const PacDetElem* pelem1 = dynamic_cast<const PacDetElem *>(sh1.detIntersection().delem);
-    if( pelem1 != 0 && pelem1->measurement()!= 0 ) {
+    if( pelem1 != 0 && pelem1->measurementDevices().size()!= 0 ) {
 // find the next measurement
       for(int jsh=ish+1;jsh<shs.size();jsh++){
         const PacSimHit& sh2 = shs[jsh];
         const PacDetElem* pelem2 = dynamic_cast<const PacDetElem *>(sh2.detIntersection().delem);
-        if( pelem2 != 0 && pelem2->measurement()!= 0 ) {
+        if( pelem2 != 0 && pelem2->measurementDevices().size()!= 0 ) {
           td.shi = ish;
           td.shj = jsh;
           td.startglen = sh1.globalFlight();
