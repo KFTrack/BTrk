@@ -52,7 +52,7 @@
 #include "PacEnv/PacBuildEnv.hh"
 #include "PacSim/PacSimulate.hh"
 #include "PacTrk/PacReconstructTrk.hh"
-#include "PacTrk/PacTrkSimHotMap.hh"
+#include "PacTrk/PacHitOnTrk.hh"
 #include "PacSim/PacSimTrack.hh"
 #include "PacSim/PacSimHit.hh"
 #include "PacSim/PacShowerInfo.hh"
@@ -113,12 +113,12 @@ void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::ve
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 void countHits(const PacSimTrack* strk,  HitCount& icount);
 
-PacTrkSimHotMap simHotMap; // used to access nasty statics  
 
 // field integral test stuff
 BField* mecofield(0);
 BFieldIntegrator* fieldint(0);
 
+PacReconstructTrk* trackreco(0);
 
 int main(int argc, char* argv[]) {
   gconfig.verbose(true);
@@ -342,7 +342,7 @@ int main(int argc, char* argv[]) {
   sim.setRandomEngine(engine);
   detector->setRandomEngine(engine);
 
-  PacReconstructTrk trackreco(bfield,penv.getKalContext());
+  trackreco = new PacReconstructTrk(bfield,penv.getKalContext());
 
   for(int itrk = 0; itrk < numtracks; itrk++) {
     if(0 == (itrk+1)%printfreq) {
@@ -350,7 +350,7 @@ int main(int argc, char* argv[]) {
     }
     itrack = itrk;
 // must clear the nasty statics
-    simHotMap.Clear();
+    trackreco->clearMaps();
 // clear vectors
     sinfo.clear();
     tdiff.clear();
@@ -450,10 +450,11 @@ int main(int argc, char* argv[]) {
     sim_nquad_ge = hcount.nhit_ge[4];
     sim_nstation = hcount.nstation;
     sim_ndlayer = hcount.ndlayer;
-
-    // Reconstruct the track with KalmanTrack (using the list of hits) 
-    TrkRecoTrk* trk = trackreco.makeTrack(simtrk);
-    if(trk != 0){
+    // create the hots for this track
+    trackreco->makeHots(simtrk);
+    // Reconstruct the track with KalmanTrack (using the list of hits)
+    TrkRecoTrk* trk = trackreco->makeTrack(simtrk);
+    if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
         //Get Reconstructed Track data
       KalInterface kinter;
       trk->attach(kinter,penv.getKalContext()->defaultType());
@@ -688,13 +689,12 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     sinfo.shradlenint = radlenint;
     sinfo.shintlenint = intlenint;
 // look for HOT info
-    std::vector<const TrkHitOnTrk*>hots = simHotMap.getHots(&sh);
+    std::vector<const PacHitOnTrk*>hots = trackreco->simHotMap().getHots(&sh);
     sinfo.shnhot = hots.size();
 // save one entry/hot, or just 1 entry if there are no hots
     if(hots.size() > 0 && hots[0]->getParentRep() != 0){
 // find track trajectory
       const TrkDifTraj& ttraj = hots[0]->getParentRep()->traj();
-      
       for(unsigned ihot=0;ihot<std::min((size_t)1,hots.size());ihot++){
         const TrkHitOnTrk* hot= hots[ihot];
         if(hot->trkTraj() != 0){
