@@ -241,8 +241,10 @@ int main(int argc, char* argv[]) {
   
 		/* Reconstruct the track with KalmanTrack (using the list of hits) */
 	PacReconstructTrk trackreco(bfield,penv.getKalContext());
+	trackreco.clearMaps();
+	trackreco.makeHots(simtrk);
 	TrkRecoTrk* trk = trackreco.makeTrack(simtrk);
-	if(trk != 0){
+	if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
 
 		KalInterface kinter;
 		trk->attach(kinter,penv.getKalContext()->defaultType());
