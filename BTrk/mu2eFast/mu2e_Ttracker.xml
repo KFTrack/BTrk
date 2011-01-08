@@ -33,7 +33,7 @@
         <measures>
             <device name="MWPC1"
                 type="DriftChamber"
-                sensitiveTimeWindow="0.5e-6"
+                sensitiveTimeWindow="1e-5"
                 rms_par0="0.01"
                 rms_par1="0"
                 rms_par2="0"
