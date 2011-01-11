@@ -173,6 +173,7 @@ int main(int argc, char* argv[]) {
   Int_t sim_nzero, sim_nsingle, sim_ndouble, sim_ntriple, sim_nquad;
   Int_t sim_nzero_ge, sim_nsingle_ge, sim_ndouble_ge, sim_ntriple_ge, sim_nquad_ge;
   Int_t sim_nstation, sim_ndlayer;
+  Int_t sim_pdgid;
   Float_t sim_d0;
   Float_t sim_phi0;
   Float_t sim_omega;
@@ -191,6 +192,7 @@ int main(int argc, char* argv[]) {
   Float_t sim_inipos_y;
   Float_t sim_inipos_z;
   
+  Int_t rec_pdgid;
   Float_t rec_chisqr;
   Float_t rec_fitprob;
   Float_t rec_lowrange;
@@ -232,6 +234,7 @@ int main(int argc, char* argv[]) {
   //Create TBranch to store track info
   trackT->Branch("itrack",&itrack,"itrack/I");
   trackT->Branch("trknum",&trknum,"trknum/I");
+  trackT->Branch("sim_pdgid",&sim_pdgid,"sim_pdgid/I");
   trackT->Branch("sim_d0",&sim_d0,"sim_d0/F");
   trackT->Branch("sim_phi0",&sim_phi0,"sim_phi0/F");
   trackT->Branch("sim_omega",&sim_omega,"sim_omega/F");
@@ -267,6 +270,7 @@ int main(int argc, char* argv[]) {
   trackT->Branch("sim_nstation",&sim_nstation,"sim_nstation/I");
   trackT->Branch("sim_ndlayer",&sim_ndlayer,"sim_ndlayer/I");
 
+  trackT->Branch("rec_pdgid",&rec_pdgid,"rec_pdgid/I");
   trackT->Branch("rec_d0",&rec_d0,"rec_d0/F");
   trackT->Branch("rec_phi0",&rec_phi0,"rec_phi0/F");
   trackT->Branch("rec_omega",&rec_omega,"rec_omega/F");
@@ -367,7 +371,7 @@ int main(int argc, char* argv[]) {
       gtrk.setP4(HepLorentzVector( part->Px(),
 					  part->Py(),
 					  part->Pz(),
-            part->Energy()));      
+            part->Energy()));
       PdtEntry* pdt = Pdt::lookup((PdtPdg::PdgType)part->GetPdgCode());
       gtrk.setPDT( pdt );
       gtrk.setVertex( &gvtx );
@@ -400,6 +404,8 @@ int main(int argc, char* argv[]) {
       TrkLineTraj zaxis(HepPoint(0, 0, -10), Hep3Vector(0, 0, 1), 20);
       TrkPoca genpoca(gentraj, 0, zaxis, 10, 1e-12);
       TrkPoca simpoca(*simtraj, 0, zaxis, 10, 1e-12);
+      
+      sim_pdgid = pdt->pdgId();
 
       //Store Momentum and Position
       Hep3Vector momvec = gtrk.p4();
@@ -464,7 +470,12 @@ int main(int argc, char* argv[]) {
 //      double localflight;
 //      const TrkSimpTraj* inithelix = recotraj.localTrajectory(fltlen, localflight);
         TrkPoca recopoca(recotraj, 0, zaxis, 10, 1e-12);
-
+        
+        const PdtEntry* pdt = Pdt::lookup(kalrep->particleType(),kalrep->charge());
+        if(pdt != 0)
+          rec_pdgid = pdt->pdgId();
+        else
+          rec_pdgid = -1000;
         rec_lowrange	= recotraj.lowRange();
         rec_hirange		= recotraj.hiRange();
         rec_poca		= recopoca.flt1();
