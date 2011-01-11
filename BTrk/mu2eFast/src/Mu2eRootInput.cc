@@ -97,9 +97,11 @@ Mu2eRootInput::nextEvent(Mu2eEvent& event) {
 
 void
 Mu2eRootInput::rewind(){
+  _nread = 0;
+  _ievt = _ifirst;
   if(_tree != 0){
     _numevt = _tree->GetEntriesFast();
-    _ievt = _ifirst;
-    _nread = 0;
+  } else {
+    _numevt = 0;
   }
 }
