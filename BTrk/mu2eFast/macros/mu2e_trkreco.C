@@ -50,7 +50,7 @@ Double_t doublegaus(Double_t *x, Double_t *par) {
 void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TString page(cpage);
   TCut rec("rec_ndof>0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0 && rec_tandip>0.5773&&rec_tandip<1.0");
   
   TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
   sgau->SetParName(0,"Norm");
@@ -384,8 +384,13 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tree->Project("momp","1000*(rec_mom_mag-sim_mom_mag)",rec+goodfit);
     momr->GetXaxis()->SetTitle("MeV");
     
+    TH1F* mom = new TH1F("mom","reconstructed momentum magnitude",200,100,110);
+    tree->Project("mom","1000*(rec_mom_mag)",rec+goodfit);
+    mom->GetXaxis()->SetTitle("MeV");
+    
+    
     can->Clear();
-    can->Divide(2,2);
+    can->Divide(3,2);
     can->cd(1);
     nhit->Draw();
     can->cd(2);
@@ -401,6 +406,8 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
     sgau->SetParLimits(4,0.0,0.8);
     momr->Fit("sgau","L");
+    can->cd(5);
+    mom->Draw();
 //    momr->Fit("sgau","M");
     
   } else if(page == "mat") {
