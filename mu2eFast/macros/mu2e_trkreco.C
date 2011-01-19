@@ -50,7 +50,10 @@ Double_t doublegaus(Double_t *x, Double_t *par) {
 void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TString page(cpage);
   TCut rec("rec_ndof>0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005&&abs(rec_d0)<10.0 && rec_tandip>0.5773&&rec_tandip<1.0");
+  TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
+  TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005");
+  TCut goodrec = rec+goodradius+gooddip+goodfit;
   
   TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
   sgau->SetParName(0,"Norm");
@@ -124,7 +127,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* td_g = new TH1F("td_g","TanDip",100,0,1.4);
     tree->Project("td_s","sim_tandip");
     tree->Project("td_r","sim_tandip",rec);
-    tree->Project("td_g","sim_tandip",rec+goodfit);
+    tree->Project("td_g","sim_tandip",goodrec);
     td_r->Divide(td_s);
     td_g->Divide(td_s);
     td_r->SetLineColor(kRed);
@@ -135,7 +138,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* z0_g = new TH1F("z0_g","z0",100,-350,-230);
     tree->Project("z0_s","sim_z0");
     tree->Project("z0_r","sim_z0",rec);
-    tree->Project("z0_g","sim_z0",rec+goodfit);
+    tree->Project("z0_g","sim_z0",goodrec);
     z0_r->Divide(z0_s);
     z0_g->Divide(z0_s);
     z0_r->SetLineColor(kRed);
@@ -145,7 +148,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH2F* pvtd_s = new TH2F("pvtd_s","Phi vs TanDip",50,0,1.4,50,-3.15,3.15);
     TH2F* pvtd_g = new TH2F("pvtd_g","Phi vs TanDip",50,0,1.4,50,-3.15,3.15);
     tree->Project("pvtd_s","sim_phi0:sim_tandip");
-    tree->Project("pvtd_g","sim_phi0:sim_tandip",rec+goodfit);
+    tree->Project("pvtd_g","sim_phi0:sim_tandip",goodrec);
     pvtd_g->Divide(pvtd_s);
     pvtd_g->SetLineColor(kBlue);
     
@@ -208,17 +211,17 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     ntriple->SetLineWidth(2);
     n3v2->SetLineWidth(2);
 
-    tree->Project("nhit","simtrk.nwiremeas",rec+goodfit);
-    tree->Project("nlay","simtrk.nwiremeas-sim_ndlayer",rec+goodfit);
-    tree->Project("nslay","simtrk.nwiremeas-2*sim_ndlayer",rec+goodfit);
-    tree->Project("ndlay","sim_ndlayer",rec+goodfit);
+    tree->Project("nhit","simtrk.nwiremeas",goodrec);
+    tree->Project("nlay","simtrk.nwiremeas-sim_ndlayer",goodrec);
+    tree->Project("nslay","simtrk.nwiremeas-2*sim_ndlayer",goodrec);
+    tree->Project("ndlay","sim_ndlayer",goodrec);
 
-    tree->Project("nstation","sim_nstation",rec+goodfit);
-    tree->Project("nsingle","sim_nsingle",rec+goodfit);
-    tree->Project("ndouble","sim_ndouble",rec+goodfit);
-    tree->Project("ntriple","sim_ntriple_ge",rec+goodfit);
+    tree->Project("nstation","sim_nstation",goodrec);
+    tree->Project("nsingle","sim_nsingle",goodrec);
+    tree->Project("ndouble","sim_ndouble",goodrec);
+    tree->Project("ntriple","sim_ntriple_ge",goodrec);
 
-    tree->Project("n3v2","sim_ntriple_ge:sim_ndouble",rec+goodfit);
+    tree->Project("n3v2","sim_ntriple_ge:sim_ndouble",goodrec);
     
     TLegend* legl = new TLegend(0.6,0.7,1.0,0.9);
     legl->AddEntry(nlay,"All","L");
@@ -285,12 +288,12 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tree->Project("momp","(rec_mom_mag-sim_mom_mag)/rec_mom_err",rec);
 
     
-    tree->Project("d0pg","pull_d0",rec+goodfit);
-    tree->Project("p0pg","pull_phi0",rec+goodfit);
-    tree->Project("ompg","pull_omega",rec+goodfit);
-    tree->Project("z0pg","pull_z0",rec+goodfit);
-    tree->Project("tdpg","pull_tandip",rec+goodfit);
-    tree->Project("mompg","(rec_mom_mag-sim_mom_mag)/rec_mom_err",rec+goodfit);
+    tree->Project("d0pg","pull_d0",goodrec);
+    tree->Project("p0pg","pull_phi0",goodrec);
+    tree->Project("ompg","pull_omega",goodrec);
+    tree->Project("z0pg","pull_z0",goodrec);
+    tree->Project("tdpg","pull_tandip",goodrec);
+    tree->Project("mompg","(rec_mom_mag-sim_mom_mag)/rec_mom_err",goodrec);
     
     can->Clear();
     can->Divide(3,2);
@@ -333,12 +336,12 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* tdr = new TH1F("tdp","tandip resolution",100,-0.1,0.1);
     TH1F* momr = new TH1F("momp","momentum resolution",200,-0.0025,0.0025);
     
-    tree->Project("d0p","rec_d0-sim_d0",rec+goodfit);
-    tree->Project("p0p","rec_phi0-sim_phi0",rec+goodfit);
-    tree->Project("omp","rec_omega-sim_omega",rec+goodfit);
-    tree->Project("z0p","rec_z0-sim_z0",rec+goodfit);
-    tree->Project("tdp","rec_tandip-sim_tandip",rec+goodfit);
-    tree->Project("momp","rec_mom_mag-sim_mom_mag",rec+goodfit);
+    tree->Project("d0p","rec_d0-sim_d0",goodrec);
+    tree->Project("p0p","rec_phi0-sim_phi0",goodrec);
+    tree->Project("omp","rec_omega-sim_omega",goodrec);
+    tree->Project("z0p","rec_z0-sim_z0",goodrec);
+    tree->Project("tdp","rec_tandip-sim_tandip",goodrec);
+    tree->Project("momp","rec_mom_mag-sim_mom_mag",goodrec);
 
     
     can->Clear();
@@ -371,21 +374,21 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   } else if (page == "mom"){
     gStyle->SetOptFit(1111);
     TH1F* nhit = new TH1F("nhit","N hits",200,-0.5,199.5);
-    tree->Project("nhit","rec_nhit",rec+goodfit);
+    tree->Project("nhit","rec_nhit",goodrec);
     
     TH1F* mome = new TH1F("mome","estimated fit mom error",100,0.01,0.6);
-    tree->Project("mome","1000*rec_mom_err",rec+goodfit);
+    tree->Project("mome","1000*rec_mom_err",goodrec);
     mome->GetXaxis()->SetTitle("MeV");
     
     TH1F* mompg = new TH1F("mompg","momentum pull",100,-10,10);
-    tree->Project("mompg","(rec_mom_mag-sim_mom_mag)/rec_mom_err",rec+goodfit);
+    tree->Project("mompg","(rec_mom_mag-sim_mom_mag)/rec_mom_err",goodrec);
     
     TH1F* momr = new TH1F("momp","momentum resolution",200,-2,2);
-    tree->Project("momp","1000*(rec_mom_mag-sim_mom_mag)",rec+goodfit);
+    tree->Project("momp","1000*(rec_mom_mag-sim_mom_mag)",goodrec);
     momr->GetXaxis()->SetTitle("MeV");
     
     TH1F* mom = new TH1F("mom","reconstructed momentum magnitude",200,100,110);
-    tree->Project("mom","1000*(rec_mom_mag)",rec+goodfit);
+    tree->Project("mom","1000*(rec_mom_mag)",goodrec);
     mom->GetXaxis()->SetTitle("MeV");
     
     
@@ -439,12 +442,12 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* mdiff = new TH1F("mdiff","average traj diff, middle of tracker",100,0.0,0.5);
     TProfile* dprof = new TProfile("dprof","average reco, true transverse separation vs Z (WRT tracker center)",40,-170,170,0,0.3);
     TH2F* d2d = new TH2F("d2d","reco, true transverse separation vs Z (WRT tracker center)",50,-170,170,50,0,1.0);
-    tree->Project("glen","trajdiff.endglen:trajdiff.startglen",rec+goodfit);
-    tree->Project("dg","trajdiff.endglen-trajdiff.startglen",rec+goodfit);
-    tree->Project("adiff","trajdiff.ddiff",adjacent+rec+goodfit);
-    tree->Project("mdiff","trajdiff.ddiff",middle+rec+goodfit);
-    tree->Project("dprof","trajdiff.ddiff:0.5*(trajdiff.startz+trajdiff.endz)",rec+goodfit);
-    tree->Project("d2d","trajdiff.ddiff:0.5*(trajdiff.startz+trajdiff.endz)",rec+goodfit);
+    tree->Project("glen","trajdiff.endglen:trajdiff.startglen",goodrec);
+    tree->Project("dg","trajdiff.endglen-trajdiff.startglen",goodrec);
+    tree->Project("adiff","trajdiff.ddiff",adjacent+goodrec);
+    tree->Project("mdiff","trajdiff.ddiff",middle+goodrec);
+    tree->Project("dprof","trajdiff.ddiff:0.5*(trajdiff.startz+trajdiff.endz)",goodrec);
+    tree->Project("d2d","trajdiff.ddiff:0.5*(trajdiff.startz+trajdiff.endz)",goodrec);
 
 
     dprof->GetXaxis()->SetTitle("cm");
@@ -488,12 +491,12 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     dadiff->GetXaxis()->SetTitle("GeV");
     dmdiff->GetXaxis()->SetTitle("GeV");
     
-    tree->Project("tadiff","trajdiff.truedpp",adjacent+rec+goodfit+early);
-    tree->Project("tmdiff","trajdiff.truedpp",middle+rec+goodfit+early);
-    tree->Project("radiff","trajdiff.recodpp",adjacent+rec+goodfit+early);
-    tree->Project("rmdiff","trajdiff.recodpp",middle+rec+goodfit+early);
-    tree->Project("dadiff","trajdiff.recodpp-trajdiff.truedpp",adjacent+rec+goodfit+early);
-    tree->Project("dmdiff","trajdiff.recodpp-trajdiff.truedpp",middle+rec+goodfit+early);
+    tree->Project("tadiff","trajdiff.truedpp",adjacent+goodrec+early);
+    tree->Project("tmdiff","trajdiff.truedpp",middle+goodrec+early);
+    tree->Project("radiff","trajdiff.recodpp",adjacent+goodrec+early);
+    tree->Project("rmdiff","trajdiff.recodpp",middle+goodrec+early);
+    tree->Project("dadiff","trajdiff.recodpp-trajdiff.truedpp",adjacent+goodrec+early);
+    tree->Project("dmdiff","trajdiff.recodpp-trajdiff.truedpp",middle+goodrec+early);
     can->Clear();
     can->Divide(2,3);
     can->cd(1);
@@ -515,10 +518,10 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* rbint = new TH1F("rbint","Field correction integral, entire track, reco trajectory",100,0,0.005);
     TH2F* cint = new TH2F("cint","Field correction integeral, entire track, reco vs true",50,0,0.005,50,0,0.005);
     TH1F* dint = new TH1F("dint","Field correction integral, entire track, reco - true trajectory",200,-1e-4,1e-4);
-    tree->Project("tbint","simtrk.binttru",rec+goodfit);
-    tree->Project("rbint","simtrk.bintrec",rec+goodfit);
-    tree->Project("cint","simtrk.bintrec:simtrk.binttru",rec+goodfit);
-    tree->Project("dint","simtrk.bintrec-simtrk.binttru",rec+goodfit);
+    tree->Project("tbint","simtrk.binttru",goodrec);
+    tree->Project("rbint","simtrk.bintrec",goodrec);
+    tree->Project("cint","simtrk.bintrec:simtrk.binttru",goodrec);
+    tree->Project("dint","simtrk.bintrec-simtrk.binttru",goodrec);
     can->Clear();
     can->Divide(2,2);
     can->cd(1);
@@ -548,14 +551,14 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     zres->GetXaxis()->SetTitle("cm");
     rres->GetXaxis()->SetTitle("cm");
     
-    tree->Project("zpos","simhit.shz",goodfit+calor+nopreshower+xyhit);
-    tree->Project("rpos","sqrt(simhit.shx^2+simhit.shy^2)",goodfit+calor+nopreshower+xyhit);
+    tree->Project("zpos","simhit.shz",goodrec+calor+nopreshower+xyhit);
+    tree->Project("rpos","sqrt(simhit.shx^2+simhit.shy^2)",goodrec+calor+nopreshower+xyhit);
     // correct for sign convention (normal points in +phi)
-//    tree->Project("zdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodfit+calor+nopreshower+zhit);
-//    tree->Project("rdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodfit+calor+nopreshower+xyhit);
+//    tree->Project("zdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodrec+calor+nopreshower+zhit);
+//    tree->Project("rdir","simhit.mdot*simhit.sdot/sqrt(1.0-simhit.mdot^2)",goodrec+calor+nopreshower+xyhit);
     // correct for projection effect of residual (which is distance in space)
-    tree->Project("zres","simhit.tresid",goodfit+calor+nopreshower+zhit);
-    tree->Project("rres","simhit.tresid",goodfit+calor+nopreshower+xyhit);
+    tree->Project("zres","simhit.tresid",goodrec+calor+nopreshower+zhit);
+    tree->Project("rres","simhit.tresid",goodrec+calor+nopreshower+xyhit);
     
     can->Clear();
     can->Divide(2,2);
@@ -586,10 +589,10 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     zrvz->GetXaxis()->SetTitle("cm");
     rrvz->GetXaxis()->SetTitle("cm");
 
-    tree->Project("zrvz","tresid:shz",goodfit+calor+nopreshower+zhit);
-    tree->Project("rrvz","tresid:shz",goodfit+calor+nopreshower+xyhit);
-    tree->Project("zrvr","tresid:sqrt(shx^2+shy^2)",goodfit+calor+nopreshower+zhit);
-    tree->Project("rrvr","tresid:sqrt(shx^2+shy^2)",goodfit+calor+nopreshower+xyhit);
+    tree->Project("zrvz","tresid:shz",goodrec+calor+nopreshower+zhit);
+    tree->Project("rrvz","tresid:shz",goodrec+calor+nopreshower+xyhit);
+    tree->Project("zrvr","tresid:sqrt(shx^2+shy^2)",goodrec+calor+nopreshower+zhit);
+    tree->Project("rrvr","tresid:sqrt(shx^2+shy^2)",goodrec+calor+nopreshower+xyhit);
 
     can->Clear();
     can->Divide(2,2);

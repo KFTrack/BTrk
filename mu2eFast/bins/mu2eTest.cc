@@ -454,7 +454,7 @@ int main(int argc, char* argv[]) {
       if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
         //Get Reconstructed Track data
         KalInterface kinter;
-        trk->attach(kinter,penv.getKalContext()->defaultType());
+        trk->attach(kinter,trk->defaultType());
         const KalRep* kalrep = kinter.kalmanRep();
         const TrkDifPieceTraj& recotraj = kalrep->pieceTraj();
         // find POCA to true production Point
