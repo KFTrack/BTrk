@@ -6,13 +6,13 @@
                 <param name="bend_sites"     type="bool"  > false</param>
                 <param name="material_sites" type="bool"  > true</param>
                 <param name="fastfit"       type="bool"  > false</param>
-                <param name="minsimhit"       type="int"  > 4</param>
+                <param name="minsimhit"       type="int"  > 5</param>
                 <param name="minsvthit"       type="int"  > 0</param>
                 <param name="mindchhit"       type="int"  > 0</param>
-                <param name="minpt"       type="float"    > 0.02</param>    
-                <param name="hitchicut"     type="float" >   500. </param> 
-                <param name="trkchicut"     type="float" >   5. </param> 
-                <param name="weedhits"      type="bool"  > true </param> 
+                <param name="minpt"       type="float"    > 0.02</param>
+                <param name="hitchicut"     type="float" >   500. </param>
+                <param name="trkchicut"     type="float" >   5. </param>
+                <param name="weedhits"      type="bool"  > true </param>
                 <param name="maxweed"       type="int"   >   10  </param>
                 <param name="seedsmear"       type="float"   >   1.0  </param>
                 <param name="momupdatefactor"       type="float"   >   1.0  </param>
