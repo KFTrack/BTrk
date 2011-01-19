@@ -22,6 +22,7 @@
                 <param name="minzdof" type="int" > 0</param>
                 <param name="mindof" type="int" > 5</param>
                 <param name="maxgap" type="float" > 0.98 </param>
+                <param name="default_pdgid" type="int" > 11 </param>
             </sect>
 
             <sect name="DetectorVolume">
