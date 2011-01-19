@@ -16,11 +16,11 @@
             <variable name="svar" type="int"></variable>
             <variable name="bvar" type="int"></variable>
             
-            <formula name="planestraw" par0="zvar" par1="svar" formula="-144.5+[0]*17.0-2.8+[1]*1.6"></formula>
-            <formula name="planewire" par0="zvar" par1="svar" formula="-144.5+[0]*17.0-2.55+[1]*1.6"></formula>
+            <formula name="planestraw" par0="zvar" par1="svar" formula="-144.5+[0]*17.0-2.7+[1]*1.666"></formula>
+            <formula name="planewire" par0="zvar" par1="svar" formula="-144.5+[0]*17.0-2.3+[1]*1.666"></formula>
 
-            <formula name="zring1" par0="zvar" formula="-144.5+[0]*17.0-1"></formula>
-            <formula name="zring2" par0="zvar" formula="-144.5+[0]*17.0+1"></formula>
+            <formula name="zring1" par0="zvar" formula="-144.5+[0]*17.0-1.5"></formula>
+            <formula name="zring2" par0="zvar" formula="-144.5+[0]*17.0+1.5"></formula>
 
             <formula name="cenphi" par0="zvar" par1="cvar" par2="svar" formula="(50*[2]^3-225*[2]^2+235*[2]+30)*0.017453 +[1]*2.094395"></formula>
 
@@ -53,8 +53,8 @@
         <detector name="Mu2e">
             <volume name="Tracker">
                 <loop variable="zvar" count="18" startvalue="1" stepvalue="1">
-                    <ring name="C1" id="zvar" z="zring1" lowradius="70" hiradius="80" thick="0.5" mat="CFiber" />
-                    <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="0.5" mat="CFiber" />
+                    <ring name="C1" id="zvar" z="zring1" lowradius="70" hiradius="80" thick="0.1" mat="CFiber" />
+                    <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="0.1" mat="CFiber" />
                     <loop variable="svar" count="4" startvalue="0" stepvalue="1">
                         <loop variable="cvar" count="3" startvalue="0" stepvalue="1">
                             <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw_15um" gap="strawgap" overlap="strawoverlap" meas="MWPC1"/>
