@@ -383,8 +383,8 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* mompg = new TH1F("mompg","momentum pull",100,-10,10);
     tree->Project("mompg","(rec_mom_mag-sim_mom_mag)/rec_mom_err",goodrec);
     
-    TH1F* momr = new TH1F("momp","momentum resolution",200,-2,2);
-    tree->Project("momp","1000*(rec_mom_mag-sim_mom_mag)",goodrec);
+    TH1F* momr = new TH1F("momr","momentum resolution",200,-2,2);
+    tree->Project("momr","1000*(rec_mom_mag-sim_mom_mag)",goodrec);
     momr->GetXaxis()->SetTitle("MeV");
     
     TH1F* mom = new TH1F("mom","reconstructed momentum magnitude",200,100,110);
