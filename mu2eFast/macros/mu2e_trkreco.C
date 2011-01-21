@@ -52,7 +52,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=10&&rec_mom_err<0.0005");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.0002");
   TCut goodrec = rec+goodradius+gooddip+goodfit;
   
   TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
@@ -407,7 +407,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     sgau->SetParameters(integral,0.0,0.8*momr->GetRMS(),0.8*momr->GetRMS(),0.01,1.5*momr->GetRMS(),1.5*momr->GetRMS());
     sgau->SetParLimits(5,1.0*momr->GetRMS(),1.0);
     sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
-    sgau->SetParLimits(4,0.0,0.8);
+    sgau->SetParLimits(4,0.0,0.49);
     momr->Fit("sgau","L");
     can->cd(5);
     mom->Draw();
