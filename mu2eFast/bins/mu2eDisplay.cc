@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
 	if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
 
 		KalInterface kinter;
-		trk->attach(kinter,penv.getKalContext()->defaultType());
+		trk->attach(kinter,trk->defaultType());
 		const KalRep* kalrep = kinter.kalmanRep();
 		const TrkDifPieceTraj& recotraj = kalrep->pieceTraj();
 //		const TrkHotList* hotlist = kalrep->hotList();
