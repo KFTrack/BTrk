@@ -18,6 +18,10 @@
 static const double ft(4.0/3.0);
 static const double ot(1.0/3.0);
 
+double invngam(double x);
+unsigned nbins(1000);
+double ybin= 1.0/nbins;
+
 // spectrum of photons (dN/dy) in terms of the energy fraction of the photon
 Double_t dNdy(Double_t* x, Double_t* par){
   return par[0]*( ft*(1.0/x[0] - 1.0) + x[0]);
@@ -28,16 +32,14 @@ Double_t NGam(Double_t* x, Double_t* par) {
   return par[0]*( ft*(x[0]-log(x[0])-1.0) + 0.5*(1-x[0]*x[0]) );
 }
 
-
 // total photon energy fraction below a cut on the fractional energy.  This is the
 // integral of the above times the photon energy
 Double_t ELow(Double_t* x, Double_t* par) {
   return par[0]*( ft*(x[0]-0.5*x[0]*x[0]) + ot*x[0]*x[0]*x[0]);
 }
 
-
-void testBrems(double rfrac,double ycut=0.05,unsigned ntrials=100000) {
-  unsigned nbins(200);
+// plot, integrate, invert, and spline fit the brem photon number and energy spectra
+void invertBrems(double rfrac,double ymin=0.001, unsigned ntrials=100000) {
   TH1F* elowh = new TH1F("elowh","Low-E Brems energy fraction vs cut",nbins,0,1);
   TF1* elow = new TF1("Elow",ELow,1e-3,1,1);
   elow->SetParameter(0,rfrac);
@@ -54,22 +56,21 @@ void testBrems(double rfrac,double ycut=0.05,unsigned ntrials=100000) {
   ngamh->SetMaximum(10*rfrac);
   
   // sample the normalized integrated N gamma distribution in order to invert it
-  double ybin= 1.0/nbins;
   std::vector<Double_t> xv;
   std::vector<Double_t> yv;
   xv.reserve(nbins);
   yv.reserve(nbins);
-  double norm = NGam(&ycut,&rfrac);
+  double norm = NGam(&ymin,&rfrac);
   double yval(0.0);
   for(unsigned ibin=0;ibin<nbins;ibin++){
-    if(yval>=ycut){
+    if(yval>=ymin){
       xv.push_back(yval);
       yv.push_back((norm-NGam(&yval,&rfrac))/norm);
     }
     yval += ybin;
   }
-//  TSpline3* sp3 = new TSpline3("spline",&xv.front(),&yv.front(),xv.size(),"",dNdy(&ycut,&rfrac)/norm,rfrac/norm);
-//  TSpline3* sp3_inv = new TSpline3("invspline",&yv.front(),&xv.front(),xv.size(),"",norm/dNdy(&ycut,&rfrac),norm/rfrac);
+//  TSpline3* sp3 = new TSpline3("spline",&xv.front(),&yv.front(),xv.size(),"",dNdy(&ymin,&rfrac)/norm,rfrac/norm);
+//  TSpline3* sp3_inv = new TSpline3("invspline",&yv.front(),&xv.front(),xv.size(),"",norm/dNdy(&ymin,&rfrac),norm/rfrac);
 
   TGraph* g = new TGraph(xv.size(),&xv.front(),&yv.front());
   TGraph* ginv = new TGraph(xv.size(),&yv.front(),&xv.front());
@@ -77,10 +78,10 @@ void testBrems(double rfrac,double ycut=0.05,unsigned ntrials=100000) {
   TSpline3* sp3 = new TSpline3("spline",g);
   g->SetLineColor(kRed);
   ginv->SetLineColor(kRed);
-//  sp3_inv->SetXmin(ycut);
+//  sp3_inv->SetXmin(ymin);
 //  sp3_inv->SetXmax(yv[0]);
   TH1F* hsp = new TH1F("hsp","spline fit to NGam",nbins,0,1);
-  TH1F* hspinv = new TH1F("hspinv","spline fit to Inverse NGam",nbins,0,1);
+  TH1F* hspinv = new TH1F("hspinv","spline fit to Inverse",nbins,0,1);
   hsp->SetMaximum(1.0);
   hsp->SetMinimum(0.0);
   hspinv->SetMaximum(1.0);
@@ -93,7 +94,7 @@ void testBrems(double rfrac,double ycut=0.05,unsigned ntrials=100000) {
   ixv.reserve(nbins);
   iyv.reserve(nbins);
   double dx = 1.0/(nbins);
-  double xval = (0.0);
+  double xval = dx/2.0;
   for(unsigned ibin=0;ibin<nbins;ibin++){
     ixv.push_back(xval);
     iyv.push_back(sp3_inv->Eval(xval));
@@ -147,64 +148,90 @@ void testBrems(double rfrac,double ycut=0.05,unsigned ntrials=100000) {
   hspect->Fit(newfun);
   
   sp3_inv2->SaveAs("invngam.cc");
-  
-  return;
-  
+}
+
+
+void testBrems(double rfrac,double ymin=0.001,double emin=0.05,unsigned ntrials=100000) {
+  TRandom3* tr = new TRandom3();
 // simulate a bunch of brems
-  TH1F* efrac = new TH1F("efrac","Fractional Brems energy loss",nbins,0.0,1.0);
-  TH1F* efracc = new TH1F("efracc","Fractional Brems energy loss, with cut",nbins,0.0,1.0);
-  TH1F* efracc2 = new TH1F("efracc2","Fractional Brems energy loss, sampled, with cut",nbins,0.0,1.0);
+  TH1F* efrac = new TH1F("efrac","Brems energy loss, 'exact'",nbins,0.0,1);
+  TH1F* efrac1 = new TH1F("efrac1","Low-E Brems energy loss",nbins,0.0,1);
+  TH1F* efrac2 = new TH1F("efrac2","High-E Brems energy loss",nbins,0.0,1);
+  TH1F* efrac3 = new TH1F("efrac3","Total sampled brems energy loss",nbins,0.0,1);
   TProfile* efracp = new TProfile("efracp","N Brems",nbins,0.0,1.0,0,1e5);
+  TH1F* ng = new TH1F("ng","N gammas ",20,-0.5,19.5);
   TH1F* ngh = new TH1F("ngh","N gammas above cut",10,-0.5,9.5);
-// set integration range
-  dndy->SetRange(ycut,1.0);
+  
+//  compute yc (assumes e0 = 1)
+  double yc = std::max(ymin,emin);
+// compute the equivalent value of (normalized) dNdy
+//  double xc =  sp3->Eval(yc);
+//  double xmin = sp3->Eval(ymin);
+//  cout << " yc = " << yc << " xc = " << xc << " xmin = " << xmin << endl;
   for(unsigned itrial=0;itrial<ntrials;itrial++){
 //  First simulate each bin of the photon energy spectrm
     double eloss(0.0);
-    double elossc = ELow(&ycut,&rfrac);
-    double elossc2 = elossc;
-    double ng = NGam(&ycut,&rfrac);
-    unsigned ngn = tr->Poisson(ng);
-    ngh->Fill((float)ngn);
-    for(unsigned igh=0;igh<ngn;igh++){
-      double y = dndy->GetRandom();
-      elossc2 += y;
-    }
-    efracc2->Fill(elossc2);
-// bin-by-bin test
     for(unsigned ibin=0;ibin<nbins;ibin++){
       double y = (ibin+0.5)*ybin;
       double dngam = ybin*dNdy(&y,&rfrac);
-      efracp->Fill(y,dngam/ybin);
+      efracp->Fill(y,dngam);
       unsigned nga = tr->Poisson(dngam);
       eloss += nga*y;
-      if(y>ycut)elossc += nga*y;
 //      if(ng > 0) std::cout << "ng =" << ng << " y=" << y << " eloss = " << eloss << std::endl;
     }
     if(eloss>1.0)eloss=1.0;
     efrac->Fill(eloss);
-    efracc->Fill(elossc);
+// Now, sampling function
+// first, fixed infrared contribution
+    double deir = ELow(&ymin,&rfrac);
+// next, high-energy part.  First, compute the # of photons
+    double ngammas = NGam(&ymin,&rfrac); 
+    unsigned mgam = tr->Poisson(ngammas);
+    unsigned mgamh (0);
+    ng->Fill((float)mgam);
+// for each gammma, sample the approprate range of the inverse integrated spectrum
+    double dehi(0.0);
+    for(unsigned igh=0;igh<mgam;igh++){
+      double yva = invngam(tr->Rndm());
+      if(yva>yc){
+        dehi += yva;
+        mgamh++;
+      } else {
+        deir += yva;
+      }
+    }
+    ngh->Fill((float)mgamh);
+    efrac1->Fill(deir);
+    efrac2->Fill(dehi);
+    efrac3->Fill(deir+dehi);
   }
   
   
   TCanvas* can2 = new TCanvas("can2");
-  can2->Divide(2,2);
+  can2->Divide(2,3);
   can2->cd(1);
   gPad->SetLogy();
   efrac->Draw();
   
   can2->cd(2);
   gPad->SetLogy();
-//  efracc->Draw();
-  efracp->Draw();
+  efrac1->Draw();
   
   can2->cd(3);
   gPad->SetLogy();
-  ngh->Draw();
-  
+  efrac2->Draw();
+
   can2->cd(4);
   gPad->SetLogy();
-  efracc2->Draw();
+  efrac3->Draw();
+
+  can2->cd(5);
+  gPad->SetLogy();
+  ng->Draw();
+
+  can2->cd(6);
+  gPad->SetLogy();
+  ngh->Draw();
   
 }
   
