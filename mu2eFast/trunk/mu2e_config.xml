@@ -45,6 +45,13 @@
             <sect name="Materials">
                 <param name="materials" type="string" > mu2eFast/MaterialsList.data</param>
             </sect>
+            
+            <sect name="PacBrems">
+                <param name="min_egamma" type="float" > 0.002 </param> <!-- Minimum brems photon energy (in GeV) to explicitly simulate-->
+            </sect>
+            <sect name="PacShower">
+                <param name="nshower" type="int" > 20 </param> <!-- this is the maximum number of discrete (brems, etc.) EM interactions in a material before the interaction is consider to have initiated a shower -->
+            </sect>            
         </config>
     </included>
 </edml>
