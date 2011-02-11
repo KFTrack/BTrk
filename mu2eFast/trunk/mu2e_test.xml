@@ -15,10 +15,10 @@
     <!-- simple generator parameters -->
     <sect name="SG">
         <!-- Number of tracks to generate -->
-        <param name="nevents" type="long"> 100000</param>
+        <param name="nevents" type="long"> 10000</param>
         <!-- Initial distance from z axis (phi symmetric) -->
         <param name="r0_mean" type="double"> 0.0</param>
-        <param name="r0_sigma" type="double"> 6.0</param>
+        <param name="r0_sigma" type="double"> 4.0</param>
         <!-- Initial distance from z=0 -->
         <param name="z0_mean" type="double"> -430</param>
         <param name="z0_sigma" type="double"> 23</param>
