@@ -34,10 +34,10 @@
             <device name="MWPC1"
                 type="DriftChamber"
                 sensitiveTimeWindow="1e-5"
-                rms_par0="0.01"
-                rms_par1="0"
-                rms_par2="0"
-                rms_par3="0"
+                rms_par0="0.017"
+                rms_par1="-0.051"
+                rms_par2="0.055"
+                rms_par3="-0.02"
                 rms_par4="0"
                 rms_par5="0"
                 eff_par0="0.99"
@@ -53,8 +53,8 @@
         <detector name="Mu2e">
             <volume name="Tracker">
                 <loop variable="zvar" count="18" startvalue="1" stepvalue="1">
-                    <ring name="C1" id="zvar" z="zring1" lowradius="70" hiradius="80" thick="0.1" mat="CFiber" />
-                    <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="0.1" mat="CFiber" />
+                    <ring name="C1" id="zvar" z="zring1" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
+                    <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
                     <loop variable="svar" count="4" startvalue="0" stepvalue="1">
                         <loop variable="cvar" count="3" startvalue="0" stepvalue="1">
                             <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw_15um" gap="strawgap" overlap="strawoverlap" meas="MWPC1"/>
