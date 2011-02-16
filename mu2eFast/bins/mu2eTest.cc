@@ -81,6 +81,7 @@
 
 #include "mu2eFast/Mu2eSimpleInput.hh"
 #include "mu2eFast/Mu2eRootInput.hh"
+#include "mu2eFast/Mu2eTargetInput.hh"
 
 #include "Framework/AppFileName.hh"
 
@@ -336,8 +337,13 @@ int main(int argc, char* argv[]) {
   // input specification; check for input file first
   if(gconfig.has("RootFile.inputfile")){
     input = new Mu2eRootInput(gconfig);
-  } else if(gconfig.has("SG.nevents")){
+  } else if (gconfig.has("TargetConversion.nevents")){
+      input = new Mu2eTargetInput(gconfig);    
+  } else if(gconfig.has("SimpleInput.nevents")){
     input = new Mu2eSimpleInput(gconfig);
+  } else {
+    std::cerr << "No input specified: aborting" << std::endl;
+    return 1;
   }
   const int printfreq = gconfig.getint("printfreq", 100);
   unsigned nevt(0);

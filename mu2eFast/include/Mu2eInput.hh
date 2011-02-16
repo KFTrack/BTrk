@@ -25,6 +25,9 @@ public:
   virtual bool nextEvent(Mu2eEvent& event) = 0;
 // rewind (return to initial conditions)
   virtual void rewind() = 0;
+// clear the event, optionally deleting the content
+protected:
+  void clear(Mu2eEvent& event,bool del=false);  
 };
 
 #endif
