@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
  
 <edml>
-    
+
+
+<!-- generate conversion electrons -->
+    <include file="mu2eFast/TargetConversion.xml" />
   <config>
 
     <!-- input specification, uncomment if you want to read a file 
@@ -13,7 +16,7 @@
         <param name="timeoffset" type="float"> 0 </param>
     </sect> -->
     <!-- simple generator parameters -->
-    <sect name="SG">
+     <sect name="SimpleInput">
         <!-- Number of tracks to generate -->
         <param name="nevents" type="long"> 10000</param>
         <!-- Initial distance from z axis (phi symmetric) -->
@@ -31,8 +34,7 @@
         <!-- negative electron -->
         <param name="PdtPdg" type="long"> 11</param>
         <param name="rndseed" type="long"> 123499821</param>
-    </sect>    
-    
+    </sect>
     <!-- ROOT file to save results to -->
     <param name="outputfile" type="string"> mu2e_test.root</param>    
     <param name="hittuple" type="bool"> true </param>
