@@ -400,7 +400,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     mome->Draw();
     can->cd(3);
     gPad->SetLogy();
-    mompg->Fit("gaus");
+    mompg->Fit("gaus","","",-2,10);
     can->cd(4);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
@@ -408,7 +408,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     sgau->SetParLimits(5,1.0*momr->GetRMS(),1.0);
     sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
     sgau->SetParLimits(4,0.0,0.49);
-    momr->Fit("sgau","L");
+    momr->Fit("sgau","L","",-0.5,1.0);
     can->cd(5);
     mom->Draw();
 //    momr->Fit("sgau","M");
