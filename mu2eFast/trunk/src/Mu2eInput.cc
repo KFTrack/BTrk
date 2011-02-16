@@ -9,3 +9,15 @@ Mu2eInput::Mu2eInput(){
 
 Mu2eInput::~Mu2eInput(){
 }
+
+void
+Mu2eInput::clear(Mu2eEvent& event,bool del) {
+  if(del){
+    for(std::vector<TParticle*>::iterator ipart = event._particles.begin();
+    ipart != event._particles.end(); ipart++){
+      delete *ipart;
+    }
+  }
+  event._particles.clear();
+}
+

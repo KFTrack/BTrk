@@ -64,7 +64,7 @@ Mu2eRootInput::~Mu2eRootInput(){
 bool
 Mu2eRootInput::nextEvent(Mu2eEvent& event) {
   bool retval(false);
-  event._particles.clear();
+  clear(event,false);
   if(_nread < _nevents){
 // move to the next entry in the tree
     int nbytes = _tree->GetEntry(_ievt++);

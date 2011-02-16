@@ -9,37 +9,32 @@
 #include "G3Data/GTrack.hh"
 
 Mu2eSimpleInput::Mu2eSimpleInput(PacConfig& config) : _ievt(0) {
-  PdtPdg::PdgType pdgid = (PdtPdg::PdgType)gconfig.getint("SG.PdtPdg",11);
+  PdtPdg::PdgType pdgid = (PdtPdg::PdgType)gconfig.getint("SimpleInput.PdtPdg",11);
   _pdt = Pdt::lookup(pdgid);
   // Read helix generation parameters 
-  _p_min = gconfig.getdouble("SG.p_min");
-  _p_max = gconfig.getdouble("SG.p_max");
-  _cost_min = gconfig.getdouble("SG.cost_min");
-  _cost_max = gconfig.getdouble("SG.cost_max");
-  _r0_mean = gconfig.getdouble("SG.r0_mean");
-  _r0_sigma = gconfig.getdouble("SG.r0_sigma");
-  _z0_mean = gconfig.getdouble("SG.z0_mean");
-  _z0_sigma = gconfig.getdouble("SG.z0_sigma");
-  _nevents = gconfig.getint("SG.nevents");
+  _p_min = gconfig.getdouble("SimpleInput.p_min");
+  _p_max = gconfig.getdouble("SimpleInput.p_max");
+  _cost_min = gconfig.getdouble("SimpleInput.cost_min");
+  _cost_max = gconfig.getdouble("SimpleInput.cost_max");
+  _r0_mean = gconfig.getdouble("SimpleInput.r0_mean");
+  _r0_sigma = gconfig.getdouble("SimpleInput.r0_sigma");
+  _z0_mean = gconfig.getdouble("SimpleInput.z0_mean");
+  _z0_sigma = gconfig.getdouble("SimpleInput.z0_sigma");
+  _nevents = gconfig.getint("SimpleInput.nevents");
   // initialize random number
-  unsigned rndseed = gconfig.getint("SG.rndseed", 1238783);
+  unsigned rndseed = gconfig.getint("SimpleInput.rndseed", 1238783);
   _rng.SetSeed(rndseed);
 }
 
 bool
 Mu2eSimpleInput::nextEvent(Mu2eEvent& event) {
 // clear existing event
-  clear(event);
+  clear(event,true);
   if(_ievt < _nevents){
 // create a particle
     TParticle* part = create();
     if(part != 0)
       event._particles.push_back(part);
-// set event
-    Int_t _evtnum;
-    Float_t _evtwt;
-    UInt_t _nevt, _npar;
-
     event._evtnum = _ievt;
     event._evtwt = 1.0;
     event._nevt = 1;
@@ -55,15 +50,6 @@ void
 Mu2eSimpleInput::rewind(){
 // reset counter
   _ievt = 0;
-}
-
-void
-Mu2eSimpleInput::clear(Mu2eEvent& event) {
-  for(std::vector<TParticle*>::iterator ipart = event._particles.begin();
-  ipart != event._particles.end(); ipart++){
-    delete *ipart;
-  }
-  event._particles.clear();
 }
 
 TParticle*
