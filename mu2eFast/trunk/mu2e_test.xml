@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
- 
 <edml>
-
-
 <!-- generate conversion electrons -->
-    <include file="mu2eFast/TargetConversion.xml" />
-  <config>
+<include file="mu2eFast/TargetConversion.xml" />
+<config>
 
     <!-- input specification, uncomment if you want to read a file 
     <sect name="RootFile">
-        <param name="inputfile" type="string">file.root</param>
-        <param name="firstevent" type="long"> 0</param>
-        <param name="nevents" type="long"> -1</param>
-        <param name="timescale" type="float"> 1e-9 </param>
-        <param name="timeoffset" type="float"> 0 </param>
+    <param name="inputfile" type="string">file.root</param>
+    <param name="firstevent" type="long"> 0</param>
+    <param name="nevents" type="long"> -1</param>
+    <param name="timescale" type="float"> 1e-9 </param>
+    <param name="timeoffset" type="float"> 0 </param>
     </sect> -->
     <!-- simple generator parameters -->
-     <sect name="SimpleInput">
+    <sect name="SimpleInput">
         <!-- Number of tracks to generate -->
         <param name="nevents" type="long"> 10000</param>
         <!-- Initial distance from z axis (phi symmetric) -->
@@ -39,11 +36,11 @@
     <param name="outputfile" type="string"> mu2e_test.root</param>    
     <param name="hittuple" type="bool"> true </param>
     <param name="trajdiff" type="bool"> false </param>
-    
+
     <!-- traj diff test parameters -->
     <param name="fieldmap" type="string"> mu2eFast/DSMap_unfmt_rad100.dat</param>
     <param name="distortionfactor" type="double"> 10.0 </param>
-    
+
     <!-- display parameters -->
     <param name="displaytrack" type="bool"> false</param>
     <param name="displayfile" type="string" > mu2e_display.root</param>
@@ -56,5 +53,5 @@
     <param name="verbose" type="bool"> false</param>
 
 
-  </config>
+</config>
 </edml>
