@@ -14,7 +14,8 @@ Mu2eTargetInput::Mu2eTargetInput(PacConfig& config) : _ievt(0) {
   _beamxsig = gconfig.getdouble("TargetConversion.beamxsigma");
   _beamtsig = gconfig.getdouble("TargetConversion.beamthetasigma");
   _beamzlambda = gconfig.getdouble("TargetConversion.beamzlambda");
-  _pconv = gconfig.getdouble("TargetConversion.conversionmomentum");
+  _p_min = gconfig.getdouble("TargetConversion.p_min");
+  _p_max = gconfig.getdouble("TargetConversion.p_max");
   _cost_min = gconfig.getdouble("TargetConversion.cost_min");
   _cost_max = gconfig.getdouble("TargetConversion.cost_max");
   _nevents = gconfig.getint("TargetConversion.nevents");
@@ -82,15 +83,16 @@ Mu2eTargetInput::create() {
     radius = sqrt(x*x + y*y);
   }
 //  nom momentum
+  double mom	= fabs(_rng.Uniform(_p_min, _p_max));
   double phi	= _rng.Uniform(0, 2*M_PI);
   double cost = _rng.Uniform(_cost_min,_cost_max);
-  double pz	= _pconv*cost;                // longitudinal momentum
-  double pt = _pconv*sqrt(1.0-cost*cost);
+  double pz	= mom*cost;                // longitudinal momentum
+  double pt = mom*sqrt(1.0-cost*cost);
 // create the particle
   TParticle* part = new TParticle();
   part->SetPdgCode((Int_t)_pdt->pdgId());
   double mass = _pdt->mass();
-  double energy = sqrt(mass*mass+_pconv*_pconv);
+  double energy = sqrt(mass*mass+mom*mom);
   part->SetMomentum(pt*cos(phi),pt*sin(phi),pz,energy);
   part->SetProductionVertex(x,y,z,0.0);
   part->SetWeight(1.0); // all particles have same weight
