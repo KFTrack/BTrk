@@ -25,7 +25,7 @@ private:
   double _beamxsig;
   double _beamtsig;
   double _beamzlambda;
-  double _pconv;
+  double _p_min, _p_max;
   double _cost_min, _cost_max;
   unsigned _nevents;
   TRandom3 _rng;
