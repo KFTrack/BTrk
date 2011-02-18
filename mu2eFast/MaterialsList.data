@@ -18,6 +18,9 @@ CO2  0.001842 0. 0. -2 1 Carbon 0 2 Oxygen 0 -10 -20 -30 20.0 1.0 gas
 HeCF4  0.0005331 0. 0. 2 0.334 Helium 0 0.666 CF4 1 -10 -20 -30 20.0 1.0 gas
 Kapton       1.4300    0.   0.   -4    37    Carbon     0 6 Oxygen 0 2 Nitrogen 0 6 Hydrogen 0    -10     -20     -30     20.0    1.0    solid
 Mylar       1.4    0.   0.   -3    10    Carbon     0 8 Oxygen 0 4 Hydrogen 0    -10     -20     -30     20.0    1.0    solid
+HDPE        0.941 0.0 0.0 -2 2 Hydrogen 0 1 Carbon 0 -10     -20     -30     20.0    1.0    solid
+MDPE        0.925 0.0 0.0 -2 2 Hydrogen 0 1 Carbon 0 -10     -20     -30     20.0    1.0    solid
+LDPE        0.915 0.0 0.0 -2 2 Hydrogen 0 1 Carbon 0 -10     -20     -30     20.0    1.0    solid
 # specific mu2e materials
 straw-wire    19.300000    0.   0.   +1    100.0e-2    Tungsten   0    -10 -20 -30     20.0    1.0    solid
 # 80:20 (by volume) Argon:CO2

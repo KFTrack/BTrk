@@ -11,20 +11,20 @@ Mu2eTargetInput::Mu2eTargetInput(PacConfig& config) : _ievt(0) {
 // conversion to electron
   _pdt = Pdt::lookup((PdtPdg::PdgType)11);
 // Read beam configuration 
-  _beamxsig = gconfig.getdouble("TargetConversion.beamxsigma");
-  _beamtsig = gconfig.getdouble("TargetConversion.beamthetasigma");
-  _beamzlambda = gconfig.getdouble("TargetConversion.beamzlambda");
-  _p_min = gconfig.getdouble("TargetConversion.p_min");
-  _p_max = gconfig.getdouble("TargetConversion.p_max");
-  _cost_min = gconfig.getdouble("TargetConversion.cost_min");
-  _cost_max = gconfig.getdouble("TargetConversion.cost_max");
-  _nevents = gconfig.getint("TargetConversion.nevents");
+  _beamxsig = gconfig.getdouble("TargetInput.beamxsigma");
+  _beamtsig = gconfig.getdouble("TargetInput.beamthetasigma");
+  _beamzlambda = gconfig.getdouble("TargetInput.beamzlambda");
+  _p_min = gconfig.getdouble("TargetInput.p_min");
+  _p_max = gconfig.getdouble("TargetInput.p_max");
+  _cost_min = gconfig.getdouble("TargetInput.cost_min");
+  _cost_max = gconfig.getdouble("TargetInput.cost_max");
+  _nevents = gconfig.getint("TargetInput.nevents");
   // initialize random number
-  unsigned rndseed = gconfig.getint("TargetConversion.rndseed", 1238783);
+  unsigned rndseed = gconfig.getint("TargetInput.rndseed", 1238783);
   _rng.SetSeed(rndseed);
 // find target geometry
-  _diskradii = gconfig.getvector("TargetConversion.diskradii");
-  _diskz = gconfig.getvector("TargetConversion.diskz");
+  _diskradii = gconfig.getvector("TargetInput.diskradii");
+  _diskz = gconfig.getvector("TargetInput.diskz");
   
 }
 

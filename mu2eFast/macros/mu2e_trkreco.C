@@ -144,9 +144,9 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     z0_r->SetLineColor(kRed);
     z0_g->SetLineColor(kBlue);
     
-    TH1F* mom_s = new TH1F("mom_s","momentum",100,0.07,0.16);
-    TH1F* mom_r = new TH1F("mom_r","momentum",100,0.07,0.16);
-    TH1F* mom_g = new TH1F("mom_g","momentum",100,0.07,0.16);
+    TH1F* mom_s = new TH1F("mom_s","momentum",100,0.05,0.16);
+    TH1F* mom_r = new TH1F("mom_r","momentum",100,0.05,0.16);
+    TH1F* mom_g = new TH1F("mom_g","momentum",100,0.05,0.16);
     tree->Project("mom_s","sim_mom_mag");
     tree->Project("mom_r","sim_mom_mag",rec);
     tree->Project("mom_g","sim_mom_mag",goodrec);
@@ -154,6 +154,18 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     mom_g->Divide(mom_s);
     mom_r->SetLineColor(kRed);
     mom_g->SetLineColor(kBlue);
+    
+    TH1F* pt_s = new TH1F("pt_s","transverse momentum",100,0.04,0.15);
+    TH1F* pt_r = new TH1F("pt_r","transverse momentum",100,0.04,0.15);
+    TH1F* pt_g = new TH1F("pt_g","transverse momentum",100,0.04,0.15);
+    tree->Project("pt_s","sim_mom_pt");
+    tree->Project("pt_r","sim_mom_pt",rec);
+    tree->Project("pt_g","sim_mom_pt",goodrec);
+    pt_r->Divide(pt_s);
+    pt_g->Divide(pt_s);
+    pt_r->SetLineColor(kRed);
+    pt_g->SetLineColor(kBlue);
+    
     
     can->Clear();
     can->Divide(2,2);
@@ -173,6 +185,10 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(3);
     mom_r->Draw();
     mom_g->Draw("same");
+    
+    can->cd(4);
+    pt_r->Draw();
+    pt_g->Draw("same");
     
   } else if(page =="count"){
     
