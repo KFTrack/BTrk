@@ -52,7 +52,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.0002");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.001");
   TCut goodrec = rec+goodradius+gooddip+goodfit;
   
   TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
@@ -395,7 +395,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* nhit = new TH1F("nhit","N hits",200,-0.5,199.5);
     tree->Project("nhit","rec_nhit",goodrec);
     
-    TH1F* mome = new TH1F("mome","estimated fit mom error",100,0.01,0.6);
+    TH1F* mome = new TH1F("mome","estimated fit mom error",100,0.01,1.0);
     tree->Project("mome","1000*rec_mom_err",goodrec);
     mome->GetXaxis()->SetTitle("MeV");
     
