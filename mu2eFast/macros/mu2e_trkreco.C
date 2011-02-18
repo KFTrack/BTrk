@@ -122,9 +122,9 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     
   } else if(page == "eff"){
 
-    TH1F* td_s = new TH1F("td_s","TanDip",100,0,1.4);
-    TH1F* td_r = new TH1F("td_r","TanDip",100,0,1.4);
-    TH1F* td_g = new TH1F("td_g","TanDip",100,0,1.4);
+    TH1F* td_s = new TH1F("td_s","TanDip",100,0.5,1.1);
+    TH1F* td_r = new TH1F("td_r","TanDip",100,0.5,1.1);
+    TH1F* td_g = new TH1F("td_g","TanDip",100,0.5,1.1);
     tree->Project("td_s","sim_tandip");
     tree->Project("td_r","sim_tandip",rec);
     tree->Project("td_g","sim_tandip",goodrec);
@@ -133,26 +133,27 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     td_r->SetLineColor(kRed);
     td_g->SetLineColor(kBlue);
     
-    TH1F* z0_s = new TH1F("z0_s","z0",100,-350,-230);
-    TH1F* z0_r = new TH1F("z0_r","z0",100,-350,-230);
-    TH1F* z0_g = new TH1F("z0_g","z0",100,-350,-230);
-    tree->Project("z0_s","sim_z0");
-    tree->Project("z0_r","sim_z0",rec);
-    tree->Project("z0_g","sim_z0",goodrec);
+    TH1F* z0_s = new TH1F("z0_s","Production z",100,-480,-380);
+    TH1F* z0_r = new TH1F("z0_r","Production z",100,-480,-380);
+    TH1F* z0_g = new TH1F("z0_g","Production z",100,-480,-380);
+    tree->Project("z0_s","sim_inipos_z");
+    tree->Project("z0_r","sim_inipos_z",rec);
+    tree->Project("z0_g","sim_inipos_z",goodrec);
     z0_r->Divide(z0_s);
     z0_g->Divide(z0_s);
     z0_r->SetLineColor(kRed);
     z0_g->SetLineColor(kBlue);
     
-    
-    TH2F* pvtd_s = new TH2F("pvtd_s","Phi vs TanDip",50,0,1.4,50,-3.15,3.15);
-    TH2F* pvtd_g = new TH2F("pvtd_g","Phi vs TanDip",50,0,1.4,50,-3.15,3.15);
-    tree->Project("pvtd_s","sim_phi0:sim_tandip");
-    tree->Project("pvtd_g","sim_phi0:sim_tandip",goodrec);
-    pvtd_g->Divide(pvtd_s);
-    pvtd_g->SetLineColor(kBlue);
-    
-    
+    TH1F* mom_s = new TH1F("mom_s","momentum",100,0.07,0.16);
+    TH1F* mom_r = new TH1F("mom_r","momentum",100,0.07,0.16);
+    TH1F* mom_g = new TH1F("mom_g","momentum",100,0.07,0.16);
+    tree->Project("mom_s","sim_mom_mag");
+    tree->Project("mom_r","sim_mom_mag",rec);
+    tree->Project("mom_g","sim_mom_mag",goodrec);
+    mom_r->Divide(mom_s);
+    mom_g->Divide(mom_s);
+    mom_r->SetLineColor(kRed);
+    mom_g->SetLineColor(kBlue);
     
     can->Clear();
     can->Divide(2,2);
@@ -162,15 +163,17 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     td_g->Draw("same");
     TLegend* leg = new TLegend(0.1,0.7,0.4,0.9);
     leg->AddEntry(td_r,"All Fits","L");
-    leg->AddEntry(td_g,"Fit con>0.01","L");
+    leg->AddEntry(td_g,"Good Fits","L");
     leg->Draw();
 
     can->cd(2);
     z0_r->Draw();
     z0_g->Draw("same");
 
-    can->cd(4);
-    pvtd_g->Draw("box");
+    can->cd(3);
+    mom_r->Draw();
+    mom_g->Draw("same");
+    
   } else if(page =="count"){
     
     TH1F* nhit = new TH1F("nhit","N layer hits",81,-0.5,80.5);
