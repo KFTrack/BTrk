@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <edml>
 <!-- generate conversion electrons -->
-<include file="mu2eFast/TargetConversion.xml" />
+<include file="mu2eFast/TargetInput.xml" />
 <config>
 
     <!-- input specification, uncomment if you want to read a file 

@@ -337,7 +337,7 @@ int main(int argc, char* argv[]) {
   // input specification; check for input file first
   if(gconfig.has("RootFile.inputfile")){
     input = new Mu2eRootInput(gconfig);
-  } else if (gconfig.has("TargetConversion.nevents")){
+  } else if (gconfig.has("TargetInput.nevents")){
       input = new Mu2eTargetInput(gconfig);    
   } else if(gconfig.has("SimpleInput.nevents")){
     input = new Mu2eSimpleInput(gconfig);
