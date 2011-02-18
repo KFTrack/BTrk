@@ -2,7 +2,7 @@
 <edml>
     <included>
         <config>
-            <sect name="TargetConversion">
+            <sect name="TargetInput">
                 <param name="rndseed" type="long"> 123499821</param>
                 <param name="nevents" type="long"> 10000</param>
                 <param name="beamxsigma"  type="double"> 5.0 </param>
