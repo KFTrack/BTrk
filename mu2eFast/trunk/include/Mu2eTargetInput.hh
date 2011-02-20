@@ -32,6 +32,7 @@ private:
 // target description
   std::vector<double> _diskradii;
   std::vector<double> _diskz;
+  double _halfthickness;
 // seed
   int _seed;
 // event counters
