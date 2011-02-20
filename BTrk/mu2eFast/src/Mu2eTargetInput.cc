@@ -25,7 +25,7 @@ Mu2eTargetInput::Mu2eTargetInput(PacConfig& config) : _ievt(0) {
 // find target geometry
   _diskradii = gconfig.getvector("TargetInput.diskradii");
   _diskz = gconfig.getvector("TargetInput.diskz");
-  
+  _halfthickness = 0.5*gconfig.getdouble("TargetInput.thickness",0.01);
 }
 
 bool
@@ -73,7 +73,8 @@ Mu2eTargetInput::create() {
       ifoil=jfoil;
     }
   }
-  double z = _diskz[ifoil];
+// randomize the position within the thickness
+  double z = _diskz[ifoil] + _rng.Uniform(-_halfthickness,_halfthickness);
 // generate position.  It must be inside the target radius
   double x,y;
   double radius(100.0);

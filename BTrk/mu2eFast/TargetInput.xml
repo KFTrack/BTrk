@@ -18,6 +18,7 @@
                 <param name="diskz"    type="vector"        >
                     -470 -465 -460 -455 -450 -445 -440 -435 -430 -425 -420 -415 -410 -405 -400 -395 -390            
                 </param>
+                <param name="thickness"  type="double"> 0.01 </param>
             </sect>            
         </config>
     </included>
