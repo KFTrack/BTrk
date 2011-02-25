@@ -241,9 +241,11 @@ int main(int argc, char* argv[]) {
   
 		/* Reconstruct the track with KalmanTrack (using the list of hits) */
 	PacReconstructTrk trackreco(bfield,penv.getKalContext());
-	trackreco.clearMaps();
-	trackreco.makeHots(simtrk);
-	TrkRecoTrk* trk = trackreco.makeTrack(simtrk);
+	trackreco.setRandomEngine(engine);
+	std::vector<const PacSimTrack*> strks;
+  strks.push_back(simtrk);
+  trackreco.makeTracks(strks);
+	const TrkRecoTrk* trk = trackreco.findTrack(simtrk);
 	if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
 
 		KalInterface kinter;
