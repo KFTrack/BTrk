@@ -21,7 +21,7 @@ void testVavilov(double rkappa=2.0, double beta2=0.5,unsigned ntrials=100000) {
   unsigned nbins(200);
   double range[2] = {-5,5};
   TH1F* vavh = new TH1F("vav","VavRan test",nbins,range[0],range[1]);
-  TF1* vfun = new TF1("Vavilov",VavilovFun,-5,5,3);
+  TF1* vfun = new TF1("Vavilov",VavilovFun,range[0],range[1],3);
   vfun->SetParameter(0,ntrials*(range[1]-range[0])/nbins);
   vfun->SetParameter(1,rkappa);
   vfun->SetParameter(2,beta2);

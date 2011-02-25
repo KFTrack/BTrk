@@ -8,11 +8,14 @@
 class PdtEntry;
 class PacConfig;
 class TRandom;
+class TGraph;
 class GTrack;
 class GVertex;
 
 class Mu2eTargetInput : public Mu2eInput {
 public:
+  // momentum spectrum description
+  enum spectrum{flat=0,file};
   // construct from configuration object
   Mu2eTargetInput(PacConfig& config);
   // override virtual interface
@@ -29,6 +32,9 @@ private:
   double _cost_min, _cost_max;
   unsigned _nevents;
   TRandom3 _rng;
+// spectrum type
+  spectrum _stype;
+  TGraph* _invintspect;
 // target description
   std::vector<double> _diskradii;
   std::vector<double> _diskz;

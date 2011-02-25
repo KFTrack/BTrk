@@ -8,6 +8,8 @@
                 <param name="beamxsigma"  type="double"> 5.0 </param>
                 <param name="beamthetasigma"  type="double"> 0.0 </param>
                 <param name="beamzlambda"  type="double"> 123.5 </param>
+                <param name="spectrumtype" type="int"> 0 </param>
+                <param name="spectrumfile" type="string">dio_spectrum.csv</param>
                 <param name="p_min"  type="double"> 0.1051</param>
                 <param name="p_max" type="double"> 0.1051 </param>
                 <param name="cost_min"  type="double"> 0.5 </param>

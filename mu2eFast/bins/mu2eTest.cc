@@ -165,6 +165,7 @@ int main(int argc, char* argv[]) {
   //Create output
   const char* outputfile = gconfig.get("outputfile", "mu2e_test.root");
   TFile* file = new TFile(outputfile,"RECREATE");
+  assert(file != 0);
   //Create Tree to store track info
   TTree* trackT = new TTree("tracks","Tracks");
   //Variables to store track information
@@ -332,7 +333,8 @@ int main(int argc, char* argv[]) {
   sim.setRandomEngine(engine);
   detector->setRandomEngine(engine);
   trackreco = new PacReconstructTrk(bfield,penv.getKalContext());
-    
+  trackreco->setRandomEngine(engine);
+
   Mu2eInput* input(0);
   // input specification; check for input file first
   if(gconfig.has("RootFile.inputfile")){
@@ -354,9 +356,8 @@ int main(int argc, char* argv[]) {
       printf("Count: %i \n",nevt+1);
     }
     nevt++;
-// must clear maps every event
-    trackreco->clearMaps();
     unsigned parnum(0);
+    std::vector<const PacSimTrack*> strks;
     for(std::vector<TParticle*>::iterator ipar = event._particles.begin();
     ipar != event._particles.end();ipar++){
 // clear vectors
@@ -365,34 +366,40 @@ int main(int argc, char* argv[]) {
 //    cdiff.clear();
 // convert TParticle to GTrack (ugly!!!)
       TParticle* part = *ipar;
-      GVertex gvtx;
-      gvtx.setCause( GVertex::generator );
-      gvtx.setPosition( HepPoint(part->Vx(),part->Vy(),part->Vz()));
-      gvtx.setTime( part->T() );
-  		gvtx.setTerminal( true );
-      gvtx.setIndex( 0 );
-  		gvtx.setParentTrimMarker( 0 );
+      GVertex* gvtx = new GVertex;
+      gvtx->setCause( GVertex::generator );
+      gvtx->setPosition( HepPoint(part->Vx(),part->Vy(),part->Vz()));
+      gvtx->setTime( part->T() );
+  		gvtx->setTerminal( true );
+      gvtx->setIndex( 0 );
+  		gvtx->setParentTrimMarker( 0 );
   		
-      GTrack gtrk;
-      gtrk.setP4(HepLorentzVector( part->Px(),
+      GTrack* gtrk = new GTrack;
+      gtrk->setP4(HepLorentzVector( part->Px(),
 					  part->Py(),
 					  part->Pz(),
             part->Energy()));
       PdtEntry* pdt = Pdt::lookup((PdtPdg::PdgType)part->GetPdgCode());
-      gtrk.setPDT( pdt );
-      gtrk.setVertex( &gvtx );
-      gtrk.setIndex( parnum );
+      gtrk->setPDT( pdt );
+      gtrk->setVertex( gvtx );
+      gtrk->setIndex( parnum );
     	
     //Simulate Track through detectors
-      PacSimTrack* simtrk = sim.simulateGTrack(&gtrk);
-
+      PacSimTrack* simtrk = sim.simulateGTrack(gtrk);
+      strks.push_back(simtrk);
+    }
+    trackreco->makeTracks(strks);
+    for(unsigned istrk=0;istrk<strks.size();istrk++){
+      const PacSimTrack* simtrk = strks[istrk];
+      const GTrack* gtrk = simtrk->getGTrack();
+      const GVertex* gvtx = gtrk->vertex();
     // global information about simtrk
       fillSimTrkSummary(simtrk,ssum);
     // Timing information
 
       if(disptrack){
         display.reset();
-        display.drawGTrack(&gtrk,simtrk->lastHit()->globalFlight(),bfield);
+        display.drawGTrack(simtrk->getGTrack(),simtrk->lastHit()->globalFlight(),bfield);
         display.drawSimTrack(simtrk);
         display.drawSimHits(simtrk,0);
       }
@@ -402,7 +409,9 @@ int main(int argc, char* argv[]) {
     //Fill initial parameters
       HepVector simparams(5);
       double flightlen;
-      TrkHelixUtils::helixFromMom(simparams,flightlen,gvtx.position(),gtrk.p4(),pdt->charge(),*bfield);
+      TrkHelixUtils::helixFromMom(simparams,flightlen,
+      gvtx->position(),
+      gtrk->p4(),gtrk->pdt()->charge(),*bfield);
 
     //Generated Track
       PacHelix gentraj(simparams,flightlen,simtraj->hiRange());
@@ -411,15 +420,15 @@ int main(int argc, char* argv[]) {
       TrkPoca genpoca(gentraj, 0, zaxis, 10, 1e-12);
       TrkPoca simpoca(*simtraj, 0, zaxis, 10, 1e-12);
       
-      sim_pdgid = pdt->pdgId();
+      sim_pdgid = gtrk->pdt()->pdgId();
 
       //Store Momentum and Position
-      Hep3Vector momvec = gtrk.p4();
+      Hep3Vector momvec = gtrk->p4();
       sim_mom_z	= momvec.z();
       sim_mom_mag	= momvec.mag();
-      sim_inipos_x	= gvtx.position().x();
-      sim_inipos_y	= gvtx.position().y();
-      sim_inipos_z	= gvtx.position().z();
+      sim_inipos_x	= gvtx->position().x();
+      sim_inipos_y	= gvtx->position().y();
+      sim_inipos_z	= gvtx->position().z();
 
       sim_mom_cost = momvec.cosTheta();
       sim_mom_phi = momvec.phi();
@@ -453,10 +462,8 @@ int main(int argc, char* argv[]) {
       sim_nquad_ge = hcount.nhit_ge[4];
       sim_nstation = hcount.nstation;
       sim_ndlayer = hcount.ndlayer;
-    // create the hots for this track
-      trackreco->makeHots(simtrk);
     // Reconstruct the track with KalmanTrack (using the list of hits)
-      TrkRecoTrk* trk = trackreco->makeTrack(simtrk);
+      const TrkRecoTrk* trk = trackreco->findTrack(simtrk);
       if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
         //Get Reconstructed Track data
         KalInterface kinter;
@@ -580,15 +587,21 @@ int main(int argc, char* argv[]) {
         trknum = -100;
       }
       if(hittuple)fillSimHitInfo(simtrk, sinfo);
-
-// cleanup
-      delete trk;
-      delete simtrk;
       trackT->Fill();
-
       if(disptrack)
         display.fillTrees();
       parnum++;
+    }
+// cleanup this event
+    for(unsigned istrk=0;istrk<strks.size();istrk++){
+      PacSimTrack* simtrk = const_cast<PacSimTrack*>(strks[istrk]);
+      GTrack* gtrk = const_cast<GTrack*>(simtrk->getGTrack());
+      GVertex* gvtx = const_cast<GVertex*>(gtrk->vertex());
+      TrkRecoTrk* trk = const_cast<TrkRecoTrk*>(trackreco->findTrack(simtrk));
+      delete gvtx;
+      delete gtrk;
+      delete simtrk;
+      delete trk;
     }
   }
 // close input
