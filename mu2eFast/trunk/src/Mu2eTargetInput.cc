@@ -41,10 +41,11 @@ Mu2eTargetInput::Mu2eTargetInput(PacConfig& config) : _ievt(0) {
 // prepare the dio spectrum generator if necessary
   if(_stype == file){
     const char* sfile = gconfig.getcstr("TargetInput.spectrumfile");
+    double scale = gconfig.getdouble("TargetInput.spectrumscale",1.0);
     TGraph spectrum(sfile, "%lg,%lg");
     if(spectrum.GetN()>0){
-      double lowedge = spectrum.GetX()[0];
-      double hiedge = spectrum.GetX()[spectrum.GetN()-1];
+      double lowedge = scale*spectrum.GetX()[0];
+      double hiedge = scale*spectrum.GetX()[spectrum.GetN()-1];
       double range = hiedge-lowedge;
       TSpline3 spspect("spspect",&spectrum);
 // integrate
@@ -58,7 +59,7 @@ Mu2eTargetInput::Mu2eTargetInput(PacConfig& config) : _ievt(0) {
         x.push_back(xval);
         y.push_back(yval);
         xval += dx;
-        yval += spspect.Eval(xval);
+        yval += spspect.Eval(xval/scale);
       }
     // normalize
       for(Int_t ipt=0;ipt<npt;ipt++){
