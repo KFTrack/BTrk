@@ -55,6 +55,7 @@
 #include "PacTrk/PacHitOnTrk.hh"
 #include "PacSim/PacSimTrack.hh"
 #include "PacSim/PacSimHit.hh"
+#include "PacSim/PacWriteParticles.hh"
 #include "PacSim/PacShowerInfo.hh"
 #include "PacGeom/PacHelix.hh"
 #include "PacGeom/PacPieceTraj.hh"
@@ -114,6 +115,7 @@ void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::ve
   std::vector<BDiff>& bdiff,PacSimTrkSummary& ssum);
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 void countHits(const PacSimTrack* strk,  HitCount& icount);
+const PacSimHit* findFirstHit(const PacSimTrack* strk);
 
 
 // field integral test stuff
@@ -162,7 +164,10 @@ int main(int argc, char* argv[]) {
   bool trajdiff = gconfig.getbool("trajdiff",false);
 //  bool calodiff = gconfig.getbool("calodiff",false);
 
-  //Create output
+// if requested, setup particle output
+  PacWriteParticles writer;
+
+  //Create tuple output
   const char* outputfile = gconfig.get("outputfile", "mu2e_test.root");
   TFile* file = new TFile(outputfile,"RECREATE");
   assert(file != 0);
@@ -462,6 +467,7 @@ int main(int argc, char* argv[]) {
       sim_nquad_ge = hcount.nhit_ge[4];
       sim_nstation = hcount.nstation;
       sim_ndlayer = hcount.ndlayer;
+      
     // Reconstruct the track with KalmanTrack (using the list of hits)
       const TrkRecoTrk* trk = trackreco->findTrack(simtrk);
       if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
@@ -586,6 +592,13 @@ int main(int argc, char* argv[]) {
         rec_nhit	= -100;
         trknum = -100;
       }
+    // if we're writing particles, test this one
+      if(writer.isActive()){
+        const PacSimHit* writehit = findFirstHit(simtrk);
+        if(writehit != 0){
+          writer.writeParticle(*writehit);
+        }
+      }
       if(hittuple)fillSimHitInfo(simtrk, sinfo);
       trackT->Fill();
       if(disptrack)
@@ -603,6 +616,10 @@ int main(int argc, char* argv[]) {
       delete simtrk;
       delete trk;
     }
+// fill the tree every event
+    if(writer.isActive()){
+      writer.fillTree();
+    }
   }
 // close input
   delete input;
@@ -615,6 +632,22 @@ int main(int argc, char* argv[]) {
   if(disptrack)display.finalize();
   cout << endl;
   return 0;
+}
+
+const PacSimHit*
+findFirstHit(const PacSimTrack* strk){
+  const PacSimHit* retval(0);
+  const std::vector<PacSimHit>& shs = strk->getHitList();
+  for(int ish=0;ish<shs.size();ish++){
+    const PacSimHit& sh = shs[ish];
+    const DetElem* delem = sh.detIntersection().delem;
+    const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
+    if( pelem != 0 && pelem->measurementDevices().size()!= 0 ) {
+      retval = &sh;
+      break;
+    }
+  }
+  return retval;
 }
 
 void
