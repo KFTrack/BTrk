@@ -7,7 +7,7 @@
                 <param name="nevents" type="long"> 10000</param>
                 <param name="beamxsigma"  type="double"> 5.0 </param>
                 <param name="beamthetasigma"  type="double"> 0.0 </param>
-                <param name="beamzlambda"  type="double"> 123.5 </param>
+                <param name="beamzlambda"  type="double"> 39.2 </param>
                 <!-- spectrum type = 0 means a flat spectrum, 
                 change spectrum type to 1 to read spectrum from a file -->
                 <param name="spectrumtype" type="int"> 0 </param>
