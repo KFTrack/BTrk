@@ -12,6 +12,10 @@ struct Mu2eEvent {
   Int_t _evtnum;
   Float_t _evtwt;
   UInt_t _nevt, _npar;
+  void append(Mu2eEvent& other){
+    _particles.insert(_particles.end(),other._particles.begin(),other._particles.end());
+    _npar += other._npar;
+  }
 };
 
 class Mu2eInput {

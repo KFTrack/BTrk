@@ -82,6 +82,7 @@
 
 #include "mu2eFast/Mu2eSimpleInput.hh"
 #include "mu2eFast/Mu2eRootInput.hh"
+#include "mu2eFast/Mu2eBkgInput.hh"
 #include "mu2eFast/Mu2eTargetInput.hh"
 
 #include "Framework/AppFileName.hh"
@@ -116,6 +117,7 @@ void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::ve
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 void countHits(const PacSimTrack* strk,  HitCount& icount);
 const PacSimHit* findFirstHit(const PacSimTrack* strk);
+void createSim(const PacSimulate& sim,const std::vector<TParticle*>& parts,std::vector<PacSimTrack*>& strks);
 
 
 // field integral test stuff
@@ -162,6 +164,7 @@ int main(int argc, char* argv[]) {
   // config parameters
   bool hittuple = gconfig.getbool("hittuple",false);
   bool trajdiff = gconfig.getbool("trajdiff",false);
+  bool writeallsim = gconfig.getbool("writeallsim",false);
 //  bool calodiff = gconfig.getbool("calodiff",false);
 
 // if requested, setup particle output
@@ -177,6 +180,7 @@ int main(int argc, char* argv[]) {
   Int_t    itrack;
   Int_t    trknum;
   
+  Int_t bkg_nsim;
   Int_t sim_nzero, sim_nsingle, sim_ndouble, sim_ntriple, sim_nquad;
   Int_t sim_nzero_ge, sim_nsingle_ge, sim_ndouble_ge, sim_ntriple_ge, sim_nquad_ge;
   Int_t sim_nstation, sim_ndlayer;
@@ -215,6 +219,7 @@ int main(int argc, char* argv[]) {
   Int_t rec_nsvt;
   Int_t rec_ndch;
   Int_t rec_nactive;
+  Int_t rec_nmerged;
   Int_t rec_nhit;
   Float_t rec_d0;
   Float_t rec_phi0;
@@ -241,6 +246,7 @@ int main(int argc, char* argv[]) {
   //Create TBranch to store track info
   trackT->Branch("itrack",&itrack,"itrack/I");
   trackT->Branch("trknum",&trknum,"trknum/I");
+  trackT->Branch("bkg_nsim",&bkg_nsim,"bkg_nsim/I");  
   trackT->Branch("sim_pdgid",&sim_pdgid,"sim_pdgid/I");
   trackT->Branch("sim_d0",&sim_d0,"sim_d0/F");
   trackT->Branch("sim_phi0",&sim_phi0,"sim_phi0/F");
@@ -298,6 +304,7 @@ int main(int argc, char* argv[]) {
   trackT->Branch("rec_nsvt",&rec_nsvt,"rec_nsvt/I");
   trackT->Branch("rec_ndch",&rec_ndch,"rec_ndch/I");
   trackT->Branch("rec_nactive",&rec_nactive,"rec_nactive/I");
+  trackT->Branch("rec_nmerged",&rec_nmerged,"rec_nmerged/I");
   trackT->Branch("rec_nhit",&rec_nhit,"rec_nhit/I");
   trackT->Branch("rec_mom_pt",&rec_mom_pt,"rec_mom_pt/F");
   trackT->Branch("rec_mom_err",&rec_mom_err,"rec_mom_err/F");
@@ -343,7 +350,8 @@ int main(int argc, char* argv[]) {
   Mu2eInput* input(0);
   // input specification; check for input file first
   if(gconfig.has("RootFile.inputfile")){
-    input = new Mu2eRootInput(gconfig);
+    PacConfig rootconfig = gconfig.getconfig("RootFile");
+    input = new Mu2eRootInput(rootconfig);
   } else if (gconfig.has("TargetInput.nevents")){
       input = new Mu2eTargetInput(gconfig);    
   } else if(gconfig.has("SimpleInput.nevents")){
@@ -352,258 +360,257 @@ int main(int argc, char* argv[]) {
     std::cerr << "No input specified: aborting" << std::endl;
     return 1;
   }
+
+  Mu2eInput* bkginput(0);
+  if(gconfig.has("BkgInput.inputfile")){
+// we have backgrounds to merge with signal.  Create and configure the input object
+    PacConfig bkgconfig = gconfig.getconfig("BkgInput.");
+// test
+//    const char* filename = bkgconfig.getcstr("inputfile");    
+    bkginput = new Mu2eBkgInput(bkgconfig);
+  }
+  
   const int printfreq = gconfig.getint("printfreq", 100);
   unsigned nevt(0);
   Mu2eEvent event;
+  Mu2eEvent bkgevt;
   bool goodevent;
   while(goodevent = input->nextEvent(event)){
     if(0 == (nevt+1)%printfreq) {
       printf("Count: %i \n",nevt+1);
     }
     nevt++;
-    unsigned parnum(0);
-    std::vector<const PacSimTrack*> strks;
-    for(std::vector<TParticle*>::iterator ipar = event._particles.begin();
-    ipar != event._particles.end();ipar++){
+// create simtrks
+    std::vector<PacSimTrack*> strks;
+    createSim(sim,event._particles,strks);
+// if bkg input exists, merge backgrounds with this event
+    if(bkginput != 0 && bkginput->nextEvent(bkgevt)){
+      bkg_nsim = bkgevt._particles.size();
+      createSim(sim,bkgevt._particles,strks);
+    } else
+      bkg_nsim = 0;
+    trackreco->makeTracks(strks);
+    for(unsigned istrk=0;istrk<strks.size();istrk++){
 // clear vectors
       sinfo.clear();
       tdiff.clear();
 //    cdiff.clear();
-// convert TParticle to GTrack (ugly!!!)
-      TParticle* part = *ipar;
-      GVertex* gvtx = new GVertex;
-      gvtx->setCause( GVertex::generator );
-      gvtx->setPosition( HepPoint(part->Vx(),part->Vy(),part->Vz()));
-      gvtx->setTime( part->T() );
-  		gvtx->setTerminal( true );
-      gvtx->setIndex( 0 );
-  		gvtx->setParentTrimMarker( 0 );
-  		
-      GTrack* gtrk = new GTrack;
-      gtrk->setP4(HepLorentzVector( part->Px(),
-					  part->Py(),
-					  part->Pz(),
-            part->Energy()));
-      PdtEntry* pdt = Pdt::lookup((PdtPdg::PdgType)part->GetPdgCode());
-      gtrk->setPDT( pdt );
-      gtrk->setVertex( gvtx );
-      gtrk->setIndex( parnum );
-    	
-    //Simulate Track through detectors
-      PacSimTrack* simtrk = sim.simulateGTrack(gtrk);
-      strks.push_back(simtrk);
-    }
-    trackreco->makeTracks(strks);
-    for(unsigned istrk=0;istrk<strks.size();istrk++){
       const PacSimTrack* simtrk = strks[istrk];
-      const GTrack* gtrk = simtrk->getGTrack();
-      const GVertex* gvtx = gtrk->vertex();
+      // Find the reconstructed track
+      const TrkRecoTrk* trk = trackreco->findTrack(simtrk);
+      if(writeallsim || ( trk!= 0 &&  trk->status() != 0 && trk->status()->fitCurrent() ) ){
+        const GTrack* gtrk = simtrk->getGTrack();
+        const GVertex* gvtx = gtrk->vertex();
     // global information about simtrk
-      fillSimTrkSummary(simtrk,ssum);
+        fillSimTrkSummary(simtrk,ssum);
     // Timing information
 
-      if(disptrack){
-        display.reset();
-        display.drawGTrack(simtrk->getGTrack(),simtrk->lastHit()->globalFlight(),bfield);
-        display.drawSimTrack(simtrk);
-        display.drawSimHits(simtrk,0);
-      }
+        if(disptrack){
+          display.reset();
+          display.drawGTrack(simtrk->getGTrack(),simtrk->lastHit()->globalFlight(),bfield);
+          display.drawSimTrack(simtrk);
+          display.drawSimHits(simtrk,0);
+        }
 
-      const PacPieceTraj* simtraj = simtrk->getTraj();
+        const PacPieceTraj* simtraj = simtrk->getTraj();
 
     //Fill initial parameters
-      HepVector simparams(5);
-      double flightlen;
-      TrkHelixUtils::helixFromMom(simparams,flightlen,
-      gvtx->position(),
-      gtrk->p4(),gtrk->pdt()->charge(),*bfield);
+        HepVector simparams(5);
+        double flightlen;
+        TrkHelixUtils::helixFromMom(simparams,flightlen,
+          gvtx->position(),
+          gtrk->p4(),gtrk->pdt()->charge(),*bfield);
 
     //Generated Track
-      PacHelix gentraj(simparams,flightlen,simtraj->hiRange());
+        PacHelix gentraj(simparams,flightlen,simtraj->hiRange());
 
-      TrkLineTraj zaxis(HepPoint(0, 0, -10), Hep3Vector(0, 0, 1), 20);
-      TrkPoca genpoca(gentraj, 0, zaxis, 10, 1e-12);
-      TrkPoca simpoca(*simtraj, 0, zaxis, 10, 1e-12);
-      
-      sim_pdgid = gtrk->pdt()->pdgId();
+        TrkLineTraj zaxis(HepPoint(0, 0, -10), Hep3Vector(0, 0, 1), 20);
+        TrkPoca genpoca(gentraj, 0, zaxis, 10, 1e-12);
+        TrkPoca simpoca(*simtraj, 0, zaxis, 10, 1e-12);
+
+        sim_pdgid = gtrk->pdt()->pdgId();
 
       //Store Momentum and Position
-      Hep3Vector momvec = gtrk->p4();
-      sim_mom_z	= momvec.z();
-      sim_mom_mag	= momvec.mag();
-      sim_inipos_x	= gvtx->position().x();
-      sim_inipos_y	= gvtx->position().y();
-      sim_inipos_z	= gvtx->position().z();
+        Hep3Vector momvec = gtrk->p4();
+        sim_mom_z	= momvec.z();
+        sim_mom_mag	= momvec.mag();
+        sim_inipos_x	= gvtx->position().x();
+        sim_inipos_y	= gvtx->position().y();
+        sim_inipos_z	= gvtx->position().z();
 
-      sim_mom_cost = momvec.cosTheta();
-      sim_mom_phi = momvec.phi();
-      sim_mom_pt = momvec.perp();
+        sim_mom_cost = momvec.cosTheta();
+        sim_mom_phi = momvec.phi();
+        sim_mom_pt = momvec.perp();
 
       //Store Parameters
-      sim_d0		= simparams(1);
-      sim_phi0	= simparams(2);
-      sim_omega	= simparams(3);
-      sim_z0		= simparams(4);
-      sim_tandip	= simparams(5);
+        sim_d0		= simparams(1);
+        sim_phi0	= simparams(2);
+        sim_omega	= simparams(3);
+        sim_z0		= simparams(4);
+        sim_tandip	= simparams(5);
 
       //Store Range of trajectory
-      sim_lowrange	= simtraj->lowRange();
-      sim_hirange		= simtraj->hiRange();
-      sim_poca		= simpoca.flt1();
-      sim_doca		= simpoca.doca();
+        sim_lowrange	= simtraj->lowRange();
+        sim_hirange		= simtraj->hiRange();
+        sim_poca		= simpoca.flt1();
+        sim_doca		= simpoca.doca();
 
     // count the number of measurements per station.
-      HitCount hcount;
-      countHits(simtrk,hcount);  
-      sim_nzero = hcount.nhit[0];
-      sim_nzero_ge = hcount.nhit_ge[0];
-      sim_nsingle = hcount.nhit[1];
-      sim_nsingle_ge = hcount.nhit_ge[1];
-      sim_ndouble = hcount.nhit[2];
-      sim_ndouble_ge = hcount.nhit_ge[2];
-      sim_ntriple = hcount.nhit[3];
-      sim_ntriple_ge = hcount.nhit_ge[3];
-      sim_nquad = hcount.nhit[4];
-      sim_nquad_ge = hcount.nhit_ge[4];
-      sim_nstation = hcount.nstation;
-      sim_ndlayer = hcount.ndlayer;
-      
-    // Reconstruct the track with KalmanTrack (using the list of hits)
-      const TrkRecoTrk* trk = trackreco->findTrack(simtrk);
-      if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
+        HitCount hcount;
+        countHits(simtrk,hcount);  
+        sim_nzero = hcount.nhit[0];
+        sim_nzero_ge = hcount.nhit_ge[0];
+        sim_nsingle = hcount.nhit[1];
+        sim_nsingle_ge = hcount.nhit_ge[1];
+        sim_ndouble = hcount.nhit[2];
+        sim_ndouble_ge = hcount.nhit_ge[2];
+        sim_ntriple = hcount.nhit[3];
+        sim_ntriple_ge = hcount.nhit_ge[3];
+        sim_nquad = hcount.nhit[4];
+        sim_nquad_ge = hcount.nhit_ge[4];
+        sim_nstation = hcount.nstation;
+        sim_ndlayer = hcount.ndlayer;
+
+        if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
         //Get Reconstructed Track data
-        KalInterface kinter;
-        trk->attach(kinter,trk->defaultType());
-        const KalRep* kalrep = kinter.kalmanRep();
-        const TrkDifPieceTraj& recotraj = kalrep->pieceTraj();
+          KalInterface kinter;
+          trk->attach(kinter,trk->defaultType());
+          const KalRep* kalrep = kinter.kalmanRep();
+          const TrkDifPieceTraj& recotraj = kalrep->pieceTraj();
         // find POCA to true production Point
-        TrkPoca recpoca(recotraj,0.0,zaxis,10, 1e-12);
-        double fltlen(0.0);
-        if(recpoca.status().success())
-          fltlen = recpoca.flt1();
-        TrkExchangePar helix = kalrep->helix(fltlen);
-        HepVector recoparams = helix.params();
-        HepSymMatrix recocovar = helix.covariance();
+          TrkPoca recpoca(recotraj,0.0,zaxis,10, 1e-12);
+          double fltlen(0.0);
+          if(recpoca.status().success())
+            fltlen = recpoca.flt1();
+          TrkExchangePar helix = kalrep->helix(fltlen);
+          HepVector recoparams = helix.params();
+          HepSymMatrix recocovar = helix.covariance();
 
         // Get initial momenta of reconstructed track
 //      double localflight;
 //      const TrkSimpTraj* inithelix = recotraj.localTrajectory(fltlen, localflight);
-        TrkPoca recopoca(recotraj, 0, zaxis, 10, 1e-12);
-        
-        const PdtEntry* pdt = Pdt::lookup(kalrep->particleType(),kalrep->charge());
-        if(pdt != 0)
-          rec_pdgid = pdt->pdgId();
-        else
-          rec_pdgid = -1000;
-        rec_lowrange	= recotraj.lowRange();
-        rec_hirange		= recotraj.hiRange();
-        rec_poca		= recopoca.flt1();
-        rec_doca		= recopoca.doca();
+          TrkPoca recopoca(recotraj, 0, zaxis, 10, 1e-12);
 
-        rec_d0		= recoparams(1);
-        rec_phi0	= recoparams(2);
-        rec_omega	= recoparams(3);
-        rec_z0		= recoparams(4);
-        rec_tandip	= recoparams(5);
-        reccov_d0		= sqrt(recocovar.fast(1,1));
-        reccov_phi0		= sqrt(recocovar.fast(2,2));
-        reccov_omega	= sqrt(recocovar.fast(3,3));
-        reccov_z0		= sqrt(recocovar.fast(4,4));
-        reccov_tandip	= sqrt(recocovar.fast(5,5));	
+          const PdtEntry* pdt = Pdt::lookup(kalrep->particleType(),kalrep->charge());
+          if(pdt != 0)
+            rec_pdgid = pdt->pdgId();
+          else
+            rec_pdgid = -1000;
+          rec_lowrange	= recotraj.lowRange();
+          rec_hirange		= recotraj.hiRange();
+          rec_poca		= recopoca.flt1();
+          rec_doca		= recopoca.doca();
 
-        Hep3Vector recoinitmom = kalrep->momentum(0.0);
-        BbrVectorErr momerr = kalrep->momentumErr(0.0);
-        rec_mom_pt	= recoinitmom.perp();
-        rec_mom_z	= recoinitmom.z();
-        rec_mom_mag	= recoinitmom.mag();
-        Hep3Vector momdir = recoinitmom.unit();
-        HepVector momvec(3);
-        for(int icor=0;icor<3;icor++)
-          momvec[icor] = momdir[icor];
-        rec_mom_err = sqrt(momerr.covMatrix().similarity(momvec));
-        Hep3Vector ptdir = Hep3Vector(momdir.x(),momdir.y(),0.0).unit();
-        for(int icor=0;icor<3;icor++)
-          momvec[icor] = ptdir[icor];
-        rec_mom_pterr = sqrt(momerr.covMatrix().similarity(momvec));
+          rec_d0		= recoparams(1);
+          rec_phi0	= recoparams(2);
+          rec_omega	= recoparams(3);
+          rec_z0		= recoparams(4);
+          rec_tandip	= recoparams(5);
+          reccov_d0		= sqrt(recocovar.fast(1,1));
+          reccov_phi0		= sqrt(recocovar.fast(2,2));
+          reccov_omega	= sqrt(recocovar.fast(3,3));
+          reccov_z0		= sqrt(recocovar.fast(4,4));
+          reccov_tandip	= sqrt(recocovar.fast(5,5));	
+
+          Hep3Vector recoinitmom = kalrep->momentum(0.0);
+          BbrVectorErr momerr = kalrep->momentumErr(0.0);
+          rec_mom_pt	= recoinitmom.perp();
+          rec_mom_z	= recoinitmom.z();
+          rec_mom_mag	= recoinitmom.mag();
+          Hep3Vector momdir = recoinitmom.unit();
+          HepVector momvec(3);
+          for(int icor=0;icor<3;icor++)
+            momvec[icor] = momdir[icor];
+          rec_mom_err = sqrt(momerr.covMatrix().similarity(momvec));
+          Hep3Vector ptdir = Hep3Vector(momdir.x(),momdir.y(),0.0).unit();
+          for(int icor=0;icor<3;icor++)
+            momvec[icor] = ptdir[icor];
+          rec_mom_pterr = sqrt(momerr.covMatrix().similarity(momvec));
 
       //Pull Calculation
-        HepVector pull(5);
-        trknum = parnum;
-        for(int i = 1; i <= 5; i++) {
-          pull(i) = (recoparams(i) - simparams(i)) / sqrt(recocovar(i,i));
-        }
+          HepVector pull(5);
+          trknum = trk->id();
+          for(int i = 1; i <= 5; i++) {
+            pull(i) = (recoparams(i) - simparams(i)) / sqrt(recocovar(i,i));
+          }
       //Store Pull information
-        pull_d0		= pull(1);
-        pull_phi0	= pull(2);
-        pull_omega	= pull(3);
-        pull_omegaabs	= (abs(recoparams(3)) - abs(simparams(3))) / sqrt(recocovar(3,3));
-        pull_z0		= pull(4);
-        pull_tandip	= pull(5);
+          pull_d0		= pull(1);
+          pull_phi0	= pull(2);
+          pull_omega	= pull(3);
+          pull_omegaabs	= (abs(recoparams(3)) - abs(simparams(3))) / sqrt(recocovar(3,3));
+          pull_z0		= pull(4);
+          pull_tandip	= pull(5);
 
       //Store fit information
-        rec_chisqr	= kalrep->chisq();
-        rec_ndof	= kalrep->nDof();
-        rec_fitprob = kalrep->chisqConsistency().significanceLevel();
+          rec_chisqr	= kalrep->chisq();
+          rec_ndof	= kalrep->nDof();
+          rec_fitprob = kalrep->chisqConsistency().significanceLevel();
 
-        rec_nsvt	= kalrep->hotList()->nSvt();
-        rec_ndch	= kalrep->hotList()->nDch();
-        rec_nactive = kalrep->hotList()->nActive();
-        rec_nhit = kalrep->hotList()->nHit();
+          rec_nsvt	= kalrep->hotList()->nSvt();
+          rec_ndch	= kalrep->hotList()->nDch();
+          rec_nactive = kalrep->hotList()->nActive();
+          rec_nhit = kalrep->hotList()->nHit();
+// count merged hits
+          rec_nmerged = 0;
+          for (TrkHotList::hot_iterator i = kalrep->hotList()->begin();i!=kalrep->hotList()->end();++i) {
+            if (i->usability() == -10)rec_nmerged++;
+          }
 
       // test of position difference between
-        if(trajdiff)fillTrajDiff(simtrk,recotraj,tdiff,bdiff,ssum);
+          if(trajdiff)fillTrajDiff(simtrk,recotraj,tdiff,bdiff,ssum);
 
-        if(disptrack)
-          display.drawRecTrack(trk);
+          if(disptrack)
+            display.drawRecTrack(trk);
 
-      } else {
+        } else {
 // no track: fill with dummy parameters
-        rec_lowrange	= -100;
-        rec_hirange		= -100;
-        rec_poca		= -100;
-        rec_doca		= -100;
-        rec_d0		= -100;
-        rec_phi0	= -100;
-        rec_omega	= -100;
-        rec_z0		= -100;
-        rec_tandip	= -100;
-        reccov_d0		= -100;
-        reccov_phi0		= -100;
-        reccov_omega	= -100;
-        reccov_z0		= -100;
-        reccov_tandip	= -100;
-        rec_mom_pt	= -100;
-        rec_mom_z	= -100;
-        rec_mom_mag	= -100;
-        rec_mom_err	= -100;
-        rec_mom_pterr	= -100;
-        pull_d0		= -100;
-        pull_phi0	= -100;
-        pull_omega	= -100;
-        pull_omegaabs	= -100;
-        pull_z0		= -100;
-        pull_tandip	= -100;
-        rec_chisqr	= -100;
-        rec_fitprob	= -100;
-        rec_ndof	= -100;
-        rec_nsvt	= -100;
-        rec_ndch	= -100;
-        rec_nactive	= -100;
-        rec_nhit	= -100;
-        trknum = -100;
-      }
-    // if we're writing particles, test this one
-      if(writer.isActive()){
-        const PacSimHit* writehit = findFirstHit(simtrk);
-        if(writehit != 0){
-          writer.writeParticle(*writehit);
+          rec_lowrange	= -100;
+          rec_hirange		= -100;
+          rec_poca		= -100;
+          rec_doca		= -100;
+          rec_d0		= -100;
+          rec_phi0	= -100;
+          rec_omega	= -100;
+          rec_z0		= -100;
+          rec_tandip	= -100;
+          reccov_d0		= -100;
+          reccov_phi0		= -100;
+          reccov_omega	= -100;
+          reccov_z0		= -100;
+          reccov_tandip	= -100;
+          rec_mom_pt	= -100;
+          rec_mom_z	= -100;
+          rec_mom_mag	= -100;
+          rec_mom_err	= -100;
+          rec_mom_pterr	= -100;
+          pull_d0		= -100;
+          pull_phi0	= -100;
+          pull_omega	= -100;
+          pull_omegaabs	= -100;
+          pull_z0		= -100;
+          pull_tandip	= -100;
+          rec_chisqr	= -100;
+          rec_fitprob	= -100;
+          rec_ndof	= -100;
+          rec_nsvt	= -100;
+          rec_ndch	= -100;
+          rec_nactive	= -100;
+          rec_nmerged	= -100;
+          rec_nhit	= -100;
+          trknum = -100;
         }
+    // if we're writing particles, test this one
+        if(writer.isActive()){
+          const PacSimHit* writehit = findFirstHit(simtrk);
+          if(writehit != 0){
+            writer.writeParticle(*writehit);
+          }
+        }
+        if(hittuple)fillSimHitInfo(simtrk, sinfo);
+        trackT->Fill();
+        if(disptrack)
+          display.fillTrees();
       }
-      if(hittuple)fillSimHitInfo(simtrk, sinfo);
-      trackT->Fill();
-      if(disptrack)
-        display.fillTrees();
-      parnum++;
     }
 // cleanup this event
     for(unsigned istrk=0;istrk<strks.size();istrk++){
@@ -940,3 +947,35 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj,
   ssum.binttru = binttru.mag();
   ssum.bintrec = bintrec.mag();
 }
+
+void createSim(const PacSimulate& sim,const std::vector<TParticle*>& parts,std::vector<PacSimTrack*>& strks) {
+  for(std::vector<TParticle*>::const_iterator ipar = parts.begin();ipar != parts.end();ipar++){
+// convert to GTrack: so ugly!!!
+    TParticle* part = *ipar;
+    GVertex* gvtx(0);
+    GTrack* gtrk(0);
+    static unsigned index(0);
+// convert TParticle to GTrack (ugly!!!)
+    gvtx = new GVertex;
+    gvtx->setCause( GVertex::generator );
+    gvtx->setPosition( HepPoint(part->Vx(),part->Vy(),part->Vz()));
+    gvtx->setTime( part->T() );
+    gvtx->setTerminal( true );
+    gvtx->setIndex( 0 );
+    gvtx->setParentTrimMarker( 0 );
+
+    gtrk = new GTrack;
+    gtrk->setP4(HepLorentzVector( part->Px(),
+      part->Py(),
+      part->Pz(),
+      part->Energy()));
+    PdtEntry* pdt = Pdt::lookup((PdtPdg::PdgType)part->GetPdgCode());
+    gtrk->setPDT( pdt );
+    gtrk->setVertex( gvtx );
+    gtrk->setIndex( index++);
+//Simulate Track through detectors
+    PacSimTrack* simtrk = sim.simulateGTrack(gtrk);
+    if(simtrk != 0)strks.push_back(simtrk);    
+  }
+}
+

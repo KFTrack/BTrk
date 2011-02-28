@@ -14,12 +14,12 @@ _file(0), _tree(0), _bparticles(0), _bevtnum(0), _bevtwt(0), _bnevt(0), _bnpar(0
   _particles(0), _evtnum(0), _evtwt(0), _nevt(0), _npar(0),
   _nread(0),_ievt(0){
 // get config information
-  const char* filename = config.getcstr("RootFile.inputfile","none.root");
-  _ifirst = config.getint("RootFile.firstevent",0);
-  _nevents = config.getint("RootFile.nevents",-1);
+  const char* filename = config.getcstr("inputfile","none.root");
+  _ifirst = config.getint("firstevent",0);
+  _nevents = config.getint("nevents",-1);
 
-  _tscale = config.getdouble("RootFile.timescale",1.0);
-  _toffset = config.getdouble("RootFile.timeoffset",1.0);
+  _tscale = config.getdouble("timescale",1.0);
+  _toffset = config.getdouble("timeoffset",1.0);
 
   _file = TFile::Open(filename,"READ");
   if(_file != 0){
