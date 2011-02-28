@@ -29,7 +29,7 @@ public:
 // root tree name
   const std::string& treename() { return _treename; }
   void setTreeName(const std::string& tname) { _treename = tname; }
-private:
+protected:
 // root structure
   TFile *_file;
   TTree *_tree;
