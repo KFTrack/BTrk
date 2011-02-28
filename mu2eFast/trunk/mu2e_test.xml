@@ -51,7 +51,13 @@
 
     <!-- Prints out Positon/Momentum/Parameter Info (make sure numtracks isn't large!!) -->
     <param name="verbose" type="bool"> false</param>
-
+    <!-- optionally write out particles at the first active hit by setting 'active' to true -->
+    <sect name="ParticleOutput">
+        <param name="weight" type="float"> 1.0</param>
+        <param name="filename" type="string" >FastSimOutput.root</param>
+        <param name="treename" type="string" >Mu2eParticles</param>
+        <param name="active" type="bool"> false</param>
+    </sect>
 
 </config>
 </edml>
