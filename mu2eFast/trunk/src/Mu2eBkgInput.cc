@@ -16,6 +16,7 @@ Mu2eBkgInput::Mu2eBkgInput(PacConfig& config) : Mu2eRootInput(config){
   _nbkg = config.getfloat("nbunchbkg",4e4);
   _bkgeff = config.getfloat("bkgeff",3.2e-3);
   _norm = 1.0-exp(-_bunchtime/_lambda);
+  _bkgtime = config.getbool("bkgtime",true);
   unsigned rndseed = config.getint("rndseed", 123872342);
   _rng.SetSeed(rndseed);
 }
@@ -40,6 +41,7 @@ Mu2eBkgInput::nextEvent(Mu2eEvent& event) {
       Double_t btime = _rng.Uniform(-_halfwindow,_halfwindow);
       for(std::vector<TParticle*>::iterator ipart=temp._particles.begin();ipart!=temp._particles.end();ipart++){
         TParticle* part = *ipart;
+        if(_bkgtime)btime += part->T();
         part->SetProductionVertex(part->Vx(),part->Vy(),part->Vz(),btime);
       }
       event.append(temp);
