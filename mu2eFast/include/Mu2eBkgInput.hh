@@ -29,6 +29,7 @@ private:
   double _nbkg; // Integral # of background events in the bunch window
   double _bkgeff; // efficiency for background events to be writen out
   double _norm; // normalization for sampling
+  bool _bkgtime; // use the bkg signal time or not
   TRandom3 _rng;
 };
 #endif
