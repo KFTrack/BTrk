@@ -416,7 +416,7 @@ int main(int argc, char* argv[]) {
 
     //Fill initial parameters
         HepVector simparams(5);
-        double flightlen;
+        double flightlen(0.0);
         TrkHelixUtils::helixFromMom(simparams,flightlen,
           gvtx->position(),
           gtrk->p4(),gtrk->pdt()->charge(),*bfield);
