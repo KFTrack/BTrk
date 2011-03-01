@@ -553,7 +553,7 @@ int main(int argc, char* argv[]) {
 // count merged hits
           rec_nmerged = 0;
           for (TrkHotList::hot_iterator i = kalrep->hotList()->begin();i!=kalrep->hotList()->end();++i) {
-            if (i->usability() == -10)rec_nmerged++;
+            if (i->usability() == 10)rec_nmerged++;
           }
 
       // test of position difference between
