@@ -13,7 +13,8 @@
 #include <TSpline.h>
 #include <TRandom3.h>
 #include <TMath.h>
-#include "mu2eFast/include/VavRan.h"
+#include <iostream.h>
+
 
 static const double ft(4.0/3.0);
 static const double ot(1.0/3.0);
