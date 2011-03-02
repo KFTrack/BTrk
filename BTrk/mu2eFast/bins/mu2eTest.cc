@@ -613,11 +613,6 @@ int main(int argc, char* argv[]) {
           rec_nhit	= -100;
           trknum = -100;
         }
-// write display
-        if(disptrack){
-          display.fillTrees();
-          display.reset();
-        }
     // if we're writing particles, test this one
         if(writer.isActive()){
           const PacSimHit* writehit = findFirstHit(simtrk);
@@ -628,6 +623,11 @@ int main(int argc, char* argv[]) {
         if(hittuple)fillSimHitInfo(simtrk, sinfo);
         trackT->Fill();
       }
+    }
+// write display
+    if(disptrack){
+      display.fillTrees();
+      display.reset();
     }
 // cleanup this event
     for(unsigned istrk=0;istrk<strks.size();istrk++){
