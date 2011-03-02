@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
   Int_t    itrack;
   Int_t    trknum;
   
-  Int_t bkg_nsim;
+  Int_t bkg_ntrks, bkg_nhits;
   Int_t sim_nzero, sim_nsingle, sim_ndouble, sim_ntriple, sim_nquad;
   Int_t sim_nzero_ge, sim_nsingle_ge, sim_ndouble_ge, sim_ntriple_ge, sim_nquad_ge;
   Int_t sim_nstation, sim_ndlayer;
@@ -246,7 +246,8 @@ int main(int argc, char* argv[]) {
   //Create TBranch to store track info
   trackT->Branch("itrack",&itrack,"itrack/I");
   trackT->Branch("trknum",&trknum,"trknum/I");
-  trackT->Branch("bkg_nsim",&bkg_nsim,"bkg_nsim/I");  
+  trackT->Branch("bkg_ntrks",&bkg_ntrks,"bkg_ntrks/I");  
+  trackT->Branch("bkg_nhits",&bkg_nhits,"bkg_nhits/I");  
   trackT->Branch("sim_pdgid",&sim_pdgid,"sim_pdgid/I");
   trackT->Branch("sim_d0",&sim_d0,"sim_d0/F");
   trackT->Branch("sim_phi0",&sim_phi0,"sim_phi0/F");
@@ -365,8 +366,6 @@ int main(int argc, char* argv[]) {
   if(gconfig.has("BkgInput.inputfile")){
 // we have backgrounds to merge with signal.  Create and configure the input object
     PacConfig bkgconfig = gconfig.getconfig("BkgInput.");
-// test
-//    const char* filename = bkgconfig.getcstr("inputfile");    
     bkginput = new Mu2eBkgInput(bkgconfig);
   }
   
@@ -382,13 +381,29 @@ int main(int argc, char* argv[]) {
     nevt++;
 // create simtrks
     std::vector<PacSimTrack*> strks;
-    createSim(sim,event._particles,strks);
 // if bkg input exists, merge backgrounds with this event
     if(bkginput != 0 && bkginput->nextEvent(bkgevt)){
-      bkg_nsim = bkgevt._particles.size();
       createSim(sim,bkgevt._particles,strks);
-    } else
-      bkg_nsim = 0;
+// count background
+      bkg_ntrks = strks.size();
+      bkg_nhits = 0;
+      for(unsigned istrk=0;istrk<strks.size();istrk++){
+        const std::vector<PacSimHit>& shs = strks[istrk]->getHitList();
+        for(int ish=0;ish<shs.size();ish++){
+          const PacSimHit& sh = shs[ish];
+          const DetElem* delem = sh.detIntersection().delem;
+          const PacDetElem* pelem = dynamic_cast<const PacDetElem *>(delem);
+          if( pelem != 0 && pelem->measurementDevices().size()!= 0 )        
+            bkg_nhits++;
+        }
+      }
+    } else {
+      bkg_ntrks = 0;
+      bkg_nhits = 0; 
+    }
+// create signal particle
+    createSim(sim,event._particles,strks);      
+// create reco tracks
     trackreco->makeTracks(strks);
     for(unsigned istrk=0;istrk<strks.size();istrk++){
 // clear vectors
