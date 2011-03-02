@@ -623,10 +623,11 @@ int main(int argc, char* argv[]) {
         }
         if(hittuple)fillSimHitInfo(simtrk, sinfo);
         trackT->Fill();
-        if(disptrack)
-          display.fillTrees();
       }
     }
+// write display
+    if(disptrack)
+      display.fillTrees();
 // cleanup this event
     for(unsigned istrk=0;istrk<strks.size();istrk++){
       PacSimTrack* simtrk = const_cast<PacSimTrack*>(strks[istrk]);
