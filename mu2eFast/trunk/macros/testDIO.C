@@ -42,14 +42,18 @@ void testDIO(TCanvas* can,const char* file="~/Downloads/dio_spectrum.csv") {
   
   TH1D* dio = new TH1D("dio","dio spectrum",200,0,106);
   dio->SetMaximum(4e-2);
+  dio->GetXaxis()->SetTitle("MeV");
   
   TH1D* intdio = new TH1D("intdio","integrated dio spectrum",200,0,106);
   intdio->SetMaximum(1.01);
+  intdio->GetXaxis()->SetTitle("MeV");
   
   TH1D* invdio = new TH1D("invdio","inverse integral dio spectrum",201,0,1.01);
   invdio->SetMaximum(105);
+  invdio->GetYaxis()->SetTitle("MeV");
   
   TH1D* sdio = new TH1D("dio","sampled dio spectrum",200,0,106);
+  sdio->GetXaxis()->SetTitle("MeV");
     
 // sample the spectrum
   int ntrials=1000000;
