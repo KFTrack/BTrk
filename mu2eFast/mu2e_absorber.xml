@@ -3,7 +3,9 @@
     <included>
         <detector name="Mu2e">
             <volume name="Absorber">
-                <cone name="ProtonAbsorber" id="0" rho1="33.5" z1="-385" rho2="38.57" z2="-135" thick="0.05" mat="MDPE"  />
+                <cone name="ProtonAbsorber" id="0" rho1="33.5" z1="-385" rho2="38.57" z2="-135" thick="0.05" mat="MDPE"  /> 
+<!--                <cyl name="ProtonAbsorber" id="0" radius="35" zmin="-385" zmax="-135" thick="0.05" mat="MDPE"  /> -->
+                
             </volume>
         </detector>
         <!-- now define the voxelization -->
@@ -16,7 +18,7 @@
                     1
                 </param>
                 <param name="zbounds"   type="vector"         >
-                    -389 -129 
+                    -389 -369 -349 -329 -309 -289 -269 -249 -229 -209 -189 -169 -149 -129 
                 </param>
             </sect>
         </config>
