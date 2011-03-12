@@ -31,9 +31,9 @@
         </define>
 
         <measures>
-            <device name="MWPC1"
+            <device name="Straw"
                 type="DriftChamber"
-                sensitiveTimeWindow="1e-5"
+                sensitiveTimeWindow="1e-6"
                 rms_par0="0.02135"
                 rms_par1="-0.061"
                 rms_par2="0.06934"
@@ -57,7 +57,7 @@
                     <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
                     <loop variable="svar" count="4" startvalue="0" stepvalue="1">
                         <loop variable="cvar" count="3" startvalue="0" stepvalue="1">
-                            <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw_15um" gap="strawgap" overlap="strawoverlap" meas="MWPC1"/>
+                            <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw_15um" gap="strawgap" overlap="strawoverlap" meas="Straw"/>
                             <rect name="wire" id="index" orientation="0" centerrho="centerrho" centerz="planewire" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="wirethickness" mat="straw-wire" gap="wiregap" /> 
                         </loop>
                     </loop>
