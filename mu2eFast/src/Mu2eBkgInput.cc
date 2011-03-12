@@ -10,9 +10,9 @@ using std::endl;
 
 Mu2eBkgInput::Mu2eBkgInput(PacConfig& config) : Mu2eRootInput(config){
 // normalize over the bunch time window
-  _bunchtime = config.getfloat("bunchtime",1.0e-6);
-  _lambda = config.getfloat("signaldecay",0.8e-6);
-  _halfwindow = config.getfloat("sensitivehalfwindow",0.1e-6);
+  _bunchtime = config.getfloat("bunchtime",0.975e-6);
+  _lambda = config.getfloat("signaldecay",0.86e-6);
+  _halfwindow = config.getfloat("bkghalfwindow",0.1e-6);
   _nbkg = config.getfloat("nbunchbkg",4e4);
   _bkgeff = config.getfloat("bkgeff",3.2e-3);
   _norm = 1.0-exp(-_bunchtime/_lambda);
@@ -27,7 +27,7 @@ Mu2eBkgInput::~Mu2eBkgInput(){
 bool
 Mu2eBkgInput::nextEvent(Mu2eEvent& event) {
   bool retval(true);
-  clear(event,false);
+  clear(event,true);
 // sample time of signal event within the bunch
   double stime = -_lambda*log(1.0 - _norm*_rng.Uniform());
 // sample the # of background events in the sensitive time window around this,
@@ -40,15 +40,21 @@ Mu2eBkgInput::nextEvent(Mu2eEvent& event) {
 // compute a random time within the window, and move the particles to that.  By Dfn. t=0 is the signal production time
       Double_t btime = _rng.Uniform(-_halfwindow,_halfwindow);
       for(std::vector<TParticle*>::iterator ipart=temp._particles.begin();ipart!=temp._particles.end();ipart++){
-        TParticle* part = *ipart;
+// must create new particles as root placement new overwrites old events
+        TParticle* part = new TParticle(**ipart);
         if(_bkgtime)btime += part->T();
         part->SetProductionVertex(part->Vx(),part->Vy(),part->Vz(),btime);
+        event._particles.push_back(part);
       }
-      event.append(temp);
     }
 // check if the file needs rewinding
     if(_nread >= _nevents)rewind();
   }
+// update general event information
+  event._evtnum = _evtnum;
+  event._evtwt = _evtwt;
+  event._nevt = _nevt;
+  event._npar = _npar;
   return retval;
 }
 
