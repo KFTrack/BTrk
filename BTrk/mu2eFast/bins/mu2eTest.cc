@@ -351,7 +351,7 @@ int main(int argc, char* argv[]) {
   Mu2eInput* input(0);
   // input specification; check for input file first
   if(gconfig.has("RootFile.inputfile")){
-    PacConfig rootconfig = gconfig.getconfig("RootFile");
+    PacConfig rootconfig = gconfig.getconfig("RootFile.");
     input = new Mu2eRootInput(rootconfig);
   } else if (gconfig.has("TargetInput.nevents")){
       input = new Mu2eTargetInput(gconfig);    
