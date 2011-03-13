@@ -1,4 +1,8 @@
+#include "BaBar/BaBar.hh"
 #include "mu2eFast/Mu2eTargetInput.hh"
+#include "PacGeom/PacRingDetType.hh"
+#include "PacGeom/PacDetector.hh"
+#include "DetectorModel/DetSet.hh"
 #include "PDT/PdtPdg.hh"
 #include "PDT/Pdt.hh"
 #include "PacEnv/PacConfig.hh"
@@ -6,20 +10,62 @@
 #include <TParticle.h>
 #include <TGraph.h>
 #include <TSpline.h>
-
+#include <assert.h>
 #include "G3Data/GVertex.hh"
 #include "G3Data/GTrack.hh"
+#include "PacGeom/PacPlaneDetElem.hh"
+#include <iostream>
+using namespace std;
 
 Mu2eTargetInput::Mu2eTargetInput(PacConfig& config) : _ievt(0) {
+  prepareBeam(config);
+// find target geometry
+  _diskradii = config.getvector("diskradii");
+  _diskz = config.getvector("diskz");
+  assert(_diskradii.size() == _diskz.size());
+  double halfthickness = 0.5*config.getdouble("thickness",0.01);
+  for(int itar=0;itar<_diskradii.size();itar++){
+    _halfthickness.push_back(halfthickness);
+  }
+}
+
+Mu2eTargetInput::Mu2eTargetInput(PacConfig& config,const PacDetector* detector) : _ievt(0) {
+  prepareBeam(config);
+// find the target in the detector
+  const std::vector<DetSet*>& sets = detector->detectorModel()->setList();
+  for(std::vector<DetSet*>::const_iterator iset=sets.begin();iset!=sets.end();iset++){
+    if((*iset)->setName()=="Target"){
+      const std::vector<DetElem*>& elems = (*iset)->elementList();
+      for(std::vector<DetElem*>::const_iterator ielem=elems.begin(); ielem!=elems.end(); ielem++){
+        const DetElem* elem = *ielem;
+        const PacPlaneDetElem* pelem = dynamic_cast<const PacPlaneDetElem*>(elem);
+        if(pelem != 0){
+          const PacRingDetType* rtype = dynamic_cast<const PacRingDetType*>(pelem->planeType());
+          if(rtype !=0){
+            cout << "found Target disk element " << pelem->elementName() 
+            << " z = " << pelem->midpoint().z() << " radius = " << rtype->highrad() 
+            << " thickness = " << rtype->thick() << endl;
+            _halfthickness.push_back(rtype->thick()/2.0);
+            _diskz.push_back(pelem->midpoint().z());
+            _diskradii.push_back(rtype->highrad());
+          }
+        }
+      }
+    }
+  }
+}
+
+void
+Mu2eTargetInput::prepareBeam(PacConfig& config){
 // conversion to electron
   _pdt = Pdt::lookup((PdtPdg::PdgType)11);
 // Read beam configuration 
-  _beamxsig = gconfig.getdouble("TargetInput.beamxsigma");
-  _beamtsig = gconfig.getdouble("TargetInput.beamthetasigma");
-  _beamzlambda = gconfig.getdouble("TargetInput.beamzlambda");
-  _p_min = gconfig.getdouble("TargetInput.p_min");
-  _p_max = gconfig.getdouble("TargetInput.p_max");
-  int ispect = gconfig.getint("TargetInput.spectrumtype",0);
+  _beamxsig = config.getdouble("beamxsigma");
+  _beamtsig = config.getdouble("beamthetasigma");
+  _beamzlambda = config.getdouble("beamzlambda");
+  _p_min = config.getdouble("p_min");
+  _p_max = config.getdouble("p_max");
+  int ispect = config.getint("spectrumtype",0);
   switch(ispect) {
     case flat: default:
     _stype = flat;
@@ -27,21 +73,16 @@ Mu2eTargetInput::Mu2eTargetInput(PacConfig& config) : _ievt(0) {
     case file:
     _stype = file;
   }
-  _cost_min = gconfig.getdouble("TargetInput.cost_min");
-  _cost_max = gconfig.getdouble("TargetInput.cost_max");
-  _nevents = gconfig.getint("TargetInput.nevents");
+  _cost_min = config.getdouble("cost_min");
+  _cost_max = config.getdouble("cost_max");
+  _nevents = config.getint("nevents");
   // initialize random number
-  unsigned rndseed = gconfig.getint("TargetInput.rndseed", 1238783);
+  unsigned rndseed = config.getint("rndseed", 1238783);
   _rng.SetSeed(rndseed);
-// find target geometry
-  _diskradii = gconfig.getvector("TargetInput.diskradii");
-  _diskz = gconfig.getvector("TargetInput.diskz");
-  _halfthickness = 0.5*gconfig.getdouble("TargetInput.thickness",0.01);
-  
-// prepare the dio spectrum generator if necessary
+  // prepare the dio spectrum generator if necessary
   if(_stype == file){
-    const char* sfile = gconfig.getcstr("TargetInput.spectrumfile");
-    double scale = gconfig.getdouble("TargetInput.spectrumscale",1.0);
+    const char* sfile = config.getcstr("spectrumfile");
+    double scale = config.getdouble("spectrumscale",1.0);
     TGraph spectrum(sfile, "%lg,%lg");
     if(spectrum.GetN()>0){
       double lowedge = scale*spectrum.GetX()[0];
@@ -117,7 +158,7 @@ Mu2eTargetInput::create() {
     }
   }
 // randomize the position within the thickness
-  double z = _diskz[ifoil] + _rng.Uniform(-_halfthickness,_halfthickness);
+  double z = _diskz[ifoil] + _rng.Uniform(-_halfthickness[ifoil],_halfthickness[ifoil]);
 // generate position.  It must be inside the target radius
   double x,y;
   double radius(100.0);

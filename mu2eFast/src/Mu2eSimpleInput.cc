@@ -9,20 +9,20 @@
 #include "G3Data/GTrack.hh"
 
 Mu2eSimpleInput::Mu2eSimpleInput(PacConfig& config) : _ievt(0) {
-  PdtPdg::PdgType pdgid = (PdtPdg::PdgType)gconfig.getint("SimpleInput.PdtPdg",11);
+  PdtPdg::PdgType pdgid = (PdtPdg::PdgType)gconfig.getint("PdtPdg",11);
   _pdt = Pdt::lookup(pdgid);
   // Read helix generation parameters 
-  _p_min = gconfig.getdouble("SimpleInput.p_min");
-  _p_max = gconfig.getdouble("SimpleInput.p_max");
-  _cost_min = gconfig.getdouble("SimpleInput.cost_min");
-  _cost_max = gconfig.getdouble("SimpleInput.cost_max");
-  _r0_mean = gconfig.getdouble("SimpleInput.r0_mean");
-  _r0_sigma = gconfig.getdouble("SimpleInput.r0_sigma");
-  _z0_mean = gconfig.getdouble("SimpleInput.z0_mean");
-  _z0_sigma = gconfig.getdouble("SimpleInput.z0_sigma");
-  _nevents = gconfig.getint("SimpleInput.nevents");
+  _p_min = gconfig.getdouble("p_min");
+  _p_max = gconfig.getdouble("p_max");
+  _cost_min = gconfig.getdouble("cost_min");
+  _cost_max = gconfig.getdouble("cost_max");
+  _r0_mean = gconfig.getdouble("r0_mean");
+  _r0_sigma = gconfig.getdouble("r0_sigma");
+  _z0_mean = gconfig.getdouble("z0_mean");
+  _z0_sigma = gconfig.getdouble("z0_sigma");
+  _nevents = gconfig.getint("nevents");
   // initialize random number
-  unsigned rndseed = gconfig.getint("SimpleInput.rndseed", 1238783);
+  unsigned rndseed = gconfig.getint("rndseed", 1238783);
   _rng.SetSeed(rndseed);
 }
 
