@@ -11,6 +11,7 @@ class TRandom;
 class TGraph;
 class GTrack;
 class GVertex;
+class PacDetector;
 
 class Mu2eTargetInput : public Mu2eInput {
 public:
@@ -18,11 +19,15 @@ public:
   enum spectrum{flat=0,file};
   // construct from configuration object
   Mu2eTargetInput(PacConfig& config);
+  // construct from the detector
+  Mu2eTargetInput(PacConfig& config, const PacDetector* det);
   // override virtual interface
   virtual bool nextEvent(Mu2eEvent& event);
   virtual void rewind();
 protected:
   TParticle* create();
+  void prepareBeam(PacConfig& config);
+  
 private:
   const PdtEntry* _pdt;
   double _beamxsig;
@@ -38,7 +43,7 @@ private:
 // target description
   std::vector<double> _diskradii;
   std::vector<double> _diskz;
-  double _halfthickness;
+  std::vector<double> _halfthickness;
 // seed
   int _seed;
 // event counters

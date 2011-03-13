@@ -17,13 +17,6 @@
                 <param name="p_max" type="double"> 0.1051 </param>
                 <param name="cost_min"  type="double"> 0.5 </param>
                 <param name="cost_max" type="double"> 0.707107 </param>
-                <param name="diskradii"    type="vector"        >
-                    10.0000 8.2168 8.1288 8.0378 7.9438 7.8467 7.7463 7.6425 7.5352 7.4241 7.3093 7.1904 7.0674 6.9401 6.8082 6.6716 6.5300
-                </param>
-                <param name="diskz"    type="vector"        >
-                    -470 -465 -460 -455 -450 -445 -440 -435 -430 -425 -420 -415 -410 -405 -400 -395 -390            
-                </param>
-                <param name="thickness"  type="double"> 0.01 </param>
             </sect>            
         </config>
     </included>
