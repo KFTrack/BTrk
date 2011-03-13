@@ -346,7 +346,7 @@ int main(int argc, char* argv[]) {
   sim.setRandomEngine(engine);
   detector->setRandomEngine(engine);
   trackreco = new PacReconstructTrk(bfield,penv.getKalContext());
-  trackreco->setRandomEngine(engine);
+  trackreco->setRandomEngine(engine);  
 
   Mu2eInput* input(0);
   // input specification; check for input file first
@@ -354,9 +354,11 @@ int main(int argc, char* argv[]) {
     PacConfig rootconfig = gconfig.getconfig("RootFile.");
     input = new Mu2eRootInput(rootconfig);
   } else if (gconfig.has("TargetInput.nevents")){
-      input = new Mu2eTargetInput(gconfig);    
+    PacConfig targetconfig = gconfig.getconfig("TargetInput.");
+    input = new Mu2eTargetInput(targetconfig,detector);
   } else if(gconfig.has("SimpleInput.nevents")){
-    input = new Mu2eSimpleInput(gconfig);
+    PacConfig simpleconfig = gconfig.getconfig("SimpleInput.");
+    input = new Mu2eSimpleInput(simpleconfig);
   } else {
     std::cerr << "No input specified: aborting" << std::endl;
     return 1;
