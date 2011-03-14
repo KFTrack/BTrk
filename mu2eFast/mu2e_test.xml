@@ -1,47 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <edml>
-<!-- generate conversion electrons -->
+<!-- by default, generate conversion electrons from the target -->
 <include file="mu2eFast/TargetInput.xml" />
+<!-- can also generate particles according to specific spectra -->
+<!-- <include file="mu2eFast/TargetInput.xml" />  -->
+<!-- can also read particles from a file -->
+<!-- <include file="mu2eFast/FileInput.xml" />  -->
+<!-- job specification -->
+<!-- optionally overlay background event frames; this should be specified in conjunction with one of the above -->
+<!-- <include file="mu2eFast/BkgInput.xml" />  -->
 <config>
-
-    <!-- input specification, uncomment if you want to read a file 
-    <sect name="RootFile">
-    <param name="inputfile" type="string">file.root</param>
-    <param name="firstevent" type="long"> 0</param>
-    <param name="nevents" type="long"> -1</param>
-    <param name="timescale" type="float"> 1e-9 </param>
-    <param name="timeoffset" type="float"> 0 </param>
-    </sect> -->
-    <!-- simple generator parameters -->
-    <sect name="SimpleInput">
-        <!-- Number of tracks to generate -->
-        <param name="nevents" type="long"> 10000</param>
-        <!-- Initial distance from z axis (phi symmetric) -->
-        <param name="r0_mean" type="double"> 0.0</param>
-        <param name="r0_sigma" type="double"> 4.0</param>
-        <!-- Initial distance from z=0 -->
-        <param name="z0_mean" type="double"> -430</param>
-        <param name="z0_sigma" type="double"> 23</param>
-        <!-- momentum range-->
-        <param name="p_min"  type="double"> 0.1051</param>
-        <param name="p_max" type="double"> 0.1051 </param>
-        <!-- polar angle range -->
-        <param name="cost_min"  type="double"> 0.5 </param>
-        <param name="cost_max" type="double"> 0.707107 </param>
-        <!-- negative electron -->
-        <param name="PdtPdg" type="long"> 11</param>
-        <param name="rndseed" type="long"> 123499821</param>
-    </sect>
     <!-- ROOT file to save results to -->
     <param name="outputfile" type="string"> mu2e_test.root</param>    
     <param name="hittuple" type="bool"> true </param>
     <param name="trajdiff" type="bool"> false </param>
 
-    <!-- traj diff test parameters -->
+    <!-- optional trajectory diff test parameters -->
     <param name="fieldmap" type="string"> mu2eFast/DSMap_unfmt_rad100.dat</param>
     <param name="distortionfactor" type="double"> 10.0 </param>
 
-    <!-- display parameters -->
+    <!-- optional display parameters; note display output is very large, don't run too many events with this true!! -->
     <param name="displaytrack" type="bool"> false</param>
     <param name="displayfile" type="string" > mu2e_display.root</param>
     <param name="displayresolution" type="int" > 2000</param>
@@ -51,6 +29,7 @@
 
     <!-- Prints out Positon/Momentum/Parameter Info (make sure numtracks isn't large!!) -->
     <param name="verbose" type="bool"> false</param>
+    
     <!-- optionally write out particles at the first active hit by setting 'active' to true -->
     <sect name="ParticleOutput">
         <param name="weight" type="float"> 1.0</param>

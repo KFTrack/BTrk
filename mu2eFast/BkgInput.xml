@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Parameter definitions are mostly the same as for root file input -->
+<!-- This simulates the overlay of multiple tracks from a time slice
+around a presumed 'signal' track -->
+<edml>
+    <included>
+        <config>
+            <sect name="BkgInput">
+                <param name="inputfile" type="string">$SBROOT/data/DioOutput_merged.root</param>
+                <param name="firstevent" type="long"> 0</param>
+                <param name="nevents" type="long"> -1</param>
+                <param name="timescale" type="float"> 1 </param>
+                <param name="timeoffset" type="float"> 0 </param>
+                <!-- live window time -->
+                <param name="bunchtime" type="float"> 0.975e-6 </param>
+                <!-- stopped muon lifetime -->
+                <param name="signaldecay" type="float"> 0.86e-6 </param>
+                <!-- # of stopped muons/bunch -->
+                <param name="nbunchbkg" type="float"> 4e4 </param>
+                <!-- fraction of stopped muons generating the specified background type.  This
+                factor should include the selection efficiency of all cuts used when creating the output file -->
+                <param name="bkgeff" type="float"> 3.2e-3 </param>
+                <!-- time window in which to integrate background.  Making this too large just adds inefficiency,
+                as the final time cuts are always made hit-by-hit -->
+                <param name="bkghalfwindow" type="float"> 1.0e-7 </param>
+            </sect>            
+        </config>
+    </included>
+</edml>
