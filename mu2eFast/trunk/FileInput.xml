@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <config>
+            <sect name="RootFile">
+                <param name="inputfile" type="string">particle_file.root</param>
+                <param name="firstevent" type="long"> 0</param>
+                <!-- negative nevents means read all the events in the file -->
+                <param name="nevents" type="long"> -1</param>
+                <!-- default FastSim timeunit is seconds, geant is nanoseconds.  Change scale to 0 if time offset is unknown -->
+                <param name="timescale" type="float"> 1e-9 </param>
+                <param name="timeoffset" type="float"> 0 </param>
+            </sect>
+        </config>
+    </included>
+</edml>

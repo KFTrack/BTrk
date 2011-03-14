@@ -57,8 +57,8 @@ Mu2eTargetInput::Mu2eTargetInput(PacConfig& config,const PacDetector* detector) 
 
 void
 Mu2eTargetInput::prepareBeam(PacConfig& config){
-// conversion to electron
-  _pdt = Pdt::lookup((PdtPdg::PdgType)11);
+// particle type; by default, negative electrons
+  _pdt = Pdt::lookup((PdtPdg::PdgType)config.getint("PdtPdg",11));
 // Read beam configuration 
   _beamxsig = config.getdouble("beamxsigma");
   _beamtsig = config.getdouble("beamthetasigma");
@@ -79,7 +79,7 @@ Mu2eTargetInput::prepareBeam(PacConfig& config){
   // initialize random number
   unsigned rndseed = config.getint("rndseed", 1238783);
   _rng.SetSeed(rndseed);
-  // prepare the dio spectrum generator if necessary
+  // prepare the spectrum generator if necessary
   if(_stype == file){
     const char* sfile = config.getcstr("spectrumfile");
     double scale = config.getdouble("spectrumscale",1.0);
