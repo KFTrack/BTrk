@@ -124,7 +124,6 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     gPad->SetLogy();
     fitprob->Fit("pol1","","",0.05,1);
   } else if(page == "selection")  {
-    TH1F* 
   } else if(page == "eff"){
 
     TH1F* td_s = new TH1F("td_s","TanDip",100,0.5,1.1);
