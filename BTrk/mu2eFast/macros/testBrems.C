@@ -113,7 +113,8 @@ void invertBrems(double rfrac,double ymin=0.001, unsigned ntrials=100000) {
     double sx = sp3_inv2->Eval(ran);
     hspect->Fill(sx);
   }
-  
+  hspect->Scale(norm*nbins/float(ntrials));
+  hspect->GetXaxis()->SetTitle("Egamma/Eelectron");
   
   TCanvas* can1 = new TCanvas("can1");
   can1->Divide(2,3);
@@ -145,6 +146,7 @@ void invertBrems(double rfrac,double ymin=0.001, unsigned ntrials=100000) {
   gPad->SetLogy();
   TF1* newfun = new TF1(*dndy);
   newfun->SetName("newdNdy");
+  newfun->SetLineColor(kRed);
   cout << newfun->GetName() << endl;
   hspect->Fit(newfun);
   
