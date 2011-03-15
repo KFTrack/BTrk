@@ -15,13 +15,17 @@ around a presumed 'signal' track -->
                 <param name="bunchtime" type="float"> 0.975e-6 </param>
                 <!-- stopped muon lifetime -->
                 <param name="signaldecay" type="float"> 0.86e-6 </param>
-                <!-- # of stopped muons/bunch -->
-                <param name="nbunchbkg" type="float"> 4e4 </param>
-                <!-- fraction of stopped muons generating the specified background type.  This
+                <!-- average # of stopped muons/bunch-->
+                <param name="nstopped" type="float"> 8.45e4 </param>
+                <!-- bunch-bunch fractional spread -->
+                <param name="nbunchspread" type="float"> 0.5 </param>
+                <!-- BF of stopped muon into this background mode -->
+                <param name="bkgBF" type="float"> 0.39 </param>
+                <!-- fraction of stopped muons in this mode generating the specified background type.  This
                 factor should include the selection efficiency of all cuts used when creating the output file -->
                 <param name="bkgeff" type="float"> 3.2e-3 </param>
                 <!-- time window in which to integrate background.  Making this too large just adds inefficiency,
-                as the final time cuts are always made hit-by-hit -->
+                as the final time cuts are made hit-by-hit -->
                 <param name="bkghalfwindow" type="float"> 1.0e-7 </param>
             </sect>            
         </config>
