@@ -27,9 +27,10 @@ private:
   double _lambda; // signal time decay constant within bunch window
   double _halfwindow; // sensitive (detector) time half-window
   double _nbkg; // Integral # of background events in the bunch window
-  double _bkgeff; // efficiency for background events to be writen out
-  double _norm; // normalization for sampling
+  double _nspread; // fractional spread in stopped muons, interpreted as +-f
+  double _norm; // normalization for lifetime sampling
   bool _bkgtime; // use the bkg signal time or not
+  double _ymin, _ymax; // limits for sampling bunch fluctuations
   TRandom3 _rng;
 };
 #endif

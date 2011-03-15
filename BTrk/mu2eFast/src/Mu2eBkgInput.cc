@@ -5,6 +5,7 @@
 #include "mu2eFast/Mu2eBkgInput.hh"
 #include "PacEnv/PacConfig.hh"
 #include <iostream>
+#include <assert.h>
 using std::cerr;
 using std::endl;
 
@@ -13,9 +14,21 @@ Mu2eBkgInput::Mu2eBkgInput(PacConfig& config) : Mu2eRootInput(config){
   _bunchtime = config.getfloat("bunchtime",0.975e-6);
   _lambda = config.getfloat("signaldecay",0.86e-6);
   _halfwindow = config.getfloat("bkghalfwindow",0.1e-6);
-  _nbkg = config.getfloat("nbunchbkg",4e4);
-  _bkgeff = config.getfloat("bkgeff",3.2e-3);
+// average # of background events is the # stopped * BF * efficiency
+  _nbkg = config.getfloat("nstopped",0) * config.getfloat("bkgBF",0) * config.getfloat("bkgeff",0); 
+  if(_nbkg == 0){
+    cerr << "# stopped muons, background BF or background efficiency not specified: aborting" << endl;
+    assert(0);
+  }
+// parameters for generating bunch fluctuations
+  _nspread = config.getfloat("nbunchspread",0);
+  _ymin = 0.25*pow(1-_nspread,2)/_nspread;
+  _ymax = 0.25*pow(1+_nspread,2)/_nspread;
+  assert(_ymax > _ymin);
+// normalization factor for the lifetime sampling
   _norm = 1.0-exp(-_bunchtime/_lambda);
+// if true, add the input particle time to the background frame time.  This normally accounts for transit
+// from the production to tyhe tracker
   _bkgtime = config.getbool("bkgtime",true);
   unsigned rndseed = config.getint("rndseed", 123872342);
   _rng.SetSeed(rndseed);
@@ -30,9 +43,13 @@ Mu2eBkgInput::nextEvent(Mu2eEvent& event) {
   clear(event,true);
 // sample time of signal event within the bunch
   double stime = -_lambda*log(1.0 - _norm*_rng.Uniform());
+// sample the # of events in this bunch assuming the production of signal and bkg
+// both are proportional to this
+  double nbunch = 2.0*_nbkg*sqrt(_nspread*_rng.Uniform(_ymin,_ymax));
 // sample the # of background events in the sensitive time window around this,
+// weighted by the muon decay probability, with Poisson fluctuations
 // and read that many events from the bkg 
-  double nsen =(_bkgeff*_nbkg/_norm)*(exp((-stime+_halfwindow)/_lambda) - exp((-stime-_halfwindow)/_lambda));
+  double nsen =(nbunch/_norm)*(exp((-stime+_halfwindow)/_lambda) - exp((-stime-_halfwindow)/_lambda));
   unsigned nbkg = _rng.Poisson(nsen);
   Mu2eEvent temp;
   for(unsigned ibkg=0;ibkg<nbkg;ibkg++){
