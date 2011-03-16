@@ -21,7 +21,7 @@ public:
     return 0;
   }
   static double mass(PdtPid::PidType){
-    return 0.13956;
+    return 0.510998910;
   }
 };
 
