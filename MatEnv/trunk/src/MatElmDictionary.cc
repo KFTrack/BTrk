@@ -25,20 +25,20 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 using babar::Collection::DeleteObject;
 
 //----------------------
 // Base Class Headers --
 //----------------------
-#include "AbsEnv/AbsEnv.hh"
-#include "GenEnv/GenEnv.hh"
-#include "EidData/EidCondKeyTriplet.hh"
+//#include "AbsEnv/AbsEnv.hh"
+//#include "GenEnv/GenEnv.hh"
+//#include "EidData/EidCondKeyTriplet.hh"
 #include "MatEnv/MatElmDictionary.hh"
-#include "BdbTime/BdbTime.hh"
-#include "ProxyDict/AbsArgVal.hh"
-#include "ProxyDict/Ifd.hh"
-#include "ProxyDict/IfdStrKey.hh"
+//#include "BdbTime/BdbTime.hh"
+//#include "ProxyDict/AbsArgVal.hh"
+//#include "ProxyDict/Ifd.hh"
+//#include "ProxyDict/IfdStrKey.hh"
 #include "ErrLogger/ErrLog.hh"
 using std::fstream;
 
@@ -52,7 +52,7 @@ MatElmDictionary::MatElmDictionary()
 {
 // Get the transient MatElementList
 
-  MatElementList* elmList = 0;
+  /* MatElementList* elmList = 0;
   BdbTime* toUse;
   if ( gblEnv->getGen() !=0 &&
        gblEnv->getGen()->primaryCondKey() != 0 ) {
@@ -76,7 +76,9 @@ MatElmDictionary::MatElmDictionary()
   }
   
   FillElmDict(elmList);
-  delete toUse;
+  delete toUse;*/
+  MatElementList* elmList = new MatElementList("BaBar/MatEnv/ElementsList.data");
+  FillElmDict(elmList);
 }
 
 void MatElmDictionary::FillElmDict(MatElementList* elmList)

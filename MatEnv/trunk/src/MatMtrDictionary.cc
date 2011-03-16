@@ -25,20 +25,20 @@
 
 #include <vector>
 #include <algorithm>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 #include <map>
 
 //----------------------
 // Base Class Headers --
 //----------------------
-#include "AbsEnv/AbsEnv.hh"
-#include "GenEnv/GenEnv.hh"
-#include "EidData/EidCondKeyTriplet.hh"
+//#include "AbsEnv/AbsEnv.hh"
+//#include "GenEnv/GenEnv.hh"
+//#include "EidData/EidCondKeyTriplet.hh"
 #include "MatEnv/MatMtrDictionary.hh"
-#include "BdbTime/BdbTime.hh"
-#include "ProxyDict/AbsArgVal.hh"
-#include "ProxyDict/Ifd.hh"
-#include "ProxyDict/IfdStrKey.hh"
+//#include "BdbTime/BdbTime.hh"
+//#include "ProxyDict/AbsArgVal.hh"
+//#include "ProxyDict/Ifd.hh"
+//#include "ProxyDict/IfdStrKey.hh"
 #include "ErrLogger/ErrLog.hh"
 
 using std::fstream;
@@ -53,7 +53,7 @@ MatMtrDictionary::MatMtrDictionary()
 {
 // Get the transient MatMaterialList
 
-  MatMaterialList* mtrList = 0;
+  /* MatMaterialList* mtrList = 0;
   BdbTime* toUse;
   if ( gblEnv->getGen() !=0 &&
        gblEnv->getGen()->primaryCondKey() != 0 ) {
@@ -75,9 +75,9 @@ MatMtrDictionary::MatMtrDictionary()
       << "MatMtrDictionary: No access to the list of materials"
       << endmsg; 
   }
-  
+  */
+  MatMaterialList* mtrList = new MatMaterialList("BaBar/MatEnv/MaterialsList.data");
   FillMtrDict(mtrList);
-  delete toUse;
 }
 
 void MatMtrDictionary::FillMtrDict(MatMaterialList* mtrList)

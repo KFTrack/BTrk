@@ -37,7 +37,7 @@
 
 #include <string>
 #include <map>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 using babar::Collection::PtrLess;
 
 //------------------------------------

@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 using babar::Collection::DeleteObject;
 
 //----------------------
