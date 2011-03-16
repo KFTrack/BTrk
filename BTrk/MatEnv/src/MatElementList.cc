@@ -20,7 +20,7 @@
 // C++ Headers --
 //----------------------
 #include <vector>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 using babar::Collection::DeleteObject;
 #include <algorithm>
 #include <fstream>

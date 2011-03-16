@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <algorithm>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 using babar::Collection::DeleteObject;
 
 //----------------------

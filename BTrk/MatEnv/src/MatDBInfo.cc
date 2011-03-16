@@ -20,11 +20,11 @@
 #include "DetectorModel/DetMaterial.hh"
 #include "ErrLogger/ErrLog.hh"
 #include "MatEnv/MtrPropObj.hh"
-#include "BbrStdUtils/String.hh"
+//#include "BbrStdUtils/String.hh"
 
 #include <string>
 #include <map>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 
 MatDBInfo::MatDBInfo() :
   _genMatFactory(0)

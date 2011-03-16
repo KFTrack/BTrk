@@ -29,11 +29,12 @@
 // Collaborating Class Headers --
 //-------------------------------
 #include "ErrLogger/ErrLog.hh"
-#include "GenEnv/PhysConst.hh"
 #include "MatEnv/MatElementObj.hh"
 #include <string>
 #include <vector>
 
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
 // Constructor to create Elements from a combination of Isotopes
 
 ElmPropObj::ElmPropObj() 

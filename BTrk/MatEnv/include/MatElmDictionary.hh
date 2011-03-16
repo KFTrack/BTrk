@@ -23,7 +23,7 @@
 //----------------------
 #include <string>
 #include <map>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 
 #include "MatEnv/MatElementObj.hh"
 #include "MatEnv/MatElementList.hh"
