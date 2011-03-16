@@ -56,10 +56,10 @@
 #include "BaBar/Constants.hh"
 #include "BbrGeom/BbrAngle.hh"
 #include "BbrGeom/Trajectory.hh"
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 #include "CLHEP/Geometry/HepPoint.h"
 #include "CLHEP/Geometry/Transformation.h"
-#include "CLHEP/Utilities/CLHEP.h"	// *** To get ATAN2
+#include "CLHEP/config/CLHEP.h"	// *** To get ATAN2
 #include "CLHEP/Vector/ThreeVector.h"
 #include "DchGeom/DchCellPlaneType.hh"
 #include "DchGeom/DchFWire.hh"

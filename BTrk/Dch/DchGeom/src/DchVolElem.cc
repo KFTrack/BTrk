@@ -92,12 +92,11 @@ int
 DchVolElem::intersect(const Trajectory* traj, DetIntersection& dinter) const
 {
   if (ErrLogging(debugging)) {
-    ostream& debs = ErrMsg(debugging);
-    debs << "DchVolElem: intersect \t" << traj->lowRange() << "\t"
+    ErrMsg(debugging) << elementName()<<" DchVolElem: intersect \t" << traj->lowRange() << "\t"
         << traj->hiRange() << "\t" << traj->range() << "\t" << dinter.pathlen
-        << "\t" << dinter.pathrange[0] << "\t" << dinter.pathrange[0] << endl;
-    traj->printAll(debs);
-    debs << endmsg;
+        << "\t" << dinter.pathrange[0] << "\t" << dinter.pathrange[1] << endl;
+    traj->printAll(std::cout);
+    ErrMsg(debugging) << endmsg;
   }
   bool success = false;
   double sEntrance, sExit, sPath;
@@ -131,7 +130,7 @@ DchVolElem::intersect(const Trajectory* traj, DetIntersection& dinter) const
       if (ilist.size() < 2) {
 
         if (ErrLogging(debugging)) {
-          ostream& outst = ErrMsg(debugging);
+          ErrMsg outst(debugging);
           outst << " DchVolElem: NUMBER OF INTERSECTIONS != 2 " << ilist.size()
               << endmsg;
           outst << " intersections:" << endl;

@@ -2,14 +2,11 @@
 //
 #include "BaBar/BaBar.hh"
 
-#include "AbsEnv/AbsEnv.hh"
 #include "DchData/DchRecoHitOnTrack.hh"
-#include "DchData/DchDigi.hh"
 #include "DchData/DchHit.hh"
 
 // DchGeom needed to verify if hit is inside of chamber...
 // and to find the trajectory describing the hit, i.e. wire
-#include "DchEnv/DchEnv.hh"
 #include "DchData/DchHitOnTrack.hh"
 #include "TrkBase/TrkEnums.hh"
 #include "TrkBase/TrkSimpTraj.hh"

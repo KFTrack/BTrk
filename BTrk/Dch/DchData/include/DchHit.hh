@@ -29,7 +29,7 @@
 
 class TrkDetElemId;
 class GTrack;
-class DchDigi;
+class DchDigi{};
 class DchDetector;
 class DchTimeToDistList;
 class DchHitData;
@@ -37,13 +37,16 @@ class DchHitData;
 class DchHit : public DchHitBase, public TrkFundHit
 {
 public:
-  DchHit(const DchDigi& digi,
+  /*  DchHit(const DchDigi& digi,
          const DchDetector& det,
          const DchTimeToDistList &t2d,
-         unsigned iTdc=0);
-  DchHit(const DchHitData&,
+         unsigned iTdc=0);*/
+  /* DchHit(int layer,int wire, double tdctime,
          const DchDetector& det,
-         const DchTimeToDistList &t2d);
+         const DchTimeToDistList &t2d);*/
+
+  DchHit(int layer,int wire,double dist,double sigma,const DchDetector& det);
+  DchHit();
 
   virtual ~DchHit();
 // dnb 12/14/01 I need these for hit filtering (unassigned hit persistence)
@@ -101,7 +104,7 @@ private:
   double crudeTof() const { return  _rmid/Constants::c; }
 
   //hide the copy ctor and assignment op, at least until somebody needs them
-  DchHit();
+  //DchHit();
 };
 extern std::ostream& operator<<(std::ostream &o,const DchHit& aHit);
 
