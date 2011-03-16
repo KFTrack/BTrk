@@ -17,11 +17,6 @@
 
 enum Severity {debugging=-1, trace=0, routine, warning, error, fatal};
 
-// Free function to inquire about the severity level.
-inline bool ErrLogging( Severity sev ){
-  return (sev >= warning);
-}
-
 class ErrMsg{
 
 public:
@@ -33,6 +28,8 @@ public:
   ~ErrMsg()
   {
   }
+
+  operator std::ostream&() { return std::cout; }
 
   template< class T >
   ErrMsg &  operator<< ( T const & t )
@@ -56,13 +53,28 @@ public:
     f(*this);
   }
 
+  static Severity ErrLoggingLevel;
 private:
   int _severity;
 };
 
+// Implementation of the global operator<< that allows "endmsg" to be used
+// with a plain ostream as a manipulator.  
+inline std::ostream& operator<<( std::ostream& os, void (* fp)(ErrMsg&) )
+{
+  os<<std::endl;
+  return os; 
+}
+
 inline void endmsg( ErrMsg & err )
 {
   err << std::endl;
+}
+
+
+// Free function to inquire about the severity level.
+inline bool ErrLogging( Severity sev ){
+  return (sev >= ErrMsg::ErrLoggingLevel);
 }
 
 #endif
