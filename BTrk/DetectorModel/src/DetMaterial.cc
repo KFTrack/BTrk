@@ -19,6 +19,10 @@
 #include <cfloat>
 #include <string>
 #include <vector>
+
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+
 using std::endl;
 using std::ostream;
 
@@ -30,8 +34,8 @@ using std::ostream;
 //  the average material interior to the tracking volume at dip=~30 degrees
 //
 
-const double DetMaterial::_msmom = 0.0122;
-const double DetMaterial::_dgev = 0.000153536;
+const double DetMaterial::_msmom = 12.2*MeV;
+const double DetMaterial::_dgev = 0.153536*MeV*cm*cm;
 const double bg2lim = 0.0169 , taulim = 8.4146e-3 ;
 const double twoln10 = 2.0*log(10.);
 
@@ -46,7 +50,7 @@ DetMaterial::DetMaterial(const char* detMatName, const DetMtrProp* detMtrProp):
   _za(detMtrProp->getZ()/detMtrProp->getA()),
   _zeff(detMtrProp->getZ()),
   _aeff(detMtrProp->getA()),
-  _radthick(detMtrProp->getRadLength()),
+  _radthick(detMtrProp->getRadLength()/cm/cm),
   _intLength(detMtrProp->getIntLength()/detMtrProp->getDensity()),
   _meanion(2.*log(detMtrProp->getMeanExciEnergy()*1.0e6)),
   _eexc(detMtrProp->getMeanExciEnergy()),
@@ -56,7 +60,7 @@ DetMaterial::DetMaterial(const char* detMatName, const DetMtrProp* detMtrProp):
   _afactor(detMtrProp->getAdensity()),
   _mpower(detMtrProp->getMdensity()),
   _bigc(detMtrProp->getCdensity()),
-  _density(detMtrProp->getDensity()),
+  _density(detMtrProp->getDensity()/cm/cm/cm),
   _noem(detMtrProp->getNumberOfElements()),
   _taul(detMtrProp->getTaul())
 {
@@ -314,8 +318,8 @@ DetMaterial::printAll(ostream& os) const {
   os << "Material " << _name << " has properties : " << endl
   << "  Effective Z = " << _zeff << endl
   << "  Effective A = " << _aeff << endl
-  << "  Density (g/cm^3) = " << _density << endl
-  << "  Radiation Length (g/cm^2) = " << _radthick << endl
+  << "  Density (g/cm^3) = " << _density*cm*cm*cm << endl
+  << "  Radiation Length (g/cm^2) = " << _radthick*cm*cm<< endl
   << "  Interaction Length (g/cm^2) = " << _intLength << endl
 //   << "  Mean Ionization energy (MeV) = " << _meanion << endl
   << "  Mean Ionization energy (MeV) = " << _eexc << endl;
