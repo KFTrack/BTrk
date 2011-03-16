@@ -48,7 +48,6 @@ using std::ostream;
 
 static const char rscid[] =
     "$Id: DchSuperLayer.cc 123 2010-04-29 14:41:45Z stroili $";
-static const int _layInSuper = 4;
 
 //		----------------------------------------
 // 		-- Public Function Member Definitions --
@@ -61,7 +60,7 @@ DchSuperLayer::DchSuperLayer(const char* detname, int number) :
   DetSet(detname, number)
 {
   _radius = _delphi = _delphiinv = 0;
-  layers[0] = layers[1] = layers[2] = layers[3] = 0;
+  for(int i=0;i<_layInSuper;i++) layers[i] =  0;
   _view = 0;
   _next = _prev = _nextInView = _prevInView = 0;
   _exist = false;
@@ -87,7 +86,7 @@ DchSuperLayer::addLayer(int index, const DchLayer* lay)
   // belonging to the superlayer, so this ramges from 0 to 3
   //----------------------------------------------------------
   // check on index number
-  assert ( index>=0 && index <4);
+  assert ( index>=0 && index <_layInSuper);
   // check that it was not already set
   assert ( layer(index) == 0 );
   // chack that layer stays in this superlayer
@@ -120,8 +119,9 @@ DchSuperLayer::print(ostream& o) const
   o << " SuperLayer #: " << slayNum() << "\n" << " rEnd: " << rEnd()
       << " rad0: " << rad0() << "\n" << " view: " << whichView() << " stDip: "
       << stDip() << "\n" << " delphi: " << delPhi() << " zEnd: " << zEnd()
-      << "\n" << layers[0]->layNum() << " " << layers[1]->layNum() << " "
-      << layers[2]->layNum() << " " << layers[3]->layNum() << "\n" << endl;
+    << "\n";
+  for(int i=0;i<_layInSuper;i++) o<< " " << layers[i]->layNum();
+  o << "\n" << endl;
 }
 
 ostream&

@@ -38,7 +38,7 @@ extern "C" {
 //-------------------------------
 // Collaborating Class Headers --
 //-------------------------------
-#include "CLHEP/String/Strings.h"
+//#include "CLHEP/String/Strings.h"
 #include "ErrLogger/ErrLog.hh"
 
 //-----------------------------------------------------------------------

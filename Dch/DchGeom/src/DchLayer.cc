@@ -41,7 +41,7 @@
 // Collaborating Class Headers --
 //-------------------------------
 #include "BaBar/Constants.hh"
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 #include "BbrGeom/Trajectory.hh"
 #include "DchGeom/DchDetector.hh"
 #include "DchGeom/DchHyperType.hh"

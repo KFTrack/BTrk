@@ -31,7 +31,7 @@ DchHotSelector::~DchHotSelector()
 bool
 DchHotSelector::useHot(const TrkHitOnTrk& hot) const 
 {
-  const DchHitOnTrack *h = hot.dchHitOnTrack();
+  const DchHitOnTrack *h = dynamic_cast<const DchHitOnTrack *>(&hot);
   bool use =  (h != 0) && (_ignoreActive || hot.isActive());
   double doca(0);
   if (use && (_minDoca>0 || _maxDoca>0)) {

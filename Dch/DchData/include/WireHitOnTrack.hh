@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------
 // File and Version Information:
-//      $Id: DchHitOnTrack.hh 89 2010-01-14 12:34:14Z stroili $
+//      $Id: WireHitOnTrack.hh 89 2010-01-14 12:34:14Z stroili $
 //
 // Description:
 //   Contains drift chamber hit info, as hit is used on a particular track
@@ -18,31 +18,30 @@
 //	20030923  M. Kelsey -- Add function to replace _dHit pointer
 //------------------------------------------------------------------------
 
-#ifndef DCHHITONTRACK_HH
-#define DCHHITONTRACK_HH
+#ifndef WIREHITONTRACK_HH
+#define WIREHITONTRACK_HH
 
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkEnums.hh"
 #include "BaBar/Constants.hh"
 #include <math.h>
 
-class DchHit;
-class DchHitBase;
-class DchHOTData;
+class WireHit;
 class DchLayer;
 class Trajectory;
 class TrkRecoTrk;
 #include "CLHEP/Matrix/Vector.h"
 
-class DchHitOnTrack : public TrkHitOnTrk {
+class WireHitOnTrack : public TrkHitOnTrk {
 
 public:
-  DchHitOnTrack(const TrkFundHit& fundHit, const DchHitBase& baseHit,
-                int ambig, double fittime, bool protoII=false);
-  virtual ~DchHitOnTrack();
+  WireHitOnTrack(const WireHit& hit,const Trajectory* wireTr=0,int ambig=0);
+  virtual ~WireHitOnTrack();
+
+  virtual TrkHitOnTrk* clone(TrkRep *, const TrkDifTraj *trkTraj=0) const;
 
 
-  // DchHitOnTrack specific functions
+  // WireHitOnTrack specific functions
   double  entranceAngle() const;
         // the entrance Angle is the difference in phi between the *direction* 
         // of the track at the hit, and the phi of the *location* of hit
@@ -63,8 +62,6 @@ public:
   int     wireAmbig()  const   { // hit wrt the wire location
     return fabs(entranceAngle())<Constants::pi/2?ambig():-ambig();} 
 
-  double   fitTime()  const  { return _fitTime; }
-  // note: drift is signed according to ambiguity...
   //   if ambiguity unknown, return the average of the 
   //   absolute value of both ambiguities, i.e. pick a positive number...
   double   drift()  const  { return _ambig!=0 ? _drift[_ambig<0 ? 0:1] 
@@ -72,40 +69,31 @@ public:
   double  drift(double dca)  const  { return _drift[dca<0?0:1]; }
   double  dcaToWire() const;
 
-  double  rawTime() const;
-
   //   generic virtual functions (required by TrkHitOnTrk)
   virtual const Trajectory* hitTraj() const;
-  virtual const DchHitOnTrack* dchHitOnTrack() const;
+  virtual const WireHitOnTrack* dchHitOnTrack() const;
   virtual bool timeResid(double& t,double& tErr) const;
   virtual bool timeAbsolute(double& t,double& tErr) const;
 
-  // specific virtual functions (required by DchHitOnTrack)
-  virtual const DchHit*  dchHit()  const;
-  virtual unsigned tdcIndex()        const = 0;
-  virtual unsigned status()           const = 0;
+  double driftVelocity() const;
+  // specific virtual functions (required by WireHitOnTrack)
+  unsigned                      status()          const;
 
   // Forwarded to DchHitBase
   int              wire()     const ;
-  const DchLayer*  layer()    const ;
-  int              layernumber() const ;
-  unsigned layerNumber()      const;
+  unsigned       layerNumber() const ;
   int              whichView() const; // 0 for axial, +/- 1 for stereo
-  double           charge()    const;
 
   TrkEnums::TrkViewInfo whatView() const;
 
   // Set used during persistant -> transient and internally
   void                     setAmbig(int a) { _ambig = a<0?-1:a>0?1:0; }
-  void                     setT0(double t0);
-
-  const DchHitBase* baseHit() const { return _dHit; }
 
   void print(std::ostream& ) const;
 protected:
 
-  DchHitOnTrack(const DchHitOnTrack &hitToBeCopied, TrkRep *newRep,
-                const TrkDifTraj* trkTraj,const DchHitBase *hb=0);
+  WireHitOnTrack(const WireHitOnTrack &hitToBeCopied, TrkRep *newRep,
+                const TrkDifTraj* trkTraj,const WireHit *hb=0);
 
   bool              isBeyondEndflange() const 
                     { return (hitLen() < _startLen || hitLen() > _endLen); }
@@ -114,40 +102,29 @@ protected:
 
   virtual TrkErrCode updateMeasurement(const TrkDifTraj* traj, bool maintainAmbiguity);
 
-  // Allow subclasses to query or replace the underlying hit pointer
-  void changeBase(DchHitBase* newBase);
-
 private:
   friend class DchHOTData;
 
   void              updateCorrections();
-  double            driftVelocity() const; // in cm/s
-  double            protoIItof(double tof) const;
   bool              driftCurrent() const { return ambig()*_drift[ambig()<0?0:1]>0; }
 
 
   //Data members
   int               _ambig;  // this is the LR ambiguity wrt the TRACK 
                              // direction;
-                             // carefull: the t->d calibration needs it wrt. 
-                             // the WIRE, and for INCOMING tracks the two are 
-                             // NOT the same.
-  bool              _isProtoII;  // whether or not to use ProtoII specific tof 
-                                // correction
   double            _drift[2];  // corrected version of what's in the FundHit,
                                 // one for each ambiguity: left, right
   const Trajectory* _hitTraj;
-  double            _fitTime;   // store last value used for the fit (for 
-                                // calib)
+
   //   cached information to improve code speed
   double            _startLen;  // start hitlen traj
   double            _endLen;    // end hitlen traj
-  const DchHitBase *_dHit;
+  const WireHit *_dHit;
 
 
   //  hide copy constructor and assignment operator
-  DchHitOnTrack(const DchHitOnTrack&);
-  DchHitOnTrack& operator=(const DchHitOnTrack&);
+  WireHitOnTrack(const WireHitOnTrack&);
+  WireHitOnTrack& operator=(const WireHitOnTrack&);
 };
 
 #endif

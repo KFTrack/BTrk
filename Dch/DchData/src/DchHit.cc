@@ -23,11 +23,11 @@
 #include "DchData/DchHit.hh"
 
 
-#include "DchData/DchDigi.hh"
-#include "DchData/DchHitData.hh"
-#include "DchData/DchDigiWF.hh"
-#include "DchData/DchDigiMC.hh"
-#include "DchData/DchDigiStatus.hh"
+//#include "DchData/DchDigi.hh"
+//#include "DchData/DchHitData.hh"
+//#include "DchData/DchDigiWF.hh"
+//#include "DchData/DchDigiMC.hh"
+//#include "DchData/DchDigiStatus.hh"
 #include "DchGeom/DchDetector.hh"
 #include "DchGeom/DchLayer.hh"
 #include "TrkBase/TrkDetElemId.hh"
@@ -38,7 +38,7 @@
 using std::endl;
 using std::ostream;
 
-
+/*
 DchHit::DchHit( const DchDigi& aDigi,
                 const DchDetector& det,
                 const DchTimeToDistList &t2d,
@@ -63,17 +63,25 @@ DchHit::DchHit( const DchDigi& aDigi,
     if (wv!=0) _charge = wv->recomputeCharge(aDigi.status(), _charge);
   }
 }
+*/
 
-DchHit::DchHit( const DchHitData& hitData,
+ /*DchHit::DchHit( int layer,int wire, double tdctime,
                 const DchDetector& det,
                 const DchTimeToDistList &t2d)
-  : DchHitBase(hitData.layernumber(), hitData.wirenumber(),hitData.tdcTime(),hitData.tdcIndex(),hitData.charge(),det,t2d),
+  : DchHitBase(layer, wire,tdctime, 0,0,det,t2d),
     _digiPtr(0),
     _phi(_layerPtr->phiWire(_wire)),_cosphi(cos(_phi)),_sinphi(sin(_phi)),
     _rmid(_layerPtr->rMid()),_zlen(_layerPtr->zLength()),
-    _status(hitData.status())
+    _status(0)
 {
+}*/
+
+DchHit::DchHit(int layer,int wire, double dist,double sigma,const DchDetector& det):
+  DchHitBase(layer,wire,dist,sigma,det){
+  
 }
+
+DchHit::DchHit():DchHitBase(){}
 
 DchHit::DchHit(const DchHit& other) :
   DchHitBase(other),_digiPtr(other._digiPtr),_phi(other._phi),
@@ -123,11 +131,11 @@ void
 DchHit::print( ostream& o ) const 
 {
   o << "layer:" <<  _layer 
-    << "\nwire:" << _wire 
-    << "\nrawTime:" << rawTime()  << " charge:" << charge() 
+    << " wire:" << _wire 
+    /*  << "\nrawTime:" << rawTime()  << " charge:" << charge() 
     << "\nphi:" << _phi << " cos(phi):" << _cosphi << " sin(phi):" 
     << _sinphi 
-    << "\nrmid:" << _rmid << " zlen:" << _zlen 
+    << "\nrmid:" << _rmid << " zlen:" << _zlen */
     << endl;
 }
 
@@ -152,14 +160,15 @@ operator<<( ostream &o, const DchHit& hit )
 const GTrack* 
 DchHit::getGTrack() const 
 {
-  const DchDigiMC *d=digi()->MCPtr();
-  return d==0?0:d->getGTrack(0);
-}
+  return 0;
+  /* const DchDigiMC *d=digi()->MCPtr();
+     return d==0?0:d->getGTrack(0);*/
+  }
 
 TrkDetElemId 
 DchHit::elemId() const 
 {
-  return TrkDetElemId(DchCellAddr::cellIs(_wire,_layer),TrkDetElemId::dch);
+  return TrkDetElemId(DchCellAddr::cellIs(_wire,_layer),TrkDetElemId::null);
 }
 
 unsigned

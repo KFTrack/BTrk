@@ -1,8 +1,10 @@
-// $Id: DchHitOnTrack.cc 89 2010-01-14 12:34:14Z stroili $
+// $Id: WireHitOnTrack.cc 89 2010-01-14 12:34:14Z stroili $
 //
 #include "BaBar/BaBar.hh"
-#include "DchData/DchHitOnTrack.hh"
+#include "DchData/WireHitOnTrack.hh"
 #include "DchData/DchHitBase.hh"
+#include "DchData/DchHit.hh"
+#include "DchData/WireHit.hh"
 
 //#include "AbsEnv/AbsEnv.hh"
 //#include "DchEnv/DchEnv.hh"
@@ -33,15 +35,11 @@ using std::endl;
 //-------------
 // Constructors
 //-------------
-DchHitOnTrack::DchHitOnTrack(const TrkFundHit& fundHit,
-                             const DchHitBase& baseHit,
-                             int ambig,  double t0,
-                             bool isProtoII)
-  : TrkHitOnTrk(&fundHit,10.e-4),
+WireHitOnTrack::WireHitOnTrack(const WireHit& baseHit,const Trajectory* wireTr,
+			       int ambig)
+  : TrkHitOnTrk(&baseHit,10.e-4),
     _ambig(ambig),
-    _isProtoII(isProtoII),
-    _hitTraj(baseHit.hitTraj()),
-    _fitTime(baseHit.rawTime()-t0*1e-9),
+    _hitTraj(wireTr),
     _dHit(&baseHit)
 {
         // need to flag somehow that that we haven't computed things yet...
@@ -53,20 +51,18 @@ DchHitOnTrack::DchHitOnTrack(const TrkFundHit& fundHit,
   _drift[1] = -9999;
   setHitResid(-21212121.0);
   setHitRms( 0.02 );
-  setHitLen(0.5 * baseHit.layer()->zLength());
+  setHitLen(0.5 * 1000/*baseHit.layer()->zLength()*/);
   setFltLen(0.);
   _startLen = hitTraj()->lowRange() - 5.;
   _endLen   = hitTraj()->hiRange()  + 5.;
 }
 
-DchHitOnTrack::DchHitOnTrack(const DchHitOnTrack &hot,TrkRep *newRep,
-                             const TrkDifTraj* trkTraj, const DchHitBase *hb)
+WireHitOnTrack::WireHitOnTrack(const WireHitOnTrack &hot,TrkRep *newRep,
+                             const TrkDifTraj* trkTraj, const WireHit *hb)
   : TrkHitOnTrk(hot,newRep,trkTraj)
 {
   _ambig = hot._ambig;
-  _isProtoII = hot._isProtoII;
   _hitTraj  = hot._hitTraj;
-  _fitTime  = hot._fitTime;
   _drift[0] = hot._drift[0];
   _drift[1] = hot._drift[1];
   _startLen = hot._startLen;
@@ -74,24 +70,19 @@ DchHitOnTrack::DchHitOnTrack(const DchHitOnTrack &hot,TrkRep *newRep,
   _dHit = (hb==0?hot._dHit:hb);
 }
 
-DchHitOnTrack::~DchHitOnTrack()
+WireHitOnTrack::~WireHitOnTrack()
 { ; }
  
-void DchHitOnTrack::print(std::ostream& o) const{
-  //layer()->getWire(0)->print(o);
-  _hitTraj->print(o);
-  if(_poca) o<<"poca flt1 = "<<_poca->flt1()<<" flt2= "<<_poca->flt2()<<" doca "<<_poca->doca()<<"\n";
-  baseHit()->print(o);
+TrkHitOnTrk*
+WireHitOnTrack::clone(TrkRep *rep, const TrkDifTraj *trkTraj) const
+{
+  return new WireHitOnTrack(*this,rep,trkTraj);
 }
 
-void
-DchHitOnTrack::setT0(double t0)
-{ 
-  _fitTime= _dHit->rawTime()-t0*1e-9; 
-}
+void WireHitOnTrack::print(std::ostream& o) const{_dHit->print(o);}
 
 double
-DchHitOnTrack::dcaToWire() const
+WireHitOnTrack::dcaToWire() const
 {
   double dca = -9999.;
   if ( getParentRep() == 0 ) {
@@ -111,7 +102,7 @@ DchHitOnTrack::dcaToWire() const
 }
 
 bool
-DchHitOnTrack::updateAmbiguity(double dca)
+WireHitOnTrack::updateAmbiguity(double dca)
 {
   if (dca < 0 && ambig() >= 0) {
     setAmbig(-1); return isActive();
@@ -122,14 +113,14 @@ DchHitOnTrack::updateAmbiguity(double dca)
   }
 }
 
-const DchHitOnTrack*
-DchHitOnTrack::dchHitOnTrack() const
+const WireHitOnTrack*
+WireHitOnTrack::dchHitOnTrack() const
 {
   return this;
 }
 
 double
-DchHitOnTrack::entranceAngle() const
+WireHitOnTrack::entranceAngle() const
 {
   static Hep3Vector dir;
   static HepPoint pos;
@@ -139,23 +130,23 @@ DchHitOnTrack::entranceAngle() const
 }
 
 unsigned
-DchHitOnTrack::layerNumber() const
+WireHitOnTrack::layerNumber() const
 {
-  return layernumber();
+  return _dHit->layernumber();
 }
 
 double
-DchHitOnTrack::dipAngle() const
+WireHitOnTrack::dipAngle() const
 {
   return getParentRep()==0?0:Constants::pi/2-getParentRep()->traj().direction(fltLen()).theta();
 }
 
 TrkErrCode
-DchHitOnTrack::updateMeasurement(const TrkDifTraj* traj, bool maintainAmb)
+WireHitOnTrack::updateMeasurement(const TrkDifTraj* traj, bool maintainAmb)
 {
   TrkErrCode status=updatePoca(traj,true);
   if (status.failure()) {
-    ErrMsg(warning) << "DchHitOnTrack::updateMeasurement failed " << status << endmsg;
+    ErrMsg(warning) << "WireHitOnTrack::updateMeasurement failed " << status << endmsg;
     return status;
   }
   assert (_poca!=0);
@@ -174,12 +165,11 @@ DchHitOnTrack::updateMeasurement(const TrkDifTraj* traj, bool maintainAmb)
 }
 
 void
-DchHitOnTrack::updateCorrections()
+WireHitOnTrack::updateCorrections()
 {
   const TrkRep* tkRep = getParentRep();
   assert(tkRep != 0);
   double tof = tkRep->arrivalTime(fltLen());
-  if ( _isProtoII ) tof = protoIItof(tof);
   // at this point, since dcaToWire is computed, _ambig must be either -1 or +1
   assert( ambig() == -1 || ambig() == 1 );
   static HepPoint pos; static Hep3Vector dir;
@@ -194,7 +184,6 @@ DchHitOnTrack::updateCorrections()
   // needed to compute the drift distance, i.e. those numbers that
   // the hit cannot figure out by itself...
   double dist =  _dHit->driftDist(tof, wireAmb, eAngle, dAngle, z); assert(dist>0);
-  _fitTime = _dHit->driftTime(tof);
   _drift[ambig()<0?0:1] = ambig() * dist;
   assert( driftCurrent() );
 
@@ -204,12 +193,11 @@ DchHitOnTrack::updateCorrections()
 }
 
 double
-DchHitOnTrack::driftVelocity() const
+WireHitOnTrack::driftVelocity() const
 {
   const TrkRep* tkRep = getParentRep();
   assert(tkRep != 0);
   double tof =  tkRep->arrivalTime(fltLen());
-  if ( _isProtoII ) tof = protoIItof(tof);
   static HepPoint pos; static Hep3Vector dir;
   _trkTraj->getInfo(fltLen(), pos, dir);
   double eAngle = BbrAngle(dir.phi() - pos.phi());
@@ -227,7 +215,7 @@ DchHitOnTrack::driftVelocity() const
 }
 
 bool
-DchHitOnTrack::timeResid(double &t, double &tErr) const
+WireHitOnTrack::timeResid(double &t, double &tErr) const
 {
     double v = driftVelocity();
     if (v <= 0) return false;
@@ -237,7 +225,7 @@ DchHitOnTrack::timeResid(double &t, double &tErr) const
 }
 
 bool
-DchHitOnTrack::timeAbsolute(double &t, double &tErr) const
+WireHitOnTrack::timeAbsolute(double &t, double &tErr) const
 {
   double tresid(-1.0);
   if(timeResid(tresid,tErr)){
@@ -248,95 +236,33 @@ DchHitOnTrack::timeAbsolute(double &t, double &tErr) const
     return false;
 }
 
-double
-DchHitOnTrack::protoIItof(double tof) const
-{
-    // Note explicit mass hypothesis here: 2 GeV muon!!!!!!!!!!!!
-    double mass2   = .01116 ;
-    double ptot2   = 4.;
-    double betainv = sqrt( (ptot2 +  mass2)/ ptot2);
-    // The flight for a protoII track is
-    // fltProtoTrk = fltLen(radTriggerCounter) - fltLen()
-    double radiusTr=69.0 ;                        // radius  Trigger Counter
-    double zPM = 29.5;                            // z of photo multiplier
-    HepTransformation unit;
-    DetCylinder cyl(unit,radiusTr);
-    double fltTrig(0);
-    Intersection inters(getParentRep()->traj(),cyl);
-    inters.intersect(fltTrig);
-    //       Intersection(parentRep()->traj(),cyl).intersect(fltTrig);
-    // Then take into account the time needed by the light to fly in the
-    // Trigger counter
-    // from the track trajectory to the PM - coordinates (0,0,29.5) cm
-    // velocity in the scintillator = c/1.6
-    //xyz track @ trigger count:
-    HepPoint coordAtTrig= getParentRep()->position(fltTrig);
-    HepPoint PMposition(0., radiusTr, zPM);
-    double flInTrig=(coordAtTrig-PMposition).mag();
-    double speedinv=betainv/Constants::c;
-    double timeInScint = flInTrig*speedinv*1.6;
-    return (fltTrig - fltLen())*speedinv -timeInScint;
-}
-
 TrkEnums::TrkViewInfo
-DchHitOnTrack::whatView() const
+WireHitOnTrack::whatView() const
 {
   return _dHit->whatView();
 }
 
 int
-DchHitOnTrack::layernumber() const
-{
-  return _dHit->layernumber();
-}
-
-const DchLayer*
-DchHitOnTrack::layer() const
-{
-  return _dHit->layer();
-}
-
-int
-DchHitOnTrack::wire() const
+WireHitOnTrack::wire() const
 {
   return _dHit->wire();
 }
 
 int
-DchHitOnTrack::whichView() const
+WireHitOnTrack::whichView() const
 {
   return _dHit->whichView();
 }
 
-double
-DchHitOnTrack::rawTime() const
-{
-  return _dHit->rawTime();
-}
-
-double
-DchHitOnTrack::charge() const
-{
-  return _dHit->charge();
-}
-
 const Trajectory*
-DchHitOnTrack::hitTraj() const
+WireHitOnTrack::hitTraj() const
 {
     return _hitTraj;
 }
 
-const DchHit*
-DchHitOnTrack::dchHit() const
+unsigned
+WireHitOnTrack::status() const
 {
-  return 0;
+  return _dHit->status();
 }
 
-
-// Replace underlying hit pointer (base class doesn't own it)
-
-void 
-DchHitOnTrack::changeBase(DchHitBase* newBase)
-{
-  _dHit = newBase;
-}

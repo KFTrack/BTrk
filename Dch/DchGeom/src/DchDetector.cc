@@ -48,8 +48,6 @@
 // Collaborating Class Headers --
 //-------------------------------
 #include "BaBar/Constants.hh"
-#include "AbsEnv/AbsEnv.hh"
-#include "GenEnv/GenEnv.hh"
 #include "ErrLogger/ErrLog.hh"
 #include "DchGeomBase/DchGDch.hh"
 #include "DchGeomBase/DchCellAddr.hh"
@@ -57,10 +55,10 @@
 #include "DchGeom/DchCylType.hh"
 #include "DchGeom/DchVolType.hh"
 #include "DchGeom/DchVolElem.hh"
-#include "DchGeom/DchGlobalAlign.hh"
-#include "DchGeom/DchPlateAlign.hh"
+//#include "DchGeom/DchGlobalAlign.hh"
+//#include "DchGeom/DchPlateAlign.hh"
 #include "DchGeom/DchPlateDefl.hh"
-#include "DchGeom/DchWireAlign.hh"
+//#include "DchGeom/DchWireAlign.hh"
 #include "DchGeom/DchHyperb.hh"
 #include "DchGeom/DchHyperType.hh"
 #include "DchGeom/DchSelections.hh"
@@ -73,7 +71,7 @@
 #include "CLHEP/Geometry/Transformation.h"
 #include "CLHEP/Geometry/AngleSets.h"
 #include "CLHEP/Vector/ThreeVector.h"
-#include "CLHEP/String/Strings.h"
+//#include "CLHEP/String/Strings.h"
 #include "DetectorModel/DetMaterial.hh"
 #include "DetectorModel/DetSet.hh"
 #include "DetectorModel/DetSurfaceElem.hh"
@@ -84,8 +82,9 @@
 #include "TrkBase/TrkErrCode.hh"
 #include "TrkBase/TrkFit.hh"
 #include "TrkBase/TrkDifTraj.hh"
-#include "TrkGeom/TrkSimpVolume.hh"
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+//#include "TrkGeom/TrkSimpVolume.hh"
+#include "BaBar/BbrCollectionUtils.hh"
+#include "MatEnv/MatDBInfo.hh"
 using std::endl;
 using std::fstream;
 using std::ios;
@@ -96,17 +95,21 @@ using std::ostream;
 // Local Macros, Typedefs, Structures, Unions and Forward Declarations --
 //-----------------------------------------------------------------------
 
-static const int _layPerSL = 4;
+static const int _layPerSL = 1;
 
+DchDetector *DchDetector::fgInstance=0;
 //----------------
 // Constructors --
 //----------------
 
 DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
   _inCylType(0), _outCylType(0), _rEPType(0), _fEPType(0), _senseWire(
-      gdch.nLayers()), _version(10), _debug(deb), _firstLayer(1), _nLayer(
-      gdch.nLayers()), _globalalign(0), _nglobal(0), _platedefl(0)
+      gdch.nLayers()), _version(10), _debug(deb), _firstLayer(1), _nLayer(gdch.nLayers())
+//, _globalalign(0), _nglobal(0), _platedefl(0)
 {
+  fgInstance=this;
+  MatDBInfo* mtdbinfo=new MatDBInfo;
+  
   double radii[2];
   double length;
 
@@ -139,9 +142,9 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     radii[0] = gdch.ICInRad();
     radii[1] = gdch.ICOutRad();
     length = gdch.ICLength();
-    const DetMaterial* material =
-        gblEnv->getGen()->findDetMaterial("Beryllium");
-    assert(0 != material);
+    const DetMaterial* material = mtdbinfo->findDetMaterial("IT-InRad");// gblEnv->getGen()->findDetMaterial("Beryllium");
+    if(material)material->printAll(std::cout); 
+    //assert(0 != material);
     _inCylType = new DchCylType("Dch inner cylinder", radii, length, material,
         1);
 
@@ -155,8 +158,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     radii[0] = gdch.OCInRad();
     radii[1] = gdch.OCOutRad();
     length = gdch.OCLength();
-    material = gblEnv->getGen()->findDetMaterial("Carbon fiber");
-    assert(0 != material);
+    material = 0;//gblEnv->getGen()->findDetMaterial("Carbon fiber");
+    //assert(0 != material);
     _outCylType = new DchCylType("Dch outer cylinder", radii, length, material,
         2);
     Hep3Vector x1(gdch.OCPosX(), gdch.OCPosY(), gdch.OCPosZ());
@@ -171,8 +174,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     radii[0] = gdch.REPInRad();
     radii[1] = gdch.REPOutRad();
     length = gdch.REPLength();
-    material = gblEnv->getGen()->findDetMaterial("Aluminum");
-    assert(0 != material);
+    material = 0;//gblEnv->getGen()->findDetMaterial("Aluminum");
+    //assert(0 != material);
 
     Hep3Vector rEPpos(gdch.REPPosX(), gdch.REPPosY(), gdch.REPPosZ());
     HepTransformation rEP_tr(rEPpos, euler);
@@ -190,8 +193,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     radii[0] = gdch.FEPInRad();
     radii[1] = gdch.FEPOutRad();
     length = gdch.FEPLength();
-    material = gblEnv->getGen()->findDetMaterial("Aluminum");
-    assert(0 != material);
+    material = 0;//gblEnv->getGen()->findDetMaterial("Aluminum");
+    //assert(0 != material);
 
     Hep3Vector fEPpos(gdch.FEPPosX(), gdch.FEPPosY(), gdch.FEPPosZ());
     HepTransformation fEP_tr(fEPpos, euler);
@@ -207,8 +210,9 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
 
   }
   // gas volume
-  const DetMaterial* material = gblEnv->getGen()->findDetMaterial("GasWire");
-  assert(0 != material);
+  const DetMaterial* material = mtdbinfo->findDetMaterial("IT-gas1");//gblEnv->getGen()->findDetMaterial("GasWire");
+  material->printAll(std::cout);
+  //assert(0 != material);
 
   radii[0] = gdch.GasInRad();
   radii[1] = gdch.GasOutRad();
@@ -240,8 +244,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
   radii[1] = gdch.REPOutRad();
 
   double tol(.2);
-  _trkVolume = new TrkSimpVolume("Dch Tracking Volume", radii[0] - tol,
-      radii[1] + tol, zR - tol, zF + tol);
+  //_trkVolume = new TrkSimpVolume("Dch Tracking Volume", radii[0] - tol,
+  //    radii[1] + tol, zR - tol, zF + tol);
 
   // tracking chamber
   // ================
@@ -274,8 +278,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     // build layer surface
     DchHyperb LayerSurf(vol_tr, sWir.rEnd, fabs(gdch.GasLength()), sWir.twist);
     //   VOID NOT YET AVAILABLE use GasWire for the moment
-    material = gblEnv->getGen()->findDetMaterial("GasWire");
-    assert(0 != material);
+    material = 0;//gblEnv->getGen()->findDetMaterial("GasWire");
+    //assert(0 != material);
     // build the basic cell
     std::vector<DchFWire*> fieldWires;
     for (int fwires = 0; fwires < gdch.cell(ilay).nofFWires; fwires++) {
@@ -358,6 +362,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     }
     outstream << endmsg;
   }
+  
 }
 
 //--------------
@@ -372,10 +377,10 @@ DchDetector::~DchDetector()
     std::for_each(i->begin(), i->end(), babar::Collection::DeleteObject());
   }
   // delete some pointers
-  delete _trkVolume;
-  delete _globalalign;
-  delete _platedefl;
-  delete _innerCyl;
+  //delete _trkVolume;
+  //delete _globalalign;
+  //delete _platedefl;
+  //delete _innerCyl;
   //
   //  First delete all elements
   //
@@ -679,6 +684,7 @@ DchDetector::setDebug(bool deb)
 //  in order to be able to rebuild the whole tree when numerical precision
 //  is lost (but that's not implemented yet).
 //
+/*
 void
 DchDetector::apply(const DchGlobalAlign& glob)
 {
@@ -808,7 +814,7 @@ DchDetector::apply(const DchWireAlign& walign)
     _senseWire[layer - 1][wire]->wireAlign(wirecorr);
   }
 }
-
+*/
 Hep3Vector
 DchDetector::entranceMomentum(const TrkFit* fit, double& fltDch) const
 {
@@ -821,7 +827,7 @@ DchDetector::entranceMomentum(const TrkFit* fit, double& fltDch) const
 
   //  check if the track has hit's in the DCH
 
-  if (fit->nDch() > 0) {
+  //  if (fit->nDch() > 0) {
 
     //  get radius of low-range point
     HepPoint x = fit->traj().position(fit->traj().lowRange());
@@ -838,7 +844,7 @@ DchDetector::entranceMomentum(const TrkFit* fit, double& fltDch) const
         fltDch = 0;
       }
     }
-  }
+    //  }
   return fit->momentum(fltDch);
 }
 
@@ -900,9 +906,9 @@ DchDetector::printAll(ostream& o) const
 }
 
 void
-DchDetector::writeToFile(HepString filename) const
+DchDetector::writeToFile(std::string filename) const
 {
-  ofstream outfile(filename, ios::out);
+  ofstream outfile(filename.c_str());
   if (outfile) {
     print(outfile);
   } else {

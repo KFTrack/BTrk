@@ -33,14 +33,37 @@ double DchHitBase::_addFindingSig = 200.e-4;
 double DchHitBase::_fittingSigMult = 1.0;
 
 
-DchHitBase::DchHitBase( unsigned layer, unsigned wire, double rawTime, unsigned iTdc, double charge,
-                        const DchDetector& det,
-                        const DchTimeToDistList& t2d)
-  : _rawTime(rawTime), _charge(charge), _geomPtr(&det),  _layerPtr(det.getDchLayer(layer)), _t2d(t2d.getTimeToDist(layer,wire)), _layer(layer), _wire(wire), _iTdc(iTdc)
+// DchHitBase::DchHitBase( unsigned layer, unsigned wire, double rawTime, unsigned iTdc, double charge,
+//                         const DchDetector& det,
+//                         const DchTimeToDistList& t2d)
+//   : _rawTime(rawTime), _charge(charge), _geomPtr(&det),  _layerPtr(det.getDchLayer(layer)), _t2d(t2d.getTimeToDist(layer,wire)), _layer(layer), _wire(wire), _iTdc(iTdc)
+// {
+//   assert( _layerPtr!=0 && _layerPtr->exist() );
+//   assert( 0 <= wire && wire < _layerPtr->nWires() );
+// }
+
+DchHitBase::DchHitBase(unsigned layer, unsigned wire,double d,double s,
+		       const DchDetector& det):
+  _geomPtr(&det),  _layerPtr(det.getDchLayer(layer)),_layer(layer), _wire(wire),
+  _dist(d),_sigma(s)
 {
-  assert( _layerPtr!=0 && _layerPtr->exist() );
-  assert( 0 <= wire && wire < _layerPtr->nWires() );
-}
+  _rawTime=0;
+  _charge=0;
+  _t2d=0;
+  _iTdc=0;
+};
+
+DchHitBase::DchHitBase():
+  _geomPtr(0),  _layerPtr(0),_layer(0), _wire(0),
+  _dist(0),_sigma(0)
+{
+  _rawTime=0;
+  _charge=0;
+  _t2d=0;
+  _iTdc=0;
+};
+
+
 
 DchHitBase::~DchHitBase()
 {

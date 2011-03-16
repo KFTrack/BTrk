@@ -46,7 +46,7 @@ bool
 DchHitUse::operator==(const TrkHitUse& rhs) const 
 {
   // This is not going to win any design prizes:
-  if (dchHit() == 0 || rhs.dchHit() ==0) return false;
+  if (dchHit() == 0 ) return false;
   const DchHitUse& x = static_cast<const DchHitUse&>(rhs);
   return ( ambig() == x.ambig() && TrkHitUse::operator==(x) );
 }

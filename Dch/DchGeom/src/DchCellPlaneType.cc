@@ -39,8 +39,8 @@ extern "C" {
 //-------------------------------
 // Collaborating Class Headers --
 //-------------------------------
-#include "AbsEnv/AbsEnv.hh"
-#include "GenEnv/GenEnv.hh"
+//#include "AbsEnv/AbsEnv.hh"
+//#include "GenEnv/GenEnv.hh"
 
 //-----------------------------------------------------------------------
 // Local Macros, Typedefs, Structures, Unions and Forward Declarations --
@@ -59,7 +59,7 @@ DchCellPlaneType::DchCellPlaneType(const char * name, int id, std::vector<
     TwoDCoord>& corners) :
   DetSurfaceType(name, id, corners), _thick(0.)
 {
-  _material = gblEnv->getGen()->findDetMaterial("GasWire");
+  //_material = gblEnv->getGen()->findDetMaterial("GasWire");
 
   // find surface boundaries
 
