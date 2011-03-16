@@ -28,14 +28,14 @@
 //----------------------
 // Base Class Headers --
 //----------------------
-#include "AbsEnv/AbsEnv.hh"
-#include "GenEnv/GenEnv.hh"
-#include "EidData/EidCondKeyTriplet.hh"
+//#include "AbsEnv/AbsEnv.hh"
+//#include "GenEnv/GenEnv.hh"
+//#include "EidData/EidCondKeyTriplet.hh"
 #include "MatEnv/MatIsoDictionary.hh"
-#include "BdbTime/BdbTime.hh"
-#include "ProxyDict/AbsArgVal.hh"
-#include "ProxyDict/Ifd.hh"
-#include "ProxyDict/IfdStrKey.hh"
+//#include "BdbTime/BdbTime.hh"
+//#include "ProxyDict/AbsArgVal.hh"
+//#include "ProxyDict/Ifd.hh"
+//#include "ProxyDict/IfdStrKey.hh"
 #include "ErrLogger/ErrLog.hh"
 using std::fstream;
 
@@ -49,7 +49,7 @@ MatIsoDictionary::MatIsoDictionary()
 {
 // Get the transient MatIsotopeList
 
-  MatIsotopeList* isoList = 0;
+  /*MatIsotopeList* isoList = 0;
   BdbTime* toUse;
   if ( gblEnv->getGen() !=0 &&
        gblEnv->getGen()->primaryCondKey() != 0 ) {
@@ -73,7 +73,7 @@ MatIsoDictionary::MatIsoDictionary()
   }
 
   FillIsoDict(isoList);
-  delete toUse;
+  delete toUse;*/
 }
 
 void MatIsoDictionary::FillIsoDict(MatIsotopeList* isoList)

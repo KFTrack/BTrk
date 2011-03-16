@@ -31,13 +31,16 @@
 // Collaborating Class Headers --
 //-------------------------------
 #include "ErrLogger/ErrLog.hh"
-#include "GenEnv/PhysConst.hh"
 #include "MatEnv/ElmPropObj.hh"
 #include "MatEnv/MatMaterialObj.hh"
 #include "CLHEP/config/TemplateFunctions.h"
 #include <string>
 #include <vector>
 using std::endl;
+
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+static const double GasThreshold    = 10.*mg/cm3;
 
 // Constructor to create Material from scratch 
 

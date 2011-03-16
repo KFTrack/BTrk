@@ -20,13 +20,13 @@
 #ifndef MATDBINFO_HH
 #define MATDBINFO_HH
 
-#include "GenEnv/MaterialInfo.hh"
+#include "MatEnv/MaterialInfo.hh"
 
 class DetMaterial;
 class RecoMatFactory;
 #include <string>
 #include <map>
-#include "BbrStdUtils/BbrCollectionUtils.hh"
+#include "BaBar/BbrCollectionUtils.hh"
 using babar::Collection::PtrLess;
 
 class MatBuildEnv;
