@@ -13,8 +13,8 @@
 
 class PdtEntry{
 public:
-  std::string name()const;
-  double mass() const;
+  std::string name()const {return "";};
+  double mass() const{return 0.;};
 };
 
 #endif
