@@ -57,7 +57,7 @@ KalContext::~KalContext(){}
 const TrkVolume*
 KalContext::trkVolume(trkDirection tdir) const {
 // this needs a proper volume handler in future DNB_RKK
-  static const TrkCentralVolume* central = new TrkCentralVolume("mu2evol",100.0,-500,500);
+  static const TrkCentralVolume* central = new TrkCentralVolume("mu2evol",1000.0,-2000,2000);
   return central;
 }
     
