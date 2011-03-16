@@ -1,0 +1,526 @@
+! $Id: History 91 2010-01-14 12:37:23Z stroili $
+!
+!           DchGeom Package History (most recent first)
+!           -------------------------------------------
+
+January 14, 2010 - R. Stroili
+	split code in src and include directories
+
+June 09, 2006 - I. Gaponenko (Tag V01-04-07)
+	Moved the BdbSetTime module to another package, fixed include
+	and binary dependency file.
+
+February 25, 2005 - M. Kelsey (Tag V01-04-02)
+	Remove DchSequence from AppUserBuild.  It isn't clear that this
+	executable can still work at all, but that's not my call.
+
+December 14, 2004 - R. Bartoldus (Tag V01-04-00)
+	o Change from std::list<DetElem*> to DetElemList to follow
+  	  interface change in DetectorModel.
+	o Make DetSet* and DetElem* arguments of selection functions
+	  const.
+	o Avoid clear() on temporary containers before they go out of
+	  scope.
+
+July 14, 2004 -  D. Nathan Brown (Tag V01-00-16 M. Kelsey)
+	Cosmetic changes to remove unused variables.
+
+December 19, 2002 -     D. Norvil Brown
+	Remove last vestiges of RW, in conjunction with DetectorModel
+	RW (final) migration.
+
+December 16, 2002 -     D. Norvil Brown
+	Modify DchSelections, DchGasSet, and DchDetector in accordance with
+	RW migrations in DetectorModel.
+
+December 10, 2002 -	D. Norvil Brown
+	Modify DchSelections to test element names as std::strings instead
+	of RWCStrings.  Required by a RW migration in DetectorModel.  
+	Also fixed a line in DchDetector.cc which was missing a trailing ;.
+
+October 19, 2002 -      R. Bartoldus
+        Remove references to *Gra* display code.  Update link files.
+
+July 12, 2002 -		M. Kelsey
+	Remove STL streams per GPDF
+
+June 19, 2002 -		M. Kelsey
+	Remove use of DchEnv from DchLayer.cc to break circular dependence.
+	Add "const DchDetector&" data member to DchLayer and ctor.
+
+	Update dependency files (link_*.mk, bin_*.mk)
+
+May 15, 2002 -          R. Stroili
+        Fix bug in DchVolElem
+
+May 13, 2002 -		M. Kelsey
+	Clean up some problems with merging differences in DchCell.
+
+May 12, 2002 -		M. Kelsey
+	Fix some debugging messages in DchVolElem
+	In GenDchGeom, replace TrkHitList::hitAList() with TrkHitListIter
+
+May 8, 2002 -		M. Kelsey (V01-00-04)
+	In DchCell::helixPath(), compute intersections from hit location,
+	  rather than by difference of flight length values.
+
+May 2, 2002 -		R. Stroili
+	Fix compilation problem in module GenDchGeom
+
+April 30, 2002 -	M. Kelsey
+	Add protected DchCell::helixPath() which takes TrkExchangePar and
+	  HepPoint hit location as arguments.  Called from both TrkFit*
+	  and HelixTraj& versions.
+
+	In DchCell::helixPath(TrkExchangePar...), add lots of debugging code
+	  hidden behind "#ifdef DCHGEOM_DEBUG".  Also add different compuation
+	  of intersection points, which uses PHI direction at _hit_, rather
+	  than phi0; this is hidden behind "#ifdef DCHCELL_USEHIT".
+
+April 17, 2002 -	M. Kelsey
+	Pseudo bug-fix -- Set DchSWire::_id in DchLayer::buildCell().  Add
+	description of inCell() functionality to DchCell.cc.
+
+April 23, 2002 -	R. Stroili
+	Fix (hopefully) problem in t-to-d calibration with cosmics
+
+April 11, 2002 -	M. Kelsey
+	Bug fix -- ostream& operator<< should take _const_ DchCell&
+
+	Add DchSWire* data member to DchCell; filled by DchLayer::buildCell.
+
+April 10, 2002 -	M. Kelsey (MHK-20020410)
+	Fix RW migrations -- don't initialize std::vectors with size
+	  argument, it allocates empty (dummy) objects on the list!
+
+	Merge DchCell::helixPath() function code into one.
+
+April 5, 2002 -		R. Stroili
+	remove (partially) RogueWave
+
+January 29, 2002 - 	R. Stroili
+	add 2 new "entranceMomentum" member functions
+
+October 20, 2001 - 	R. Stroili
+	add more debugging output and a new test (from D. Williams)
+	fix remedy 5605
+
+August 27 2001 -	R. Stroili
+	Tracking migration (moved TrkSimpVolume from DetectorModel to TrkGeom)
+
+May 6, 2001 -		R. Stroili
+	remove inlining of virtual functions
+
+April 23, 2001 -	R. Stroili
+	some more code cleanup 
+
+April 18, 2001 -	R. Stroili
+	- add new function to DchDetector to get track momentum inside
+	  the chamber (2 cm. after the inner cylinder or where the track
+	  validity range starts inside the chamber)
+	- some code cleanup and inlining
+
+April 11, 2001 -	R. Stroili
+	Add cylinder inside detector for PID reconstruction (it was in 
+	DchPidInfo, but there's no need to have it there)
+
+February 6, 2001 -	R. Stroili
+	set correct sizes (where possible) in RW vactors
+
+February 5, 2001 -	R. Stroili
+	put DchFWire destructor in .cc file
+
+January 16, 2001 -	R. Stroili
+	add some member functions to DchFWire
+
+November 2, 2000 -	R. Stroili
+	framework migration
+	add member function in DchLayer (needed by new DchHOT's)
+
+September 22, 2000 -	R. Stroili
+	remove warning (change it to debugging)
+
+July 24, 2000 - 	R. Stroili
+	Add member function in DchLayer needed to speedup G4 simulation
+
+July 21, 2000 - 	R. Stroili
+	some code optimization
+
+June 28, 2000 - 	R. Stroili
+	fix catch statements in some tcl scripts
+
+June 13, 2000 - 	R. Stroili
+	re-write distTo implementation in DchHyperb, add new tests in test 
+	module
+
+June 6, 2000 -		R. Stroili
+	complete migration of geometry trajectories from TrkBase to BbrGeom
+
+May 22, 2000 -		R. Stroili
+	Fix bug in gas volume (many thanks to Dave)
+ 
+May 11, 2000 -		M. Kelsey
+	Convert DchDetector::_dchlayerset to a DchSurfaceSet, which improves
+	intersection-finding (in TrkDchHitAdder) by an order of magnitude
+	(12K calls per event -> 1K).  No interface changes whatsoever.
+
+April 28, 2000 - 	R. Stroili
+	Some code cleanup
+
+March 24, 2000 - 	R. Stroili
+	Some code cleanup
+
+March 13, 2000 -	R. Stroili
+	Fix tracking volume dimensions
+
+March 7, 2000 -		R. Stroili
+	Some changes to speed up the code
+
+February 25, 2000 -	R. Stroili
+	Add missing method in DchWireAlign needed to store wire alignments in 
+	the conditions database
+
+February 1, 2000, -	R. Stroili
+	Code cleanup
+
+December 20, 1999 -	R. Stroili
+	Change some default values in DchTestGeom module
+
+December 17, 1999 - 	R. Stroili
+	Fix potential bug in DchHyperb (protect against division by 0)
+	improve test module
+
+December 16, 1999 -	R. Stroili
+	Migrate DchCell static functions to DchGeomBase/DchCellAddr class
+	in order to break circular dependency between DchGeom and DchMaps
+	(use DchGeomBase V00-00-06 or later)
+
+December 2, 1999 -	M. Kelsey
+	Move DchTestGeom to BINCCFILES list, eliminating circular
+	dependence between DchGeom and DchEnv.  Updated link_*.mk, bin_*.mk.
+
+December 2, 1999 -	R. Stroili
+	Put a protection in DchCell::helixPath against null trajectory pointer
+
+November 18, 1999 -	R. Stroili
+	Fix linux compilation warning in DchVolElem
+
+November 17, 1999 -	G. Raven
+ 	Remove useless include
+
+November 12, 1999 -	R. Stroili
+	Added method to get cell width along z
+
+November 11, 1999 -	M. Rotondo, G. Raven
+	Fix method helixPath
+
+November 4, 1999 -	R. Stroili
+	Fix in DchWireAlign by Jean-Yves
+
+October 12, 1999 -	R. Stroili
+	Added function in DchDetector to access cell width per layer
+
+September 27, 1999 -	R. Stroili
+	Added function to return cell width (from class DchLayer) and
+	cached information on cell widths ratio (with respect to layer # 16)
+	in class DchDetector
+
+September 9, 1999 -	M. Kelsey
+	added new implementation of whichCells() which takes a "road width"
+	(half width!) and returns all the cells within that distance of the
+	trajectory.  If the distance is more than half the circumference,
+	only the latter is used (all cells in the layer will be returned).
+	This function will be useful for adding DCH hits to SVT-only tracks.
+
+July 19, 1999 -		R. Stroili
+	Fixed bug in DchVolElem
+
+July 14, 1999 -		R. Stroili
+	Fixed bug in DchVolElem
+
+July 12, 1999 -		R. Stroili
+	Modified DchVolElem in order to handle tracks originating or 
+	terminating in Dch
+
+July 1, 1999 -		R. Stroili
+	added a function to get access to end-plate deflections in
+	DchDetector
+
+June 7, 1999 - 		R. Stroili
+	added new functions to print some information for some (defined) wires
+	in order to compare MC and reconstruction geometry
+
+June 3, 1999 -		S. Gowdy
+	- Change an index name from index to anIndex to avoid
+	ambiguity.
+
+June 3, 1999 -		R. Stroili
+	- added pointer to DchPlateDefl object in DchDetector
+	- added new module to dump Dch geometry when it changes
+	- fixed bug in DchSWire related to the alignment
+
+May 20, 1999 -		J. Albert
+	add new method in DchLayer for efficiency studies (whichClosestCell)
+
+May 20, 1999 -		R. Faccini
+	migrate DchFWire to TrajGeom/TrkLineTraj
+
+April 25, 1999 -        F. Wilson (FFW-250499)
+        - new method helixPath to compute helix/plane intercept. 5 times
+          faster than intersect.
+
+April 14, 1999 -	R. Stroili
+	- new method path in DchCell to get trajectory path in cell
+	  faster and more efficient (by ~.25%) of previous method 
+	  intersect
+	- fixed a bug in DchSagTraj
+	- some code cleanup in DchCellPlaneType to improve code speed
+
+April 2, 1999 -         S. Schaffner
+        Optimize (for speed) calculations in DchSagTraj::getInfo().
+
+March 26, 1999 -	R. Stroili
+	fix bug in DchLayer::whichCells
+
+February 25, 1999 -	R. Stroili
+	added data file for end-plate deflection corrections
+
+February 21, 1999 -	R. Stroili
+	fixed a typo in dchNullSag.dat
+
+February 12, 1999 -	R. Stroili
+	protected DchDetector against unwanted debugging printouts
+
+February 9, 1999 -      S. Schaffner
+	Make DchSagTraj behave like a straight line for flight lengths < 0. 
+	(was changing directions there).  
+
+February 8, 1999 - 	R. Stroili
+	remove DchDetector inheritance from IfdData
+
+January 27,1999 -	D. Brown
+	fix a bug in DchVolElem
+
+January 26,1999 -	R. Stroili
+	fix a typo in dchSag.dat
+
+January 14,1999 - 	Phil Strother
+	change abs to fabs in DchCell
+
+January 12, 1999 -	R. Stroili
+	Some more ErrLogger migration
+
+January 4, 1999 -	R. Stroili
+	Migrated code to DetectorModel V00-03-00. Fixed a bug in DchHyperb
+	class
+
+December 21, 1998 -	B. Jacobsen
+	CLHEP migration
+
+December 7, 1998 -	R. Stroili
+	Improved efficiency of DchCell::intersection method. Changed output
+	stream for message in DchDetector destructor
+
+November 23, 1998 - 	R. Stroili
+	Small fix in GNUmakefile
+
+November 17, 1998 -	S. Gowdy
+	Fix a bug found by Purify by Jacek Becla. Points and their containers
+	were being deleted twice in DchCylType and DchHyperType. Also fixed
+	the creation of the Outline list to use the same point for start and
+	end.
+
+November 10, 1998 - 	R. Stroili
+	Fix a bug in DchCellPlaneType, tolerance for intersection set to 0
+
+November 9, 1998 - 	R. Stroili
+	use fabs instead of abs....
+
+November 8, 1998 - 	R. Stroili
+	Fixed problem in DchSagTraj, some more migration to ErrLogger
+
+October 21, 1998 -	R. Stroili
+	completed ErrLogger migration on some classes (DchCylType, DchHyperb,
+	DchLayer, DchPlateAlign, DchSagTraj, DchVolElem, DchVolType, 
+	DchWireAlign, GenDchGeom)
+
+October 19, 1998 -	R. Stroili
+	- code cleaning
+	- migration to ErrLogger (not complete)
+
+October 16, 1998 -	R. Stroili
+	whichCells() should work also on loopers
+
+October 15, 1998 -	R. Stroili
+	whichCells() function in DchLayer now working. Changes in DchHyperb
+	and other classes needed by the function whichCells
+
+October 12, 1998 -	R. Stroili
+	Some bug fix in DchHyperb and DchHyperType, none of the functions
+	interested by these fix where used. Added whichCells function
+	to DchLayer (not yet fully implemented), it should give the
+	list of cells traversed by a trajectory
+
+October 6, 1998 -	R. Stroili
+	Made public copy constructor and assignment operator of classes
+	DchWireAlign and DchPlateDefl. Some code cleaning.
+
+October 5, 1998 -	R. Stroili
+	Removed all direct dependencies from persistent classes.
+
+September 25, 1998 -	R. Stroili
+	Fix return of distTo1stError in DchSagTraj
+
+September 24, 1998 -	D. Brown
+	Some optimizations in DchPlateDefl, fix another #include in 
+	DchAlignConv.cc
+
+September 22, 1998 -	D. Brown
+	Put #includes in .cc files that used to come from DchAlignElem in
+	DchGlobalAlign.cc DchPlateAlign.cc
+
+September 22, 1998 -	R. Stroili
+	Fixed test program, fixed problem with corrections to end-plate
+	deflections and cell intersection
+
+September 10, 1998 -	R. Stroili
+	added new intersection method to DchCell class
+
+September 8, 1998 -	R. Stroili
+	moved persistent classes to new DchGeomP package
+
+August 27, 1998 -	R. Stroili
+	fixed FcsInputSequence in AppUserBuild, introduced printAll
+	function in DchCell, added missing path in #include statement
+
+August 13, 1998 - M. Kelsey
+        Applied Framework Migration II patchUp script to GenDchGeom.
+        Fix macro definitions in GNUmakefile to use := instead of =, and
+        to apply filter for LIBCCFILES _after_ BINCCFILES defined.
+
+August 5, 1998 -	R. Stroili
+	migrated to new Framework interface
+	Moved GenDchGeom out of the library, this module is needed only by the
+	test program
+
+August 3, 1998 -	R. Stroili
+	Several changes in DchSWire, DchLayer DchCell and DchDetector in order 
+	to make easier the migration to the DchSagWire class for the sag 
+	description of the sense wire
+
+July 20, 1998 -		R. Stroili
+	code cleaning of class |DchDetector|
+
+July 15, 1998 -		R. Stroili
+	added header file DchSearchId
+	inserted #ifndef XXX_HH to prevent multiple inclusion in 
+	DchSearchId.hh DchSelections.hh	
+	added _const_ keyword to ostream<< operator in class |DchDetector|
+
+July 9, 1998 -		R. Stroili
+	add wire sag class - first incomplete implementation
+
+July 6, 1998 -		G. Raven
+	fixed a bug in DchDetector destructor (only visible in ProtoII)
+
+June 29, 1998 -		R. Stroili
+	added some alignment data-files, added print functions to 
+	|DchGlobalAlign| and |DchPlateAlign|
+
+June 23, 1998 -		R. Stroili
+	changes in AppUserBuild to make test program compliant with new 
+	digitization scheme
+
+June 22, 1998 -		R. Stroili
+	some minor fix in |DchVolElem|
+
+May 13, 1998 -		R. Stroili
+	put some protections in DchLayer against access to wrong cells
+
+May 13, 1998 -		R. Stroili
+	fixed a bug in DchGlobalAlign, fixed memory leak problems related
+	to the (re)alignment of the detector
+ 
+April 30, 1998 -	R. Stroili
+	introduced Bdb.hh in persistent classes
+
+March 27, 1998 -	R. Stroili
+	some more changes for alignment
+
+March 23, 1998 -	R. Stroili
+	Renamed |DchWire| in |DchWirePar|, added some new classes
+	(|DchPPlateAlign|, |DchPlateAlign|, |DchPWireAlign|, 
+	|DchWireAlign|, |DchPPlateDefl| and |DchPlateDefl|) both
+	transient and persistent for alignment corrections.
+
+March 19, 1998 - 	R. Stroili
+	Some changes in order to satisfy CodeWizard requests.
+	Added transient and persistent Dch global alignment class.
+
+March 11, 1998 -	R. Stroili
+	Introduced new class (|DchCellLayout|) for storing the cell
+	structure in the database. Added DchGDch constructor from 
+	persistent (DchGDchP) object. Added some hardwired geometry for
+	protoII code in DchGDch. Added some more information in |DchGDchP| 
+	class. Some improvements in class |DchWire|.
+ 
+March 4, 1998 -		R. Stroili
+	Improved _debug flag handling, introduced 2 new classes for db
+	storage (|DchWire| and |DchSimpleCyl|) and persistent geometry
+	class (|DchGDchP|).
+
+February 24, 1998 -     R. Stroili
+	Some changes in test program to remove circular dependencies, 
+	initialized _debug data member of |DchVolElem|
+
+February 17, 1998 -     S. Schaffner
+	Removed hitmap from DchLayer and associated functions from DchDetector.
+
+February 9, 1998 -      S. Schaffner
+	Fixed bug in calculating DchSWire::_twist for wires crossing phi=pi.
+
+January 29, 1998 -      M. Kelsey
+        Added static functions for cellID/(wire,layer) conversion to
+	DchCell, along with two new Selectors to return wireNum, layerNum.
+	
+January 20, 1998 -	R. Stroili
+	changed GNUmakefile to work with incremental link
+
+January 5, 1998 -	R. Stroili
+	cleaned the code, removed some obsolete classes (|DchSet|, 
+	|DchSWireElem| and |DchSWireType|), fixed a compilation problem for 
+	the aCC compiler.
+
+December 15, 1997 -	R. Stroili
+	cleaned link_DchGeom.mk and GNUmakefile
+
+December 2, 1997 -	R. Stroili
+	Fixed a memory leak problem in |DchCell|, changed end-plates 
+	description (now they are of type |DchVolType| instead of 
+	|DchCylType|) for the Kalman filter
+
+November 26, 1997 -	R. Stroili
+	Fixed a problem with geometry loaded from ASCII file: the cell was not
+	build correctly (this was causing problems with DchProto code)
+
+November 24, 1997 -	R. Stroili
+	Fixed a bug in cell structure
+
+November 18, 1997 -	R. Stroili
+	Introduced Dch cell for dE/dx reconstruction
+
+November 8, 1997 - 	R. Stroili
+	Changes to work with new DchCalib package
+
+November 7, 1997 -	R. Stroili
+	First functional release of DchGeom. Now it replaces old geometry
+	description (DchData), the interfaces are unchanged, the functionality 
+	too. It does not support old GEANT hits (DchGLayHit and DchGWireHit),
+	by default it loads the geometry using dbio functions, but it
+	can still use old-style ascii files. 
+	A lot of things are still missing, but it works (almost) as the old 
+	geometry.
+
+October 7, 1997 -	R. Stroili
+	First release of package (V00-00-02). Still not functional for 
+	reconstruction, but used in graphics (DchGra).
