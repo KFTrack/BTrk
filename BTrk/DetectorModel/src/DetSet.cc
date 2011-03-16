@@ -21,7 +21,7 @@
 using std::endl;
 using std::ostream;
 static const double _epsilon = 1.0e-4;
-static const int _MAXINTER = 200; // maximum # of successive intersections of a single element
+static const int _MAXINTER = 1000; // maximum # of successive intersections of a single element
 //
 //  Define the list functions for printing
 //
@@ -362,7 +362,11 @@ DetSet::intersection(std::vector<DetIntersection>& divec,
     DetElemList::const_iterator diter = dlist().begin();
     DetElem* elem = 0;
     while ( diter != dlist().end() ) {
+ 
       elem = *diter++;
+      if (ErrLogging(debugging)) {
+	ErrMsg(debugging) << "begin "<<elem->elementName()<<endmsg;
+      }
       DetIntersection dinter(0,traj,range[0],range[1]);
 //
 //  Loop till the element is no longer intersected, to handle multiple intersections
