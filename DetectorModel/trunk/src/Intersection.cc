@@ -13,7 +13,7 @@ using std::cout;
 using std::endl;
 
 static const double minstep = 1e-5;       // step size to exit iterations
-static const double maxrange = 1000.; // maximum range for track intersections
+static const double maxrange = 5000.; // maximum range for track intersections
 static const unsigned maxit = 100; // maximum number of steps over the range
 static const double intolerance = 0.01;
 static const double invsqrt2 = 0.7071067812;
