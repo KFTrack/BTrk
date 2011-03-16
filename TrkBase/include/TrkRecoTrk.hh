@@ -166,6 +166,7 @@ private:
   double _trackT0;
   const BField* _bField;
 protected:
+public:
   TrkRep* getRep(PdtPid::PidType hypo);
   const TrkRep* getRep(PdtPid::PidType hypo) const;
   // protected functio
@@ -192,7 +193,7 @@ protected:
   TrkRecoTrk(PdtPid::PidType defaultPart, const TrkContext&, double t0);
 // persistence constructor.  BField must be set later
   TrkRecoTrk(PdtPid::PidType defaultPart,long idnum,double t0);
-public:
+
   // Access to TrkRep, for testing only; use it at your peril
   const TrkRep* testRep( PdtPid::PidType hypo ) const { return getRep(hypo);}
   friend class TrkFitMaker;
