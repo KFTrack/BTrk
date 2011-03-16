@@ -1,0 +1,10 @@
+# 
+#
+#  List of Alignement constants for entry in the Conditions DB
+#  This file contains the global alignment parameters for DCH 
+#  (1 DetAlignElem element)
+#  
+#  The line following is a tag :  don't remove it !
+#Alignment
+#Global
+    1     0.         0.         0.         0.         0.         0.
