@@ -44,7 +44,7 @@ extern "C" {
 //-------------------------------
 // Collaborating Class Headers --
 //-------------------------------
-#include "CLHEP/String/Strings.h"
+//#include "CLHEP/String/Strings.h"
 #include "ErrLogger/ErrLog.hh"
 using std::streampos;
 
@@ -196,9 +196,9 @@ DchDbioParser::getDchSWire( int lay, std::vector<double>& par )
   assert( lay > 0 );
   std::string layName;
   if ( lay <10 ) {
-    layName = HepString("layer0")+HepString(lay);
+    //    layName = HepString("layer0")+HepString(lay);
   } else {
-    layName = HepString("layer")+HepString(lay);
+    // layName = HepString("layer")+HepString(lay);
   }
 
   if ( locate(std::string("DchSwir"), layName) ) {
@@ -227,9 +227,9 @@ DchDbioParser::getDchFWire( const std::string& type, int lay,
   assert( lay > 0 );
   std::string layName;
   if ( lay <10 ) {
-    layName = HepString("layer0")+HepString(lay);
+    //layName = HepString("layer0")+HepString(lay);
   } else {
-    layName = HepString("layer")+HepString(lay);
+    //  layName = HepString("layer")+HepString(lay);
   }
 
   if ( locate(type, layName) ) {

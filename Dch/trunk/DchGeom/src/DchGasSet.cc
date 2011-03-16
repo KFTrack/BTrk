@@ -36,7 +36,7 @@ extern "C" {
 //-------------------------------
 // Collaborating Class Headers --
 //-------------------------------
-#include "CLHEP/Utilities/CLHEP.h"
+#include "CLHEP/config/CLHEP.h"
 #include <vector>
 using std::cout;
 using std::endl;
@@ -184,7 +184,7 @@ DchGasSet::intersection( std::vector<DetIntersection>& divec,
 	if ( dinter.pathrange[0] < dinter.pathrange[1] ) {
 	  divec.push_back(dinter);
 	  dinter.pathrange[0] = dinter.pathrange[1] + _epsilon;
-	  dinter.pathrange[1] = max(dinter.pathrange[0] + _epsilon,range[1]);
+	  dinter.pathrange[1] = std::max(dinter.pathrange[0] + _epsilon,range[1]);
 	} else {
 	  break;
 	}

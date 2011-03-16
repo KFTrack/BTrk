@@ -30,7 +30,7 @@ class TrkRecoTrk;
 // Class definition//
 class DchRecoHitOnTrack : public DchHitOnTrack {
 public:
-  DchRecoHitOnTrack(const DchHit& baseHit, int ambig, double bunchTime,bool isProtoII=false);
+  DchRecoHitOnTrack(const DchHit& baseHit, int ambig=0, double bunchTime=0,bool isProtoII=false);
   virtual ~DchRecoHitOnTrack();
   virtual TrkHitOnTrk* clone(TrkRep *, const TrkDifTraj *trkTraj=0) const;
 

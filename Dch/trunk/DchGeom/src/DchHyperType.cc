@@ -125,7 +125,8 @@ DchHyperType::physicalMaterial(const TypeCoord* point) const
 double
 DchHyperType::thickness(const TwoDCoord* point) const
 {
-  return Constants::epsilon;
+  const double epsilon = 1.0e-05;
+  return epsilon;
 }
 
 double

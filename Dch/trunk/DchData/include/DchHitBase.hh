@@ -33,7 +33,7 @@
 #include "DchGeomBase/DchCellAddr.hh"
 #include "TrkBase/TrkEnums.hh"
 #include "DchCalib/DchTimeToDist.hh"
-
+#include <iostream>
 //----------------------------
 //    Class Declarations    --
 //----------------------------
@@ -47,8 +47,11 @@ class DchHitBase
 {
 public:
 
-  DchHitBase(unsigned layer, unsigned wire, double rawTime, unsigned iTdc, double charge,
-             const DchDetector&, const DchTimeToDistList&);
+  // DchHitBase(unsigned layer, unsigned wire, double rawTime, unsigned iTdc, double charge,
+  //            const DchDetector&, const DchTimeToDistList&);
+
+  DchHitBase(unsigned layer, unsigned wire, double dist,double sigma,const DchDetector& det);
+  DchHitBase();
   virtual ~DchHitBase();
 
   bool operator==(const DchHitBase& rhs) const { return (this == &rhs); }
@@ -78,7 +81,11 @@ public:
   int whichView() const;
   TrkEnums::TrkViewInfo whatView() const  { return whichView()==0?TrkEnums::xyView:TrkEnums::bothView; }
 
+  virtual void print(std::ostream &) const{};
+
 protected:
+  double _dist;
+  double _sigma;
   double _rawTime;
   double _charge;
   const DchDetector* _geomPtr;  // pointer to geometry
@@ -94,7 +101,7 @@ protected:
   static double _fittingSigMult;//scale factor to manipulate nom. sigma
 
 
-  DchHitBase(const DchHitBase& rhs):
+  /*  DchHitBase(const DchHitBase& rhs):
           _rawTime(rhs._rawTime), _charge(rhs._charge),
           _geomPtr(rhs._geomPtr), _layerPtr(rhs._layerPtr),
           _t2d(rhs._t2d), _layer(rhs._layer),
@@ -114,7 +121,7 @@ protected:
       _charge = rhs._charge;
     }
     return *this;
-  }
+    }*/
 
 private:
   friend class DchMakeHits;
@@ -123,7 +130,7 @@ private:
     _fittingSigMult = fitMult;}
 
   //hide the copy ctor and assignment op, at least until somebody needs them
-  DchHitBase();
+  // DchHitBase();
 
 };
 
@@ -138,22 +145,24 @@ double
 DchHitBase::driftDist(double tof, int ambig, double entranceAngle,
                    double dipAngle, double z) const 
 { // tof in s, rawtime in ns..
-  return _t2d->timeToDist(driftTime(tof),ambig,entranceAngle,dipAngle,z);
+  return _dist;//_t2d->timeToDist(driftTime(tof),ambig,entranceAngle,dipAngle,z);
 }
 
 double
 DchHitBase::sigma(double driftdist, int ambig) const
 {
-  double sig = _fittingSigMult * _t2d->resolution(driftdist,ambig,0,0,0);
-  return sqrt(sig*sig + _addFindingSig * _addFindingSig);
+  return _sigma;
+  // double sig = _fittingSigMult * _t2d->resolution(driftdist,ambig,0,0,0);
+  // return sqrt(sig*sig + _addFindingSig * _addFindingSig);
 }
 
 double
 DchHitBase::sigma( double driftdist, int ambig, double entranceAngle,
                    double dipAngle, double z) const
 {
-  return _fittingSigMult * _t2d->resolution(driftdist,ambig,entranceAngle,
-                                            dipAngle,z);
+  return _sigma;
+  // return _fittingSigMult * _t2d->resolution(driftdist,ambig,entranceAngle,
+  //                                           dipAngle,z);
 }
 
 #endif

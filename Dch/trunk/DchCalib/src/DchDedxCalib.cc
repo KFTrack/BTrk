@@ -28,7 +28,7 @@
 #include <assert.h>
 #include <math.h>
 //
-#include "CLHEP/Vector.h"
+#include "CLHEP/Matrix/Vector.h"
 #include "ErrLogger/ErrLog.hh"
 //
 #include "DchCalib/DchDedxCalib.hh"
