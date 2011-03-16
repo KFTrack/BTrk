@@ -47,7 +47,6 @@ typedef unsigned long long       uint64_t;
 #endif
 #endif
 
-
 // Activate large file support for Sun if it isn't already.
 // This should be done in CPPFLAGS (and is) but a bug in the template
 // support in the Workshop 4.2 compiler causes some files to be
@@ -221,6 +220,12 @@ int clock_gettime ( clockid_t clock_id, struct timespec *tp);
 #include "CLHEP/Vector/ThreeVector.h"
 using namespace CLHEP;
 
+typedef double HepDouble;
+typedef int    HepInt;
+typedef float  HepFloat;
+typedef bool   HepBoolean;
+
+
 // Used by DetectorModel/src/DetMaterial.cc
 inline double sqr( double a){
   return a*a;
@@ -228,6 +233,9 @@ inline double sqr( double a){
 
 // Electron mass in GeV/c^2.  Needed by DetectorModel/src/DetMaterial.cc
 // Replace with proper invocation from PDT.
-static const double electron_mass_c2 = 0.000510998910;
+//static const double electron_mass_c2 = 0.000510998910;
+
+#include <stdio.h>
+#include <algorithm>
 
 #endif // BABAR_HH
