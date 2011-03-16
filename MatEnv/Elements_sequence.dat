@@ -1,0 +1,9 @@
+#
+#  List of elements for entry in the Conditions DB
+#  The date/time at which it is to be stored 
+#  is followed by the file name which actually defines the elements
+#
+Zone UTC
+01Jan1971 00:00:01  MatEnv/ElementsList.data 
++Infinity
+
