@@ -47,6 +47,8 @@
 #include "TrkBase/TrkHitUse.hh"
 #include "ErrLogger/ErrLog.hh"
 #include "PDT/Pdt.hh"
+#include "DchGeom/DchDetector.hh"
+
 #include <algorithm>
 #include <vector>
 #include <deque>
@@ -58,8 +60,8 @@ using std::max;
 const double KalRep::_minfltlen(0.1); // minimum flight length allowed for a KalRep
 const double KalRep::_minmom(0.01); // minimum momentum = 10 MeV
 const double KalRep::_fltepsilon(0.001); // small flight length buffer
-const double KalRep::_maxintrange(750.0); // maximum bfield integration range
-const double KalRep::_divergeflt(300.0); // flight length change to signify a diverging fit
+const double KalRep::_maxintrange(7500.0); // maximum bfield integration range
+const double KalRep::_divergeflt(3000.0); // flight length change to signify a diverging fit
 const double KalRep::_mindot(0.85);  // minimum direction dot product change for a traj to be 'reasonable'
 
 // predicates for site updating
@@ -659,14 +661,24 @@ KalRep::iterateFit(){
   while(_niter <= _kalcon->maxIterations() && !converged()){
 // iteration sequence: update, fit, build the trajectory
 // Check status after every step
+    if (ErrLogging(debugging))
+      std::cout<<"fit iteration "<<_niter<<std::endl;
     _niter++;
     if(_niter>1){
       fiterr = updateSites();
+      if (ErrLogging(debugging))
+	std::cout<<"update Sites err="<<fiterr<<std::endl;
       if(fiterr.failure())return fiterr;
     }
     fiterr = fitSites();
+    if (ErrLogging(debugging)){
+      std::cout<<"fit Sites err="<<fiterr<<std::endl;
+      printAll(std::cout);
+    }
     if(fiterr.failure())return fiterr;
     fiterr = buildTraj();
+    if (ErrLogging(debugging))
+      std::cout<<"build Traj err="<<fiterr<<std::endl;
     if(fiterr.failure())return fiterr;
   }
   return fiterr;
@@ -1030,7 +1042,8 @@ KalRep::extendThrough(double newf) {
 	if(_kalcon->materialSites()){
 //  Get the top-level detector set
 // For now, use an empty detector set.  In future, this should come from the geometry service DNB_RKK
-    static const DetSet* trkmodel = new DetSet("dummy",1);
+//    static const DetSet* trkmodel = new DetSet("dummy",1);
+	  const DetSet* trkmodel= &(DchDetector::GetInstance()->dchSet());
 //  Find the material intersections, and create KalMaterial sites for them
 	  std::vector<DetIntersection> tlist; tlist.reserve(16);
 	  trkmodel->intersection(tlist,_reftraj,piecerange);
@@ -1256,10 +1269,13 @@ KalRep::buildMaterialSites(double range[2],std::vector<DetIntersection>& tlist) 
   if(range[1]>range[0]){
 //  Get the Tracking DetectorModel tree from TrkEnv
 // For now, use an empty detector set.  In future, this should come from the geometry service DNB_RKK
-    static const DetSet* trkmodel = new DetSet("dummy",1);
+//    static const DetSet* trkmodel = new DetSet("dummy",1);
+    const DetSet* trkmodel= &(DchDetector::GetInstance()->dchSet());
 // find the intersections with the reference trajectory, if no intersections provided
-		if(tlist.size() == 0)
-    	trkmodel->intersection(tlist,_reftraj,range);
+    if(tlist.size() == 0)
+      trkmodel->intersection(tlist,_reftraj,range);
+		
+//    std::cout<<"Intersections n="<<tlist.size()<<std::endl;
 // split the intersection list into those before and after the reference momentum
     int below(0);
     while(below<tlist.size() && tlist[below].pathlen<_refmomfltlen)
@@ -1382,7 +1398,7 @@ KalRep::momentum(double fltL) const {
 //----------------------------------------------------------------------
 //  const BField& theField = parentTrack()->bField();
   // kludge DNB_RKK
-  static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
+  static const BField* theField = new BFieldFixed(0.0,0.0,1.0);
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
   return TrkMomCalculator::vecMom(*locTraj, *theField, localFlt);
@@ -1394,7 +1410,7 @@ KalRep::pt(double fltL) const {
 //----------------------------------------------------------------------
 //  const BField& theField = parentTrack()->bField();
   // kludge DNB_RKK
-  static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
+  static const BField* theField = new BFieldFixed(0.0,0.0,1.0);
   
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
@@ -1407,7 +1423,7 @@ KalRep::momentumErr(double fltL) const {
 //----------------------------------------------------------------------
 //  const BField& theField = parentTrack()->bField();
   // kludge DNB_RKK
-  static const BField* theField = new BFieldFixed(0.0,0.0,-1.0);
+  static const BField* theField = new BFieldFixed(0.0,0.0,1.0);
   
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
@@ -1650,6 +1666,9 @@ KalRep::converged() const {
     if(converged) converged &= _kalcon->maxParamDiff(trkIn) < 0.0 ||
 		    parameterDifference(trkIn) < _kalcon->maxParamDiff(trkIn);
   }
+  if(_niter<=1) converged=false;
+  //std::cout<<"converged "<<converged<<" "<<_niter<<std::endl;
+
   return converged;
 }
 
@@ -1966,10 +1985,19 @@ KalRep::isFitable(TrkErrCode& err) const {
        (_sites[_hitrange[1]]->globalLength() <= _stopsite->globalLength() + _kalcon->intersectionTolerance() )){
 // check for parameters diverging
       if(_maxfltdif > _divergeflt){
+	if (ErrLogging(debugging)) {
+	  std::cout<<"max fligth difference "<<_maxfltdif<<std::endl;
+	}
 	fitable = false;
 	err = TrkErrCode(TrkErrCode::fail,KalCodes::diverge,"Iterations diverge");
       }
     } else {
+      if (ErrLogging(debugging)) {
+	if(_stopsite!=0)
+	  std::cout<<"Will stop must be on "<<_sites[_hitrange[1]]->globalLength()<<" "
+		   <<" but stop on length "<<_stopsite->globalLength()
+		   <<" eps "<<_kalcon->intersectionTolerance()<<std::endl;
+      }
       fitable = false;
       err = TrkErrCode(TrkErrCode::fail,KalCodes::stops,
 		       "Track stops due to energy loss before last hit");
