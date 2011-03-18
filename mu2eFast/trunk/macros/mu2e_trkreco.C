@@ -727,5 +727,109 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     leg->AddEntry(rad,"All","L");
     leg->AddEntry(radh,"# Hits>0","L");
     leg->Draw();
+  } else if(page=="eloss"){
+    TCut target("shelemnum<0&&shz<-380");
+    TCut absorber("shelemnum==0&&shz<-150");    
+    
+//    TH1F* recmom = new TH1F("recmom","e- momentum, target+absorber",201,80,108);
+//    TH1F* trumom = new TH1F("trumom","e- momentum, target+absorber",201,80,108);
+
+    TH1F* grecmom = new TH1F("grecmom","e- momentum, target+absorber, good tracks",201,100,111);
+    TH1F* gtrumom = new TH1F("gtrumom","e- momentum, target+absorber, good tracks",201,100,111);
+    TH1F* dmom = new TH1F("dmom","e- energy loss to first hit",201,-0.01,20);
+    
+    TH1F* tdmom = new TH1F("tdmom","Energy loss/Intersection",201,0,50);
+    TH1F* admom = new TH1F("admom","Energy loss/intersection",201,0,50);
+    
+    TH1F* ntar = new TH1F("ntar","# intersections/track",10,-0.5,9.5);
+    TH1F* nabs = new TH1F("nabs","# intersections/track",10,-0.5,9.5);
+    
+//    recmom->SetStats(0);
+//    trumom->SetStats(0);
+    grecmom->SetStats(0);
+    gtrumom->SetStats(0);
+    tdmom->SetStats(0);
+    admom->SetStats(0);
+    ntar->SetStats(0);
+    nabs->SetStats(0);
+    
+    tree->Project("tdmom","1000*(shmomin-shmomout)",target);
+    tree->Project("admom","1000*(shmomin-shmomout)",absorber);
+    
+    tree->Project("grecmom","1000*rec_mom_mag",goodrec);
+    tree->Project("gtrumom","1000*shmomin[ifirsthit]",goodrec);
+    tree->Project("dmom","1000*(shmomin[0]-shmomin[ifirsthit])",goodrec);
+    
+    tree->Project("ntar","sim_ntarget",goodrec);
+    tree->Project("nabs","sim_nabsorber",goodrec);
+
+//    tree->Project("recmom","1000*rec_mom_mag",rec);
+///    tree->Project("trumom","1000*shmomin[ifirsthit]",rec);
+
+//    recmom->SetLineColor(kRed);
+//    trumom->SetLineColor(kBlue);
+//    recmom->GetXaxis()->SetTitle("MeV");
+//    trumom->GetXaxis()->SetTitle("MeV");
+
+    grecmom->SetLineColor(kRed);
+    gtrumom->SetLineColor(kBlue);
+    grecmom->GetXaxis()->SetTitle("MeV");
+    gtrumom->GetXaxis()->SetTitle("MeV");
+    
+    tdmom->SetLineColor(kRed);
+    admom->SetLineColor(kBlue);
+
+    ntar->SetLineColor(kRed);
+    nabs->SetLineColor(kBlue);
+    
+
+//    TLegend* leg = new TLegend(0.2,0.65,0.85,0.8);
+    char title[100];
+//    sprintf(title,"True mom at 1st track hit, mean=%4.1f MeV",trumom->GetMean());    
+//    leg->AddEntry(trumom,title,"L");
+//    sprintf(title,"Reconstructed momentum at origin, mean=%4.1f MeV",recmom->GetMean());    
+//    leg->AddEntry(recmom,title,"L");
+    
+    TLegend* gleg = new TLegend(0.1,0.65,0.75,0.8);
+    sprintf(title,"True mom at 1st hit, mean=%4.1f MeV",gtrumom->GetMean());    
+    gleg->AddEntry(gtrumom,title,"L");
+    sprintf(title,"Reco mom at origin, mean=%4.1f MeV",grecmom->GetMean());    
+    gleg->AddEntry(grecmom,title,"L");
+    
+    TLegend* nleg = new TLegend(0.5,0.65,0.95,0.8);
+    sprintf(title,"target, mean=%4.1f",ntar->GetMean());    
+    nleg->AddEntry(ntar,title,"L");
+    sprintf(title,"absorber, mean=%4.1f",nabs->GetMean());    
+    nleg->AddEntry(nabs,title,"L");
+
+    TLegend* deleg = new TLegend(0.2,0.65,0.85,0.8);
+    sprintf(title,"target, mean=%4.2f MeV",tdmom->GetMean());    
+    deleg->AddEntry(tdmom,title,"L");
+    sprintf(title,"absorber, mean=%4.2f MeV",admom->GetMean());    
+    deleg->AddEntry(admom,title,"L");
+    
+    can->Clear();
+    can->Divide(2,2);
+    can->cd(1);
+    gPad->SetLogy();
+    grecmom->Draw();
+    gtrumom->Draw("same");
+    gleg->Draw();
+
+    can->cd(2);
+    gPad->SetLogy();
+    dmom->Draw();
+    
+    can->cd(3);
+    ntar->Draw();
+    nabs->Draw("same");
+    nleg->Draw();
+    
+    can->cd(4);
+    gPad->SetLogy();
+    admom->Draw();
+    tdmom->Draw("same");
+    deleg->Draw();
+    
   }
 }
