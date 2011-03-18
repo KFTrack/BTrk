@@ -95,6 +95,8 @@ struct HitCount{
   Int_t nhit_ge[ncount];
   Int_t nstation;
   Int_t ndlayer;
+  Int_t nabs;
+  Int_t ntar;
   HitCount() { reset();}
   void reset(){
     nstation = ndlayer = 0;
@@ -102,6 +104,8 @@ struct HitCount{
       nhit[icount] = 0;
       nhit_ge[icount] = 0;
     }
+    nabs = 0;
+    ntar = 0;
   }
   void increment(unsigned nhits){
     nstation++;
@@ -183,7 +187,7 @@ int main(int argc, char* argv[]) {
   Int_t bkg_ntrks, bkg_nhits;
   Int_t sim_nzero, sim_nsingle, sim_ndouble, sim_ntriple, sim_nquad;
   Int_t sim_nzero_ge, sim_nsingle_ge, sim_ndouble_ge, sim_ntriple_ge, sim_nquad_ge;
-  Int_t sim_nstation, sim_ndlayer;
+  Int_t sim_nstation, sim_ndlayer, sim_nabsorber, sim_ntarget;
   Int_t sim_pdgid;
   Float_t sim_d0;
   Float_t sim_phi0;
@@ -283,6 +287,8 @@ int main(int argc, char* argv[]) {
   trackT->Branch("sim_nquad_ge",&sim_nquad_ge,"sim_nquad_ge/I");
   trackT->Branch("sim_nstation",&sim_nstation,"sim_nstation/I");
   trackT->Branch("sim_ndlayer",&sim_ndlayer,"sim_ndlayer/I");
+  trackT->Branch("sim_nabsorber",&sim_nabsorber,"sim_nabsorber/I");
+  trackT->Branch("sim_ntarget",&sim_ntarget,"sim_ntarget/I");
 
   trackT->Branch("rec_pdgid",&rec_pdgid,"rec_pdgid/I");
   trackT->Branch("rec_d0",&rec_d0,"rec_d0/F");
@@ -486,6 +492,8 @@ int main(int argc, char* argv[]) {
         sim_nquad_ge = hcount.nhit_ge[4];
         sim_nstation = hcount.nstation;
         sim_ndlayer = hcount.ndlayer;
+        sim_ntarget = hcount.ntar;
+        sim_nabsorber = hcount.nabs;
 
         if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
         //Get Reconstructed Track data
@@ -699,6 +707,11 @@ countHits(const PacSimTrack* strk, HitCount& count) {
 // double layer: increment taht
         count.ndlayer++;
       }
+    } else if(delem != 0){
+      if(delem->elementNumber() == 0)
+        count.nabs++;
+      else if(delem->elementNumber() < 0)
+        count.ntar++;
     }
   }
 // fill the struct
