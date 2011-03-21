@@ -13,7 +13,7 @@
                 <!-- beam spread parameter -->
                 <param name="beamthetasigma"  type="double"> 0.0 </param>
                 <!-- the following is the exponential decay constant for the muon flux as a function of z (cm) -->
-                <param name="beamzlambda"  type="double"> 39.2 </param>
+                <param name="beamzlambda"  type="double"> 57.5 </param>
                 <!-- spectrum type = 0 means a flat spectrum, 
                 change spectrum type to 1 to read spectrum from a file -->
                 <param name="spectrumtype" type="int"> 0 </param>
