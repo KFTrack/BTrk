@@ -396,8 +396,8 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
 
   } else if (page == "mom"){
     gStyle->SetOptFit(1111);
-    TH1F* nhit = new TH1F("nhit","N hits",200,-0.5,199.5);
-    tree->Project("nhit","rec_nhit",goodrec);
+//    TH1F* nhit = new TH1F("nhit","N hits",200,-0.5,199.5);
+//    tree->Project("nhit","rec_nhit",goodrec);
     
     TH1F* mome = new TH1F("mome","estimated fit mom error",100,0.01,1.0);
     tree->Project("mome","1000*rec_mom_err",goodrec);
@@ -416,15 +416,15 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     
     
     can->Clear();
-    can->Divide(3,2);
+    can->Divide(2,2);
     can->cd(1);
-    nhit->Draw();
-    can->cd(2);
+//    nhit->Draw();
+//    can->cd(2);
     mome->Draw();
-    can->cd(3);
+    can->cd(2);
     gPad->SetLogy();
     mompg->Fit("gaus","","",-2,10);
-    can->cd(4);
+    can->cd(3);
     gPad->SetLogy();
     double integral = momr->GetEntries()*momr->GetBinWidth(1);
     sgau->SetParameters(integral,0.0,0.8*momr->GetRMS(),0.8*momr->GetRMS(),0.01,1.5*momr->GetRMS(),1.5*momr->GetRMS());
@@ -432,7 +432,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
     sgau->SetParLimits(4,0.0,0.49);
     momr->Fit("sgau","L","",-0.5,2.0);
-    can->cd(5);
+    can->cd(4);
     mom->Draw();
 //    momr->Fit("sgau","M");
     

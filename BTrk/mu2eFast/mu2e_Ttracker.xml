@@ -40,6 +40,8 @@
                 rms_par3="-0.00330654"
                 rms_par4="0"
                 rms_par5="0"
+                ngFrac="0.02"
+                ngFactor="5.0"
                 eff_par0="0.99"
                 eff_par1="1.00"	
                 cell_size="0.5"
