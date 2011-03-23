@@ -10,7 +10,7 @@
                 <param name="minsvthit"       type="int"  > 0</param>
                 <param name="mindchhit"       type="int"  > 0</param>
                 <param name="minpt"       type="float"    > 0.02</param>
-                <param name="hitchicut"     type="float" >   500. </param>
+                <param name="hitchicut"     type="float" >   10. </param>
                 <param name="trkchicut"     type="float" >   5. </param>
                 <param name="weedhits"      type="bool"  > true </param>
                 <param name="maxweed"       type="int"   >   10  </param>

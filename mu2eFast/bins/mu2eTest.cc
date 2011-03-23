@@ -793,7 +793,7 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
 // find track trajectory
       const TrkDifTraj& ttraj = hots[0]->getParentRep()->traj();
       for(unsigned ihot=0;ihot<std::min((size_t)1,hots.size());ihot++){
-        const TrkHitOnTrk* hot= hots[ihot];
+        const PacHitOnTrk* hot= dynamic_cast<const PacHitOnTrk*>(hots[ihot]);
         if(hot->trkTraj() != 0){
           sinfo.hview = hot->whatView();
           sinfo.hlay = hot->layerNumber();
@@ -813,6 +813,7 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
           sinfo.tresid = Hep3Vector(pos - (trkpoint+sval*trkdir)).dot(mdir);
           sinfo.mdot = pocadir.dot(snorm);
           sinfo.herr = hot->hitRms();
+          sinfo.serr = hot->hitInfo()._sres;
           svec.push_back(sinfo);
         }
       }
