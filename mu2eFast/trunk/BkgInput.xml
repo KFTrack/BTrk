@@ -26,7 +26,7 @@ around a presumed 'signal' track -->
                 <param name="bkgeff" type="float"> 3.2e-3 </param>
                 <!-- time window in which to integrate background.  Making this too large just adds inefficiency,
                 as the final time cuts are made hit-by-hit -->
-                <param name="bkghalfwindow" type="float"> 1.0e-7 </param>
+                <param name="bkghalfwindow" type="float"> 1.5e-7 </param>
             </sect>            
         </config>
     </included>
