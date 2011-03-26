@@ -68,9 +68,18 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TF1* dgau = new TF1("dgau",doublegaus,-1.,1.,5);
   if( page == "sim"){
     TH1F* mom = new TH1F("mom","momentum",100,0.09,0.11);
+    mom->GetXaxis()->SetTitle("GeV");
     TH1F* td = new TH1F("td","tandip",100,0,1.4);
     TH1F* z0 = new TH1F("z0","z position",91,-475.5,-384.5);
+    z0->GetXaxis()->SetTitle("cm from tracker center");
+    z0->SetStats(0);
+    TH1F* rprof = new TH1F("rprof","radial profile",100,-11,11);
+    rprof->GetXaxis()->SetTitle("cm");
+//    rprof->SetStats(0);
     TH2F* xyprof = new TH2F("xyprof","xy profile",50,-11,11,50,-11,11);
+    xyprof->GetXaxis()->SetTitle("cm");
+    xyprof->GetYaxis()->SetTitle("cm");
+    xyprof->SetStats(0);
 //    TH1F* d0 = new TH1F("d0","transverse position",100,-25,25);
 //    TH2F* nvtd = new TH2F("nvtd","N planes vs tandip",51,0.5,1.1,51,-0.5,50.5);
 //    TH2F* nvd0 = new TH2F("nvd0","N planes vs transverse position",51,-25.5,25.5,51,-0.5,50.5);
@@ -80,6 +89,9 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tree->Project("td","sim_tandip",gen);
     tree->Project("z0","sim_inipos_z",gen);
     tree->Project("xyprof","sim_inipos_y:sim_inipos_x",gen);
+    tree->Project("rprof","sim_inipos_x",gen);
+    tree->Project("rprof+","sim_inipos_y",gen);
+    
 //    tree->Project("d0","sim_d0");
 //    tree->Project("nvtd","simtrk.ngas:sim_tandip");
 //    tree->Project("nvd0","simtrk.ngas:sim_d0");
@@ -92,7 +104,8 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(3);
     z0->Draw();
     can->cd(4);
-    xyprof->Draw("box");
+//    xyprof->Draw("box");
+    rprof->Draw();
 //    can->cd(5);
 //    nvtd->Draw("box");
 //    can->cd(6);
@@ -630,7 +643,9 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   } else if(page == "merged") {
     TH1F* nbkgevt = new TH1F("nbkgevt","# DIO tracks/signal track",100,-0.5,99.5);
     TH1F* nbkghit = new TH1F("nbkghit","# bkg hits/signal track",100,0,1200);
-    TH1F* nmerged = new TH1F("nmerged","# merged hits/signal track",10,-0.5,9.5);
+    TH1F* nmerged = new TH1F("nmerged","# hits/signal track",10,-0.5,9.5);
+    TH1F* nmergeda = new TH1F("nmergeda","# hits/signal track",10,-0.5,9.5);
+    TH1F* nshadowed = new TH1F("nshadowed","# hits/signal track",10,-0.5,9.5);
     TH1F* mfprob = new TH1F("mfprob","Fit consistency",200,0.0,1.0);
     TH1F* nmfprob = new TH1F("nmfprob","Fit consistency",200,0.0,1.0);
     
@@ -639,8 +654,10 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tree->Project("nbkgevt","bkg_ntrks",gen);
     tree->Project("nbkghit","bkg_nhits",gen);
     tree->Project("nmerged","rec_nmerged",gen);
-    tree->Project("mfprob","rec_fitprob",gen+"rec_nmerged>0");
-    tree->Project("nmfprob","rec_fitprob",gen+"rec_nmerged==0");
+    tree->Project("nmergeda","rec_nmergeda",gen);
+    tree->Project("nshadowed","rec_nshadowed",gen);
+    tree->Project("mfprob","rec_fitprob",gen+"rec_nmergeda>0");
+    tree->Project("nmfprob","rec_fitprob",gen+"rec_nmergeda==0");
     can->Clear();
     can->Divide(2,2);
     can->cd(1);
@@ -651,17 +668,27 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     nbkghit->Draw();
     can->cd(3);
     gPad->SetLogy();
+    nmerged->SetLineColor(kRed);
+    nmergeda->SetLineColor(kBlue);
+    nshadowed->SetLineColor(kGreen);
     nmerged->Draw();
+    nmergeda->Draw("same");
+    nshadowed->Draw("same");
+    TLegend* leg = new TLegend(0.3,0.5,0.7,0.7);
+    leg->AddEntry(nmerged,"replaced","L");
+    leg->AddEntry(nmergeda,"replaced(active)","L");
+    leg->AddEntry(nshadowed,"shadowed","L");
+    leg->Draw();
     can->cd(4);
     gPad->SetLogy();
     mfprob->Scale(10.0);
     mfprob->Draw();
     nmfprob->Draw("same");
    
-    TLegend* leg = new TLegend(0.2,0.5,0.7,0.8);
-    leg->AddEntry(nmfprob,"#merged==0","L");
-    leg->AddEntry(mfprob,"#merged>0 (X10)","L");
-    leg->Draw();
+    TLegend* leg2 = new TLegend(0.2,0.5,0.7,0.8);
+    leg2->AddEntry(nmfprob,"#replaced==0","L");
+    leg2->AddEntry(mfprob,"#replaced>0 (X10)","L");
+    leg2->Draw();
     
   } else if(page == "bkg") {
     TH1F* nhit = new TH1F("nhit","# track hits",60,-0.5,59.5);
