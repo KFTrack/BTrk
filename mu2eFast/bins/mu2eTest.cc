@@ -224,6 +224,8 @@ int main(int argc, char* argv[]) {
   Int_t rec_ndch;
   Int_t rec_nactive;
   Int_t rec_nmerged;
+  Int_t rec_nmergeda;
+  Int_t rec_nshadowed;
   Int_t rec_nhit;
   Float_t rec_d0;
   Float_t rec_phi0;
@@ -312,6 +314,8 @@ int main(int argc, char* argv[]) {
   trackT->Branch("rec_ndch",&rec_ndch,"rec_ndch/I");
   trackT->Branch("rec_nactive",&rec_nactive,"rec_nactive/I");
   trackT->Branch("rec_nmerged",&rec_nmerged,"rec_nmerged/I");
+  trackT->Branch("rec_nmergeda",&rec_nmergeda,"rec_nmergeda/I");
+  trackT->Branch("rec_nshadowed",&rec_nshadowed,"rec_nshadowed/I");
   trackT->Branch("rec_nhit",&rec_nhit,"rec_nhit/I");
   trackT->Branch("rec_mom_pt",&rec_mom_pt,"rec_mom_pt/F");
   trackT->Branch("rec_mom_err",&rec_mom_err,"rec_mom_err/F");
@@ -576,8 +580,12 @@ int main(int argc, char* argv[]) {
           rec_nhit = kalrep->hotList()->nHit();
 // count merged hits
           rec_nmerged = 0;
+          rec_nmergeda = 0;
+          rec_nshadowed = 0;
           for (TrkHotList::hot_iterator i = kalrep->hotList()->begin();i!=kalrep->hotList()->end();++i) {
             if (i->usability() == 10)rec_nmerged++;
+            if (i->usability() == 10 && i->isActive())rec_nmergeda++;
+            if (i->usability() == -11 && !i->isActive())rec_nshadowed++;
           }
 
       // test of position difference between
