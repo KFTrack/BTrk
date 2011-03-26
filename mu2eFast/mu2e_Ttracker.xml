@@ -29,15 +29,16 @@
             <formula name="index" par0="zvar" par1="cvar" par2="svar" formula="100*(3*[2]+[1])+[0]"></formula>
 
         </define>
+<!-- resolution parameters are set according to NA62 prototype measurements, scaled by 10%-->
 
         <measures>
             <device name="Straw"
                 type="DriftChamber"
                 sensitiveTimeWindow="1e-6"
-                rms_par0="0.0213475 "
-                rms_par1="-0.0305015"
-                rms_par2="0.0173343"
-                rms_par3="-0.00330654"
+                rms_par0="0.0234823 "
+                rms_par1="-0.033552"
+                rms_par2="0.0190677"
+                rms_par3="-0.0036372"
                 rms_par4="0"
                 rms_par5="0"
                 ngFrac="0.02"
