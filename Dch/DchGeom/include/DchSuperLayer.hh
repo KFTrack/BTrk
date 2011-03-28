@@ -48,6 +48,7 @@ class DchLayer;
 //		---------------------
 // 		-- Class Interface --
 //		---------------------
+static const int _layInSuper = 1;
 
 class DchSuperLayer : public DetSet {
 
@@ -89,10 +90,10 @@ public:
   // here |index| is the index of array of pointers to layers
   // belonging to the superlayer, so this ramges from 0 to 3
   //----------------------------------------------------------
-  const DchLayer* layer(int i) const { assert ( i>=0 && i <4 ) ; 
+  const DchLayer* layer(int i) const { assert ( i>=0 && i <_layInSuper ) ; 
                                        return layers[i]; }
   const DchLayer* firstLayer(void) const                 {return layers[0];}
-  const DchLayer* lastLayer(void) const                  {return layers[3];}
+  const DchLayer* lastLayer(void) const                  {return layers[_layInSuper-1];}
   const DchSuperLayer* next(void) const                      {return _next;}
   const DchSuperLayer* prev(void) const                      {return _prev;}
   const DchSuperLayer* nextInView(void) const          {return _nextInView;}
@@ -126,7 +127,7 @@ private:
   double _radius;  // mean rad.
   double _delphi; // diff in phi between z=0 and zend (=0 for axial
   double _delphiinv; 
-  const DchLayer* layers[4];
+  const DchLayer* layers[_layInSuper];
   int _view;  // +1, 0, -1 = U, axial, V
   int _slayer;  // superlayer number
   const DchSuperLayer* _next;
