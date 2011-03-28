@@ -29,8 +29,8 @@
             <formula name="index" par0="zvar" par1="cvar" par2="svar" formula="100*(3*[2]+[1])+[0]"></formula>
 
         </define>
-<!-- resolution parameters are set according to NA62 prototype measurements, scaled by 10%-->
-
+<!-- resolution parameters are set according to NA62 prototype measurements, scaled by 10%-
+Note that the straws are oriented along the u direction (v is default) -->
         <measures>
             <device name="Straw"
                 type="DriftChamber"
