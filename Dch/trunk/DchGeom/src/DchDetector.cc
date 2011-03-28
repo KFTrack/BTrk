@@ -142,7 +142,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     radii[0] = gdch.ICInRad();
     radii[1] = gdch.ICOutRad();
     length = gdch.ICLength();
-    const DetMaterial* material = mtdbinfo->findDetMaterial("IT-InRad");// gblEnv->getGen()->findDetMaterial("Beryllium");
+    const DetMaterial* material = mtdbinfo->findDetMaterial("ITInBarrelAuto");// gblEnv->getGen()->findDetMaterial("Beryllium");
     if(material)material->printAll(std::cout); 
     //assert(0 != material);
     _inCylType = new DchCylType("Dch inner cylinder", radii, length, material,
@@ -210,7 +210,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
 
   }
   // gas volume
-  const DetMaterial* material = mtdbinfo->findDetMaterial("IT-gas1");//gblEnv->getGen()->findDetMaterial("GasWire");
+  const DetMaterial* material = mtdbinfo->findDetMaterial("ITgasAuto");//gblEnv->getGen()->findDetMaterial("GasWire");
   material->printAll(std::cout);
   //assert(0 != material);
 
