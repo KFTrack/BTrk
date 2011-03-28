@@ -68,9 +68,9 @@ public:
   ElmPropObj* GetElmProperties( const std::string& );
   MtrPropObj* GetMtrProperties( const std::string& );
 
-  const std::map<std::string*, MatMaterialObj*, PtrLess>* materialDictionary() const 
+  std::map<std::string*, MatMaterialObj*, PtrLess>* materialDictionary() const 
   { return _theMtrDict; }
-  const std::map<std::string*, MatElementObj*, PtrLess>* elementDictionary() const 
+  std::map<std::string*, MatElementObj*, PtrLess>* elementDictionary() const 
   { return _theElmDict; }
 
 private:
