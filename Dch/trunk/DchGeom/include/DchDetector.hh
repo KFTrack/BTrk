@@ -44,21 +44,22 @@ class DchHyperb;
 class DchHyperType;
 class DchSuperLayer;
 class DchSWire;
-class DchGlobalAlign;
-class DchPlateAlign;
+//class DchGlobalAlign;
+//class DchPlateAlign;
 class DchPlateDefl;
-class DchWireAlign;
+//class DchWireAlign;
 class TrkVolume;
 class TrkFit;
 class DchGDch;
 #include <iosfwd>
 #include <iosfwd>
-class HepString;
+//class HepString;
 
 class DchDetector {
 public:
 
   //  Constructors
+  static DchDetector* GetInstance(){return fgInstance;} 
   DchDetector( const DchGDch&, bool deb=false ); // builds the whole 
                                                  // transient tree from dbio
   //  Destructor
@@ -141,14 +142,14 @@ public:
   // alignment stuff
   // ---------------
   // apply alignment
-  void apply(const DchGlobalAlign&); // align the whole DCH
+  /* void apply(const DchGlobalAlign&); // align the whole DCH
   void apply(const DchPlateAlign&); // align the end plates
   void apply(const DchPlateDefl&); // correct for end-plate deflections
   void apply(const DchWireAlign&); // single wire corrections
   // access current alignment
   const DchGlobalAlign* globalAlignment() const { return _globalalign; }
   const DchPlateDefl* plateDeflection() const { return _platedefl; }
-
+  */
   // modifiers
   void setDebug(bool deb);
 
@@ -163,7 +164,7 @@ public:
   // print coordinate for some wires; for comparison with MC geoemtry
   void printDebug(std::ostream& o) const;
   // dump to file
-  void writeToFile(HepString filename) const;
+  void writeToFile(std::string filename) const;
   // get Dch entrance momentum
   Hep3Vector entranceMomentum( const TrkFit* fit ) const;  
   Hep3Vector entranceMomentum( const TrkFit* fit, double& flt ) const;
@@ -225,10 +226,11 @@ private:
   double            _zOffset;
 
   // alignment
-  DchGlobalAlign* _globalalign; // last global alignment applied
-  int _nglobal; // number of times global alignment has been applied
-  DchPlateDefl*   _platedefl;
+  //DchGlobalAlign* _globalalign; // last global alignment applied
+  //int _nglobal; // number of times global alignment has been applied
+  //DchPlateDefl*   _platedefl;
 
+  static DchDetector *fgInstance;
 };
 
 std::ostream&  operator << (std::ostream& o, const DchDetector&);
