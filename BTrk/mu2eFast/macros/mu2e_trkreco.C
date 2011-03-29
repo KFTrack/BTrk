@@ -18,6 +18,7 @@
 #include <TString.h>
 #include <TStyle.h>
 #include <TProfile.h>
+#include <TLine.h>
 #include <stdio.h>
 #include "Riostream.h"
 
@@ -52,10 +53,16 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.001");
+  TCut goodfit("rec_fitprob>0.001&&rec_ndof>=20&&rec_mom_err<0.0005");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300");
-  TCut goodrec = gen+goodhits+goodradius+gooddip+goodfit;
+  TCut goodrec = goodhits+goodradius+gooddip+goodfit;
+  
+  TCut goodfitp("rec_fitprob>0.05");
+  TCut goodndof("rec_ndof>=20");
+  TCut goodmerr("rec_mom_err<0.001");
+  TCut goodd0("abs(rec_d0)<10.0");
+  TCut goodrmax("abs(2.0/rec_omega - rec_d0)<68.0");
   
   TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
   sgau->SetParName(0,"Norm");
@@ -136,12 +143,193 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     gPad->SetLogy();
     fitprob->Fit("pol1","","",0.05,1);
-  } else if(page == "selection")  {
+  } else if(page == "selection1")  {
+    TH1F* d0 = new TH1F("d0","DOCA to Z axis",100,0,12);
+    TH1F* sd0 = new TH1F("sd0","DOCA to Z axis",100,0,12);
+    TH1F* gd0 = new TH1F("gd0","DOCA to Z axis",100,0,12);
+    d0->SetLineColor(kBlue);
+    sd0->SetLineColor(kGreen);
+    gd0->SetLineColor(kRed);
+    d0->GetXaxis()->SetTitle("cm");
+    
+    TH1F* rmax = new TH1F("rmax","Maximum radius",100,40,70);
+    TH1F* srmax = new TH1F("srmax","Maximum radius",100,40,70);
+    TH1F* grmax = new TH1F("grmax","Maximum radius",100,40,70);
+    rmax->SetLineColor(kBlue);
+    srmax->SetLineColor(kGreen);
+    grmax->SetLineColor(kRed);
+    rmax->GetXaxis()->SetTitle("cm");
+
+    TH1F* td = new TH1F("td","tanDip",100,0.25,1.5);
+    TH1F* std = new TH1F("std","tanDip",100,0.25,1.5);
+    TH1F* gtd = new TH1F("gtd","tanDip",100,0.25,1.5);
+    td->SetLineColor(kBlue);
+    std->SetLineColor(kGreen);
+    gtd->SetLineColor(kRed);
+
+    TH1F* ndof = new TH1F("ndof","Fit N DOF",100,-0.5,99.5);
+    TH1F* sndof = new TH1F("sndof","Fit N DOF",100,-0.5,99.5);
+    TH1F* gndof = new TH1F("gndof","Fit N DOF",100,-0.5,99.5);
+    ndof->SetLineColor(kBlue);
+    sndof->SetLineColor(kGreen);
+    gndof->SetLineColor(kRed);
+    
+    
+    tree->Project("d0","abs(rec_d0)",rec);
+    tree->Project("sd0","abs(rec_d0)",rec+gen);
+    tree->Project("gd0","abs(rec_d0)",rec+goodrmax+gooddip+goodfit+goodhits);
+    
+    tree->Project("rmax","abs(2.0/rec_omega - rec_d0)",rec);
+    tree->Project("srmax","abs(2.0/rec_omega - rec_d0)",rec+gen);
+    tree->Project("grmax","abs(2.0/rec_omega - rec_d0)",rec+goodd0+gooddip+goodfit+goodhits);
+    
+    tree->Project("td","rec_tandip",rec);
+    tree->Project("std","rec_tandip",rec+gen);
+    tree->Project("gtd","rec_tandip",rec+goodradius+goodfit+goodhits);
+
+    tree->Project("ndof","rec_ndof",rec);
+    tree->Project("sndof","rec_ndof",rec+gen);
+    tree->Project("gndof","rec_ndof",rec+goodradius+gooddip+goodfitp+goodmerr+goodhits);
+    
+    can->Clear();
+    can->Divide(2,2);
+    can->cd(1);
+    gPad->SetLogy();
+    d0->SetMinimum(1);
+    d0->Draw();
+    sd0->Draw("same");
+    gd0->Draw("same");
+    TLine* d0cut = new TLine(10.0,0.0,10.0,0.5*d0->GetMaximum());
+    d0cut->Draw("same");
+    can->cd(2);
+    rmax->Draw();
+    srmax->Draw("same");
+    grmax->Draw("same");
+    TLine* rmaxcut = new TLine(68.0,0.0,68.0,0.5*rmax->GetMaximum());
+    rmaxcut->Draw("same");
+    can->cd(3);
+    td->Draw();
+    std->Draw("same");
+    gtd->Draw("same");
+    TLine* tdcut1 = new TLine(0.5774,0.0,0.5774,0.5*td->GetMaximum());
+    TLine* tdcut2 = new TLine(1.0,0.0,1.0,0.5*td->GetMaximum());
+    tdcut1->Draw("same");
+    tdcut2->Draw("same");
+    
+    can->cd(4);
+//    gPad->SetLogy();
+    ndof->SetMinimum(1);
+    ndof->Draw();
+    sndof->Draw("same");
+    gndof->Draw("same");
+    TLine* ndofcut = new TLine(20,0.0,20.0,0.5*ndof->GetMaximum());
+    ndofcut->Draw("same");
+    TLegend* leg = new TLegend(0.5,0.7,0.9,0.9);
+//    leg->AddEntry(fitp,"Conversion + DIO","L");
+    leg->AddEntry(sndof,"Conversion","L");
+    leg->AddEntry(gndof,"All other cuts applied","L");
+    leg->Draw();
+    
+    
+  } else if(page == "selection2")  {
+    
+    
+    TH1F* nmiss = new TH1F("nmiss","N missing hits",51,-0.5,50.5);
+    TH1F* snmiss = new TH1F("snmiss","N missing hits",51,-0.5,50.5);
+    TH1F* gnmiss = new TH1F("gnmiss","N missing hits",51,-0.5,50.5);
+    nmiss->SetLineColor(kBlue);
+    snmiss->SetLineColor(kGreen);
+    gnmiss->SetLineColor(kRed);
+    
+    TH1F* fitp = new TH1F("fitp","Fit consistency",101,-0.001,1.001);
+    TH1F* sfitp = new TH1F("sfitp","Fit consistency",101,-0.001,1.001);
+    TH1F* gfitp = new TH1F("gfitp","Fit consistency",101,-0.001,1.001);
+    fitp->SetLineColor(kBlue);
+    sfitp->SetLineColor(kGreen);
+    gfitp->SetLineColor(kRed);
+
+    TH1F* merr = new TH1F("merr","Estimated mom error",100,0,1.5);
+    TH1F* smerr = new TH1F("smerr","Estimated mom error",100,0,1.5);
+    TH1F* gmerr = new TH1F("gmerr","Estimated mom error",100,0,1.5);
+    merr->SetLineColor(kBlue);
+    smerr->SetLineColor(kGreen);
+    gmerr->SetLineColor(kRed);
+    merr->GetXaxis()->SetTitle("MeV");
+    
+    TH1F* mom = new TH1F("mom","momentum",100,103,107);
+    TH1F* smom = new TH1F("smom","momentum",100,103,107);
+    TH1F* gmom = new TH1F("gmom","momentum",100,103,107);
+    mom->SetLineColor(kBlue);
+    smom->SetLineColor(kGreen);
+    gmom->SetLineColor(kRed);
+    mom->GetXaxis()->SetTitle("MeV");
+    
+
+    tree->Project("fitp","rec_fitprob",rec);
+    tree->Project("sfitp","rec_fitprob",rec+gen);
+    tree->Project("gfitp","rec_fitprob",rec+goodrmax+gooddip+goodndof+goodmerr+goodhits);
+
+    tree->Project("merr","1000*rec_mom_err",rec);
+    tree->Project("smerr","1000*rec_mom_err",rec+gen);
+    tree->Project("gmerr","1000*rec_mom_err",rec+goodrmax+gooddip+goodndof+goodfitp+goodhits);
+
+    tree->Project("nmiss","rec_nhit-rec_nactive",rec);
+    tree->Project("snmiss","rec_nhit-rec_nactive",rec+gen);
+    tree->Project("gnmiss","rec_nhit-rec_nactive",rec+goodrmax+gooddip+goodfit);
+
+    tree->Project("mom","1000*rec_mom_mag",rec);
+    tree->Project("smom","1000*rec_mom_mag",rec+gen);
+    tree->Project("gmom","1000*rec_mom_mag",rec+goodrec);
+    
+    can->Clear();
+    can->Divide(2,2);
+    
+    can->cd(1);
+    fitp->Draw();
+    sfitp->Draw("same");
+    gfitp->Draw("same");
+    TLine* fitpcut = new TLine(0.05,0.0,0.05,0.5*fitp->GetMaximum());
+    fitpcut->Draw("same");
+    
+    
+    TLegend* leg = new TLegend(0.5,0.7,0.9,0.9);
+//    leg->AddEntry(fitp,"Conversion + DIO","L");
+    leg->AddEntry(sfitp,"Conversion","L");
+    leg->AddEntry(gfitp,"All other cuts applied","L");
+    leg->Draw();
+    
+    
+    can->cd(2);
+    gPad->SetLogy();
+    merr->SetMinimum(1);
+    merr->Draw();
+    smerr->Draw("same");
+    gmerr->Draw("same");
+    TLine* merrcut = new TLine(0.25,0.0,0.25,0.5*merr->GetMaximum());
+    merrcut->Draw("same");
+    
+    can->cd(3);
+    gPad->SetLogy();
+    nmiss->SetMinimum(1);
+    nmiss->Draw();
+    snmiss->Draw("same");
+    gnmiss->Draw("same");
+    TLine* nmisscut = new TLine(10.0,0.0,10.0,0.5*nmiss->GetMaximum());
+    nmisscut->Draw("same");
+    
+    can->cd(4);
+    gPad->SetLogy();
+    mom->SetMinimum(1);
+    mom->Draw();
+    smom->Draw("same");
+    gmom->Draw("same");
+
+    
   } else if(page == "eff"){
 
-    TH1F* td_s = new TH1F("td_s","TanDip",100,0.5,1.1);
-    TH1F* td_r = new TH1F("td_r","TanDip",100,0.5,1.1);
-    TH1F* td_g = new TH1F("td_g","TanDip",100,0.5,1.1);
+    TH1F* td_s = new TH1F("td_s","TanDip",100,0.0,2.0);
+    TH1F* td_r = new TH1F("td_r","TanDip",100,0.0,2.0);
+    TH1F* td_g = new TH1F("td_g","TanDip",100,0.0,2.0);
     tree->Project("td_s","sim_tandip");
     tree->Project("td_r","sim_tandip",rec);
     tree->Project("td_g","sim_tandip",goodrec);
@@ -149,6 +337,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     td_g->Divide(td_s);
     td_r->SetLineColor(kRed);
     td_g->SetLineColor(kBlue);
+    td_r->SetStats(0);
     
     TH1F* z0_s = new TH1F("z0_s","Production z",100,-480,-380);
     TH1F* z0_r = new TH1F("z0_r","Production z",100,-480,-380);
@@ -160,28 +349,35 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     z0_g->Divide(z0_s);
     z0_r->SetLineColor(kRed);
     z0_g->SetLineColor(kBlue);
-    
-    TH1F* mom_s = new TH1F("mom_s","momentum",100,0.05,0.16);
-    TH1F* mom_r = new TH1F("mom_r","momentum",100,0.05,0.16);
-    TH1F* mom_g = new TH1F("mom_g","momentum",100,0.05,0.16);
-    tree->Project("mom_s","sim_mom_mag");
-    tree->Project("mom_r","sim_mom_mag",rec);
-    tree->Project("mom_g","sim_mom_mag",goodrec);
+    z0_r->SetStats(0);
+    TH1F* mom_s = new TH1F("mom_s","momentum",100,50,160);
+    TH1F* mom_r = new TH1F("mom_r","momentum",100,50,160);
+    TH1F* mom_g = new TH1F("mom_g","momentum",100,50,160);
+    tree->Project("mom_s","1000*sim_mom_mag");
+    tree->Project("mom_r","1000*sim_mom_mag",rec);
+    tree->Project("mom_g","1000*sim_mom_mag",goodrec);
     mom_r->Divide(mom_s);
     mom_g->Divide(mom_s);
     mom_r->SetLineColor(kRed);
     mom_g->SetLineColor(kBlue);
+    mom_r->GetXaxis()->SetTitle("MeV");
+    mom_r->GetYaxis()->SetTitle("efficiency");
+    mom_r->SetStats(0);
     
-    TH1F* pt_s = new TH1F("pt_s","transverse momentum",100,0.04,0.15);
-    TH1F* pt_r = new TH1F("pt_r","transverse momentum",100,0.04,0.15);
-    TH1F* pt_g = new TH1F("pt_g","transverse momentum",100,0.04,0.15);
-    tree->Project("pt_s","sim_mom_pt");
-    tree->Project("pt_r","sim_mom_pt",rec);
-    tree->Project("pt_g","sim_mom_pt",goodrec);
+    
+    TH1F* pt_s = new TH1F("pt_s","transverse momentum",100,40,150);
+    TH1F* pt_r = new TH1F("pt_r","transverse momentum",100,40,150);
+    TH1F* pt_g = new TH1F("pt_g","transverse momentum",100,40,150);
+    tree->Project("pt_s","1000*sim_mom_pt");
+    tree->Project("pt_r","1000*sim_mom_pt",rec);
+    tree->Project("pt_g","1000*sim_mom_pt",goodrec);
     pt_r->Divide(pt_s);
     pt_g->Divide(pt_s);
     pt_r->SetLineColor(kRed);
     pt_g->SetLineColor(kBlue);
+    pt_r->GetXaxis()->SetTitle("MeV");
+    pt_r->GetYaxis()->SetTitle("efficiency");
+    pt_r->SetStats(0);
     
     
     can->Clear();
@@ -190,10 +386,6 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(1);
     td_r->Draw();
     td_g->Draw("same");
-    TLegend* leg = new TLegend(0.1,0.7,0.4,0.9);
-    leg->AddEntry(td_r,"All Fits","L");
-    leg->AddEntry(td_g,"Good Fits","L");
-    leg->Draw();
 
     can->cd(2);
     z0_r->Draw();
@@ -202,6 +394,10 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(3);
     mom_r->Draw();
     mom_g->Draw("same");
+    TLegend* leg = new TLegend(0.1,0.7,0.4,0.9);
+    leg->AddEntry(td_r,"All Fits","L");
+    leg->AddEntry(td_g,"Good Fits","L");
+    leg->Draw();
     
     can->cd(4);
     pt_r->Draw();
@@ -641,16 +837,19 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     rrvr->Draw("box");
   } else if(page == "merged") {
-    TH1F* nbkgevt = new TH1F("nbkgevt","# DIO tracks/signal track",100,-0.5,99.5);
-    TH1F* nbkghit = new TH1F("nbkghit","# bkg hits/signal track",100,0,1200);
-    TH1F* nmerged = new TH1F("nmerged","# hits/signal track",10,-0.5,9.5);
-    TH1F* nmergeda = new TH1F("nmergeda","# hits/signal track",10,-0.5,9.5);
-    TH1F* nshadowed = new TH1F("nshadowed","# hits/signal track",10,-0.5,9.5);
-    TH1F* mfprob = new TH1F("mfprob","Fit consistency",200,0.0,1.0);
-    TH1F* nmfprob = new TH1F("nmfprob","Fit consistency",200,0.0,1.0);
+    TH1F* nbkgevt = new TH1F("nbkgevt","# in-time DIO tracks/signal track",100,-0.5,99.5);
+    TH1F* nbkghit = new TH1F("nbkghit","# in-time DIO hits/signal track",100,0,800);
+    TH1F* nmerged = new TH1F("nmerged","# replaced hits/signal track",10,-0.5,9.5);
+    TH1F* nmergeda = new TH1F("nmergeda","# replaced hits/signal track",10,-0.5,9.5);
+    nmerged->SetLineColor(kRed);
+    nmergeda->SetLineColor(kBlue);
     
-    nmfprob->SetLineColor(kBlue);
-    mfprob->SetLineColor(kRed);
+    TH1F* nshadowed = new TH1F("nshadowed","# shadowed hits/signal track",10,-0.5,9.5);
+//    TH1F* mfprob = new TH1F("mfprob","Fit consistency",200,0.0,1.0);
+//    TH1F* nmfprob = new TH1F("nmfprob","Fit consistency",200,0.0,1.0);
+    
+//    nmfprob->SetLineColor(kBlue);
+//    mfprob->SetLineColor(kRed);
     tree->Project("nbkgevt","bkg_ntrks",gen);
     tree->Project("nbkghit","bkg_nhits",gen);
     tree->Project("nmerged","rec_nmerged",gen);
@@ -661,34 +860,34 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->Clear();
     can->Divide(2,2);
     can->cd(1);
-    gPad->SetLogy();
+//    gPad->SetLogy();
     nbkgevt->Draw();
     can->cd(2);
-    gPad->SetLogy();
+//    gPad->SetLogy();
     nbkghit->Draw();
     can->cd(3);
     gPad->SetLogy();
-    nmerged->SetLineColor(kRed);
-    nmergeda->SetLineColor(kBlue);
-    nshadowed->SetLineColor(kGreen);
+//    nshadowed->SetLineColor(kGreen);
     nmerged->Draw();
     nmergeda->Draw("same");
-    nshadowed->Draw("same");
     TLegend* leg = new TLegend(0.3,0.5,0.7,0.7);
     leg->AddEntry(nmerged,"replaced","L");
     leg->AddEntry(nmergeda,"replaced(active)","L");
-    leg->AddEntry(nshadowed,"shadowed","L");
+//    leg->AddEntry(nshadowed,"shadowed","L");
     leg->Draw();
     can->cd(4);
     gPad->SetLogy();
-    mfprob->Scale(10.0);
-    mfprob->Draw();
-    nmfprob->Draw("same");
+    nshadowed->Draw();
+//    can->cd(4);
+//    gPad->SetLogy();
+//    mfprob->Scale(10.0);
+//    mfprob->Draw();
+//    nmfprob->Draw("same");
    
-    TLegend* leg2 = new TLegend(0.2,0.5,0.7,0.8);
-    leg2->AddEntry(nmfprob,"#replaced==0","L");
-    leg2->AddEntry(mfprob,"#replaced>0 (X10)","L");
-    leg2->Draw();
+//    TLegend* leg2 = new TLegend(0.2,0.5,0.7,0.8);
+//    leg2->AddEntry(nmfprob,"#replaced==0","L");
+//    leg2->AddEntry(mfprob,"#replaced>0 (X10)","L");
+//    leg2->Draw();
     
   } else if(page == "bkg") {
     TH1F* nhit = new TH1F("nhit","# track hits",60,-0.5,59.5);
