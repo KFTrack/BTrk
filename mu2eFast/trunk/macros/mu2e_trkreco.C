@@ -53,11 +53,10 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.001&&rec_ndof>=20&&rec_mom_err<0.0005");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.00025");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
-  
   TCut goodfitp("rec_fitprob>0.05");
   TCut goodndof("rec_ndof>=20");
   TCut goodmerr("rec_mom_err<0.001");
@@ -326,18 +325,32 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
 
     
   } else if(page == "eff"){
+    TCut goodrec_noa = goodhits+goodradius+goodfit;
 
     TH1F* td_s = new TH1F("td_s","TanDip",100,0.0,2.0);
     TH1F* td_r = new TH1F("td_r","TanDip",100,0.0,2.0);
     TH1F* td_g = new TH1F("td_g","TanDip",100,0.0,2.0);
     tree->Project("td_s","sim_tandip");
     tree->Project("td_r","sim_tandip",rec);
-    tree->Project("td_g","sim_tandip",goodrec);
+    tree->Project("td_g","sim_tandip",goodrec_noa);
     td_r->Divide(td_s);
     td_g->Divide(td_s);
     td_r->SetLineColor(kRed);
     td_g->SetLineColor(kBlue);
     td_r->SetStats(0);
+    
+    TH1F* ct_s = new TH1F("ct_s","Cos(#theta)",100,0.0,1.0);
+    TH1F* ct_r = new TH1F("ct_r","Cos(#theta)",100,0.0,1.0);
+    TH1F* ct_g = new TH1F("ct_g","Cos(#theta)",100,0.0,1.0);
+    tree->Project("ct_s","sim_mom_cost");
+    tree->Project("ct_r","sim_mom_cost",rec);
+    tree->Project("ct_g","sim_mom_cost",goodrec_noa);
+    ct_r->Divide(ct_s);
+    ct_g->Divide(ct_s);
+    ct_r->SetLineColor(kRed);
+    ct_g->SetLineColor(kBlue);
+    ct_r->SetStats(0);
+    
     
     TH1F* z0_s = new TH1F("z0_s","Production z",100,-480,-380);
     TH1F* z0_r = new TH1F("z0_r","Production z",100,-480,-380);
@@ -386,10 +399,21 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(1);
     td_r->Draw();
     td_g->Draw("same");
+    TLine* tdcut1 = new TLine(0.5774,0.0,0.5774,0.9*td_r->GetMaximum());
+    TLine* tdcut2 = new TLine(1.0,0.0,1.0,0.9*td_r->GetMaximum());
+    tdcut1->Draw("same");
+    tdcut2->Draw("same");
+    
 
     can->cd(2);
-    z0_r->Draw();
-    z0_g->Draw("same");
+//    z0_r->Draw();
+//    z0_g->Draw("same");
+    ct_r->Draw();
+    ct_g->Draw("same");
+    TLine* ctcut1 = new TLine(0.5,0.0,0.5,0.9*ct_r->GetMaximum());
+    TLine* ctcut2 = new TLine(0.7071,0.0,0.7071,0.9*ct_r->GetMaximum());
+    ctcut1->Draw("same");
+    ctcut2->Draw("same");
 
     can->cd(3);
     mom_r->Draw();
@@ -644,6 +668,45 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(4);
     mom->Draw();
 //    momr->Fit("sgau","M");
+
+  } else if (page == "momeff"){
+    const unsigned nmom(5);
+    double cutval[nmom] = {0.0,1e-3,1e-2,2e-2,5e-2};
+    TH1F* momres[nmom];
+    TLegend* leg = new TLegend(0.3,0.5,0.7,0.7);
+    int colors[6] = {kRed,kBlue,kGreen,kMagenta,kCyan,kOrange};
+    for(unsigned imom=0;imom<nmom;imom++){
+      char name[100];
+      snprintf(name,100,"momr_%d",imom);
+      char pcut[100];
+      snprintf(pcut,100,"rec_fitprob<%f",cutval[imom]);
+      TCut probcut(pcut);
+      momres[imom] = new TH1F(name,"momentum resolution",200,-2,2);
+      tree->Project(name,"1000*(rec_mom_mag-sim_mom_mag)",rec+goodrmax+gooddip+goodndof+goodmerr+goodhits+probcut);
+      momres[imom]->GetXaxis()->SetTitle("MeV");
+      momres[imom]->SetLineColor(colors[imom]);
+      leg->AddEntry(momres[imom],pcut,"L");
+    }
+    can->Clear();
+    can->Divide(1,1);
+    can->cd(1);
+    gPad->SetLogy();
+    for(unsigned imom=0;imom<nmom;imom++){
+      TString opt;
+      if(imom==0)
+        opt == "";
+      else
+        opt == "same";
+      TH1F* momr = momres[imom];
+//      double integral = momr->GetEntries()*momr->GetBinWidth(1);
+//      sgau->SetParameters(integral,0.0,0.8*momr->GetRMS(),0.8*momr->GetRMS(),0.01,1.5*momr->GetRMS(),1.5*momr->GetRMS());
+//      sgau->SetParLimits(5,1.0*momr->GetRMS(),1.0);
+//      sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
+//      sgau->SetParLimits(4,0.0,0.49);
+//      momr->Fit("sgau","L",opt,-0.5,2.0);
+      momr->Draw(opt);
+    }
+    leg->Draw();
     
   } else if(page == "mat") {
     gStyle->SetOptFit(1111);
