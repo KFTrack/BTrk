@@ -53,7 +53,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.00025");
+  TCut goodfit("rec_fitprob>0.01&&rec_ndof>=20&&rec_mom_err<0.00025");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
@@ -670,43 +670,74 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
 //    momr->Fit("sgau","M");
 
   } else if (page == "momeff"){
-    const unsigned nmom(5);
-    double cutval[nmom] = {0.0,1e-3,1e-2,2e-2,5e-2};
-    TH1F* momres[nmom];
-    TLegend* leg = new TLegend(0.3,0.5,0.7,0.7);
+    const unsigned npcut(5);
+    double pcutval[npcut] = {0.0,1e-3,1e-2,2e-2,5e-2};
+    const unsigned necut(5);
+    double ecutval[necut] = {1.0,0.25,0.2,0.18,0.16};
+    TH1F* momresp[npcut];
+    TH1F* momrese[necut];
+    TLegend* pleg = new TLegend(0.5,0.7,0.9,0.9);
+    TLegend* eleg = new TLegend(0.5,0.7,0.9,0.9);
     int colors[6] = {kRed,kBlue,kGreen,kMagenta,kCyan,kOrange};
-    for(unsigned imom=0;imom<nmom;imom++){
+    for(unsigned imom=0;imom<npcut;imom++){
       char name[100];
-      snprintf(name,100,"momr_%d",imom);
+      snprintf(name,100,"momp_%d",imom);
       char pcut[100];
-      snprintf(pcut,100,"rec_fitprob<%f",cutval[imom]);
+      snprintf(pcut,100,"rec_fitprob>%f",pcutval[imom]);
       TCut probcut(pcut);
-      momres[imom] = new TH1F(name,"momentum resolution",200,-2,2);
-      tree->Project(name,"1000*(rec_mom_mag-sim_mom_mag)",rec+goodrmax+gooddip+goodndof+goodmerr+goodhits+probcut);
-      momres[imom]->GetXaxis()->SetTitle("MeV");
-      momres[imom]->SetLineColor(colors[imom]);
-      leg->AddEntry(momres[imom],pcut,"L");
+      momresp[imom] = new TH1F(name,"momentum resolution",200,-2,3);
+      tree->Project(name,"1000*(rec_mom_mag-sim_mom_mag)",rec+goodrmax+gooddip+goodndof+goodhits+probcut);
+      momresp[imom]->SetMinimum(0.1);
+      momresp[imom]->SetStats(0);
+      momresp[imom]->GetXaxis()->SetTitle("MeV");
+      momresp[imom]->SetLineColor(colors[imom]);
+      double eff = momresp[imom]->GetEntries()/momresp[0]->GetEntries();
+      char label[100];
+      snprintf(label,100,"fit con>%5.3f, eff = %3.2f",pcutval[imom],eff);
+      pleg->AddEntry(momresp[imom],label,"L");
     }
+    
+    for(unsigned imom=0;imom<necut;imom++){
+      char name[100];
+      snprintf(name,100,"mome_%d",imom);
+      char ecut[100];
+      snprintf(ecut,100,"1000*rec_mom_err<%f",ecutval[imom]);
+      TCut errcut(ecut);
+      momrese[imom] = new TH1F(name,"momentum resolution",200,-2,3);
+      tree->Project(name,"1000*(rec_mom_mag-sim_mom_mag)",rec+goodrmax+gooddip+goodndof+goodhits+errcut);
+      momrese[imom]->SetMinimum(0.1);
+      momrese[imom]->SetStats(0);
+      momrese[imom]->GetXaxis()->SetTitle("MeV");
+      momrese[imom]->SetLineColor(colors[imom]);
+      double eff = momrese[imom]->GetEntries()/momrese[0]->GetEntries();
+      char label[100];
+      snprintf(label,100,"mom err<%5.3f, eff = %3.2f",ecutval[imom],eff);
+      eleg->AddEntry(momrese[imom],label,"L");
+    }
+    
+    
     can->Clear();
-    can->Divide(1,1);
+    can->Divide(2,1);
     can->cd(1);
     gPad->SetLogy();
-    for(unsigned imom=0;imom<nmom;imom++){
-      TString opt;
+    for(unsigned imom=0;imom<npcut;imom++){
       if(imom==0)
-        opt == "";
+        momresp[imom]->Draw();
       else
-        opt == "same";
-      TH1F* momr = momres[imom];
-//      double integral = momr->GetEntries()*momr->GetBinWidth(1);
-//      sgau->SetParameters(integral,0.0,0.8*momr->GetRMS(),0.8*momr->GetRMS(),0.01,1.5*momr->GetRMS(),1.5*momr->GetRMS());
-//      sgau->SetParLimits(5,1.0*momr->GetRMS(),1.0);
-//      sgau->SetParLimits(6,1.0*momr->GetRMS(),1.0);
-//      sgau->SetParLimits(4,0.0,0.49);
-//      momr->Fit("sgau","L",opt,-0.5,2.0);
-      momr->Draw(opt);
+        momresp[imom]->Draw("same");
     }
-    leg->Draw();
+    pleg->Draw();
+    
+    can->cd(2);
+    gPad->SetLogy();
+    for(unsigned imom=0;imom<necut;imom++){
+      if(imom==0)
+        momrese[imom]->Draw();
+      else
+        momrese[imom]->Draw("same");
+    }
+    eleg->Draw();
+    
     
   } else if(page == "mat") {
     gStyle->SetOptFit(1111);
