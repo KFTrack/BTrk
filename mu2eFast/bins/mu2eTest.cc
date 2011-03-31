@@ -115,6 +115,22 @@ struct HitCount{
   }
 };
 
+// track selector
+class MyTrkSel : public SimTrkSel {
+public:
+  MyTrkSel(bool invert) : _invert(invert) {}
+  void add(const PacSimTrack* strk) { _mytrks.push_back(strk); }
+  virtual bool select(const PacSimTrack* strk) const {
+    std::vector<const PacSimTrack*>::const_iterator ifnd = std::find(_mytrks.begin(),_mytrks.end(),strk);
+    bool found = ifnd != _mytrks.end();
+    return _invert ^ found;
+  }
+  void clear() { _mytrks.clear();}
+private:
+  std::vector<const PacSimTrack*> _mytrks;
+  bool _invert;
+};
+
 void fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& sinfo);
 void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::vector<TrajDiff>& tdiff,
   std::vector<BDiff>& bdiff,PacSimTrkSummary& ssum);
@@ -375,10 +391,14 @@ int main(int argc, char* argv[]) {
   }
 
   Mu2eInput* bkginput(0);
+  MyTrkSel* strksel = 0;
   if(gconfig.has("BkgInput.inputfile")){
 // we have backgrounds to merge with signal.  Create and configure the input object
     PacConfig bkgconfig = gconfig.getconfig("BkgInput.");
     bkginput = new Mu2eBkgInput(bkgconfig);
+    bool fitbkg = bkgconfig.getbool("fitbkg",false);
+// reverse logic
+    strksel = new MyTrkSel(!fitbkg);
   }
   
   const int printfreq = gconfig.getint("printfreq", 100);
@@ -396,10 +416,13 @@ int main(int argc, char* argv[]) {
 // if bkg input exists, merge backgrounds with this event
     if(bkginput != 0 && bkginput->nextEvent(bkgevt)){
       createSim(sim,bkgevt._particles,strks);
+// create background selector
+      strksel->clear();
 // count background
       bkg_ntrks = strks.size();
       bkg_nhits = 0;
       for(unsigned istrk=0;istrk<strks.size();istrk++){
+        strksel->add(strks[istrk]);
         const std::vector<PacSimHit>& shs = strks[istrk]->getHitList();
         for(int ish=0;ish<shs.size();ish++){
           const PacSimHit& sh = shs[ish];
@@ -416,7 +439,8 @@ int main(int argc, char* argv[]) {
 // create signal particle
     createSim(sim,event._particles,strks);      
 // create reco tracks
-    trackreco->makeTracks(strks);
+    
+    trackreco->makeTracks(strks,strksel);
     for(unsigned istrk=0;istrk<strks.size();istrk++){
 // clear vectors
       sinfo.clear();
