@@ -53,13 +53,13 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.01&&rec_ndof>=20&&rec_mom_err<0.00025");
+  TCut goodfit("rec_fitprob>0.01&&rec_ndof>=20&&rec_mom_err<0.0005");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
-  TCut goodfitp("rec_fitprob>0.05");
+  TCut goodfitp("rec_fitprob>0.01");
   TCut goodndof("rec_ndof>=20");
-  TCut goodmerr("rec_mom_err<0.001");
+  TCut goodmerr("rec_mom_err<0.0005");
   TCut goodd0("abs(rec_d0)<10.0");
   TCut goodrmax("abs(2.0/rec_omega - rec_d0)<68.0");
   
@@ -862,10 +862,10 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   
   } else if(page == "caloresid") {
     gStyle->SetOptFit(1111);
-    TCut calor("shelemnum>10005&&shnhot>0&&shmeastype==1");
-    TCut nopreshower("shmomin>0.103");
-    TCut xyhit("simhit.hview==0");
-    TCut zhit("simhit.hview==1");
+    TCut calor("shelemnum>=10010&&shnhot>0&&shmeastype==1");
+    TCut nopreshower("shmomin>0.10");
+    TCut xyhit("hview==0");
+    TCut zhit("hview==1");
     TH1F* zpos = new TH1F("zpos","Z track position at calo",100,160,340);
     TH1F* rpos = new TH1F("rpos","R track position at calo",100,30,75);
     TH1F* zres = new TH1F("zres","Z track residual at calo",100,-3,3);
