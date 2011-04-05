@@ -862,8 +862,8 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   
   } else if(page == "caloresid") {
     gStyle->SetOptFit(1111);
-    TCut calor("simhit.shelemnum>10008&&simhit.shnhot>0");
-    TCut nopreshower("simhit.shmomin>0.103");
+    TCut calor("shelemnum>10005&&shnhot>0&&shmeastype==1");
+    TCut nopreshower("shmomin>0.103");
     TCut xyhit("simhit.hview==0");
     TCut zhit("simhit.hview==1");
     TH1F* zpos = new TH1F("zpos","Z track position at calo",100,160,340);
