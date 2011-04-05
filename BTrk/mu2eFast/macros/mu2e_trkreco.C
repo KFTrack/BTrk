@@ -932,7 +932,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     rrvr->Draw("box");
   } else if(page == "merged") {
     TH1F* nbkgevt = new TH1F("nbkgevt","# in-time DIO tracks/signal track",100,-0.5,99.5);
-    TH1F* nbkghit = new TH1F("nbkghit","# in-time DIO hits/signal track",100,0,800);
+    TH1F* nbkghit = new TH1F("nbkghit","# in-time DIO hits/signal track",100,0,15000);
     TH1F* nmerged = new TH1F("nmerged","# replaced hits/signal track",10,-0.5,9.5);
     TH1F* nmergeda = new TH1F("nmergeda","# replaced hits/signal track",10,-0.5,9.5);
     nmerged->SetLineColor(kRed);
@@ -1151,5 +1151,30 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tdmom->Draw("same");
     deleg->Draw();
     
+  } else if(page == "bkghits") {
+    TCut goodhit("simhit.shmeastype>0&&simhit.shz<170");
+    TH1F* smom = new TH1F("smom","track momentum",100,30,70);
+    smom->GetXaxis()->SetTitle("MeV");
+    TH1F* hrad = new TH1F("hrad","Tracker hit transverse radius",100,37,69);
+    hrad->GetXaxis()->SetTitle("cm");
+    TH1F* htime = new TH1F("htime","Tracker hit time",100,0,0.2);
+    htime->GetXaxis()->SetTitle("#mu seconds");
+    TH1F* hplen = new TH1F("hplen","particle pathlength in cell",100,0,15);
+    hplen->GetXaxis()->SetTitle("cm");
+    
+    tree->Project("smom","1000*sim_mom_mag");
+    tree->Project("hrad","sqrt(simhit.shy^2+simhit.shx^2)",goodhit);
+    tree->Project("htime","1e6*simhit.shtime",goodhit);
+    tree->Project("hplen","simhit.shpathlen",goodhit);
+    can->Clear();
+    can->Divide(2,2);
+    can->cd(1);
+    hrad->Draw();
+    can->cd(2);
+    htime->Draw();
+    can->cd(3);
+    smom->Draw();
+    can->cd(4);
+    hplen->Draw();
   }
 }
