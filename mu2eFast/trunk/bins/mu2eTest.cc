@@ -824,9 +824,11 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     if(hots.size() > 0 && hots[0]->getParentRep() != 0){
 // find track trajectory
       const TrkDifTraj& ttraj = hots[0]->getParentRep()->traj();
-      for(unsigned ihot=0;ihot<std::min((size_t)1,hots.size());ihot++){
+// multiple hots/simhit not currently handled: fixme!!!
+      for(unsigned ihot=0;ihot<hots.size();ihot++){
         const PacHitOnTrk* hot= dynamic_cast<const PacHitOnTrk*>(hots[ihot]);
         if(hot->trkTraj() != 0){
+          sinfo.ihot = ihot;
           sinfo.hview = hot->whatView();
           sinfo.hlay = hot->layerNumber();
           sinfo.active = hot->isActive();
@@ -917,7 +919,7 @@ fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum) {
       for(std::vector<const PacMeasurement*>::const_iterator imdev = pelem->measurementDevices().begin();
       imdev != pelem->measurementDevices().end();imdev++){
         const PacMeasurement* meas = *imdev;
-        if( meas->measurementType() == PacMeasurement::TrkHit){
+        if( meas->measurementType() == PacMeasurement::TrkHit && sh.detIntersection().delem->elementNumber()< 5000){
           if(ssum.ifirsthit<0)ssum.ifirsthit=ish;
           ssum.ilasthit = ish;
         }
