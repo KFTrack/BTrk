@@ -27,6 +27,8 @@ around a presumed 'signal' track -->
                 <!-- time window in which to integrate background.  Making this too large just adds inefficiency,
                 as the final time cuts are made hit-by-hit -->
                 <param name="bkghalfwindow" type="float"> 1.5e-7 </param>
+                <!-- by default, don't fit background tracks -->
+                <param name="fitbkg" type="bool"> false </param>
             </sect>            
         </config>
     </included>
