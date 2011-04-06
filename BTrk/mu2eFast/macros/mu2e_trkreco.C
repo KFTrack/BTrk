@@ -53,11 +53,11 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.01&&rec_ndof>=20&&rec_mom_err<0.0005");
-  TCut goodhits("rec_nhit-rec_nactive<10");
+  TCut goodfit("rec_fitprob>0.0001&&rec_ndof>=20&&rec_mom_err<0.0005");
+  TCut goodhits("rec_nhit-rec_nactive<20");
   TCut gen("sim_inipos_z<-300");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
-  TCut goodfitp("rec_fitprob>0.01");
+  TCut goodfitp("rec_fitprob>0.0001");
   TCut goodndof("rec_ndof>=20");
   TCut goodmerr("rec_mom_err<0.0005");
   TCut goodd0("abs(rec_d0)<10.0");
@@ -240,9 +240,9 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     snmiss->SetLineColor(kGreen);
     gnmiss->SetLineColor(kRed);
     
-    TH1F* fitp = new TH1F("fitp","Fit consistency",101,-0.001,1.001);
-    TH1F* sfitp = new TH1F("sfitp","Fit consistency",101,-0.001,1.001);
-    TH1F* gfitp = new TH1F("gfitp","Fit consistency",101,-0.001,1.001);
+    TH1F* fitp = new TH1F("fitp","Fit consistency",501,-0.001,1.001);
+    TH1F* sfitp = new TH1F("sfitp","Fit consistency",501,-0.001,1.001);
+    TH1F* gfitp = new TH1F("gfitp","Fit consistency",501,-0.001,1.001);
     fitp->SetLineColor(kBlue);
     sfitp->SetLineColor(kGreen);
     gfitp->SetLineColor(kRed);
@@ -1151,30 +1151,68 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tdmom->Draw("same");
     deleg->Draw();
     
-  } else if(page == "bkghits") {
-    TCut goodhit("simhit.shmeastype>0&&simhit.shz<170");
-    TH1F* smom = new TH1F("smom","track momentum",100,30,70);
+  } else if(page == "hits") {
+    gStyle->SetOptStat(0);
+    TCut bkg("sim_mom_mag<0.1");
+    TCut sig("sim_mom_mag>0.1");
+    TCut intime("shtime[ifirsthit]<0.05e-6");
+    TCut trkhit("simhit.shmeastype>0&&simhit.shz<170");
+
+    TH1F* bmom = new TH1F("bmom","track momentum",100,30,110);
+    bmom->GetXaxis()->SetTitle("MeV");
+    bmom->SetLineColor(kRed);
+    TH1F* smom = new TH1F("smom","track momentum",100,30,110);
     smom->GetXaxis()->SetTitle("MeV");
-    TH1F* hrad = new TH1F("hrad","Tracker hit transverse radius",100,37,69);
-    hrad->GetXaxis()->SetTitle("cm");
-    TH1F* htime = new TH1F("htime","Tracker hit time",100,0,0.2);
-    htime->GetXaxis()->SetTitle("#mu seconds");
-    TH1F* hplen = new TH1F("hplen","particle pathlength in cell",100,0,15);
-    hplen->GetXaxis()->SetTitle("cm");
+    smom->SetLineColor(kBlue);
+
+    TH1F* brad = new TH1F("brad","Tracker hit transverse radius",100,37,69);
+    brad->GetXaxis()->SetTitle("cm");
+    brad->SetLineColor(kRed);
+    TH1F* srad = new TH1F("srad","Tracker hit transverse radius",100,37,69);
+    srad->GetXaxis()->SetTitle("cm");
+    srad->SetLineColor(kBlue);
     
-    tree->Project("smom","1000*sim_mom_mag");
-    tree->Project("hrad","sqrt(simhit.shy^2+simhit.shx^2)",goodhit);
-    tree->Project("htime","1e6*simhit.shtime",goodhit);
-    tree->Project("hplen","simhit.shpathlen",goodhit);
+    TH1F* btime = new TH1F("btime","Tracker hit time",100,-0.01,0.1);
+    btime->GetXaxis()->SetTitle("#mu seconds");
+    btime->SetLineColor(kRed);
+    TH1F* stime = new TH1F("stime","Tracker hit time",100,-0.01,0.1);
+    stime->GetXaxis()->SetTitle("#mu seconds");
+    stime->SetLineColor(kBlue);
+    
+    TH1F* bplen = new TH1F("bplen","particle pathlength in cell",150,0,10);
+    bplen->GetXaxis()->SetTitle("cm");
+    bplen->SetLineColor(kRed);
+    TH1F* splen = new TH1F("splen","particle pathlength in cell",150,0,10);
+    splen->GetXaxis()->SetTitle("cm");
+    splen->SetLineColor(kBlue);
+    
+    tree->Project("bmom","1000*sim_mom_mag",bkg);
+    tree->Project("smom","1000*sim_mom_mag",sig);
+    tree->Project("brad","sqrt(simhit.shy^2+simhit.shx^2)",bkg+trkhit+intime);
+    tree->Project("srad","sqrt(simhit.shy^2+simhit.shx^2)",sig+trkhit+intime);
+    tree->Project("btime","1e6*(shtime-shtime[ifirsthit])",bkg+trkhit+intime);
+    tree->Project("stime","1e6*(shtime-shtime[ifirsthit])",sig+trkhit+intime);
+    tree->Project("bplen","simhit.shpathlen",bkg+trkhit+intime);
+    tree->Project("splen","simhit.shpathlen",sig+trkhit+intime);
     can->Clear();
     can->Divide(2,2);
     can->cd(1);
-    hrad->Draw();
+    brad->Draw();
+    srad->Draw("same");
+    
+    TLegend* leg = new TLegend(0.5,0.65,0.9,0.9);
+    leg->AddEntry(bmom,"DIO hits","L");
+    leg->AddEntry(smom,"Conversion hits","L");
+    leg->Draw();
+    
     can->cd(2);
-    htime->Draw();
+    btime->Draw();
+    stime->Draw("same");
     can->cd(3);
-    smom->Draw();
+    bmom->Draw();
+    smom->Draw("same");
     can->cd(4);
-    hplen->Draw();
+    bplen->Draw();
+    splen->Draw("same");
   }
 }
