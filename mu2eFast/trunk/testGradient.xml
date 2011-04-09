@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<edml>
+<config>
+    <!-- ROOT file to save results to -->
+    <param name="displayfile" type="string"> dispgrad.root</param>
+    <param name="displayresolution" type="int" > 2000</param>
+    <param name="b0" type="double"> 2.0 </param>
+    <param name="b1" type="double"> 1.0 </param>
+
+    <param name="z0" type="double"> -596 </param>
+    <param name="z1" type="double"> -263 </param>
+
+    <param name="step" type="double"> 1 </param>
+    <param name="tol" type="double"> 1e-1 </param>
+
+    
+    <sect name="SimpleInput">
+        <!-- Number of tracks to generate -->
+        <param name="nevents" type="long"> 100</param>
+        <!-- Initial distance from z axis (phi symmetric) -->
+        <param name="r0_mean" type="double"> 0.0</param>
+        <param name="r0_sigma" type="double"> 1.0</param>
+        <!-- Initial distance from z=0 -->
+        <param name="z0_mean" type="double"> -430</param>
+        <param name="z0_sigma" type="double"> 23</param>
+        <!-- momentum range-->
+        <param name="p_min"  type="double"> 0.1051</param>
+        <param name="p_max" type="double"> 0.1051 </param>
+        <!-- polar angle range -->
+        <param name="cost_min"  type="double"> -1.0 </param>
+        <param name="cost_max" type="double"> 1.0 </param>
+        <!-- negative electron -->
+        <param name="PdtPdg" type="long"> -11</param>
+        <param name="rndseed" type="long"> 123499821</param>
+    </sect>
+    
+    
+</config>
+</edml>

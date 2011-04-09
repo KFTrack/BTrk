@@ -19,7 +19,7 @@ $(addprefix $(bindir),$(EXTRABINS)): $(bindir)% : %.o
 #################################################################
 #++ binary products				[build it with 'bin']
 
-BINS := mu2eDisplay mu2eTest mu2eBFieldTest
+BINS := mu2eDisplay mu2eTest mu2eBFieldTest mu2eGradientFieldTest
 
 BINCCFILES := $(BINS:=.cc) $(EXTRABINS:=.cc)
 
