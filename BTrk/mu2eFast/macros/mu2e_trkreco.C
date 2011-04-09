@@ -53,11 +53,11 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.0001&&rec_ndof>=20&&rec_mom_err<0.0005");
-  TCut goodhits("rec_nhit-rec_nactive<20");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.0005");
+  TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
-  TCut goodfitp("rec_fitprob>0.0001");
+  TCut goodfitp("rec_fitprob>0.05");
   TCut goodndof("rec_ndof>=20");
   TCut goodmerr("rec_mom_err<0.0005");
   TCut goodd0("abs(rec_d0)<10.0");

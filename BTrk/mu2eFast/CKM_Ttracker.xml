@@ -35,7 +35,7 @@ Note that the straws are oriented along the u direction (v is default) -->
             <device name="Straw"
                 type="DriftChamber"
                 sensitiveTimeWindow="1e-6"
-                rms_par0="0.0250"
+                rms_par0="0.020"
                 rms_par1="0"
                 rms_par2="0"
                 rms_par3="0"
