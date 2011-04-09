@@ -55,7 +55,7 @@ Note that the straws are oriented along the u direction (v is default) -->
         
         <detector name="Mu2e">
             <volume name="Tracker">
-                <loop variable="zvar" count="18" startvalue="1" stepvalue="1">
+                <loop variable="zvar" count="18" startvalue="0" stepvalue="1">
                     <ring name="C1" id="zvar" z="zring1" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
                     <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
                     <loop variable="svar" count="4" startvalue="0" stepvalue="1">
