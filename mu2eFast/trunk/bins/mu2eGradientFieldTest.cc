@@ -16,6 +16,8 @@
 #include "PacSim/PacSimHit.hh"
 #include "TrkBase/TrkHelixUtils.hh"
 #include "BField/BFieldIntegrator.hh"
+#include "Pdt/Pdt.hh"
+#include "Pdt/PdtEntry.hh"
 #include <iostream>
 #include "TParticlePDG.h"
 
@@ -83,7 +85,14 @@ int main(int argc, char* argv[]) {
       HepPoint pos(part->Vx(),part->Vy(),part->Vz());
       Hep3Vector mom(part->Px(),part->Py(),part->Pz());
       double fmax(1000);
-      PacSimTrack* strk = new PacSimTrack(0);
+      GTrack* gtrk = new GTrack;
+      gtrk->setP4(HepLorentzVector( part->Px(),
+        part->Py(),
+        part->Pz(),
+        part->Energy()));
+      PdtEntry* pdt = Pdt::lookup((PdtPdg::PdgType)part->GetPdgCode());
+      gtrk->setPDT( pdt );      
+      PacSimTrack* strk = new PacSimTrack(gtrk);
       double localflt(0);
       double charge = part->GetPDG()->Charge()/3.0;
       TrkHelixUtils::helixFromMom(hpars,localflt,pos,mom,charge,gfield.bFieldVect(pos).z());
