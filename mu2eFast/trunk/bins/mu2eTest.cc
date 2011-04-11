@@ -66,6 +66,7 @@
 #include "mu2eFast/BDiff.rdl"
 #include "mu2eFast/PacSimTrkSummary.rdl"
 #include "mu2eFast/mu2eDSField.hh"
+#include "mu2eFast/mu2eGradientField.hh"
 
 #include "ProxyDict/Ifd.hh"
 #include "ProxyDict/IfdDataProxyUnowned.hh"
@@ -159,8 +160,21 @@ int main(int argc, char* argv[]) {
   penv.buildCore();
   penv.buildTrk();
 
-  // get back the bfield
+  // override the bfield
+  bool gradient = gconfig.getbool("GradientField.use",false);
+  if(gradient){
+    double b0 = gconfig.getfloat("GradientField.b0",2.0);
+    double z0 = gconfig.getfloat("GradientField.z0",-596);
+    double b1 = gconfig.getfloat("GradientField.b1",1.0);
+    double z1 = gconfig.getfloat("GradientField.z1",-263);
+    double rmax = gconfig.getfloat("GradientField.rmax",153);
+    BField* bfield = new mu2eGradientField(b0,z0,b1,z1,rmax);
+    bool iput = Ifd<BField>::put(gblPEnv,bfield,"Default");
+    assert(iput);
+  }
+// get back the field
   const BField* bfield = Ifd<BField>::get(gblPEnv,"Default");
+
   // build detector
   PacCylDetector* detector = new PacCylDetector();
   /* put the DetectorModel into the event */
@@ -182,6 +196,7 @@ int main(int argc, char* argv[]) {
 	}
   
   // config parameters
+  bool verbose = gconfig.getbool("verbose",false);
   bool hittuple = gconfig.getbool("hittuple",false);
   bool trajdiff = gconfig.getbool("trajdiff",false);
   bool writeallsim = gconfig.getbool("writeallsim",false);
@@ -442,6 +457,7 @@ int main(int argc, char* argv[]) {
     
     trackreco->makeTracks(strks,strksel);
     for(unsigned istrk=0;istrk<strks.size();istrk++){
+//      if(verbose)strks[istrk]->print();
 // clear vectors
       sinfo.clear();
       tdiff.clear();

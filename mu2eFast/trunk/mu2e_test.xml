@@ -21,6 +21,7 @@
 
     <!-- optional display parameters; note display output is very large, don't run too many events with this true!! -->
     <param name="displaytrack" type="bool"> false</param>
+    <param name="writeallsim" type="bool"> true</param>
     <param name="displayfile" type="string" > mu2e_display.root</param>
     <param name="displayresolution" type="int" > 2000</param>
 

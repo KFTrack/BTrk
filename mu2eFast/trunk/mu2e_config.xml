@@ -27,21 +27,26 @@
             </sect>
 
             <sect name="DetectorVolume">
-                <param name="rmax"    type="float"        >  200</param>
-                <param name="zmin"   type="float"         > -500</param>
-                <param name="zmax"    type="float"         >  500</param>
+                <param name="rmax"    type="float"        >  150</param>
+                <param name="zmin"   type="float"         > -1000</param>
+                <param name="zmax"    type="float"         >  1000</param>
             </sect>        
             <sect name="General">
                 <param name="ConfigKey" type="int" > 1 </param>
                 <param name="ConfigName" type="string"> Test </param>
             </sect>
             <sect name="PacField">
-                <param name="B_nom"    type="float"         > -1.0</param>
+                <!-- gradient field configuration -->
+                <param name="B_nom"    type="float"         > 1.0</param>
+                <param name="gradient"    type="float"         > -0.003</param>
+                <param name="zg1"    type="float"         > -790</param>
+                <param name="zg2"    type="float"         > -390</param>
                 <param name="DeltaB"   type="vector_double" > 0.0, 0.0, 0.0</param>
                 <param name="B_radius" type="float"         > 153.0</param>
-                <param name="B_zlow"   type="float"         > -500</param>
-                <param name="B_zhi"    type="float"         > 500 </param>
+                <param name="B_zlow"   type="float"         > -1000</param>
+                <param name="B_zhi"    type="float"         > 1000 </param>
             </sect>
+            
             <sect name="Materials">
                 <param name="materials" type="string" > mu2eFast/MaterialsList.data</param>
             </sect>

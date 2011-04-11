@@ -19,8 +19,8 @@
                 <param name="spectrumtype" type="int"> 0 </param>
                 <param name="spectrumscale" type="float"> 0.001 </param>
                 <param name="spectrumfile" type="string">mu2eFast/dio_spectrum.csv</param>
-                <param name="cost_min"  type="double"> 0.5 </param>
-                <param name="cost_max" type="double"> 0.707107 </param>
+                <param name="cost_min"  type="double"> -1 </param>
+                <param name="cost_max" type="double"> 1 </param>
                 <!-- the following are used only if no spectrum is supplied -->
                 <param name="p_min"  type="double"> 0.1051</param>
                 <param name="p_max" type="double"> 0.1051 </param>
