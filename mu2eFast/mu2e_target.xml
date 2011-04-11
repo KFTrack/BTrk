@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <edml>
     <included>
-        <define>
-            <constant name="tarmat" value="vacuum"></constant>
-<!-- target material set to vacuum by default, change to TargetAl below to change to Al -->
-<!--            <constant name="tarmat" value="TargetAl"></constant> -->
-            
+        <define>            
             <constant name="diskthickness" value="0.01"></constant>
             <constant name="diskr1" value="10.0000"></constant>
             <constant name="diskr2" value="8.2168"></constant>
