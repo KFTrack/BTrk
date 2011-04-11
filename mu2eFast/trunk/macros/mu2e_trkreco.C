@@ -47,17 +47,16 @@ Double_t doublegaus(Double_t *x, Double_t *par) {
   return retval;
 }
 
-
 void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TString page(cpage);
   TCut rec("rec_ndof>0");
-  TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega - rec_d0)<68.0");
+  TCut goodradius("abs(rec_d0)<15.0 && abs(2.0/rec_omega - rec_d0)<65.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
   TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.0005");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
-  TCut goodfitp("rec_fitprob>0.05");
+  TCut goodfitp("rec_fitprob>0.01");
   TCut goodndof("rec_ndof>=20");
   TCut goodmerr("rec_mom_err<0.0005");
   TCut goodd0("abs(rec_d0)<10.0");
@@ -143,9 +142,9 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     gPad->SetLogy();
     fitprob->Fit("pol1","","",0.05,1);
   } else if(page == "selection1")  {
-    TH1F* d0 = new TH1F("d0","DOCA to Z axis",100,0,12);
-    TH1F* sd0 = new TH1F("sd0","DOCA to Z axis",100,0,12);
-    TH1F* gd0 = new TH1F("gd0","DOCA to Z axis",100,0,12);
+    TH1F* d0 = new TH1F("d0","DOCA to Z axis",100,0,20);
+    TH1F* sd0 = new TH1F("sd0","DOCA to Z axis",100,0,20);
+    TH1F* gd0 = new TH1F("gd0","DOCA to Z axis",100,0,20);
     d0->SetLineColor(kBlue);
     sd0->SetLineColor(kGreen);
     gd0->SetLineColor(kRed);
@@ -193,18 +192,18 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->Clear();
     can->Divide(2,2);
     can->cd(1);
-    gPad->SetLogy();
+//    gPad->SetLogy();
     d0->SetMinimum(1);
     d0->Draw();
     sd0->Draw("same");
     gd0->Draw("same");
-    TLine* d0cut = new TLine(10.0,0.0,10.0,0.5*d0->GetMaximum());
+    TLine* d0cut = new TLine(15.0,0.0,15.0,0.5*d0->GetMaximum());
     d0cut->Draw("same");
     can->cd(2);
     rmax->Draw();
     srmax->Draw("same");
     grmax->Draw("same");
-    TLine* rmaxcut = new TLine(68.0,0.0,68.0,0.5*rmax->GetMaximum());
+    TLine* rmaxcut = new TLine(65.0,0.0,65.0,0.5*rmax->GetMaximum());
     rmaxcut->Draw("same");
     can->cd(3);
     td->Draw();
@@ -287,7 +286,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     fitp->Draw();
     sfitp->Draw("same");
     gfitp->Draw("same");
-    TLine* fitpcut = new TLine(0.05,0.0,0.05,0.5*fitp->GetMaximum());
+    TLine* fitpcut = new TLine(0.01,0.0,0.01,0.5*fitp->GetMaximum());
     fitpcut->Draw("same");
     
     
@@ -304,7 +303,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     merr->Draw();
     smerr->Draw("same");
     gmerr->Draw("same");
-    TLine* merrcut = new TLine(0.25,0.0,0.25,0.5*merr->GetMaximum());
+    TLine* merrcut = new TLine(0.5,0.0,0.5,0.5*merr->GetMaximum());
     merrcut->Draw("same");
     
     can->cd(3);
