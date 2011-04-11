@@ -788,6 +788,7 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
     sinfo.shz = pos.z();
     sinfo.shmomin = sh.momentumIn().mag();
     sinfo.shmomout = sh.momentumOut().mag();
+    sinfo.shdel = sqrt(std::max(0.0,1.0 -sh.momentumIn().unit().dot(sh.momentumOut().unit())));
     if(sh.showerInfo() != 0){
       sinfo.sheinfrac = sh.showerInfo()->fractionIn();
     } else {
@@ -864,6 +865,10 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
           sinfo.mdot = pocadir.dot(snorm);
           sinfo.herr = hot->hitRms();
           sinfo.serr = hot->hitInfo()._sres;
+          double xresid,xerr;
+          hot->resid(xresid,xerr,true);
+          sinfo.xresid = xresid;
+          sinfo.xerr = xerr;
           svec.push_back(sinfo);
         }
       }
@@ -876,6 +881,9 @@ fillSimHitInfo(const PacSimTrack* strk, std::vector<PacSimHitInfo>& svec) {
       sinfo.hresid = -1.;
       sinfo.mdot = -1.;
       sinfo.herr = -1.;
+      sinfo.serr = -1.;
+      sinfo.xresid = -1;
+      sinfo.xerr = -1;
       svec.push_back(sinfo);
     }
   }
