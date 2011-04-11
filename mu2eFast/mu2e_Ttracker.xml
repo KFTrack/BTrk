@@ -71,10 +71,10 @@ Note that the straws are oriented along the u direction (v is default) -->
         <config>
             <sect name="Tracker">
                 <param name="rbounds"    type="vector"        >
-                    37 53 69 85 101
+                    -1 37 53 69 85 101
                 </param>
                 <param name="nphivoxels"    type="vector"         >
-                    6 6 6 6
+                    1 6 6 6 6
                 </param>
                 <param name="zbounds"   type="vector"         >
                      -140 -123 -106 -89 -72 -55 -38 -21 -4 13 30 47 64 81 98 115 132 149 166 

@@ -114,10 +114,10 @@
                 <config>
                     <sect name="Tracker">
                         <param name="rbounds"    type="vector"        >
-                            34 40 69
+                            -1 34 40 69
                         </param>
                         <param name="nphivoxels"    type="vector"         >
-                            8 8 
+                            1 8 8 
                         </param>
                         <param name="zbounds"   type="vector"         >
                             -150 150 

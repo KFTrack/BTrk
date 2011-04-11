@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <edml>
     <included>
+        <define>        
+            <constant name="absmat" value="vacuum"></constant>
+            <!-- uncomment the following to put in the absorber -->
+            <!--    <constant name="absmat" value="vacuum"></constant> -->
+        </define>
         <detector name="Mu2e">
             <volume name="Absorber">
-                <cone name="ProtonAbsorber" id="0" rho1="33.5" z1="-385" rho2="38.57" z2="-135" thick="0.05" mat="MDPE"  /> 
-<!--                <cyl name="ProtonAbsorber" id="0" radius="35" zmin="-385" zmax="-135" thick="0.05" mat="MDPE"  /> -->
-                
+                <cone name="ProtonAbsorber" id="0" rho1="33.5" z1="-385" rho2="38.57" z2="-135" thick="0.05" mat="absmat"  />                
             </volume>
         </detector>
         <!-- now define the voxelization -->
         <config>
             <sect name="Absorber">
                 <param name="rbounds"    type="vector"        >
-                    33.0 39.0
+                    -1 33.0 39.0 150.0
                 </param>
                 <param name="nphivoxels"    type="vector"         >
-                    1
+                    1 1 1
                 </param>
                 <param name="zbounds"   type="vector"         >
                     -389 -369 -349 -329 -309 -289 -269 -249 -229 -209 -189 -169 -149 -129 

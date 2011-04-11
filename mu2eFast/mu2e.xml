@@ -2,9 +2,10 @@
 <edml>
     <include file="PacSim/Material_simulation.xml" />
     <include file="mu2eFast/mu2e_config.xml" />
-<!-- target is always needed when using target as input source -->
+<!-- target is always needed when using target as input source 
+    default absorber material is vacuum, so it's OK to keep it also -->
     <include file="mu2eFast/mu2e_target.xml" />
-    <!--    <include file="mu2eFast/mu2e_absorber.xml" /> -->
+    <include file="mu2eFast/mu2e_absorber.xml" />
     <include file="mu2eFast/mu2e_Ttracker.xml" />
     <include file="mu2eFast/mu2e_calo.xml" />
 <!-- <include file="mu2eFast/mu2e_Ltracker.xml" /> -->
