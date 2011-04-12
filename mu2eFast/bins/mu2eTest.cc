@@ -488,7 +488,7 @@ int main(int argc, char* argv[]) {
           gtrk->p4(),gtrk->pdt()->charge(),*bfield);
 
     //Generated Track
-        PacHelix gentraj(simparams,flightlen,simtraj->hiRange());
+        PacHelix gentraj(simparams,flightlen,max(flightlen+10,simtraj->hiRange()));
 
         TrkLineTraj zaxis(HepPoint(0, 0, -10), Hep3Vector(0, 0, 1), 20);
         TrkPoca genpoca(gentraj, 0, zaxis, 10, 1e-12);
