@@ -52,13 +52,13 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<15.0 && abs(2.0/rec_omega - rec_d0)<65.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.0005");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.00025");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
-  TCut goodfitp("rec_fitprob>0.01");
+  TCut goodfitp("rec_fitprob>0.05");
   TCut goodndof("rec_ndof>=20");
-  TCut goodmerr("rec_mom_err<0.0005");
+  TCut goodmerr("rec_mom_err<0.00025");
   TCut goodd0("abs(rec_d0)<10.0");
   TCut goodrmax("abs(2.0/rec_omega - rec_d0)<68.0");
   
@@ -286,7 +286,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     fitp->Draw();
     sfitp->Draw("same");
     gfitp->Draw("same");
-    TLine* fitpcut = new TLine(0.01,0.0,0.01,0.5*fitp->GetMaximum());
+    TLine* fitpcut = new TLine(0.05,0.0,0.05,0.5*fitp->GetMaximum());
     fitpcut->Draw("same");
     
     
@@ -303,7 +303,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     merr->Draw();
     smerr->Draw("same");
     gmerr->Draw("same");
-    TLine* merrcut = new TLine(0.5,0.0,0.5,0.5*merr->GetMaximum());
+    TLine* merrcut = new TLine(0.25,0.0,0.25,0.5*merr->GetMaximum());
     merrcut->Draw("same");
     
     can->cd(3);
@@ -558,7 +558,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     d0pg->Fit("gaus","","sames");
     TLegend* leg = new TLegend(0.1,0.7,0.4,0.9);
     leg->AddEntry(d0p,"All Fits","L");
-    leg->AddEntry(d0pg,"Fit con>0.01","L");
+    leg->AddEntry(d0pg,"Fit con>0.05","L");
     leg->Draw();
     
     can->cd(2);
@@ -931,7 +931,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     rrvr->Draw("box");
   } else if(page == "merged") {
     TH1F* nbkgevt = new TH1F("nbkgevt","# in-time DIO tracks/signal track",100,-0.5,99.5);
-    TH1F* nbkghit = new TH1F("nbkghit","# in-time DIO hits/signal track",100,0,15000);
+    TH1F* nbkghit = new TH1F("nbkghit","# in-time DIO hits/signal track",100,0,1000);
     TH1F* nmerged = new TH1F("nmerged","# replaced hits/signal track",10,-0.5,9.5);
     TH1F* nmergeda = new TH1F("nmergeda","# replaced hits/signal track",10,-0.5,9.5);
     nmerged->SetLineColor(kRed);
@@ -990,27 +990,30 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* momh = new TH1F("momh","Momentum",200,0,100.);
 //    TH1F* pt = new TH1F("pt","Transverse momentum",200,0,100.);
 //    TH1F* pth = new TH1F("pth","Transverse momentum",200,0,100.);
-    TH1F* dip = new TH1F("dip","dip angle",100,0,1.572);
-    TH1F* diph = new TH1F("diph","dip angle",100,0,1.572);
+    TH1F* cost = new TH1F("cost","cos(#theta)",100,-1.0,1.0);
+    TH1F* costh = new TH1F("costh","cos(#theta)",100,-1.0,1.0);
 
     rad->SetLineColor(kBlue);
     rad->GetXaxis()->SetTitle("cm");
     rad->SetMinimum(0.5);
+    rad->SetStats(0);
     radh->SetLineColor(kRed);
     radh->GetXaxis()->SetTitle("cm");
     mom->GetXaxis()->SetTitle("MeV");
     mom->SetMinimum(0.5);
-    momh->GetXaxis()->SetTitle("MeV");
     mom->SetLineColor(kBlue);
+    mom->SetStats(0);
+    momh->GetXaxis()->SetTitle("MeV");
     momh->SetLineColor(kRed);
 //    pt->SetLineColor(kBlue);
 //    pt->SetMinimum(0.5);
 //    pth->SetLineColor(kRed);
 //    pt->GetXaxis()->SetTitle("MeV");
 //    pth->GetXaxis()->SetTitle("MeV");
-    dip->SetLineColor(kBlue);
-    dip->SetMinimum(0.5);
-    diph->SetLineColor(kRed);
+    cost->SetLineColor(kBlue);
+    cost->SetMinimum(0.5);
+    cost->SetStats(0);
+    costh->SetLineColor(kRed);
 
     int max=100000000;
     tree->Project("nhit","nwiremeas","","",max);
@@ -1020,8 +1023,8 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tree->Project("momh","1000*sim_mom_mag","nwiremeas>0","",max);
 //    tree->Project("pt","1000*sim_mom_pt","","",max);
 //    tree->Project("pth","1000*sim_mom_pt","nwiremeas>0","",max);
-    tree->Project("dip","atan(sim_tandip)","","",max);
-    tree->Project("diph","atan(sim_tandip)","nwiremeas>0","",max);
+    tree->Project("cost","sim_mom_cost","","",max);
+    tree->Project("costh","sim_mom_cost","nwiremeas>0","",max);
 
     can->Clear();
     can->Divide(2,2);
@@ -1031,15 +1034,15 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(2);
     gPad->SetLogy();
     rad->Draw();
-    radh->Draw("same");
+    radh->Draw("sames");
     can->cd(3);
     gPad->SetLogy();
     mom->Draw();
-    momh->Draw("same");
+    momh->Draw("sames");
     can->cd(4);
     gPad->SetLogy();
-    dip->Draw();
-    diph->Draw("same");
+    cost->Draw();
+    costh->Draw("sames");
 //    pt->Draw();
 //    pth->Draw("same");
     TLegend* leg = new TLegend(0.3,0.5,0.7,0.7);
@@ -1163,6 +1166,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* smom = new TH1F("smom","track momentum",100,30,110);
     smom->GetXaxis()->SetTitle("MeV");
     smom->SetLineColor(kBlue);
+    smom->SetStats(0);
 
     TH1F* brad = new TH1F("brad","Tracker hit transverse radius",100,37,69);
     brad->GetXaxis()->SetTitle("cm");
@@ -1170,6 +1174,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* srad = new TH1F("srad","Tracker hit transverse radius",100,37,69);
     srad->GetXaxis()->SetTitle("cm");
     srad->SetLineColor(kBlue);
+    srad->SetStats(0);
     
     TH1F* btime = new TH1F("btime","Tracker hit time",100,-0.01,0.1);
     btime->GetXaxis()->SetTitle("#mu seconds");
@@ -1177,6 +1182,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* stime = new TH1F("stime","Tracker hit time",100,-0.01,0.1);
     stime->GetXaxis()->SetTitle("#mu seconds");
     stime->SetLineColor(kBlue);
+    stime->SetStats(0);
     
     TH1F* bplen = new TH1F("bplen","particle pathlength in cell",150,0,10);
     bplen->GetXaxis()->SetTitle("cm");
@@ -1184,6 +1190,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     TH1F* splen = new TH1F("splen","particle pathlength in cell",150,0,10);
     splen->GetXaxis()->SetTitle("cm");
     splen->SetLineColor(kBlue);
+    splen->SetStats(0);
     
     tree->Project("bmom","1000*sim_mom_mag",bkg);
     tree->Project("smom","1000*sim_mom_mag",sig);
