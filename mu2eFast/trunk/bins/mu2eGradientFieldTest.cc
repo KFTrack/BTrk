@@ -4,7 +4,7 @@
 // CLHEP includes
 #include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Geometry/HepPoint.h"
-#include "mu2eFast/mu2eGradientField.hh"
+#include "PacGeom/PacGradBField.hh"
 #include "Framework/AppFileName.hh"
 #include "PacEnv/PacConfig.hh"
 #include "PacEnv/PacBuildEnv.hh"
@@ -12,6 +12,7 @@
 #include "PacDisplay/PacEvtDisplay.hh"
 #include "PacGeom/PacHelix.hh"
 #include "PacGeom/PacPieceTraj.hh"
+#include "PacGeom/PacGradBField.hh"
 #include "PacSim/PacSimTrack.hh"
 #include "PacSim/PacSimHit.hh"
 #include "TrkBase/TrkHelixUtils.hh"
@@ -47,7 +48,7 @@ int main(int argc, char* argv[]) {
   double step = gconfig.getfloat("step",1.0);
   double tol = gconfig.getfloat("tol",1e-3);
 
-  mu2eGradientField gfield(b0,z0,b1,z1,0.9);
+  PacGradBField gfield(b0,b1,z0,z1,150.0,-1000,1000);
 
   double bnom = gfield.bFieldNominal();
   std::cout <<" nominal field = " << bnom << std::endl;
