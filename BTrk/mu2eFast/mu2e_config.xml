@@ -39,8 +39,8 @@
                 <!-- gradient field configuration -->
                 <param name="B_nom"    type="float"         > 1.0</param>
                 <param name="gradient"    type="float"         > -0.003</param>
-                <param name="zg1"    type="float"         > -685</param>
-                <param name="zg2"    type="float"         > -345</param>
+                <param name="zg1"    type="float"         > -610</param>
+                <param name="zg2"    type="float"         > -270</param>
                 <param name="DeltaB"   type="vector_double" > 0.0, 0.0, 0.0</param>
                 <param name="B_radius" type="float"         > 153.0</param>
                 <param name="B_zlow"   type="float"         > -1000</param>
