@@ -50,7 +50,7 @@ Double_t doublegaus(Double_t *x, Double_t *par) {
 void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TString page(cpage);
   TCut rec("rec_ndof>0");
-  TCut goodradius("abs(rec_d0)<15.0 && abs(2.0/rec_omega - rec_d0)<65.0");
+  TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega + rec_d0)<65.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
   TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.00025");
   TCut goodhits("rec_nhit-rec_nactive<10");
@@ -60,7 +60,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut goodndof("rec_ndof>=20");
   TCut goodmerr("rec_mom_err<0.00025");
   TCut goodd0("abs(rec_d0)<10.0");
-  TCut goodrmax("abs(2.0/rec_omega - rec_d0)<68.0");
+  TCut goodrmax("abs(2.0/rec_omega + rec_d0)<68.0");
   
   TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
   sgau->SetParName(0,"Norm");
@@ -197,7 +197,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     d0->Draw();
     sd0->Draw("same");
     gd0->Draw("same");
-    TLine* d0cut = new TLine(15.0,0.0,15.0,0.5*d0->GetMaximum());
+    TLine* d0cut = new TLine(10.0,0.0,10.0,0.5*d0->GetMaximum());
     d0cut->Draw("same");
     can->cd(2);
     rmax->Draw();
