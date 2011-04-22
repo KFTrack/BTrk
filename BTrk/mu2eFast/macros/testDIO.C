@@ -42,6 +42,7 @@ void testDIO(TCanvas* can,const char* file="~/Downloads/dio_spectrum.csv") {
   
   TH1D* dio = new TH1D("dio","dio spectrum",200,0,106);
   dio->SetMaximum(4e-2);
+  dio->SetMinimum(1e-6);
   dio->GetXaxis()->SetTitle("MeV");
   
   TH1D* intdio = new TH1D("intdio","integrated dio spectrum",200,0,106);
@@ -54,7 +55,7 @@ void testDIO(TCanvas* can,const char* file="~/Downloads/dio_spectrum.csv") {
   
   TH1D* sdio = new TH1D("dio","sampled dio spectrum",200,0,106);
   sdio->GetXaxis()->SetTitle("MeV");
-    
+  sdio->SetMinimum(1);
 // sample the spectrum
   int ntrials=1000000;
   TRandom3* tr = new TRandom3();
@@ -73,7 +74,9 @@ void testDIO(TCanvas* can,const char* file="~/Downloads/dio_spectrum.csv") {
   spspect->Draw("same");
   can->cd(2);
   intdio->Draw();
+  
   intspect->Draw("same");
+  cout << "Integral 0-40 = " << intspect->Eval(40.0) << endl;
   
   can->cd(3);
   invdio->Draw();

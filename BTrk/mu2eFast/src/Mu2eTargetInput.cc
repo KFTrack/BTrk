@@ -108,6 +108,13 @@ Mu2eTargetInput::prepareBeam(PacConfig& config){
       }
     // inverse integral spectrum
       _invintspect = new TGraph(x.size(),&y.front(),&x.front());
+    // integral spectrum
+      TGraph intspect(x.size(),&x.front(),&y.front());
+  // compute integral from _pmin to _pmax
+      double spectint = intspect.Eval(_p_max) - intspect.Eval(_p_min);
+      double eff = (_cost_max-_cost_min)*spectint/2.0;
+      std::cout << "efficiency between " << _cost_min << " < cos(theta) < " <<_cost_max 
+        << " and " << _p_min << " < P < " << _p_max << " = " << eff << std::endl;
     }
   }
 }
@@ -168,12 +175,15 @@ Mu2eTargetInput::create() {
     radius = sqrt(x*x + y*y);
   }
 //  nom momentum
-  double mom;
+  double mom(0.0);
   if(_stype == flat)
     mom	= fabs(_rng.Uniform(_p_min, _p_max));
-  else
-    mom	= fabs(_invintspect->Eval(_rng.Uniform()));
-  
+  else {
+// loop until we are within range
+    while(mom < _p_min || mom > _p_max){
+      mom	= fabs(_invintspect->Eval(_rng.Uniform()));
+    }
+  }
   double phi	= _rng.Uniform(0, 2*M_PI);
   double cost = _rng.Uniform(_cost_min,_cost_max);
   double pz	= mom*cost;                // longitudinal momentum

@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
 	}
   
   // config parameters
-  bool verbose = gconfig.getbool("verbose",false);
+//  bool verbose = gconfig.getbool("verbose",false);
   bool hittuple = gconfig.getbool("hittuple",false);
   bool trajdiff = gconfig.getbool("trajdiff",false);
   bool writeallsim = gconfig.getbool("writeallsim",false);
@@ -224,6 +224,19 @@ int main(int argc, char* argv[]) {
   Float_t sim_inipos_x;
   Float_t sim_inipos_y;
   Float_t sim_inipos_z;
+  
+  Float_t simt_d0;
+  Float_t simt_phi0;
+  Float_t simt_omega;
+  Float_t simt_z0;
+  Float_t simt_tandip;
+  Float_t simt_pos_x;
+  Float_t simt_pos_y;
+  Float_t simt_pos_z;
+  Float_t simt_mom_mag;
+  Float_t simt_mom_cost;
+  Float_t simt_mom_phi;
+  Float_t simt_mom_pt;
   
   Int_t rec_pdgid;
   Float_t rec_chisqr;
@@ -309,6 +322,19 @@ int main(int argc, char* argv[]) {
   trackT->Branch("sim_ndlayer",&sim_ndlayer,"sim_ndlayer/I");
   trackT->Branch("sim_nabsorber",&sim_nabsorber,"sim_nabsorber/I");
   trackT->Branch("sim_ntarget",&sim_ntarget,"sim_ntarget/I");
+    
+  trackT->Branch("simt_d0",&simt_d0,"simt_d0/F");
+  trackT->Branch("simt_phi0",&simt_phi0,"simt_phi0/F");
+  trackT->Branch("simt_omega",&simt_omega,"simt_omega/F");
+  trackT->Branch("simt_z0",&simt_z0,"simt_z0/F");
+  trackT->Branch("simt_tandip",&simt_tandip,"simt_tandip/F");
+  trackT->Branch("simt_mom_mag",&simt_mom_mag,"simt_mom_mag/F");
+  trackT->Branch("simt_mom_cost",&simt_mom_cost,"simt_mom_cost/F");
+  trackT->Branch("simt_mom_phi",&simt_mom_phi,"simt_mom_phi/F");
+  trackT->Branch("simt_mom_pt",&simt_mom_pt,"simt_mom_pt/F");
+  trackT->Branch("simt_pos_x",&simt_pos_x,"simt_pos_x/F");
+  trackT->Branch("simt_pos_y",&simt_pos_y,"simt_pos_y/F");
+  trackT->Branch("simt_pos_z",&simt_pos_z,"simt_pos_z/F");
 
   trackT->Branch("rec_pdgid",&rec_pdgid,"rec_pdgid/I");
   trackT->Branch("rec_d0",&rec_d0,"rec_d0/F");
@@ -525,7 +551,49 @@ int main(int argc, char* argv[]) {
         sim_ndlayer = hcount.ndlayer;
         sim_ntarget = hcount.ntar;
         sim_nabsorber = hcount.nabs;
+        // look for parameters at the tracker
+        
+        simt_d0		= -100.0;
+        simt_phi0	= -100.0;
+        simt_omega	= -100.0;
+        simt_z0		= -100.0;
+        simt_tandip	= -100.0;
+        simt_pos_x	= -100.0;
+        simt_pos_y	= -100.0;
+        simt_pos_z	= -100.0;
+        simt_mom_mag = -100.0;
+        simt_mom_cost = -100.0;
+        simt_mom_phi = -100.0;
+        simt_mom_pt = -100.0;        
+        
+        const std::vector<PacSimHit>& shs = simtrk->getHitList();
+        for(int ish=0;ish<shs.size();ish++){
+          const PacSimHit& sh = shs[ish];
+          const DetElem* delem = sh.detIntersection().delem;
+          if(delem != 0 && delem->elementNumber() == 2){
+            simt_pos_x	= sh.position().x();
+            simt_pos_y	= sh.position().y();
+            simt_pos_z	= sh.position().z();
+            simt_mom_mag = sh.momentumIn().mag();
+            simt_mom_cost = sh.momentumIn().cosTheta();
+            simt_mom_phi = sh.momentumIn().phi();
+            simt_mom_pt = sh.momentumIn().perp();
 
+            HepVector simtparams(5);
+            double flightlen(0.0);
+            TrkHelixUtils::helixFromMom(simtparams,flightlen,
+              sh.position(),sh.momentumIn(),
+              gtrk->pdt()->charge(),*bfield);
+            //Store Parameters
+            simt_d0		= simtparams(1);
+            simt_phi0	= simtparams(2);
+            simt_omega	= simtparams(3);
+            simt_z0		= simtparams(4);
+            simt_tandip	= simtparams(5);
+            break;
+          }
+        }
+// look for reconstructed tracks
         if(trk != 0 && trk->status() != 0 && trk->status()->fitCurrent() ){
         //Get Reconstructed Track data
           KalInterface kinter;
