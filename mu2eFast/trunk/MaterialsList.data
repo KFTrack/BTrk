@@ -7,6 +7,7 @@
 air     0.001290    0.    0.    +2      73.7e-2    Nitrogen   0   26.3e-2    Oxygen   0    36.66000   90.0000   -30    0.0   1.0   gas  
 vacuum          1.0e-25     1.    1.01   0     -10    -20    -30    -270.42    2.961e-23    gas
 TargetAl     2.700000    0.   0.   +1    100.0e-2    Aluminum   0   24.01000   106.40000    -30     20.0    1.0    solid
+TargetCu     8.960000    0.   0.   +1    100.0e-2    Copper   0   12.86000  134.90000  -30  20.0  1.0  solid
 Lexan        1.20        0.   0.   -3      5         Hydrogen   0    5         Carbon      0    2    Oxygen    0    41.46    84.7    -30    20.0   1.0   solid 
 CFiber       1.605       0.   0.   +2     53.7e-2    Carbon     0   46.3e-2    Lexan   1    -10    -20    -30    20.0   1.0   solid 
 RPCgas       0.00166     0.   0.   +1    100.0e-2    Argon      0   19.55      117.2        -30     20.0    1.0    gas   

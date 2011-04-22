@@ -2,7 +2,7 @@
 <edml>
     <included>
         <define>            
-            <constant name="diskthickness" value="0.01"></constant>
+            <constant name="diskthickness" value="0.02"></constant>
             <constant name="diskr1" value="10.0000"></constant>
             <constant name="diskr2" value="8.2168"></constant>
             <constant name="diskr3" value="8.1288"></constant>
@@ -39,9 +39,17 @@
             <constant name="zdisk16" value="-395"></constant>
             <constant name="zdisk17" value="-390"></constant>
         </define>
+        
+        
 
         <detector name="Mu2e">
-            <volume name="Target">
+            <volume name="Collimator">
+                <ring name="coll5" id="11" z="-601" lowradius="12.8" hiradius="24" thick="10" mat="TargetCu"/>
+                <ring name="cryo" id="11" z="-601" lowradius="24" hiradius="70" thick="10" mat="TargetAl"/>
+            </volume>
+            
+            
+            <volume name="Target">                
                 <ring name="D1" id="1" z="zdisk1" lowradius="0" hiradius="diskr1" thick="diskthickness" mat="tarmat"/>
                 <ring name="D2" id="1" z="zdisk2" lowradius="0" hiradius="diskr2" thick="diskthickness" mat="tarmat"/>
                 <ring name="D3" id="1" z="zdisk3" lowradius="0" hiradius="diskr3" thick="diskthickness" mat="tarmat"/>
@@ -71,9 +79,22 @@
                     1 1
                 </param>
                 <param name="zbounds"   type="vector"         >
-                    -800 -472.5 -467.5 -462.5 -457.5 -452.5 -447.5 -442.5 -437.5 -432.5 -427.5 -422.5 -417.5 -412.5  -407.5 -402.5 -397.5 -392.5 -387.5   
+                    -600 -472.5 -467.5 -462.5 -457.5 -452.5 -447.5 -442.5 -437.5 -432.5 -427.5 -422.5 -417.5 -412.5  -407.5 -402.5 -397.5 -392.5 -387.5   
                 </param>
             </sect>
+            
+            <sect name="Collimator">
+                <param name="rbounds"    type="vector"        >
+                    -1 12 23 150.0
+                </param>
+                <param name="nphivoxels"    type="vector"         >
+                    1 1 1 
+                </param>
+                <param name="zbounds"   type="vector"         >
+                    -800 -620 -600.1
+                </param>
+            </sect>
+            
         </config>
     </included>
 </edml>

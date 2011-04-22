@@ -52,13 +52,13 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega + rec_d0)<65.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.00025");
+  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.001");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
   TCut goodfitp("rec_fitprob>0.05");
   TCut goodndof("rec_ndof>=20");
-  TCut goodmerr("rec_mom_err<0.00025");
+  TCut goodmerr("rec_mom_err<0.001");
   TCut goodd0("abs(rec_d0)<10.0");
   TCut goodrmax("abs(2.0/rec_omega + rec_d0)<68.0");
   
@@ -1222,7 +1222,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     splen->Draw("same");
   } else if (page == "cost") {
     
-    TH2F* cttvct = new TH2F("cttvct",";cos(#theta prod);cos(#theta rec)",400,-1,1,400,0.25,1);
+    TH2F* cttvct = new TH2F("cttvct",";cos(#theta prod);cos(#theta rec)",400,-0.7,0.85,400,0.4,0.95);
     cttvct->SetStats(0);
     TH1F* cost = new TH1F("cost","#epsilon vs cos(#theta);prod cos(#theta);#epsilon",100,-1,1);
     TH1F* cose = new TH1F("cose","#epsilon vs cos(#theta);prod cos(#theta);#epsilon",100,-1,1);
@@ -1230,11 +1230,88 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tree->Project("cose","sim_mom_cost","rec_nhit>19");
     cose->Divide(cost);
     tree->Project("cttvct","sqrt(rec_mom_mag^2-rec_mom_pt^2)/rec_mom_mag:sim_mom_cost","rec_ndof>15");
-
-    can->Divide(2,1);
+    can->Clear();
+    can->Divide(1,2);
     can->cd(1);
-    cose->Draw();
-    can->cd(2);
     cttvct->Draw();
+    can->cd(2);
+    cose->Draw();
+  } else if(page == "grad") {
+    TProfile* angle = new TProfile("angle","angle ratio vs Z_{prod};Z_{prod};sin(#theta)_{tracker}/sin(#theta)_{prod}",100,-490,-380,0.0,5);
+    angle->SetMinimum(0.75);
+    angle->SetMaximum(0.9);
+    angle->SetStats(0);
+    angle->SetMarkerStyle(30);
+    angle->SetMarkerColor(kRed);
+    tree->Project("angle","sqrt(1.0-simt_mom_cost^2)/sqrt(1.0-sim_mom_cost^2):sim_inipos_z","simt_mom_mag>0");
+    can->Clear();
+    angle->Draw();
+    TF1* bgrad = new TF1("bgrad","sqrt(1.0/(1.0-0.003*(x-[0])))",-500,-300);
+    bgrad->SetParameter(0,-270.0);
+    bgrad->SetLineColor(kBlue);
+    bgrad->Draw("same");
+    TLegend* leg = new TLegend(0.1,0.65,0.5,0.9);
+    leg->AddEntry(angle,"conversion electrons","P");
+    leg->AddEntry(bgrad,"#sqrt{B_{tracker}/B_{prod}}","L");
+    leg->Draw();
+  } else if(page == "dioeff"){
+    TH1F* trmax = new TH1F("trmax","Maximum radius at tracker",100,0,60);
+    TH1F* trmaxw = new TH1F("trmaxw","Maximum radius at tracker",100,0,60);
+    TH1F* prmax = new TH1F("prmax","Maximum radius at production",100,0,60);
+    TH1F* prmaxw = new TH1F("prmaxw","Maximum radius at production",100,0,60);
+    
+    tree->Project("trmax","2.0/simt_omega+simt_d0","simt_mom_mag>0");
+    tree->Project("trmaxw","2.0/simt_omega+simt_d0","simt_mom_mag>0 && nwiremeas>0");
+    
+    tree->Project("prmax","2.0/sim_omega+sim_d0","simt_mom_mag>0");
+    tree->Project("prmaxw","2.0/sim_omega+sim_d0","simt_mom_mag>0 && nwiremeas>0");
+    
+    trmax->SetLineColor(kBlue);
+    trmaxw->SetLineColor(kRed);
+    trmaxw->SetMinimum(1);
+    trmax->SetStats(0);
+    trmaxw->SetStats(0);
+    trmax->GetXaxis()->SetTitle("cm");
+    
+    prmax->SetLineColor(kBlue);
+    prmaxw->SetLineColor(kRed);
+    prmaxw->SetMinimum(1);
+    prmax->SetStats(0);
+    prmaxw->SetStats(0);
+    prmax->GetXaxis()->SetTitle("cm");
+    
+    can->Clear();
+    can->Divide(1,2);
+    can->cd(1);
+    gPad->SetLogy();
+    trmax->Draw();
+    trmaxw->Draw("same");
+    TLegend* leg = new TLegend(0.6,0.6,0.9,0.9);
+    leg->AddEntry(trmax,"All DIO","L");
+    leg->AddEntry(trmaxw,"DIO Nhits>0","L");
+    leg->Draw();
+    can->cd(2);
+    gPad->SetLogy();
+    prmax->Draw();
+    prmaxw->Draw("same");
+        
+  } else if (page=="origin2d"){
+    TH2F* orig = new TH2F("orig","Dio origin;Z (cm);Radius (cm)",17,-472.5,-387.5,50,0,10.5);
+    TH2F* origh = new TH2F("origh","Dio origin;Z (cm);Radius (cm)",17,-472.5,-387.5,50,0,10.5);
+    tree->Project("orig","sqrt(sim_inipos_x^2+sim_inipos_y^2):sim_inipos_z");
+    tree->Project("origh","sqrt(sim_inipos_x^2+sim_inipos_y^2):sim_inipos_z","nwiremeas>0");
+    origh->SetLineColor(kRed);
+    orig->SetStats(0);
+    origh->SetStats(0);
+    can->Clear();
+    can->Divide(1,2);
+    can->cd(1);
+    orig->Draw("box");
+    can->cd(2);
+    origh->Draw("box");
+    TLegend* leg = new TLegend(.5,.7,.9,.9);
+    leg->AddEntry(orig,"All DIO","L");
+    leg->AddEntry(origh,"DIO, # hits>0","L");
+    leg->Draw();
   }
 }

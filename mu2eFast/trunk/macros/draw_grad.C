@@ -15,13 +15,13 @@
   TTree* t6 = (TTree*)g6.Get("tracks");
   TTree* t7 = (TTree*)g7.Get("tracks");
 
-  TH1F* sint1 = new TH1F("sint1","reconstructed sin(#theta), Nhit>=20",100,0,1);
-  TH1F* sint2 = new TH1F("sint2","reconstructed sin(#theta), Nhit>=20",100,0,1);
-  TH1F* sint3 = new TH1F("sint3","reconstructed sin(#theta), Nhit>=20",100,0,1);
-  TH1F* sint4 = new TH1F("sint4","reconstructed sin(#theta), Nhit>=20",100,0,1);
-  TH1F* sint5 = new TH1F("sint5","reconstructed sin(#theta), Nhit>=20",100,0,1);
-  TH1F* sint6 = new TH1F("sint6","reconstructed sin(#theta), Nhit>=20",100,0,1);
-  TH1F* sint7 = new TH1F("sint7","reconstructed sin(#theta), Nhit>=20",100,0,1);
+  TH1F* sint1 = new TH1F("sint1","reconstructed sin(#theta), Nhit>=20",100,0.5,1.01);
+  TH1F* sint2 = new TH1F("sint2","reconstructed sin(#theta), Nhit>=20",100,0.5,1.01);
+  TH1F* sint3 = new TH1F("sint3","reconstructed sin(#theta), Nhit>=20",100,0.5,1.01);
+  TH1F* sint4 = new TH1F("sint4","reconstructed sin(#theta), Nhit>=20",100,0.5,1.01);
+  TH1F* sint5 = new TH1F("sint5","reconstructed sin(#theta), Nhit>=20",100,0.5,1.01);
+  TH1F* sint6 = new TH1F("sint6","reconstructed sin(#theta), Nhit>=20",100,0.5,1.01);
+  TH1F* sint7 = new TH1F("sint7","reconstructed sin(#theta), Nhit>=20",100,0.5,1.01);
 
   TH1F* sint01 = new TH1F("sint01","produced sin(#theta), Nhit>=20",100,0.5,1.02);
   TH1F* sint02 = new TH1F("sint02","produced sin(#theta), Nhit>=20",100,0.5,1.02);
@@ -62,7 +62,7 @@
   sint05->SetLineColor(kCyan);
   sint06->SetLineColor(kOrange);
   sint07->SetLineColor(kBlack);
-  TLegend* leg = new TLegend(0.1,0.4,0.45,0.9);
+  TLegend* leg = new TLegend(0.1,0.4,0.4,0.9);
   
   double n1 = sint1->Integral(sint1->FindBin(0.70711),sint1->FindBin(0.86603));
   double n2 = sint2->Integral(sint2->FindBin(0.70711),sint2->FindBin(0.86603));
@@ -178,7 +178,7 @@
   double ratio[7];
   double ratioerr[7];
   for(int iz=0;iz<7;iz++){
-    ratio[iz] = r[iz]/p[iz];
+    ratio[iz] = r[iz]/(p[iz]);
     ratioerr[iz] = rerr[iz]/p[iz];
   }
   
@@ -190,7 +190,7 @@
   tg->SetMarkerColor(kRed);
   tg->Draw("AP");
   
-  TF1* flip = new TF1("flip","[0]/([0]+0.5*([1]-x)*[2])",-450,-200);
+  TF1* flip = new TF1("flip","sqrt([0]/([0]+([1]-x)*[2]))",-450,-200);
   flip->SetParameters(1.0,zstop,bgrad);
   flip->Draw("same");
   
