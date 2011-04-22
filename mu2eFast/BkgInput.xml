@@ -23,10 +23,10 @@ around a presumed 'signal' track -->
                 <param name="bkgBF" type="float"> 0.39 </param>
                 <!-- fraction of stopped muons in this mode generating the specified background type.  This
                 factor should include the selection efficiency of all cuts used when creating the output file -->
-                <param name="bkgeff" type="float"> 1.168e-3 </param>
+                <param name="bkgeff" type="float"> 6.0e-5 </param>
                 <!-- time window in which to integrate background.  Making this too large just adds inefficiency,
                 as the final time cuts are made hit-by-hit -->
-                <param name="bkghalfwindow" type="float"> 1.5e-7 </param>
+                <param name="bkghalfwindow" type="float"> 2.0e-7 </param>
                 <!-- by default, don't fit background tracks -->
                 <param name="fitbkg" type="bool"> false </param>
             </sect>            
