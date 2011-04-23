@@ -44,8 +44,8 @@
 
         <detector name="Mu2e">
             <volume name="Collimator">
-                <ring name="coll5" id="11" z="-601" lowradius="12.8" hiradius="24" thick="10" mat="TargetCu"/>
-                <ring name="cryo" id="11" z="-601" lowradius="24" hiradius="70" thick="10" mat="TargetAl"/>
+                <ring name="coll5" id="11" z="-677" lowradius="12.8" hiradius="24" thick="10" mat="TargetCu"/>
+                <ring name="cryo" id="11" z="-677" lowradius="24" hiradius="70" thick="10" mat="TargetAl"/>                
             </volume>
             
             
