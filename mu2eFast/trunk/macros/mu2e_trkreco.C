@@ -1222,7 +1222,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     splen->Draw("same");
   } else if (page == "cost") {
     
-    TH2F* cttvct = new TH2F("cttvct",";cos(#theta prod);cos(#theta rec)",400,-0.7,0.85,400,0.4,0.95);
+    TH2F* cttvct = new TH2F("cttvct",";cos(#theta prod);cos(#theta rec)",400,-0.7,0.85,400,0.45,0.95);
     cttvct->SetStats(0);
     TH1F* cost = new TH1F("cost","#epsilon vs cos(#theta);prod cos(#theta);#epsilon",100,-1,1);
     TH1F* cose = new TH1F("cose","#epsilon vs cos(#theta);prod cos(#theta);#epsilon",100,-1,1);
