@@ -4,13 +4,12 @@
 #define Mu2eTargetInput_HH
 #include "mu2eFast/Mu2eInput.hh"
 #include <TRandom3.h>
+#include <TLorentzVector.h>
 
 class PdtEntry;
 class PacConfig;
 class TRandom;
 class TGraph;
-class GTrack;
-class GVertex;
 class PacDetector;
 
 class Mu2eTargetInput : public Mu2eInput {
@@ -25,7 +24,10 @@ public:
   virtual bool nextEvent(Mu2eEvent& event);
   virtual void rewind();
 protected:
-  TParticle* create();
+  TParticle* create(const TLorentzVector& pos, const TLorentzVector& mom) const;
+  void createPosition(TLorentzVector& pos) const;
+  void createMomentum(TLorentzVector& mom) const;
+  
   void prepareBeam(PacConfig& config);
   
 private:
@@ -35,18 +37,20 @@ private:
   double _beamzlambda;
   double _p_min, _p_max;
   double _cost_min, _cost_max;
-  unsigned _nevents;
-  TRandom3 _rng;
+  double _mass2;
+  mutable TRandom3 _rng;
 // spectrum type
   spectrum _stype;
   TGraph* _invintspect;
 // target description
   std::vector<double> _diskradii;
-  std::vector<double> _diskz;
   std::vector<double> _halfthickness;
 // seed
   int _seed;
 // event counters
+protected:
+  std::vector<double> _diskz;
+  unsigned _nevents;
   unsigned _ievt;
 };
 #endif

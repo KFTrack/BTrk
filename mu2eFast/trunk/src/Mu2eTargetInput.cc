@@ -11,8 +11,6 @@
 #include <TGraph.h>
 #include <TSpline.h>
 #include <assert.h>
-#include "G3Data/GVertex.hh"
-#include "G3Data/GTrack.hh"
 #include "PacGeom/PacPlaneDetElem.hh"
 #include <iostream>
 using namespace std;
@@ -59,6 +57,7 @@ void
 Mu2eTargetInput::prepareBeam(PacConfig& config){
 // particle type; by default, negative electrons
   _pdt = Pdt::lookup((PdtPdg::PdgType)config.getint("PdtPdg",11));
+  _mass2 = _pdt->mass()*_pdt->mass();
 // Read beam configuration 
   _beamxsig = config.getdouble("beamxsigma");
   _beamtsig = config.getdouble("beamthetasigma");
@@ -124,7 +123,11 @@ Mu2eTargetInput::nextEvent(Mu2eEvent& event) {
 // clear existing event
   clear(event,true);
   if(_ievt < _nevents){
-    TParticle* part = create();
+    static TLorentzVector pos;
+    static TLorentzVector mom;
+    createPosition(pos);
+    createMomentum(mom);
+    TParticle* part = create(pos,mom);
     if(part != 0)
       event._particles.push_back(part);
     event._evtnum = _ievt;
@@ -145,7 +148,19 @@ Mu2eTargetInput::rewind(){
 }
 
 TParticle*
-Mu2eTargetInput::create() {
+Mu2eTargetInput::create(const TLorentzVector& pos, const TLorentzVector& mom) const {
+  // create the particle
+  TParticle* part = new TParticle();
+  part->SetPdgCode((Int_t)_pdt->pdgId());
+  part->SetMomentum(mom);
+  part->SetProductionVertex(pos);
+  part->SetWeight(1.0); // all particles have same weight
+  part->SetStatusCode(1);
+  return part;
+}
+
+void
+Mu2eTargetInput::createPosition(TLorentzVector& pos) const {
 // compute z position using truncated exponential
   double deltaz = (_diskz.back() - _diskz.front());
   double zspace = deltaz/(_diskz.size()-1);
@@ -174,7 +189,12 @@ Mu2eTargetInput::create() {
     y = _rng.Gaus(0, _beamxsig);
     radius = sqrt(x*x + y*y);
   }
-//  nom momentum
+// set the time to 0
+  pos = TLorentzVector(x,y,z,0.0);
+}
+ 
+void
+Mu2eTargetInput::createMomentum(TLorentzVector& momvec) const {
   double mom(0.0);
   if(_stype == flat)
     mom	= fabs(_rng.Uniform(_p_min, _p_max));
@@ -188,14 +208,6 @@ Mu2eTargetInput::create() {
   double cost = _rng.Uniform(_cost_min,_cost_max);
   double pz	= mom*cost;                // longitudinal momentum
   double pt = mom*sqrt(1.0-cost*cost);
-// create the particle
-  TParticle* part = new TParticle();
-  part->SetPdgCode((Int_t)_pdt->pdgId());
-  double mass = _pdt->mass();
-  double energy = sqrt(mass*mass+mom*mom);
-  part->SetMomentum(pt*cos(phi),pt*sin(phi),pz,energy);
-  part->SetProductionVertex(x,y,z,0.0);
-  part->SetWeight(1.0); // all particles have same weight
-  part->SetStatusCode(1);
-  return part;
+  double energy = sqrt(_mass2+mom*mom);
+  momvec = TLorentzVector(pt*cos(phi),pt*sin(phi),pz,energy);
 }

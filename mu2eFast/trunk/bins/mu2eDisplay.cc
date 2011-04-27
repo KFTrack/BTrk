@@ -70,9 +70,9 @@
 #include "DetectorModel/DetSet.hh"
 #include "BField/BField.hh"
 
-#include "G3Data/GVertex.hh"
-#include "G3Data/GTrack.hh"
 #include "Framework/AppFileName.hh"
+#include <TParticle.h>
+#include <TParticlePDG.h>
 
 #include "TF1.h"
 
@@ -188,22 +188,23 @@ int main(int argc, char* argv[]) {
 	HepPoint initpos = gconfig.getHepPoint("initpos");
 	Hep3Vector initmom = gconfig.getHep3Vector("initmom");
 	PdtPdg::PdgType pdgid = (PdtPdg::PdgType)gconfig.getint("PdtPdg",13);
-	
-
-// create GTrack
-	GVertex gvtx;
-	gvtx.setPosition(initpos);
-	GTrack gtrk;
 	PdtEntry* pdt = Pdt::lookup(pdgid);
+
+// create particle
+
+  TParticle* part = new TParticle();
+  part->SetPdgCode(pdgid);
+  double mass = pdt->mass();
+  double energy = sqrt(mass*mass+initmom.mag2());
+  part->SetMomentum(initmom.x(),initmom.y(),initmom.z(),energy);
+  part->SetProductionVertex(initpos.x(),initpos.y(),initpos.z(),0.0);
+  part->SetWeight(1.0); // all particles have same weight
+  part->SetStatusCode(1);
+
   cout << "Simulating particle type ";
   pdt->printOn(cout);
  	
 	double q = pdt->charge();
-	gtrk.setVertex(&gvtx);
-	gtrk.setPDT(pdt);
-	HepLorentzVector p4; p4.setVectM(initmom,pdt->mass());
-	gtrk.setP4(p4);	
-
 		/* Generate the track */
 		
 	PacSimulate sim(bfield,detector);
@@ -211,7 +212,7 @@ int main(int argc, char* argv[]) {
 	HepRandom::setTheEngine(engine);
 	sim.setRandomEngine(engine);
 	detector->setRandomEngine(engine);
-	PacSimTrack* simtrk = sim.simulateGTrack(&gtrk);
+	PacSimTrack* simtrk = sim.simulateParticle(part);
 	const PacPieceTraj* simtraj = simtrk->getTraj();
 	HepVector gparams(5);
 	double fltlen;
@@ -234,7 +235,7 @@ int main(int argc, char* argv[]) {
     }
   }
   if(disptrack){
-     display.drawGTrack(&gtrk,simtrk->lastHit()->globalFlight(),bfield);
+     display.drawParticle(part,simtrk->lastHit()->globalFlight(),bfield);
      display.drawSimTrack(simtrk);
      display.drawSimHits(simtrk,0);
    }
