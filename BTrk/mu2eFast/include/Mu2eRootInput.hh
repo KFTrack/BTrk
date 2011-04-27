@@ -29,6 +29,7 @@ public:
 // root tree name
   const std::string& treename() { return _treename; }
   void setTreeName(const std::string& tname) { _treename = tname; }
+  unsigned nread() const { return _nread; }
 protected:
 // root structure
   TFile *_file;

@@ -20,6 +20,7 @@ public:
   Mu2eTargetInput(PacConfig& config);
   // construct from the detector
   Mu2eTargetInput(PacConfig& config, const PacDetector* det);
+  ~Mu2eTargetInput();  
   // override virtual interface
   virtual bool nextEvent(Mu2eEvent& event);
   virtual void rewind();
@@ -38,7 +39,6 @@ private:
   double _p_min, _p_max;
   double _cost_min, _cost_max;
   double _mass2;
-  mutable TRandom3 _rng;
 // spectrum type
   spectrum _stype;
   TGraph* _invintspect;
@@ -49,6 +49,7 @@ private:
   int _seed;
 // event counters
 protected:
+  mutable TRandom3 _rng;
   std::vector<double> _diskz;
   unsigned _nevents;
   unsigned _ievt;
