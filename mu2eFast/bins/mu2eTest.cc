@@ -15,6 +15,8 @@
 #include <Gtypes.h>
 #include <TCanvas.h>
 #include <TFile.h>
+#include <TParticle.h>
+#include <TParticlePDG.h>
 #include <TGraph.h>
 #include <TPolyLine3D.h>
 #include <TPolyMarker3D.h>
@@ -76,13 +78,10 @@
 #include "CLHEP/Random/RanecuEngine.h"
 #include "CLHEP/Vector/ThreeVector.h"
 
-#include "G3Data/GVertex.hh"
-#include "G3Data/GTrack.hh"
-#include "GUtils/GTrkUtils.hh"
-
 #include "mu2eFast/Mu2eSimpleInput.hh"
 #include "mu2eFast/Mu2eRootInput.hh"
 #include "mu2eFast/Mu2eBkgInput.hh"
+#include "mu2eFast/Mu2eBeamInput.hh"
 #include "mu2eFast/Mu2eTargetInput.hh"
 
 #include "Framework/AppFileName.hh"
@@ -410,6 +409,9 @@ int main(int argc, char* argv[]) {
   } else if (gconfig.has("TargetInput.nevents")){
     PacConfig targetconfig = gconfig.getconfig("TargetInput.");
     input = new Mu2eTargetInput(targetconfig,detector);
+  } else if (gconfig.has("BeamInput.nevents")){
+    PacConfig beamconfig = gconfig.getconfig("BeamInput.");
+    input = new Mu2eBeamInput(beamconfig,&sim);
   } else if(gconfig.has("SimpleInput.nevents")){
     PacConfig simpleconfig = gconfig.getconfig("SimpleInput.");
     input = new Mu2eSimpleInput(simpleconfig);
@@ -467,7 +469,6 @@ int main(int argc, char* argv[]) {
 // create signal particle
     createSim(sim,event._particles,strks);      
 // create reco tracks
-    
     trackreco->makeTracks(strks,strksel);
     for(unsigned istrk=0;istrk<strks.size();istrk++){
 //      if(verbose)strks[istrk]->print();
@@ -479,14 +480,13 @@ int main(int argc, char* argv[]) {
       // Find the reconstructed track
       const TrkRecoTrk* trk = trackreco->findTrack(simtrk);
       if(writeallsim || ( trk!= 0 &&  trk->status() != 0 && trk->status()->fitCurrent() ) ){
-        const GTrack* gtrk = simtrk->getGTrack();
-        const GVertex* gvtx = gtrk->vertex();
+        const TParticle* tpart = simtrk->getTParticle();
     // global information about simtrk
         fillSimTrkSummary(simtrk,ssum);
     // Timing information
 
         if(disptrack){
-          display.drawGTrack(simtrk->getGTrack(),simtrk->lastHit()->globalFlight(),bfield);
+          display.drawParticle(simtrk->getTParticle(),simtrk->lastHit()->globalFlight(),bfield);
           display.drawSimTrack(simtrk);
           display.drawSimHits(simtrk,0);
         }
@@ -496,9 +496,10 @@ int main(int argc, char* argv[]) {
     //Fill initial parameters
         HepVector simparams(5);
         double flightlen(0.0);
-        TrkHelixUtils::helixFromMom(simparams,flightlen,
-          gvtx->position(),
-          gtrk->p4(),gtrk->pdt()->charge(),*bfield);
+        HepPoint gpos(tpart->Vx(),tpart->Vy(),tpart->Vz());
+        Hep3Vector gmom(tpart->Px(),tpart->Py(),tpart->Pz());
+        double gcharge = (const_cast<TParticle*>(tpart))->GetPDG()->Charge()/3.0;
+        TrkHelixUtils::helixFromMom(simparams,flightlen,gpos,gmom,gcharge,*bfield);
 
     //Generated Track
         PacHelix gentraj(simparams,flightlen,max(flightlen+10,simtraj->hiRange()));
@@ -507,15 +508,16 @@ int main(int argc, char* argv[]) {
         TrkPoca genpoca(gentraj, 0, zaxis, 10, 1e-12);
         TrkPoca simpoca(*simtraj, 0, zaxis, 10, 1e-12);
 
-        sim_pdgid = gtrk->pdt()->pdgId();
+        sim_pdgid = simtrk->pdgId();
 
-      //Store Momentum and Position
-        Hep3Vector momvec = gtrk->p4();
+      //Store initial Momentum and Position
+        const PacSimHit& fhit = simtrk->getHitList()[0];
+        Hep3Vector momvec = fhit.momentumIn();
         sim_mom_z	= momvec.z();
         sim_mom_mag	= momvec.mag();
-        sim_inipos_x	= gvtx->position().x();
-        sim_inipos_y	= gvtx->position().y();
-        sim_inipos_z	= gvtx->position().z();
+        sim_inipos_x	= fhit.position().x();
+        sim_inipos_y	= fhit.position().y();
+        sim_inipos_z	= fhit.position().z();
 
         sim_mom_cost = momvec.cosTheta();
         sim_mom_phi = momvec.phi();
@@ -582,8 +584,7 @@ int main(int argc, char* argv[]) {
             HepVector simtparams(5);
             double flightlen(0.0);
             TrkHelixUtils::helixFromMom(simtparams,flightlen,
-              sh.position(),sh.momentumIn(),
-              gtrk->pdt()->charge(),*bfield);
+              sh.position(),sh.momentumIn(),gcharge,*bfield);
             //Store Parameters
             simt_d0		= simtparams(1);
             simt_phi0	= simtparams(2);
@@ -745,11 +746,7 @@ int main(int argc, char* argv[]) {
 // cleanup this event
     for(unsigned istrk=0;istrk<strks.size();istrk++){
       PacSimTrack* simtrk = const_cast<PacSimTrack*>(strks[istrk]);
-      GTrack* gtrk = const_cast<GTrack*>(simtrk->getGTrack());
-      GVertex* gvtx = const_cast<GVertex*>(gtrk->vertex());
       TrkRecoTrk* trk = const_cast<TrkRecoTrk*>(trackreco->findTrack(simtrk));
-      delete gvtx;
-      delete gtrk;
       delete simtrk;
       delete trk;
     }
@@ -1096,31 +1093,8 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj,
 
 void createSim(const PacSimulate& sim,const std::vector<TParticle*>& parts,std::vector<PacSimTrack*>& strks) {
   for(std::vector<TParticle*>::const_iterator ipar = parts.begin();ipar != parts.end();ipar++){
-// convert to GTrack: so ugly!!!
     TParticle* part = *ipar;
-    GVertex* gvtx(0);
-    GTrack* gtrk(0);
-    static unsigned index(0);
-// convert TParticle to GTrack (ugly!!!)
-    gvtx = new GVertex;
-    gvtx->setCause( GVertex::generator );
-    gvtx->setPosition( HepPoint(part->Vx(),part->Vy(),part->Vz()));
-    gvtx->setTime( part->T() );
-    gvtx->setTerminal( true );
-    gvtx->setIndex( 0 );
-    gvtx->setParentTrimMarker( 0 );
-
-    gtrk = new GTrack;
-    gtrk->setP4(HepLorentzVector( part->Px(),
-      part->Py(),
-      part->Pz(),
-      part->Energy()));
-    PdtEntry* pdt = Pdt::lookup((PdtPdg::PdgType)part->GetPdgCode());
-    gtrk->setPDT( pdt );
-    gtrk->setVertex( gvtx );
-    gtrk->setIndex( index++);
-//Simulate Track through detectors
-    PacSimTrack* simtrk = sim.simulateGTrack(gtrk);
+    PacSimTrack* simtrk = sim.simulateParticle(part);
     if(simtrk != 0)strks.push_back(simtrk);    
   }
 }
