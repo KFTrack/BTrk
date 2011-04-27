@@ -19,7 +19,7 @@ _file(0), _tree(0), _bparticles(0), _bevtnum(0), _bevtwt(0), _bnevt(0), _bnpar(0
   _nevents = config.getint("nevents",-1);
 
   _tscale = config.getdouble("timescale",1.0);
-  _toffset = config.getdouble("timeoffset",1.0);
+  _toffset = config.getdouble("timeoffset",0.0);
 
   _file = TFile::Open(filename,"READ");
   if(_file != 0){
