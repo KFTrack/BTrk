@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <edml>
-<!-- by default, generate conversion electrons from the target -->
-<include file="mu2eFast/TargetInput.xml" />
+<!-- generate electrons from beam muons stopping in the target and decaying -->
+    <include file="mu2eFast/BeamInput.xml" />
+<!-- generate conversion electrons from the target using simple profiles -->
+<!-- ><include file="mu2eFast/TargetInput.xml" /> -->
 <!-- can also generate particles according to specific spectra -->
 <!-- <include file="mu2eFast/TargetInput.xml" />  -->
 <!-- can also read particles from a file -->

@@ -141,6 +141,11 @@ Mu2eTargetInput::nextEvent(Mu2eEvent& event) {
   }
 }
 
+Mu2eTargetInput::~Mu2eTargetInput(){
+  std::cout << "Mu2eTargetInput processed " << _ievt << " events." << std::endl;
+}
+
+
 void
 Mu2eTargetInput::rewind(){
 // reset counter

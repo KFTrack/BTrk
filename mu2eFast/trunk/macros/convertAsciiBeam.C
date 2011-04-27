@@ -45,7 +45,7 @@ void convertAsciiBeam(const char* asciifile, const char* rootfile) {
 //    cout << "peeking found " << first << endl;
     if(strncmp(&first,pound,1)==0) {
       in.getline(commentline,256);
-      cout << " found comment " << commentline << endl;
+//      cout << " found comment " << commentline << endl;
     } else {
       in >> xpos >> ypos >> zpos >> xmom >> ymom >> zmom >> ptime >> pdgid >> eventid >> trackid >> parentid >> weight;
 
@@ -59,9 +59,9 @@ void convertAsciiBeam(const char* asciifile, const char* rootfile) {
       ymom *= 1e-3;
       zmom *= 1e-3;
 
-      cout << "found particle vertex = " << xpos <<","<< ypos<<","<< zpos 
-      << " momentum =  " << xmom <<","<< ymom <<","<< zmom
-      << " time = " << ptime << " pdgid = " <<  pdgid  << endl;
+//      cout << "found particle vertex = " << xpos <<","<< ypos<<","<< zpos 
+//      << " momentum =  " << xmom <<","<< ymom <<","<< zmom
+//      << " time = " << ptime << " pdgid = " <<  pdgid  << endl;
       
       
 // only 1 particle/tree

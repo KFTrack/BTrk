@@ -13,7 +13,13 @@ Mu2eBeamInput::Mu2eBeamInput(PacConfig& config,const PacSimulate* sim) :
 {
   PacConfig bconfig = config.getconfig("Beam.");
   _rinput = new Mu2eRootInput(bconfig);
+  _lifetime = config.getfloat("lifetime",0.86e-6);
 }
+
+Mu2eBeamInput::~Mu2eBeamInput(){
+  std::cout << "Mu2eBeamInput read " << _rinput->nread() << " beam events." << std::endl;
+}
+
 
 bool
 Mu2eBeamInput::nextEvent(Mu2eEvent& event) {
@@ -48,7 +54,8 @@ Mu2eBeamInput::nextEvent(Mu2eEvent& event) {
     for(std::vector<PacSimTrack*>::iterator istrk=strks.begin();istrk!=strks.end();istrk++){
       if(stopsInTarget(*istrk)){
         HepPoint spos = (*istrk)->lastHit()->position();
-        double stime = (*istrk)->lastHit()->time();
+        // add a random decay time to the stopping time
+        double stime = (*istrk)->lastHit()->time() + _rng.Exp(_lifetime);
         TLorentzVector pos(spos.x(),spos.y(),spos.z(),stime);
         static TLorentzVector mom;
         createMomentum(mom);
