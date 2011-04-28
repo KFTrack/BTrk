@@ -45,6 +45,8 @@ protected:
 // allow scaling and shifting the time
   double _tscale;
   double _toffset;
+// automatic rewind until specified # of events are read: infinite loop for nevents<0!
+  bool _loop;
 // initialization information; starting event number
   unsigned _ifirst;
 // event counter
