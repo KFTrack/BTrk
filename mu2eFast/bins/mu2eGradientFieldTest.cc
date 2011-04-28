@@ -17,8 +17,8 @@
 #include "PacSim/PacSimHit.hh"
 #include "TrkBase/TrkHelixUtils.hh"
 #include "BField/BFieldIntegrator.hh"
-#include "Pdt/Pdt.hh"
-#include "Pdt/PdtEntry.hh"
+#include "PDT/Pdt.hh"
+#include "PDT/PdtEntry.hh"
 #include <iostream>
 #include "TParticlePDG.h"
 
