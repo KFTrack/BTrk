@@ -6,14 +6,18 @@
 
 #include <TParticle.h>
 #include <vector>
+class PacSimTrack;
+
 // simple structure to keep a single event's info coordinated
 struct Mu2eEvent {
   std::vector<TParticle*> _particles;
+  std::vector<PacSimTrack*> _strks;
   Int_t _evtnum;
   Float_t _evtwt;
   UInt_t _nevt, _npar;
   void append(Mu2eEvent& other){
     _particles.insert(_particles.end(),other._particles.begin(),other._particles.end());
+    _strks.insert(_strks.end(),other._strks.begin(),other._strks.end());
     _npar += other._npar;
   }
 };
@@ -31,7 +35,7 @@ public:
   virtual void rewind() = 0;
 // clear the event, optionally deleting the content
 protected:
-  void clear(Mu2eEvent& event,bool del=false);  
+  void clear(Mu2eEvent& event,bool del=false);
 };
 
 #endif

@@ -54,7 +54,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
   TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.001");
   TCut goodhits("rec_nhit-rec_nactive<10");
-  TCut gen("sim_inipos_z<-300");
+  TCut gen("sim_inipos_z<-300 && sim_pdgid==11");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
   TCut goodfitp("rec_fitprob>0.05");
   TCut goodndof("rec_ndof>=20");
@@ -72,9 +72,10 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   sgau->SetParName(6,"TSigL");
   TF1* dgau = new TF1("dgau",doublegaus,-1.,1.,5);
   if( page == "sim"){
-    TH1F* mom = new TH1F("mom","momentum",100,0.09,0.11);
+    TH1F* mom = new TH1F("mom","momentum",100,0.0,0.11);
     mom->GetXaxis()->SetTitle("GeV");
-    TH1F* td = new TH1F("td","tandip",100,0,1.4);
+    TH1F* cost = new TH1F("cost","Cos(#theta)",100,-1,1);
+    cost->SetMinimum(0);
     TH1F* z0 = new TH1F("z0","z position",91,-475.5,-384.5);
     z0->GetXaxis()->SetTitle("cm from tracker center");
     z0->SetStats(0);
@@ -91,7 +92,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     
 
     tree->Project("mom","sim_mom_mag",gen);
-    tree->Project("td","sim_tandip",gen);
+    tree->Project("cost","sim_mom_cost",gen);
     tree->Project("z0","sim_inipos_z",gen);
     tree->Project("xyprof","sim_inipos_y:sim_inipos_x",gen);
     tree->Project("rprof","sim_inipos_x",gen);
@@ -105,7 +106,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     can->cd(1);
     mom->Draw();
     can->cd(2);
-    td->Draw();
+    cost->Draw();
     can->cd(3);
     z0->Draw();
     can->cd(4);
@@ -1157,7 +1158,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     gStyle->SetOptStat(0);
     TCut bkg("sim_mom_mag<0.1");
     TCut sig("sim_mom_mag>0.1");
-    TCut intime("shtime[ifirsthit]<0.05e-6");
+//    TCut intime("shtime[ifirsthit]<0.05e-6");
     TCut trkhit("simhit.shmeastype>0&&simhit.shz<170");
 
     TH1F* bmom = new TH1F("bmom","track momentum",100,30,110);
@@ -1192,14 +1193,14 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     splen->SetLineColor(kBlue);
     splen->SetStats(0);
     
-    tree->Project("bmom","1000*sim_mom_mag",bkg);
-    tree->Project("smom","1000*sim_mom_mag",sig);
-    tree->Project("brad","sqrt(simhit.shy^2+simhit.shx^2)",bkg+trkhit+intime);
-    tree->Project("srad","sqrt(simhit.shy^2+simhit.shx^2)",sig+trkhit+intime);
-    tree->Project("btime","1e6*(shtime-shtime[ifirsthit])",bkg+trkhit+intime);
-    tree->Project("stime","1e6*(shtime-shtime[ifirsthit])",sig+trkhit+intime);
-    tree->Project("bplen","simhit.shpathlen",bkg+trkhit+intime);
-    tree->Project("splen","simhit.shpathlen",sig+trkhit+intime);
+    tree->Project("bmom","1000*sim_mom_mag",bkg+gen);
+    tree->Project("smom","1000*sim_mom_mag",sig+gen);
+    tree->Project("brad","sqrt(simhit.shy^2+simhit.shx^2)",bkg+trkhit+gen);
+    tree->Project("srad","sqrt(simhit.shy^2+simhit.shx^2)",sig+trkhit+gen);
+    tree->Project("btime","1e6*(shtime-shtime[ifirsthit])",bkg+trkhit+gen);
+    tree->Project("stime","1e6*(shtime-shtime[ifirsthit])",sig+trkhit+gen);
+    tree->Project("bplen","simhit.shpathlen",bkg+trkhit+gen);
+    tree->Project("splen","simhit.shpathlen",sig+trkhit+gen);
     can->Clear();
     can->Divide(2,2);
     can->cd(1);

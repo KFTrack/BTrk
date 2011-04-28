@@ -53,18 +53,27 @@ Mu2eBeamInput::nextEvent(Mu2eEvent& event) {
 // use the stopping point(s) to generate daughters
     for(std::vector<PacSimTrack*>::iterator istrk=strks.begin();istrk!=strks.end();istrk++){
       if(stopsInTarget(*istrk)){
-        HepPoint spos = (*istrk)->lastHit()->position();
+        // randomize the position along the trajector within this element
+        const PacSimHit* sthit = (*istrk)->lastHit();
+        Hep3Vector dir = sthit->momentumIn().unit();
+        double flen = _rng.Uniform(sthit->detIntersection().pathrange[0]-sthit->detIntersection().pathlen,
+          sthit->detIntersection().pathrange[1]-sthit->detIntersection().pathlen);
+        HepPoint spos = sthit->position() + dir*flen;
         // add a random decay time to the stopping time
         double stime = (*istrk)->lastHit()->time() + _rng.Exp(_lifetime);
         TLorentzVector pos(spos.x(),spos.y(),spos.z(),stime);
         static TLorentzVector mom;
         createMomentum(mom);
         TParticle* part = create(pos,mom);
-        if(part != 0)
-          event._particles.push_back(part); 
+        if(part != 0){
+          event._particles.push_back(part);
+          event._strks.push_back(*istrk);
+        } else {
+          delete *istrk;          
+        }
+      } else {
+        delete *istrk;
       }
-// cleanup; I would like to keep these simtracks!
-      delete *istrk;
     }
     event._evtnum = _ievt;
     event._evtwt = 1.0;

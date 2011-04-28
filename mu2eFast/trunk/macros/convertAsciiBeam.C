@@ -67,16 +67,18 @@ void convertAsciiBeam(const char* asciifile, const char* rootfile) {
 // only 1 particle/tree
       TParticle* part = new(_particles[0]) TParticle();
       part->SetPdgCode(pdgid);
-      double mass = part->GetPDG()->Mass();
+      if(part->GetPDG() != 0){
+        double mass = part->GetPDG()->Mass();
 //      cout << " mass = " << mass << endl;
-      double energy = sqrt(mass*mass + xmom*xmom + ymom*ymom + zmom*zmom);
-      part->SetMomentum(xmom,ymom,zmom,energy);
-      part->SetProductionVertex(xpos,ypos,zpos,ptime);
-      part->SetWeight(weight); // all particles have same weight
-      part->SetStatusCode(eventid);
-      _tree->Fill();
-      _particles.Clear();        
-      npar++;
+        double energy = sqrt(mass*mass + xmom*xmom + ymom*ymom + zmom*zmom);
+        part->SetMomentum(xmom,ymom,zmom,energy);
+        part->SetProductionVertex(xpos,ypos,zpos,ptime);
+        part->SetWeight(weight); // all particles have same weight
+        part->SetStatusCode(eventid);
+        _tree->Fill();
+        _particles.Clear();        
+        npar++;
+      }
     }
 
     if (!in.good()) break;
@@ -85,4 +87,5 @@ void convertAsciiBeam(const char* asciifile, const char* rootfile) {
 // cleanup
   in.close();
   file->Write();
+  file->Close();
 }

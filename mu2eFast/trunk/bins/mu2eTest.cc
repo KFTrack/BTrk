@@ -136,7 +136,7 @@ void fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj, std::ve
 void fillSimTrkSummary(const PacSimTrack* strk, PacSimTrkSummary& ssum);
 void countHits(const PacSimTrack* strk,  HitCount& icount);
 const PacSimHit* findFirstHit(const PacSimTrack* strk);
-void createSim(const PacSimulate& sim,const std::vector<TParticle*>& parts,std::vector<PacSimTrack*>& strks);
+void createSim(const PacSimulate& sim,Mu2eEvent& event);
 
 
 // field integral test stuff
@@ -441,19 +441,17 @@ int main(int argc, char* argv[]) {
       printf("Count: %i \n",nevt+1);
     }
     nevt++;
-// create simtrks
-    std::vector<PacSimTrack*> strks;
 // if bkg input exists, merge backgrounds with this event
     if(bkginput != 0 && bkginput->nextEvent(bkgevt)){
-      createSim(sim,bkgevt._particles,strks);
+      createSim(sim,bkgevt);
 // create background selector
       strksel->clear();
 // count background
-      bkg_ntrks = strks.size();
+      bkg_ntrks = bkgevt._strks.size();
       bkg_nhits = 0;
-      for(unsigned istrk=0;istrk<strks.size();istrk++){
-        strksel->add(strks[istrk]);
-        const std::vector<PacSimHit>& shs = strks[istrk]->getHitList();
+      for(unsigned istrk=0;istrk<bkgevt._strks.size();istrk++){
+        strksel->add(bkgevt._strks[istrk]);
+        const std::vector<PacSimHit>& shs = bkgevt._strks[istrk]->getHitList();
         for(int ish=0;ish<shs.size();ish++){
           const PacSimHit& sh = shs[ish];
           const DetElem* delem = sh.detIntersection().delem;
@@ -466,17 +464,19 @@ int main(int argc, char* argv[]) {
       bkg_ntrks = 0;
       bkg_nhits = 0; 
     }
-// create signal particle
-    createSim(sim,event._particles,strks);      
+// simulate signal particle
+    createSim(sim,event);
+// combine with bkg
+    event.append(bkgevt);
 // create reco tracks
-    trackreco->makeTracks(strks,strksel);
-    for(unsigned istrk=0;istrk<strks.size();istrk++){
+    trackreco->makeTracks(event._strks,strksel);
+    for(unsigned istrk=0;istrk<event._strks.size();istrk++){
 //      if(verbose)strks[istrk]->print();
 // clear vectors
       sinfo.clear();
       tdiff.clear();
 //    cdiff.clear();
-      const PacSimTrack* simtrk = strks[istrk];
+      const PacSimTrack* simtrk = event._strks[istrk];
       // Find the reconstructed track
       const TrkRecoTrk* trk = trackreco->findTrack(simtrk);
       if(writeallsim || ( trk!= 0 &&  trk->status() != 0 && trk->status()->fitCurrent() ) ){
@@ -744,12 +744,14 @@ int main(int argc, char* argv[]) {
       display.reset();
     }
 // cleanup this event
-    for(unsigned istrk=0;istrk<strks.size();istrk++){
-      PacSimTrack* simtrk = const_cast<PacSimTrack*>(strks[istrk]);
+    for(unsigned istrk=0;istrk<event._strks.size();istrk++){
+      PacSimTrack* simtrk = const_cast<PacSimTrack*>(event._strks[istrk]);
       TrkRecoTrk* trk = const_cast<TrkRecoTrk*>(trackreco->findTrack(simtrk));
       delete simtrk;
       delete trk;
     }
+    event._strks.clear();
+    bkgevt._strks.clear();
 // fill the tree every event
     if(writer.isActive()){
       writer.fillTree();
@@ -1091,11 +1093,11 @@ fillTrajDiff(const PacSimTrack* strk, const TrkDifPieceTraj& ptraj,
   ssum.bintrec = bintrec.mag();
 }
 
-void createSim(const PacSimulate& sim,const std::vector<TParticle*>& parts,std::vector<PacSimTrack*>& strks) {
-  for(std::vector<TParticle*>::const_iterator ipar = parts.begin();ipar != parts.end();ipar++){
+void createSim(const PacSimulate& sim, Mu2eEvent& event) {
+  for(std::vector<TParticle*>::const_iterator ipar = event._particles.begin();ipar != event._particles.end();ipar++){
     TParticle* part = *ipar;
     PacSimTrack* simtrk = sim.simulateParticle(part);
-    if(simtrk != 0)strks.push_back(simtrk);    
+    if(simtrk != 0)event._strks.push_back(simtrk);
   }
 }
 
