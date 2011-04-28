@@ -21,6 +21,8 @@ _file(0), _tree(0), _bparticles(0), _bevtnum(0), _bevtwt(0), _bnevt(0), _bnpar(0
   _tscale = config.getdouble("timescale",1.0);
   _toffset = config.getdouble("timeoffset",0.0);
 
+  _loop = config.getbool("loop",false);
+
   _file = TFile::Open(filename,"READ");
   if(_file != 0){
 // establish the tree structure
@@ -32,6 +34,8 @@ _file(0), _tree(0), _bparticles(0), _bevtnum(0), _bevtwt(0), _bnevt(0), _bnpar(0
       _bevtwt = _tree->GetBranch("EvtW");
       _bnevt = _tree->GetBranch("NEvt");
       _bnpar = _tree->GetBranch("NPar");
+      _numevt = _tree->GetEntriesFast();
+      
       if(_bparticles != 0 && _bevtnum != 0 && _bevtwt != 0 && _bnevt != 0 && _bnpar != 0){
 // link branches to local variables
         _bparticles->SetAddress(&_particles);
@@ -44,12 +48,11 @@ _file(0), _tree(0), _bparticles(0), _bevtnum(0), _bevtwt(0), _bnevt(0), _bnpar(0
       }
     } else {
       cerr << "Tree " << _treename << " not found in file " << filename << endl;
+      _numevt = 0;
     }
   }
 //initialize
   rewind();
-// set limit
-  if(_nevents < 0)_nevents = _numevt;
 }
 Mu2eRootInput::~Mu2eRootInput(){
 // close the file  
@@ -68,7 +71,7 @@ Mu2eRootInput::nextEvent(Mu2eEvent& event) {
   if(_nread < _nevents){
 // move to the next entry in the tree
     int nbytes = _tree->GetEntry(_ievt++);
-    if(_particles !=0){
+    if(nbytes >0 && _particles !=0){
       retval = true;
 // set particles
       unsigned npar = _particles->GetEntries();
@@ -87,8 +90,8 @@ Mu2eRootInput::nextEvent(Mu2eEvent& event) {
       event._npar = _npar;
     }
 // reset if we reach the end
-    if(_ievt >= _numevt){
-      _ievt = 0;
+    if(_ievt >= _numevt && _loop){
+      rewind();
     }
     _nread++;
   }
@@ -97,11 +100,6 @@ Mu2eRootInput::nextEvent(Mu2eEvent& event) {
 
 void
 Mu2eRootInput::rewind(){
-  _nread = 0;
+  std::cout << "Rewinding input file " << _file->GetName() << std::endl;
   _ievt = _ifirst;
-  if(_tree != 0){
-    _numevt = _tree->GetEntriesFast();
-  } else {
-    _numevt = 0;
-  }
 }

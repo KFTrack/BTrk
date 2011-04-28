@@ -44,29 +44,29 @@
 
         <detector name="Mu2e">
             <volume name="Collimator">
-                <ring name="coll5" id="11" z="-677" lowradius="12.8" hiradius="24" thick="10" mat="TargetCu"/>
-                <ring name="cryo" id="11" z="-677" lowradius="24" hiradius="70" thick="10" mat="TargetAl"/>                
+                <ring name="Coll5" id="11" z="-677" lowradius="12.8" hiradius="24" thick="10" mat="TargetCu"/>
+                <ring name="Cryo" id="11" z="-677" lowradius="24" hiradius="70" thick="10" mat="TargetAl"/>                
             </volume>
             
             
             <volume name="Target">                
-                <ring name="D1" id="1" z="zdisk1" lowradius="0" hiradius="diskr1" thick="diskthickness" mat="tarmat"/>
-                <ring name="D2" id="1" z="zdisk2" lowradius="0" hiradius="diskr2" thick="diskthickness" mat="tarmat"/>
-                <ring name="D3" id="1" z="zdisk3" lowradius="0" hiradius="diskr3" thick="diskthickness" mat="tarmat"/>
-                <ring name="D4" id="1" z="zdisk4" lowradius="0" hiradius="diskr4" thick="diskthickness" mat="tarmat"/>
-                <ring name="D5" id="1" z="zdisk5" lowradius="0" hiradius="diskr5" thick="diskthickness" mat="tarmat"/>
-                <ring name="D6" id="1" z="zdisk6" lowradius="0" hiradius="diskr6" thick="diskthickness" mat="tarmat"/>
-                <ring name="D7" id="1" z="zdisk7" lowradius="0" hiradius="diskr7" thick="diskthickness" mat="tarmat"/>
-                <ring name="D8" id="1" z="zdisk8" lowradius="0" hiradius="diskr8" thick="diskthickness" mat="tarmat"/>
-                <ring name="D9" id="1" z="zdisk9" lowradius="0" hiradius="diskr9" thick="diskthickness" mat="tarmat"/>
-                <ring name="D10" id="1" z="zdisk10" lowradius="0" hiradius="diskr10" thick="diskthickness" mat="tarmat"/>
-                <ring name="D11" id="1" z="zdisk11" lowradius="0" hiradius="diskr11" thick="diskthickness" mat="tarmat"/>
-                <ring name="D12" id="1" z="zdisk12" lowradius="0" hiradius="diskr12" thick="diskthickness" mat="tarmat"/>
-                <ring name="D13" id="1" z="zdisk13" lowradius="0" hiradius="diskr13" thick="diskthickness" mat="tarmat"/>
-                <ring name="D14" id="1" z="zdisk14" lowradius="0" hiradius="diskr14" thick="diskthickness" mat="tarmat"/>
-                <ring name="D15" id="1" z="zdisk15" lowradius="0" hiradius="diskr15" thick="diskthickness" mat="tarmat"/>
-                <ring name="D16" id="1" z="zdisk16" lowradius="0" hiradius="diskr16" thick="diskthickness" mat="tarmat"/>
-                <ring name="D17" id="1" z="zdisk17" lowradius="0" hiradius="diskr17" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD1" id="1" z="zdisk1" lowradius="0" hiradius="diskr1" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD2" id="1" z="zdisk2" lowradius="0" hiradius="diskr2" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD3" id="1" z="zdisk3" lowradius="0" hiradius="diskr3" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD4" id="1" z="zdisk4" lowradius="0" hiradius="diskr4" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD5" id="1" z="zdisk5" lowradius="0" hiradius="diskr5" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD6" id="1" z="zdisk6" lowradius="0" hiradius="diskr6" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD7" id="1" z="zdisk7" lowradius="0" hiradius="diskr7" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD8" id="1" z="zdisk8" lowradius="0" hiradius="diskr8" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD9" id="1" z="zdisk9" lowradius="0" hiradius="diskr9" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD10" id="1" z="zdisk10" lowradius="0" hiradius="diskr10" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD11" id="1" z="zdisk11" lowradius="0" hiradius="diskr11" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD12" id="1" z="zdisk12" lowradius="0" hiradius="diskr12" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD13" id="1" z="zdisk13" lowradius="0" hiradius="diskr13" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD14" id="1" z="zdisk14" lowradius="0" hiradius="diskr14" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD15" id="1" z="zdisk15" lowradius="0" hiradius="diskr15" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD16" id="1" z="zdisk16" lowradius="0" hiradius="diskr16" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD17" id="1" z="zdisk17" lowradius="0" hiradius="diskr17" thick="diskthickness" mat="tarmat"/>
             </volume>
         </detector>
         <!-- now define the voxelization -->
