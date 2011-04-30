@@ -21,12 +21,13 @@
 
             <formula name="zring1" par0="zvar" formula="-144.5+[0]*17.0-1.5"></formula>
             <formula name="zring2" par0="zvar" formula="-144.5+[0]*17.0+1.5"></formula>
+            <formula name="elemnum" par0="zvar" formula="[0]+10"></formula>
 
             <formula name="cenphi" par0="zvar" par1="cvar" par2="svar" formula="(50*[2]^3-225*[2]^2+235*[2]+30)*0.017453 +[1]*2.094395"></formula>
 
             <formula name="aphi" par0="zvar" par1="cvar" par2="svar" formula="(50*[2]^3-225*[2]^2+235*[2]+300)*0.017453+[1]*2.094395"></formula>
 
-            <formula name="index" par0="zvar" par1="cvar" par2="svar" formula="100*(3*[2]+[1])+[0]"></formula>
+            <formula name="index" par0="zvar" par1="cvar" par2="svar" formula="100*(3*[2]+[1])+[0]+10"></formula>
 
         </define>
 <!-- resolution parameters are set according to NA62 prototype measurements, scaled by 10%-
@@ -58,8 +59,8 @@ Note that the straws are oriented along the u direction (v is default) -->
                 <ring name="Entrance" id="2" z="-149" lowradius="-1" hiradius="90" thick="0.001" mat="vacuum" />
                 
                 <loop variable="zvar" count="18" startvalue="0" stepvalue="1">
-                    <ring name="C1" id="zvar" z="zring1" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
-                    <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
+                    <ring name="C1" id="elemnum" z="zring1" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
+                    <ring name="C2" id="elemnum" z="zring2" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
                     <loop variable="svar" count="4" startvalue="0" stepvalue="1">
                         <loop variable="cvar" count="3" startvalue="0" stepvalue="1">
                             <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw_15um" gap="strawgap" overlap="strawoverlap" meas="Straw"/>
