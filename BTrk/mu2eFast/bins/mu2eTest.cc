@@ -812,7 +812,7 @@ countHits(const PacSimTrack* strk, HitCount& count) {
     } else if(delem != 0){
       if(delem->elementNumber() == 0)
         count.nabs++;
-      else if(delem->elementNumber() < 0)
+      else if(delem->elementNumber() ==1 )
         count.ntar++;
     }
   }
