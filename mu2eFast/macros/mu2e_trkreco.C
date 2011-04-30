@@ -52,11 +52,11 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega + rec_d0)<65.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.05&&rec_ndof>=20&&rec_mom_err<0.001");
+  TCut goodfit("rec_fitprob>0.01&&rec_ndof>=20&&rec_mom_err<0.001");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300 && sim_pdgid==11");
   TCut goodrec = goodhits+goodradius+gooddip+goodfit;
-  TCut goodfitp("rec_fitprob>0.05");
+  TCut goodfitp("rec_fitprob>0.01");
   TCut goodndof("rec_ndof>=20");
   TCut goodmerr("rec_mom_err<0.001");
   TCut goodd0("abs(rec_d0)<10.0");
@@ -247,9 +247,9 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     sfitp->SetLineColor(kGreen);
     gfitp->SetLineColor(kRed);
 
-    TH1F* merr = new TH1F("merr","Estimated mom error",100,0,1.5);
-    TH1F* smerr = new TH1F("smerr","Estimated mom error",100,0,1.5);
-    TH1F* gmerr = new TH1F("gmerr","Estimated mom error",100,0,1.5);
+    TH1F* merr = new TH1F("merr","Estimated mom error",100,0,2.5);
+    TH1F* smerr = new TH1F("smerr","Estimated mom error",100,0,2.5);
+    TH1F* gmerr = new TH1F("gmerr","Estimated mom error",100,0,2.5);
     merr->SetLineColor(kBlue);
     smerr->SetLineColor(kGreen);
     gmerr->SetLineColor(kRed);
@@ -287,7 +287,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     fitp->Draw();
     sfitp->Draw("same");
     gfitp->Draw("same");
-    TLine* fitpcut = new TLine(0.05,0.0,0.05,0.5*fitp->GetMaximum());
+    TLine* fitpcut = new TLine(0.01,0.0,0.01,0.5*fitp->GetMaximum());
     fitpcut->Draw("same");
     
     
@@ -304,7 +304,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     merr->Draw();
     smerr->Draw("same");
     gmerr->Draw("same");
-    TLine* merrcut = new TLine(0.25,0.0,0.25,0.5*merr->GetMaximum());
+    TLine* merrcut = new TLine(1,0.0,1,0.5*merr->GetMaximum());
     merrcut->Draw("same");
     
     can->cd(3);
@@ -1017,15 +1017,15 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     costh->SetLineColor(kRed);
 
     int max=100000000;
-    tree->Project("nhit","nwiremeas","","",max);
-    tree->Project("rad","sqrt(sim_inipos_x^2+sim_inipos_y^2)","","",max);
-    tree->Project("radh","sqrt(sim_inipos_x^2+sim_inipos_y^2)","nwiremeas>0","",max);
-    tree->Project("mom","1000*sim_mom_mag","","",max);
-    tree->Project("momh","1000*sim_mom_mag","nwiremeas>0","",max);
+    tree->Project("nhit","nwiremeas",gen,"",max);
+    tree->Project("rad","sqrt(sim_inipos_x^2+sim_inipos_y^2)",gen,"",max);
+    tree->Project("radh","sqrt(sim_inipos_x^2+sim_inipos_y^2)",gen+"nwiremeas>0","",max);
+    tree->Project("mom","1000*sim_mom_mag",gen,"",max);
+    tree->Project("momh","1000*sim_mom_mag",gen+"nwiremeas>0","",max);
 //    tree->Project("pt","1000*sim_mom_pt","","",max);
 //    tree->Project("pth","1000*sim_mom_pt","nwiremeas>0","",max);
-    tree->Project("cost","sim_mom_cost","","",max);
-    tree->Project("costh","sim_mom_cost","nwiremeas>0","",max);
+    tree->Project("cost","sim_mom_cost",gen,"",max);
+    tree->Project("costh","sim_mom_cost",gen+"nwiremeas>0","",max);
 
     can->Clear();
     can->Divide(2,2);
@@ -1051,8 +1051,8 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     leg->AddEntry(radh,"# Hits>0","L");
     leg->Draw();
   } else if(page=="eloss"){
-    TCut target("shelemnum<0&&shz<-380");
-    TCut absorber("shelemnum==0&&shz<-150");    
+    TCut target("shelemnum==1");
+    TCut absorber("shelemnum==0");    
     
 //    TH1F* recmom = new TH1F("recmom","e- momentum, target+absorber",201,80,108);
 //    TH1F* trumom = new TH1F("trumom","e- momentum, target+absorber",201,80,108);
@@ -1076,8 +1076,8 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     ntar->SetStats(0);
     nabs->SetStats(0);
     
-    tree->Project("tdmom","1000*(shmomin-shmomout)",target);
-    tree->Project("admom","1000*(shmomin-shmomout)",absorber);
+    tree->Project("tdmom","1000*(shmomin-shmomout)",target+gen);
+    tree->Project("admom","1000*(shmomin-shmomout)",absorber+gen);
     
     tree->Project("grecmom","1000*rec_mom_mag",goodrec);
     tree->Project("gtrumom","1000*shmomin[ifirsthit]",goodrec);
@@ -1098,6 +1098,9 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     gtrumom->SetLineColor(kBlue);
     grecmom->GetXaxis()->SetTitle("MeV");
     gtrumom->GetXaxis()->SetTitle("MeV");
+    tdmom->GetXaxis()->SetTitle("MeV");
+    admom->GetXaxis()->SetTitle("MeV");
+    dmom->GetXaxis()->SetTitle("MeV");
     
     tdmom->SetLineColor(kRed);
     admom->SetLineColor(kBlue);
