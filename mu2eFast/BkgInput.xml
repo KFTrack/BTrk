@@ -11,8 +11,10 @@ around a presumed 'signal' track -->
                 <param name="nevents" type="long"> -1</param>
                 <param name="timescale" type="float"> 1 </param>
                 <param name="timeoffset" type="float"> 0 </param>
-                <!-- live window time -->
-                <param name="bunchtime" type="float"> 0.975e-6 </param>
+                <!-- livegate -->
+                <param name="livegate_start" type="float"> 0.7e-6 </param>
+                <param name="livegate_start" type="float"> 1.7e-6 </param>
+                <param name="halfwindow" type="float"> 1.e-7 </param>
                 <!-- stopped muon lifetime -->
                 <param name="signaldecay" type="float"> 0.86e-6 </param>
                 <!-- average # of stopped muons/bunch-->
@@ -23,11 +25,8 @@ around a presumed 'signal' track -->
                 <param name="bkgBF" type="float"> 0.39 </param>
                 <!-- fraction of stopped muons in this mode generating the specified background type.  This
                 factor should include the selection efficiency of all cuts used when creating the output file -->
-                <param name="bkgeff" type="float"> 6.0e-5 </param>
-                <!-- time window in which to integrate background.  Making this too large just adds inefficiency,
-                as the final time cuts are made hit-by-hit -->
-                <param name="bkghalfwindow" type="float"> 2.0e-7 </param>
-                <!-- by default, don't fit background tracks -->
+                <param name="bkgeff" type="float"> 6.92e-5 </param>
+                <!-- by default, don't reconstruct background tracks -->
                 <param name="fitbkg" type="bool"> false </param>
             </sect>            
         </config>
