@@ -52,15 +52,17 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
   TCut rec("rec_ndof>0");
   TCut goodradius("abs(rec_d0)<10.0 && abs(2.0/rec_omega + rec_d0)<65.0");
   TCut gooddip("rec_tandip>0.5773&&rec_tandip<1.0");
-  TCut goodfit("rec_fitprob>0.01&&rec_ndof>=20&&rec_mom_err<0.001");
+  TCut goodfit("rec_fitprob>0.01&&rec_ndof>=20");
+  TCut goodres("rec_mom_err<0.001");
   TCut goodhits("rec_nhit-rec_nactive<10");
   TCut gen("sim_inipos_z<-300 && sim_pdgid==11");
-  TCut goodrec = goodhits+goodradius+gooddip+goodfit;
+  TCut goodrec = goodhits+goodradius+gooddip+goodfit+goodres;
   TCut goodfitp("rec_fitprob>0.01");
   TCut goodndof("rec_ndof>=20");
   TCut goodmerr("rec_mom_err<0.001");
   TCut goodd0("abs(rec_d0)<10.0");
   TCut goodrmax("abs(2.0/rec_omega + rec_d0)<68.0");
+  TCut signalbox("rec_mom_mag>0.104");
   
   TF1* sgau = new TF1("sgau",splitgaus,-1.,1.,7);
   sgau->SetParName(0,"Norm");
@@ -176,19 +178,19 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     
     tree->Project("d0","abs(rec_d0)",rec);
     tree->Project("sd0","abs(rec_d0)",rec+gen);
-    tree->Project("gd0","abs(rec_d0)",rec+goodrmax+gooddip+goodfit+goodhits);
+    tree->Project("gd0","abs(rec_d0)",rec+goodrmax+gooddip+goodfit+goodres+goodhits);
     
     tree->Project("rmax","abs(2.0/rec_omega - rec_d0)",rec);
     tree->Project("srmax","abs(2.0/rec_omega - rec_d0)",rec+gen);
-    tree->Project("grmax","abs(2.0/rec_omega - rec_d0)",rec+goodd0+gooddip+goodfit+goodhits);
+    tree->Project("grmax","abs(2.0/rec_omega - rec_d0)",rec+goodd0+gooddip+goodfit+goodres+goodhits);
     
     tree->Project("td","rec_tandip",rec);
     tree->Project("std","rec_tandip",rec+gen);
-    tree->Project("gtd","rec_tandip",rec+goodradius+goodfit+goodhits);
+    tree->Project("gtd","rec_tandip",rec+goodradius+goodfit+goodres+goodhits);
 
     tree->Project("ndof","rec_ndof",rec);
     tree->Project("sndof","rec_ndof",rec+gen);
-    tree->Project("gndof","rec_ndof",rec+goodradius+gooddip+goodfitp+goodmerr+goodhits);
+    tree->Project("gndof","rec_ndof",rec+goodradius+gooddip+goodfitp+goodres+goodmerr+goodhits);
     
     can->Clear();
     can->Divide(2,2);
@@ -274,7 +276,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
 
     tree->Project("nmiss","rec_nhit-rec_nactive",rec);
     tree->Project("snmiss","rec_nhit-rec_nactive",rec+gen);
-    tree->Project("gnmiss","rec_nhit-rec_nactive",rec+goodrmax+gooddip+goodfit);
+    tree->Project("gnmiss","rec_nhit-rec_nactive",rec+goodrmax+gooddip+goodfit+goodres);
 
     tree->Project("mom","1000*rec_mom_mag",rec);
     tree->Project("smom","1000*rec_mom_mag",rec+gen);
@@ -325,7 +327,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
 
     
   } else if(page == "eff"){
-    TCut goodrec_noa = goodhits+goodradius+goodfit;
+    TCut goodrec_noa = goodhits+goodradius+goodfit+goodres;
 
     TH1F* td_s = new TH1F("td_s","TanDip",100,0.0,2.0);
     TH1F* td_r = new TH1F("td_r","TanDip",100,0.0,2.0);
@@ -643,7 +645,7 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     tree->Project("momr","1000*(rec_mom_mag-sim_mom_mag)",goodrec);
     momr->GetXaxis()->SetTitle("MeV");
     
-    TH1F* mom = new TH1F("mom","reconstructed momentum magnitude",200,100,110);
+    TH1F* mom = new TH1F("mom","Reconstructed Momentum Magnitude",200,100,110);
     tree->Project("mom","1000*(rec_mom_mag)",goodrec);
     mom->GetXaxis()->SetTitle("MeV");
     
@@ -1317,5 +1319,99 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     leg->AddEntry(orig,"All DIO","L");
     leg->AddEntry(origh,"DIO, # hits>0","L");
     leg->Draw();
+  } else if(page == "acc"){
+    TCut tracker("nwiremeas>0");
+    TH1F* cutf = new TH1F("cutf","Acceptance",8,-0.5,7.5);
+    TH1F* cutfs = new TH1F("cutfs","Acceptance",8,-0.5,7.5);
+    TH1F* ncutf = new TH1F("ncutf","Acceptance",8,-0.5,7.5);
+    cutf->GetXaxis()->SetBinLabel(1,"All Conversions");
+    cutf->GetXaxis()->SetBinLabel(2,"Reaches Tracker");
+    cutf->GetXaxis()->SetBinLabel(3,"Track Reconstructed");
+    cutf->GetXaxis()->SetBinLabel(4,"Pitch Angle");
+    cutf->GetXaxis()->SetBinLabel(5,"Fiducial Geometry");
+    cutf->GetXaxis()->SetBinLabel(6,"Fit Quality");
+    cutf->GetXaxis()->SetBinLabel(7,"Mom. Resolution");
+    cutf->GetXaxis()->SetBinLabel(8,"Signal Box");
+    
+    tree->Project("cutf","0",gen);
+    tree->Project("+cutf","1",gen+tracker);
+    tree->Project("+cutf","2",gen+tracker+rec);
+    tree->Project("+cutf","3",gen+tracker+rec+gooddip);
+    tree->Project("+cutf","4",gen+tracker+rec+gooddip+goodradius);
+    tree->Project("+cutf","5",gen+tracker+rec+goodradius+gooddip+goodfit);
+    tree->Project("+cutf","6",gen+tracker+rec+goodradius+gooddip+goodfit+goodres);
+    tree->Project("+cutf","7",gen+tracker+rec+goodradius+gooddip+goodfit+goodres+signalbox);
+    
+    tree->Project("cutfs","0",gen);
+    tree->Project("+cutfs","1",gen+tracker);
+    tree->Project("+cutfs","2",gen+rec);
+    tree->Project("+cutfs","3",gen+rec+gooddip);
+    tree->Project("+cutfs","4",gen+rec+goodradius);
+    tree->Project("+cutfs","5",gen+rec+goodfit);
+    tree->Project("+cutfs","6",gen+rec+goodres);
+    tree->Project("+cutfs","7",gen+rec+signalbox);
+    
+    tree->Project("ncutf","0",gen);
+    tree->Project("+ncutf","1",gen);
+    tree->Project("+ncutf","2",gen);
+    tree->Project("+ncutf","3",gen);
+    tree->Project("+ncutf","4",gen);
+    tree->Project("+ncutf","5",gen);
+    tree->Project("+ncutf","6",gen);
+    tree->Project("+ncutf","7",gen);
+
+    cutf->Divide(ncutf);
+    cutf->SetStats(0);
+    cutf->SetLineColor(kRed);
+    cutf->SetMinimum(0.0);
+    cutf->SetMaximum(1.01);
+    cutf->SetLineWidth(2);
+
+    cutfs->Divide(ncutf);
+    cutfs->SetStats(0);
+    cutfs->SetLineColor(kBlue);
+    cutfs->SetMinimum(0.0);
+    cutfs->SetMaximum(1.01);
+    cutfs->SetLineWidth(2);
+
+    can->Clear();
+    cutf->Draw();
+    cutfs->Draw("same");
+    
+    TLegend* leg = new TLegend(.5,.7,.9,.9);
+    leg->AddEntry(cutfs,"Individual","L");
+    leg->AddEntry(cutf,"Cumulative","L");
+    leg->Draw();
+    
+    
+  } else if(page == "accres"){
+    TH1F* mom = new TH1F("mom","Reconstructed Momentum Magnitude",200,100,110);
+    TH1F* momp = new TH1F("momp","Reconstructed Momentum Magnitude",200,100,110);
+    TH1F* momq = new TH1F("momq","Reconstructed Momentum Magnitude",200,100,110);
+    TH1F* momr = new TH1F("momr","Reconstructed Momentum Magnitude",200,100,110);
+    
+    tree->Project("mom","1000*(rec_mom_mag)",rec);
+    tree->Project("momp","1000*(rec_mom_mag)",rec+gooddip+goodradius);
+    tree->Project("momq","1000*(rec_mom_mag)",rec+gooddip+goodradius+goodfit+goodhits);
+    tree->Project("momr","1000*(rec_mom_mag)",rec+gooddip+goodradius+goodfit+goodhits+goodres);
+    
+    mom->GetXaxis()->SetTitle("MeV");
+    mom->SetStats(0);
+    mom->SetLineColor(kBlack);
+    momp->SetLineColor(kBlue);
+    momq->SetLineColor(kGreen);
+    momr->SetLineColor(kRed);
+    can->Clear();
+    mom->Draw();
+    momp->Draw("same");
+    momq->Draw("same");
+    momr->Draw("same");
+    TLegend* leg = new TLegend(.65,.7,.9,.9);
+    leg->AddEntry(mom,"All Reco","L");
+    leg->AddEntry(momp,"Geometry","L");
+    leg->AddEntry(momq,"+ Fit Quality","L");
+    leg->AddEntry(momr,"+ Momentum Error","L");
+    leg->Draw();
+
   }
 }
