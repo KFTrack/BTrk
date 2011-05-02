@@ -23,9 +23,7 @@ public:
 // override virtual interface
   virtual bool nextEvent(Mu2eEvent& event);
 private:
-  double _livegate_start; // bunch time active window
-  double _livegate_stop; // bunch time active window
-  double _halfwindow; // sensitive (detector) time half-window
+  double _bunchtime; // microbunch time spacing
   double _nbkg; // # of background/bunch: includes efficiency
   double _nspread; // fractional spread in stopped muons, interpreted as +-f
   double _norm; // normalization for lifetime sampling

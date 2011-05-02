@@ -11,9 +11,7 @@ using std::endl;
 
 Mu2eBkgInput::Mu2eBkgInput(PacConfig& config) : Mu2eRootInput(config){
 // normalize over the bunch time window
-  _livegate_start = config.getfloat("livegate_start",0.7e-6);
-  _livegate_stop = config.getfloat("livegate_stop",1.7e-6);
-  _halfwindow = config.getfloat("halfwindow",1e-7);
+  _bunchtime = config.getfloat("bunchtime",1.7e-6);
 // average # of background events is the # stopped * BF * efficiency
   _nbkg = config.getfloat("nstopped",0) * config.getfloat("bkgBF",0) * config.getfloat("bkgeff",0); 
   if(_nbkg == 0){
@@ -44,12 +42,13 @@ Mu2eBkgInput::nextEvent(Mu2eEvent& event) {
   for(unsigned ibkg=0;ibkg<nbkg;ibkg++){
     if(Mu2eRootInput::nextEvent(temp) && temp._particles.size() > 0){
       for(std::vector<TParticle*>::iterator ipart=temp._particles.begin();ipart!=temp._particles.end();ipart++){
-// check time
-        if((*ipart)->T() > _livegate_start-_halfwindow && (*ipart)->T() < _livegate_stop+_halfwindow){
+// synchronize to the current bunch crossing.  This isn't quite right, as the # of particles/bunch are
+// uncorrelated, but...
+        double btime = fmod((*ipart)->T(),_bunchtime);
+        (*ipart)->SetProductionVertex((*ipart)->Vx(),(*ipart)->Vy(),(*ipart)->Vz(),btime);
 // must create new particles as root placement new overwrites old events
-          TParticle* part = new TParticle(**ipart);
-          event._particles.push_back(part);
-        }
+        TParticle* part = new TParticle(**ipart);
+        event._particles.push_back(part);
       }
     }
 // check if the file needs rewinding

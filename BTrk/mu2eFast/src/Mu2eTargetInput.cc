@@ -10,22 +10,12 @@
 #include <TParticle.h>
 #include <TGraph.h>
 #include <TSpline.h>
+#include <Math/QuantFuncMathCore.h>
+
 #include <assert.h>
 #include "PacGeom/PacPlaneDetElem.hh"
 #include <iostream>
 using namespace std;
-
-Mu2eTargetInput::Mu2eTargetInput(PacConfig& config) : _ievt(0) {
-  prepareBeam(config);
-// find target geometry
-  _diskradii = config.getvector("diskradii");
-  _diskz = config.getvector("diskz");
-  assert(_diskradii.size() == _diskz.size());
-  double halfthickness = 0.5*config.getdouble("thickness",0.01);
-  for(int itar=0;itar<_diskradii.size();itar++){
-    _halfthickness.push_back(halfthickness);
-  }
-}
 
 Mu2eTargetInput::Mu2eTargetInput(PacConfig& config,const PacDetector* detector) : _ievt(0) {
   prepareBeam(config);
@@ -116,6 +106,13 @@ Mu2eTargetInput::prepareBeam(PacConfig& config){
         << " and " << _p_min << " < P < " << _p_max << " = " << eff << std::endl;
     }
   }
+  // timing parameters
+  _bunchtime = config.getfloat("bunchtime",1.7e-6);
+  _lifetime = config.getfloat("lifetime",0.86e-6);
+  // lognormal distribution parameters (for muon stops)
+  _lnsigma = config.getfloat("lnsigma",3.791);
+  _lntheta = config.getfloat("lntheta",3.581e-8);
+  _lnscale = config.getfloat("lnscale",2.191e-7);  
 }
 
 bool
@@ -194,8 +191,11 @@ Mu2eTargetInput::createPosition(TLorentzVector& pos) const {
     y = _rng.Gaus(0, _beamxsig);
     radius = sqrt(x*x + y*y);
   }
-// set the time to 0
-  pos = TLorentzVector(x,y,z,0.0);
+// set the time according to the log-normal distribution for stopping muons, plus the muon decay
+  double stime = ROOT::Math::lognormal_quantile(_rng.Uniform(),_lntheta,_lnsigma)*_lnscale + _lntheta + _rng.Exp(_lifetime);
+// Synchronize this to the nearest bunch: this assumes infinite bunch trains
+  double btime = fmod(stime,_bunchtime);
+  pos = TLorentzVector(x,y,z,btime);
 }
  
 void

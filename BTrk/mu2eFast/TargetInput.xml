@@ -24,6 +24,14 @@
                 <!-- the following are used only if no spectrum is supplied -->
                 <param name="p_min"  type="double"> 0.1051</param>
                 <param name="p_max" type="double"> 0.1051 </param>
+                <!-- bunch parameters-->
+                <param name="bunchtime" type="float"> 1.7e-6 </param>
+                <!-- stopped muon lifetime -->
+                <param name="lifetime" type="float"> 0.86e-6 </param>
+                <!-- the following describe the timing of the muon stops, as a log normal -->
+                <param name="lnsigma"  type="float"> 0.3791</param>
+                <param name="lntheta"  type="float"> 3.581e-8</param>
+                <param name="lnscale"  type="float"> 2.191e-7</param>
             </sect>            
         </config>
     </included>
