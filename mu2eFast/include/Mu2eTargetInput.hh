@@ -16,8 +16,6 @@ class Mu2eTargetInput : public Mu2eInput {
 public:
   // momentum spectrum description
   enum spectrum{flat=0,file};
-  // construct from configuration object
-  Mu2eTargetInput(PacConfig& config);
   // construct from the detector
   Mu2eTargetInput(PacConfig& config, const PacDetector* det);
   ~Mu2eTargetInput();  
@@ -39,6 +37,12 @@ private:
   double _p_min, _p_max;
   double _cost_min, _cost_max;
   double _mass2;
+// timing
+  double _lifetime;
+  double _bunchtime;
+  double _lnscale;
+  double _lnsigma;
+  double _lntheta;
 // spectrum type
   spectrum _stype;
   TGraph* _invintspect;

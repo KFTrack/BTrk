@@ -14,6 +14,7 @@ Mu2eBeamInput::Mu2eBeamInput(PacConfig& config,const PacSimulate* sim) :
   PacConfig bconfig = config.getconfig("Beam.");
   _rinput = new Mu2eRootInput(bconfig);
   _lifetime = config.getfloat("lifetime",0.86e-6);
+  _bunchtime = config.getfloat("bunchtime",1.7e-6);
 }
 
 Mu2eBeamInput::~Mu2eBeamInput(){
@@ -61,7 +62,9 @@ Mu2eBeamInput::nextEvent(Mu2eEvent& event) {
         HepPoint spos = sthit->position() + dir*flen;
         // add a random decay time to the stopping time
         double stime = (*istrk)->lastHit()->time() + _rng.Exp(_lifetime);
-        TLorentzVector pos(spos.x(),spos.y(),spos.z(),stime);
+        // Synchronize this to the nearest bunch: this assumes infinite bunch trains
+        double btime = fmod(stime,_bunchtime);
+        TLorentzVector pos(spos.x(),spos.y(),spos.z(),btime);
         static TLorentzVector mom;
         createMomentum(mom);
         TParticle* part = create(pos,mom);
