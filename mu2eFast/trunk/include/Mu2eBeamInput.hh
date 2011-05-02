@@ -25,5 +25,6 @@ private:
   Mu2eRootInput* _rinput;
   const PacSimulate* _sim;
   double _lifetime;
+  double _bunchtime;
 };
 #endif

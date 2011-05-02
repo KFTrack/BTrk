@@ -11,6 +11,8 @@
 #include <TF1.h>
 #include <TCanvas.h>
 #include <TH1F.h>
+#include <TMath.h>
+#include <Math.h>
 #include <TH2F.h>
 #include <TTree.h>
 #include <TCut.h>
@@ -19,8 +21,10 @@
 #include <TStyle.h>
 #include <TProfile.h>
 #include <TLine.h>
+#include <TRandom3.h>
 #include <stdio.h>
 #include "Riostream.h"
+#include "Math/QuantFuncMathCore.h"
 
 Double_t splitgaus(Double_t *x, Double_t *par) {
   Double_t retval;
@@ -1413,5 +1417,36 @@ void mu2e_trkreco(TCanvas* can,TTree* tree, const char* cpage="rec" ) {
     leg->AddEntry(momr,"+ Momentum Error","L");
     leg->Draw();
 
+  } else if(page=="mustop") {
+    TCut muon("sim_pdgid==13");
+    TH1F* stime = new TH1F("stime","Muon stop time",100,0,1e-6);
+    TH1F* stimes = new TH1F("stimes","Muon stop time",100,0,1e-6);
+    tree->Project("stime","shtime[nsimhit-1]",muon+"sheffect[nsimhit-1]==7");
+    TF1* lognorm = new TF1("lognorm","[0]*TMath::LogNormal(x,[1],[2],[3])");
+    lognorm->SetParName(0,"norm");
+    lognorm->SetParName(1,"sigma");
+    lognorm->SetParName(2,"theta");
+    lognorm->SetParName(3,"scale");
+    lognorm->SetParameters(1.0e-8*stime->GetEntries(),0.4,3.6e-8,2.2e-7);
+    
+    can->Clear();
+    can->Divide(2);
+    can->cd(1);
+    gStyle->SetOptFit(111111);
+    stime->Fit("lognorm");
+    can->cd(2);
+    
+    double sigma = lognorm->GetParameter(1);
+    double theta = lognorm->GetParameter(2);
+    double scale = lognorm->GetParameter(3);
+    TRandom3 myrand;
+    for(unsigned iln=0;iln<stime->GetEntries();iln++){
+      double y = myrand.Uniform();
+      double x = ROOT::Math::lognormal_quantile(y,theta,sigma)*scale + theta;
+//      double ynew = lognorm->Eval(x)/stime->GetEntries();
+//      cout << "y = " << y << " x = " << x << endl;
+      stimes->Fill(x);
+    }  
+    stimes->Draw();
   }
 }

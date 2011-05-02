@@ -466,8 +466,8 @@ int main(int argc, char* argv[]) {
     }
 // simulate signal particle
     createSim(sim,event);
-// combine with bkg
-    event.append(bkgevt);
+// combine bkg tracks
+    event._strks.insert(event._strks.end(),bkgevt._strks.begin(),bkgevt._strks.end());
 // create reco tracks
     trackreco->makeTracks(event._strks,strksel);
     for(unsigned istrk=0;istrk<event._strks.size();istrk++){

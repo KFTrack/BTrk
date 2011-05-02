@@ -11,12 +11,8 @@ around a presumed 'signal' track -->
                 <param name="nevents" type="long"> -1</param>
                 <param name="timescale" type="float"> 1 </param>
                 <param name="timeoffset" type="float"> 0 </param>
-                <!-- livegate -->
-                <param name="livegate_start" type="float"> 0.7e-6 </param>
-                <param name="livegate_start" type="float"> 1.7e-6 </param>
-                <param name="halfwindow" type="float"> 1.e-7 </param>
-                <!-- stopped muon lifetime -->
-                <param name="signaldecay" type="float"> 0.86e-6 </param>
+                <!-- bunch parameters-->
+                <param name="bunchtime" type="float"> 1.7e-6 </param>
                 <!-- average # of stopped muons/bunch-->
                 <param name="nstopped" type="float"> 8.45e4 </param>
                 <!-- bunch-bunch fractional spread -->
