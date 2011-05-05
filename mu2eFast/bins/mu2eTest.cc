@@ -679,9 +679,9 @@ int main(int argc, char* argv[]) {
           rec_nmergeda = 0;
           rec_nshadowed = 0;
           for (TrkHotList::hot_iterator i = kalrep->hotList()->begin();i!=kalrep->hotList()->end();++i) {
-            if (i->usability() == 10)rec_nmerged++;
-            if (i->usability() == 10 && i->isActive())rec_nmergeda++;
-            if (i->usability() == -11 && !i->isActive())rec_nshadowed++;
+            if (i->usability() >= 11)rec_nmerged++;
+            if (i->usability() >= 11 && i->isActive())rec_nmergeda++;
+            if (i->usability() <= -10 && !i->isActive())rec_nshadowed++;
           }
 
       // test of position difference between

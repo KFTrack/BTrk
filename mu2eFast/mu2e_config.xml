@@ -13,6 +13,8 @@
                 <param name="hitchicut"     type="float" >   5. </param>
                 <param name="trkchicut"     type="float" >   5. </param>
                 <param name="weedhits"      type="bool"  > true </param>
+                <param name="domerge"       type="bool"  > true </param>
+                <param name="dopatrec"       type="bool"  > true </param>
                 <param name="maxweed"       type="int"   >   10  </param>
                 <param name="seedsmear"       type="float"   >   1.0  </param>
                 <param name="momupdatefactor"       type="float"   >   1.0  </param>
