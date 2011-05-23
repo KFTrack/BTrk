@@ -1,0 +1,35 @@
+//--------------------------------------------------------------------------
+// File and Version Information:
+// 	$Id: DifFourVector.icc,v 1.1 2002/05/19 05:00:38 snyder Exp $
+//
+// Description:
+//	Class Implementation for |DifFourVector| 
+//      What do i do ?
+// Environment:
+//	Software developed for the BaBar Detector at the SLAC B-Factory.
+//
+// Author List:
+//	A. Snyder
+//
+// Copyright Information:
+//	Copyright (C) 1996	SLAC
+//
+//------------------------------------------------------------------------
+
+
+inline DifFourVector& DifFourVector::operator+=(const DifFourVector& v) { E+=v.E; P+=v.P; return *this; }
+inline DifFourVector& DifFourVector::operator-=(const DifFourVector& v) { E-=v.E; P-=v.P; return *this; }
+inline DifFourVector& DifFourVector::operator=(const DifFourVector& v) { E=v.E; P=v.P; return *this; }
+inline DifFourVector& DifFourVector::zeroDerivatives() { E.zeroDerivatives(); P.zeroDerivatives(); return *this;}
+inline DifFourVector operator+(const DifFourVector& a,const DifFourVector& b) { return DifFourVector(a)+=b; }
+inline DifFourVector operator-(const DifFourVector& a,const DifFourVector& b) { return DifFourVector(a)-=b; }
+inline DifNumber operator*(const DifFourVector& a,const DifFourVector& b) { return a.E*b.E-a.P*b.P; }
+
+
+inline int DifFourVector::nPar()const {return E.nPar();}
+inline DifVector DifFourVector::direction()const
+
+{
+  DifVector temp(P);
+  return temp.normalize();
+} 
