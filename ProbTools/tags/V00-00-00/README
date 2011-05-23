@@ -1,0 +1,66 @@
+ProbTools package - contains probability tools, including the
+consistency class, etc.
+
+Initial package coordinator is Bob Jacobsen, but he's
+looking to get rid of it.
+
+Note the probab.* routines are to be merged into 
+the chisq-consistency support, then removed.
+
+probab.* was originally in Beta/probab*, and a migration
+.hh file is probably present there now (late March 97)
+
+Jan 15 2010: R. Stroili
+    split code in src and include directories
+
+June 14 2002: Jane Tinslay
+    RW migration
+
+TAG V00-01-19--------------
+Feb 15 2001: Eric C
+  - Added ProbTools_LinkDef.rdl file to control cint dictionary generation
+
+Nov 21 2000: Eric C
+  - Added LIBEXTRARDLFILES line to GNUmakefile
+ 
+June 27 2000: Andy S
+  - add explicit casting of double to int in PoissonConsistency to avoid
+    warnings from gcc
+  - remove debugging printount in PoissonConsistency
+  - add unistd.h in consistencyTest.cc which is needed for Linux to get 
+    getopt() declaration
+
+June 27 2000: Andy S
+  - update of NumRecipes::gammln() for the book's version
+  - rewritten PoissonConsistency's calculation of significance
+    level
+  - updated consistencyTest for changes in PoissonConsistency
+
+July 4th 1999: Phil S
+	Fix up bug in CombinedConsistency when noMeasure is 
+	reported by all systems
+	Add functions to AbsLikelihoodFraction to do 
+	relative likelihoods (and logs thereof) with status
+	checks on the calculation. 
+	Fix up GaussConsistency, AsymGaussConsistency to 
+	return values from calc() (hmm.. not sure what they 
+	were doing before!).
+	Remove unecessary return in probab.cc
+
+March 23:  Migrating the Consistency classes. 
+  Step 1: Copy and commit - they exist in libBaBar.a and 
+          libProbTools.a
+  Step 2: After release includes ProbTools, remove from
+          libBaBar, add migration .hh
+  Step 3: remove migration .hh
+
+July 26, 97
+	Fix crash when combining a zero Consistency - Bob J
+
+Aug 8, 97
+	Default status is OK when constructing from double - Bob J
+
+Aug 13, 97
+	ConsistencySign update - Bob J
+
+
