@@ -1,0 +1,27 @@
+DchCalib -- Drift Chamber OFFLINE calibration software
+------------------------------------------------------
+
+Package Coordinator: Gerhard Raven (Gerhard.Raven@slac.stanford.edu)
+
+This package implements the t->d calibration of the DCH.
+The 'deliverable' of this package is the DchTimeToDistList,
+which contains the DchTimeToDist objects for each individual
+wire. The user retrieves a valid DchTimeToDistList through 
+DchEnv using a proxy which lives in DchProxy. 
+
+The DchTimeToDist objects 'know' how to:
+   i) compute driftdistance, given drifttime, entrance angle,...
+  ii) compute drifttime, given driftdistance, entrance angle,...
+ iii) compute resolution, given driftdistance, entrance angle,...
+
+The DchTimeToDist objects are implemented using 2 DchCalibFun's,
+representing the t->d parameterization and the resolution, and a T0.
+The 'bulk' of this package consists of different implementations
+of DchCalibFuns...
+
+FIXME:
+This package should be split into two. It currently contains 
+the abstract interface for calibration functions (DchCalibFun),
+the 'deliverables' DchTimeToDist{,List} on the one hand, and on
+the other hand ALL of the implementations of DchCalibFun's...
+Those implementations should move out of this package...
