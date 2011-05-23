@@ -1,0 +1,42 @@
+#
+# $Id:$
+# $Author:$
+# $Date:$
+#
+# Original author Rob Kutschke.
+#
+
+import os, re
+home = os.environ['MU2E_HOME']
+Import('env')
+
+plugin_cc = Glob('*_plugin.cc', strings=True)
+non_plugin_cc = Glob('*.cc', strings=True)
+for cc in plugin_cc: non_plugin_cc.remove(cc)
+
+if non_plugin_cc:
+    # This library name does not follow the standard pattern
+    local_lib_name='BaBar_CLHEP'
+    env.SharedLibrary('#/lib/'+local_lib_name, non_plugin_cc,
+                      LIBS=[ 'FWCoreFramework',
+                             'GeometryService',
+                             'GeneralUtilities',
+                             'CLHEP',
+                           ],
+                      )
+    libs=[ local_lib_name ]
+else:
+    libs=[]
+
+for cc in plugin_cc:
+    libname='#/lib/'+cc[:cc.find('.cc')]
+    env.SharedLibrary( libname, cc,
+                     LIBS=[ 'FWCoreFramework', libs, 'ToyDP', 'GeometryService',
+                            'GeneralUtilities', 'CLHEP',
+                          ],
+                     )
+
+# This tells emacs to view this file in python mode.
+# Local Variables:
+# mode:python
+# End:
