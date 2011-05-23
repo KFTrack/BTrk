@@ -1,0 +1,173 @@
+This package provides base classes and some general daughter classes from these
+that are designed to build up a geometric and material model of a detector for
+reconstruction, and in particular tracking.  These classes define the interface between
+detector-specific geometry and the tracking system in BaBar coordinates. They also provide a
+standard implementation of alignment (IE slight displacement or rotation of an element from
+its nominal position, both locally and globally) at the base class level.  An interface to a
+material model is also described, along with a (probably temporary) implementation.  This interface
+will be used to build the parts of a Kalman filter track fit which needs to know about physical
+materials of detector elements.  Subsystems using this package to describe their geometry
+will this inherit 'for free' a connection to BaBar tracking.
+
+At the base class level, this package provides the following:
+
+	A pure virtual class DetElem, which is intended to describe a single unique part
+	of a detector, 	oriented in the BaBar coordinate system.  Example DetElem objects
+	would be one single SVT wafer (the SVT contains 340 wafers, so there would be a
+	total of 340 such objects), or 1 DIRC bar, or 1 EMC crystal.  Real methods for applying
+	and removing alignment corrections are provided.  Pure virtual methods for interacting
+	with tracks are prototyped.  Functions used to define the profile of the object in
+	space (physicalOutline and activeOutline) are also provided, and are used both
+	internally and externally for graphics representation purposes.
+Note(3/1/97)
+	The interface to the *Outline functions has been changed to use RogueWave lists instead
+	of arrays.  The old interface will be maintained for a few more releases, but will
+	soon be removed, so don't write any new code using the old interfaces, and start
+	converting your code now.
+
+	DetSet, which collects together a related set of DetElems.  This
+	base class provides default methods for track navigation (IE, determining which of
+	its contained elements are intersected by a track trajectory).  It also has functions
+	to distribute alignment to its contained elements.
+
+	DetType, a pure virtual class which is intended to describe a part of a detector
+	as it might have looked on the lab bench before assembly.  DetElem contains a
+	pointer to a DetType object, which describes the general properties of that physical
+	part which are not unique to its exact position and identity in the detector. Example
+	DetType objects would be an SVT wafer of a particular geometry (there are 6 wafer
+	geometries in the SVT, so a total of 6 objects are needed), a DIRC bar, or an EMC crystal
+	in a particular anulus.
+
+In addition to these base classes, fully worked-out implementations for a few cases
+are also provided, such as:
+
+	DetSurfaceElem.  This is a subclass to DetElem where the detector piece in question
+	can be effectively described as a 2-dimensional object (plane, cylinder, ...).  Objects
+	of this class are used to describe SVT wafers and ribs (using a plane) and struts (using
+	a cylinder).
+
+New(3-1-97)
+	DetSurfaceSet.  This is a subclass to DetSet which is intended to contain a set of
+	objects organized geometrically roughly according to the contour of a surface.  The
+	constructor takes as input a surface (object of a sub-class of DetSurface) which defines
+	what kind of surface to use, as well giving an estimate of the 'average' surface on
+	which the elements lie.  Using this surface as a seed, 2 new surfaces are constructed as
+	members of the 'family' implicitly defined by the seed.  These 2 new surfaces completely
+	contain all the elements in the sense that all points on all elements lie between the surfaces.
+	A hash table is then made of the projected 2-d outlines of all elements, which is used
+	to greatly speed up the navigation of intersecting tracks with the set.  An example of
+	a use of DetSurfaceSet (using a cylinder) is a layer of the Svt.
+
+	DetElemSet.  This is a subclass to DetSet which has a special relationship with one of its
+	contained elements.  This special relationship is visible only via alignment: in all other
+	respects, the DetElemSet behaves just like a DetSet, and its elements (even the special
+	element) like all other elements.  The additional alignment feature provided by a DetElemSet
+	is the idea of an 'intermediate' level of alignment.  Essentially, intermediate alignment is
+	applied to the special element, and all the other elements in the set are adjusted so as to
+	maintain their position relative to this element.  This is useful for alignments which act
+	on collections of objects, not just single elments (local) or an entire detector (global).
+
+New(3-1-97)
+	DetSetHash.  This is a helper class which can be constructed from any DetSet object.
+	It builds a hash table of the DetElem ID numbers of selected elements according to a
+	user-supplied hash function.  This allows very efficient location of elements by their ID.
+	Several DetSetHash objects can be created from the same DetSet for different subsets of
+	elements by providing a different selection function to the constructor, allowing efficienty
+	location along several organization.  The element selection is applied recursively, so that
+	the DetSetHash location function can cut across set boundaries.
+
+Note(3-1-97)
+	DetCylinderSet.  This is an (obsolete) predecessor to DetSurfaceSet, and should not
+	be used in any new code.  The full functionality of DetCylinderSet is recovered by
+	building a DetSurfaceSet from a cylinder.  Additionally, DetSurfaceSet can handle
+	cylinders whose axis is not the Z axis, and whose elements subtend only a fraction
+	of 2pi.  DetSurfaceSet is also more efficient.  DetCylinderSet will be removed in an
+	upcoming release, so don't write any new code using it, and start converting your code now.
+
+An implementation of several purely geometric classes is contained in this package, as follows:
+
+	DetSurfaces.  A base class for describing surfaces, based on the GISMO surface (but not
+	using any of the GISMO code).  Some functions specialized to the use of DetSurfaces in
+	DetectorModel classes are provided.  All surfaces are characterized as infinite 2-dimensional
+	objects, located in 3-space by a HepTransform (from CLHEP), with a local (2-d) Surface
+	coordinate system defined appropriate to their intrinsic nature.
+
+	DetPlane.  A plane implementation of the above.
+
+	DetCylinder.  A cylinder implementation of the above.
+
+	Intersection.  This is a helper class which performs the intersection of a Trajectory (see
+	the TrkBase package) and a surface.  The current implementation is not terribly efficient,
+	but works for all kinds of surfaces.  Specialized, more efficient algorithms will be
+	provided in future releases.
+
+	DetCone, DetToroid, and DetSphere do not yet exist, but are forseen.
+
+David Brown (Dave_Brown@lbl.gov)
+
+	Gautier and I (Stephen) have added some volume classes to
+	DetectorModel. I'll list them below with their intended purpose.
+
+DetVolumeElem:
+	A subclass of DetElem for representing volumes made from DetSurfaces
+	as sides.
+
+DetVolumeType:
+	A type for this class. The sides must include the origin in the
+	region which is valid as the surface of the volume.
+
+DetSimpleVolumeType:
+	A type which is made from only DetPlanes as sides. Two must be
+	opposite and have any number of sides and the others must have
+	four edges.
+
+DetVolSideIntersection:
+	An intersection designed for use with DetVolumeElems.
+
+
+
+Wed Feb 10 13:05:05 PST 1999
+A. Snyder
+
+-Added code to handle track starting inside a DetVolumeElem. Set intersection
+ _flag[0]=-1, _flag[1] indicates which side of the volume was hit.
+
+-Tracking ending inside an element is considered a failure.
+
+-DetIntersection _flag used to indicate failure mode.
+
+-Set DetIntersection _flag to -2 for DetSurfaceElem, so SwimTracks knows 
+ what to 
+
+Thurs May 6 1999
+John Back
+
+Fixed the segmentMinMax function in DetCone to do the right thing 
+(after Dave made changes to how the hash tables are made with the use of the
+projection function in DetSurfaceSet).
+
+Fri May  7 11:44:46 PDT 1999
+A. Snyder
+
+-Make DetSet::listAllElements public.
+
+Tue Jun 15 22:23:15 PDT 1999
+A. Snyder
+
+DetVolumeElem::intersect - make contained intersection (both end inside the
+volume) return the pointer to the DetElem in dinter. Tested by forcing tracks
+to start in emcXtals in SwimTracks.
+
+DetSurfaceElemType::insideLimitsOf - change to bailout when a "side" fails. Should
+have no operational effect and be faster.
+
+Mon Aug 20 2001
+J. Stelzer
+
+Implemented multiplication of two DetAlignElem(ents) which is needed by EMC-alignment.
+Another constructor ( from a HepTransformation ) has been added.
+
+Thu Jan 14 2010
+R. Stroili
+
+split code in src and include directories
