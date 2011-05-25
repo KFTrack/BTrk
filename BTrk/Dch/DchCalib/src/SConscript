@@ -7,7 +7,6 @@
 #
 
 import os, re
-home = os.environ['MU2E_HOME']
 Import('env')
 
 plugin_cc = Glob('*_plugin.cc', strings=True)
@@ -19,7 +18,7 @@ if non_plugin_cc:
     dd=re.search('[^/]*/[^/]*$',env.Dir('.').abspath).group(0)
     local_lib_name='BaBar_'+os.path.dirname(dd)
     env.SharedLibrary('#/lib/'+local_lib_name, non_plugin_cc,
-                      LIBS=[ 'FWCoreFramework',
+                      LIBS=[ 'art_Framework_Core',
                              'GeometryService',
                              'GeneralUtilities',
                              'CLHEP',
@@ -32,7 +31,7 @@ else:
 for cc in plugin_cc:
     libname='#/lib/'+cc[:cc.find('.cc')]
     env.SharedLibrary( libname, cc,
-                     LIBS=[ 'FWCoreFramework', libs, 'ToyDP', 'GeometryService',
+                     LIBS=[ 'art_Framework_Core', libs, 'ToyDP', 'GeometryService',
                             'GeneralUtilities', 'CLHEP',
                           ],
                      )
