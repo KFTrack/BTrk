@@ -1,4 +1,4 @@
-// $Id: BFieldIntegrator.hh 497 2010-01-14 09:06:53Z stroili $
+// $Id: BFieldIntegrator.hh 830 2011-04-09 07:14:58Z brownd $
 // Description:	Class Header for |BFieldIntegrator|
 //              Do integral B*dl along track
 // Author List:A. Snyder, Copyright (C) 1998	SLAC
@@ -21,8 +21,8 @@ class BFieldIntegrator {
 public:
 
   //construct
-  BFieldIntegrator
-  (const BField &bField);	// full field
+  BFieldIntegrator(const BField &bField);
+  BFieldIntegrator(const BField &bField,const Hep3Vector& bnom);
 
 public:
 
