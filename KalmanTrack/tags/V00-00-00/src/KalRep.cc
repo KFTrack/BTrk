@@ -116,7 +116,7 @@ KalRep::initRep() {
   _refmom = momvec.mag();
   _charge = TrkMomCalculator::charge(*_seedtraj,parentTrack()->bField(),_refmomfltlen);
 // build the initial reference trajectory
-  buildRefTraj();
+  if(_reftraj == 0)buildRefTraj();
 // Initialize _ptraj to _reftraj. This is needed
 // by UpdateFitStuff, which calls down to momentum(), which needs the traj
   _ptraj = _reftraj;
@@ -218,7 +218,7 @@ KalRep::KalRep(const KalRep& other,PdtPid::PidType hypo) :
   Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,parentTrack()->bField(),_refmomfltlen);
   _refmom = momvec.mag();
 // clone-Copy the sites
-  for(int isite=0;isite<other._sites.size();isite++){
+  for(unsigned isite=0;isite<other._sites.size();isite++){
     KalSite* newsite = other._sites[isite]->clone(this);
     assert(newsite != 0);
     _sites.push_back(newsite);
@@ -265,7 +265,7 @@ KalRep::KalRep(const KalRep& other, TrkRecoTrk* newtrk) :
     _fitrange[idir] = other._fitrange[idir];
   }
 // clone-Copy the sites
-  for(int isite=0;isite<other._sites.size();isite++){
+  for(unsigned isite=0;isite<other._sites.size();isite++){
     KalSite* oldsite = other._sites[isite];
     KalSite* newsite = oldsite->clone(this);
     assert(newsite != 0);
@@ -416,7 +416,7 @@ KalRep::nDof(double fltlen,trkDirection tdir) const {
 int 
 KalRep::nDof(TrkEnums::TrkViewInfo view) const {
   int dof(0);
-  for(int isite= 0;isite<_sites.size();isite++)
+  for(unsigned isite= 0;isite<_sites.size();isite++)
     dof += _sites[isite]->nDof(view);
 // subtract the parameters (for overall DOFs)
   if(view == TrkEnums::bothView)
@@ -587,7 +587,7 @@ KalRep::printAll(ostream& ostr) const {
   ostr << endl;
   ostr << "There are " << _sites.size()
     << " KalSites on this rep, as follows: " << endl;
-  for(int isite=0;isite<_sites.size();isite++){
+  for(unsigned isite=0;isite<_sites.size();isite++){
     ostr << "Site " << isite << " : ";
     _sites[isite]->printAll(ostr);
   }
@@ -810,7 +810,8 @@ KalRep::buildTraj(){
     oldlen = thesite->globalLength();
   }
 // test the new trajectory before making it official
-  double dot = newtraj->direction(0.0).dot(_ptraj->direction(0.0));
+  double hflt = _sites[_hitrange[0]]->globalLength();
+  double dot = newtraj->direction(hflt).dot(_ptraj->direction(hflt));
   if( dot > _mindot || _niter <= 1){
 //  Delete the old trajectory, and set the new one
     if(_ptraj != _reftraj)
@@ -1144,13 +1145,18 @@ KalRep::updateSites() {
 // if the flightlength of the hit sites has changed a lot, this means the
 // intersection and field integrals may no longer be correct, so rebuild the
 // material and bend sites
-    if( _maxfltdif > _kalcon->intersectionTolerance() && 
+    if( _kalcon->materialSites() && _maxfltdif > _kalcon->intersectionTolerance() && 
 	_ninter < _kalcon->maxIntersections())
       reIntersect();
     return TrkErrCode(TrkErrCode::succeed);
-  } else
-    return TrkErrCode(TrkErrCode::fail,KalCodes::notready,
+  } else{
+    if(_ptraj == 0)
+      return TrkErrCode(TrkErrCode::fail,KalCodes::notready,
 		      "KalRep not ready for updating");
+		else
+      return TrkErrCode(TrkErrCode::succeed,KalCodes::valid,
+		      "KalRep already updated");
+  }
 }
 //
 //  fit existing sites in both directions
@@ -1215,13 +1221,12 @@ KalRep::findHitSites() {
 // find the first and last hot sites
   _hitrange[0] = _sites.size()+1;
   _hitrange[1] = -1;
-  int isite;
-  for(isite=0;isite<_sites.size();isite++)
+  for(unsigned isite=0;isite<_sites.size();isite++)
     if(_sites[isite]->nDof() > 0) {
       _hitrange[0] = isite;
       break;
     }
-  for(isite=_sites.size()-1;isite>=0;isite--)
+  for(unsigned isite=_sites.size()-1;isite>=0;isite--)
     if(_sites[isite]->nDof() > 0) {
       _hitrange[1] = isite;
       break;
@@ -1270,14 +1275,14 @@ KalRep::buildMaterialSites(double range[2],std::vector<DetIntersection>& tlist) 
 //  Get the Tracking DetectorModel tree from TrkEnv
 // For now, use an empty detector set.  In future, this should come from the geometry service DNB_RKK
 //    static const DetSet* trkmodel = new DetSet("dummy",1);
-    const DetSet* trkmodel= &(DchDetector::GetInstance()->dchSet());
+//    const DetSet* trkmodel= &(DchDetector::GetInstance()->dchSet());
 // find the intersections with the reference trajectory, if no intersections provided
     if(tlist.size() == 0)
-      trkmodel->intersection(tlist,_reftraj,range);
-		
+      std::cout << "No detector " << std::endl;
+//      trkmodel->intersection(tlist,_reftraj,range);
 //    std::cout<<"Intersections n="<<tlist.size()<<std::endl;
 // split the intersection list into those before and after the reference momentum
-    int below(0);
+    unsigned below(0);
     while(below<tlist.size() && tlist[below].pathlen<_refmomfltlen)
       below++;
 // build material sites on either side of the first inwards
@@ -1434,7 +1439,7 @@ KalRep::momentumErr(double fltL) const {
 void
 KalRep::updateHots() {
 //  update the KalHit sites
-  for(int isite=0;isite<_sites.size();isite++){
+  for(unsigned isite=0;isite<_sites.size();isite++){
     KalSite* thesite = _sites[isite];
     if(thesite->kalHit() != 0)
       thesite->update(_reftraj,_refmom); // note, hit sites don't care about momentum,
@@ -1657,13 +1662,13 @@ KalRep::converged() const {
   if(hotList()->hitCapable()){
 // several convergence tests, do them roughly in order of importance.
 // trajectory convergence  
-    if(converged) converged &= _maxdist < _kalcon->distanceTolerance();
+    if(converged) converged = _maxdist < _kalcon->distanceTolerance();
 // momentum convergence
-    if(converged) converged &= fabs(estimatedMomDiff()) < _kalcon->maxMomDiff();
+    if(converged) converged = fabs(estimatedMomDiff()) < _kalcon->maxMomDiff();
 //  Parameter convergence; if the parameter differences tolerance is set < 0.0  skip the test
-    if(converged) converged &= _kalcon->maxParamDiff(trkOut) < 0.0 ||
+    if(converged) converged = _kalcon->maxParamDiff(trkOut) < 0.0 ||
 		    parameterDifference(trkOut) < _kalcon->maxParamDiff(trkOut);
-    if(converged) converged &= _kalcon->maxParamDiff(trkIn) < 0.0 ||
+    if(converged) converged = _kalcon->maxParamDiff(trkIn) < 0.0 ||
 		    parameterDifference(trkIn) < _kalcon->maxParamDiff(trkIn);
   }
   if(_niter<=1) converged=false;
@@ -1768,6 +1773,35 @@ KalRep::filterTraj(double fltlen,
   }
   return retval;
 }
+
+bool
+KalRep::smoothedTraj(const KalHit* hitsite,TrkSimpTraj* traj) const {
+  bool retval(false);
+// find this site
+  std::vector<KalSite*>::const_iterator ifnd = std::find(_sites.begin(),_sites.end(),hitsite);
+  if(ifnd != _sites.end()) {
+// find the sites on either side: if none, mark them as the end of the container
+    std::vector<KalSite*>::const_iterator iprev = ifnd;
+    if(iprev != _sites.begin())iprev--;
+    std::vector<KalSite*>::const_iterator inext = ifnd;
+    inext++;
+    if(iprev != _sites.end() && inext != _sites.end()){
+  // both bounding sites exist; merge their parameters
+      KalParams smoothed;
+      (*iprev)->mergeParams(*inext,smoothed);
+      if(smoothed.matrixOK()){
+        retval = true;      
+        *(traj->parameters()) = smoothed.trackParameters();
+      }
+    } else if(iprev != _sites.end()){
+      retval = (*iprev)->setTrajState(trkOut,traj);      
+    } else if(inext != _sites.end()) {
+      retval = (*inext)->setTrajState(trkIn,traj);
+    }
+  }
+  return retval;
+}
+
 
 void
 KalRep::updateRefMom() {
@@ -2132,7 +2166,7 @@ TrkErrCode
 KalRep::extendTraj(int startsite,trkDirection tdir) {
   TrkErrCode retval;
 // compute some index limits
-  int endsite,nsites,sitestep;
+  int endsite(0),nsites(0),sitestep(0);
   switch(tdir){
   case trkIn:
     endsite = 0;
@@ -2327,6 +2361,8 @@ KalRep::reIntersect() {
 
 void
 KalRep::updateEndSites(double smear,bool diagonly) {
+// diagonalization doesn't seem to work
+  diagonly = false;
   double firstlen = _fitrange[0];
   double lastlen = _fitrange[1];
 // use the hits if possible
@@ -2349,7 +2385,7 @@ KalRep::nextActive(unsigned index,trkDirection tdir) const {
   KalSite* retval(0);
   int step = tdir == trkOut ? 1 : -1;
   int jndex = index+step;
-  while(jndex > 0 && jndex < _sites.size()){
+  while(jndex >= 0 && jndex < _sites.size()){
     if( _sites[jndex]->isActive()){
       retval = _sites[jndex];
       break;
@@ -2379,7 +2415,7 @@ KalRep::findMaterial(double fltlen,double minrad) const {
 const KalSite*
 KalRep::findSite(KalSite::siteType stype) const {
   const KalSite* retval(0);
-  for(int isite=0; isite < _sites.size(); isite++){
+  for(unsigned isite=0; isite < _sites.size(); isite++){
     if(_sites[isite]->type() == stype){
       retval = _sites[isite];
       break;
