@@ -73,6 +73,9 @@ MatDBInfo::declareMaterial( const std::string& db_name,
 const DetMaterial*
 MatDBInfo::findDetMaterial( const std::string& matName ) const
 {
+  if (_genMatFactory == 0)
+    that()->_genMatFactory = RecoMatFactory::getInstance();
+  
   DetMaterial* theMat;
   std::map< std::string*, DetMaterial*, PtrLess >::const_iterator pos;
   if ((pos = _matList.find((std::string*)&matName)) != _matList.end()) {
