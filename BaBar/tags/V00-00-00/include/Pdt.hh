@@ -20,8 +20,20 @@ public:
   static const PdtEntry* lookup(PdtPid::PidType){
     return 0;
   }
-  static double mass(PdtPid::PidType){
-    return 0.510998910;
+  static double mass(PdtPid::PidType pid ){
+    switch (pid){
+      default:
+      case PdtPid::electron:
+      return 0.510998910;
+      case PdtPid::muon:
+      return 105.658369;
+      case PdtPid::pion:
+      return 139.57018;
+      case PdtPid::kaon:
+      return 493.677;
+      case PdtPid::proton:
+      return 938.27203;
+    }
   }
 };
 
