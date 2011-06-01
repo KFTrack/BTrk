@@ -88,6 +88,11 @@ HelixTraj::z(const double& f) const
   return z0() + f*sinDip() + referencePoint().z();
 }
 
+double
+HelixTraj::zFlight(double zpos) const {
+  return (zpos - z0())/sinDip();
+}
+
 HepPoint
 HelixTraj::position( double f) const
 {
@@ -104,6 +109,7 @@ HelixTraj::position( double f) const
                  -(cang - cphi0)/omega() + d0()*cphi0+referencePoint().y(),
                  z0() + f*sDip                       +referencePoint().z());
 }
+
 
 Hep3Vector
 HelixTraj::direction( double f) const
