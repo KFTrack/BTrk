@@ -1226,7 +1226,7 @@ KalRep::findHitSites() {
       _hitrange[0] = isite;
       break;
     }
-  for(unsigned isite=_sites.size()-1;isite>=0;isite--)
+  for(int isite=_sites.size()-1;isite>=0;isite--)
     if(_sites[isite]->nDof() > 0) {
       _hitrange[1] = isite;
       break;
