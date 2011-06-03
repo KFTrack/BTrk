@@ -77,6 +77,7 @@ public:
 
   inline bool isActive() const;    // false => leave out of current fit calc
   inline bool isUsable() const;    // false => cannot be made active
+  inline int usability() const { return _isUsable;}
   inline bool mustUse() const;     // true => cannot be made inactive
   virtual TrkEnums::TrkViewInfo whatView() const = 0;
   virtual unsigned layerNumber() const = 0;
@@ -142,6 +143,7 @@ public:
   void setUsability(int usability);         // 0=unusable; 1=usable; 2=must use
                                             // setUsability will call setActivity
   void setFltLen(double f)                                      {_trkLen = f;}
+  void setHitLen(double h)                               {_hitLen = h;}
 
   //****************
   // Set values that shouldn't normally be set
@@ -172,7 +174,6 @@ protected:
 protected:
   void setHitResid(double newResid)                        {_resid = newResid;}
   TrkRep* parentRep() const { return _parentRep;}
-  void setHitLen(double h)                               {_hitLen = h;}
   void setUsedHit();               // tell underlying hit 
   void setUnusedHit(); 
   virtual TrkErrCode updateMeasurement(const TrkDifTraj* traj, bool maintainAmbiguity) = 0;
