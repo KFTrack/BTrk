@@ -213,6 +213,9 @@ public:
   void deactivateHot(TrkHitOnTrk *);
   void updateHot(TrkHitOnTrk *);
   void updateHots();
+  //  Use the current output trajectory to update the KalSites.
+  //  This removes fitCurrent, but not fitValid.
+  TrkErrCode updateSites();
 //******************************************
 // Constraint manipulation
 //******************************************
@@ -240,6 +243,9 @@ public:
   bool filterTrajs(double fltlen,TrkSimpTraj* intraj,TrkSimpTraj* outtraj) const;
 // access filter traj in a single direction
   bool filterTraj(double fltlen,trkDirection dir,TrkSimpTraj* traj) const;
+// smoothed trajectory EXCLUDING the measurement content of the given site
+  bool smoothedTraj(const KalHit* hit,TrkSimpTraj* traj) const;
+// 
 //******************************************
 // iteration convergence testing
 //******************************************
@@ -413,9 +419,6 @@ protected:
 // build a 1-direction traj.  The valid range on this traj will be from the first/last
 // hit inwards/outwards
   TrkErrCode buildTraj(trkDirection);
-  //  Use the current output trajectory to update the KalSites.
-  //  This removes fitCurrent, but not fitValid.
-  TrkErrCode updateSites();
 // special function to update end sites
   void updateEndSites(double smear,bool diagonly=false);
 // direction-dependent version of the above
