@@ -34,6 +34,9 @@ public:
 // the flightlength at the vertex point.
   static void helixFromMom(HepVector& parvec, double& fltlen, const HepPoint& vertex, 
 		const Hep3Vector& p, double sign, const BField&);
+// same, inputing value of Bz
+	static void helixFromMom(HepVector& parvec, double& fltlen, const HepPoint& vertex, 
+  	const Hep3Vector& p, double sign, double Bz);
 
      // Create a helix-set from a position and a momentum.
      // Uses nominal B field to determine curvature. 
