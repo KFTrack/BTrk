@@ -38,6 +38,9 @@ public:
 // construct from a vector of simptrajs (which will be cloned).  The first segment will define
 // the global flightlength origin, and subsequent global lengths will be computed using POCA.
   TrkDifPieceTraj(const std::vector<TrkSimpTraj*>& trajs);
+// construct from a vector of simptrajs, which are TAKEN FOR OWNERSHIP.  The first segment will define
+// the global flightlength origin, and subsequent global lengths will be computed using POCA.
+  TrkDifPieceTraj(std::vector<TrkSimpTraj*>& trajs,double gstart=0.0);  
   virtual ~TrkDifPieceTraj();
   TrkDifPieceTraj& operator =(const TrkDifPieceTraj&);
 // validation test
