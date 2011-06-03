@@ -15,17 +15,14 @@
 //------------------------------------------------------------------------------
 #include "BaBar/BaBar.hh"
 #include "DetectorModel/DetMaterial.hh"
+#include "CLHEP/Units/PhysicalConstants.h"
 #include <iostream>
 #include <cfloat>
 #include <string>
 #include <vector>
-
-#include "CLHEP/Units/PhysicalConstants.h"
-using namespace CLHEP;
-
 using std::endl;
 using std::ostream;
-
+using namespace CLHEP;
 //
 // setup the static members
 //
@@ -34,13 +31,19 @@ using std::ostream;
 //  the average material interior to the tracking volume at dip=~30 degrees
 //
 
-const double DetMaterial::_msmom = 12.2*MeV;
-const double DetMaterial::_dgev = 0.153536*MeV*cm*cm;
-const double bg2lim = 0.0169 , taulim = 8.4146e-3 ;
+double DetMaterial::_msmom = 15.0*MeV;
+double DetMaterial::_dgev = 0.153536*MeV*cm*cm;
+double DetMaterial::_minkappa(1.0e-3);
+double DetMaterial::_scatterfrac(0.9999); // integrate 99.99% percent of the tail by default, this should be larger
+// if the materials are very thin.
+const double bg2lim = 0.0169;
+const double taulim = 8.4146e-3 ;
 const double twoln10 = 2.0*log(10.);
-
 const double betapower = 1.667; // most recent PDG gives beta^-5/3 as dE/dx
 const int maxnstep = 10; // maximum number of steps through a single material
+// should be from a physics class
+const double DetMaterial::_alpha(1.0/137.036);
+
 //
 //  Constructor
 //
@@ -74,6 +77,12 @@ DetMaterial::DetMaterial(const char* detMatName, const DetMtrProp* detMtrProp):
   _vecBlow = new std::vector< double >(detMtrProp->getVecBlow());
   _vecClow = new std::vector< double >(detMtrProp->getVecClow());
   _vecZ = new std::vector< double >(detMtrProp->getVecZ());
+// compute cached values; these are used in detailed scattering models
+  _invx0 = _density/_radthick;
+  _nbar = _invx0*1.587e7*pow(_zeff,1.0/3.0)/((_zeff+1)*log(287/sqrt(_zeff)));
+  _chic2 = 1.57e1*_zeff*(_zeff+1)/_aeff;  
+  _chia2_1 = 2.007e-5*pow(_zeff,2.0/3.0);
+  _chia2_2 = 3.34*pow(_zeff*_alpha,2);
 }
 
 DetMaterial::~DetMaterial()
@@ -88,23 +97,37 @@ DetMaterial::~DetMaterial()
 }
 
 //
-//  Multiple scattering static function (from PDG 96)
+//  Multiple scattering function
 //
 double
-DetMaterial::scatterAngleRMS(double mom,
-					 double pathlen,double mass) const {
+DetMaterial::scatterAngleRMS(double mom, double pathlen,double mass) const {
   if(mom>0.0){
-    double radfrac = _density*fabs(pathlen)/_radthick;
-//  The logrithmic term is non-local, and so shouldn't be used.  An effective
-//  term is included in _msmom, see above
-    return _msmom*sqrt(radfrac)/(mom*particleBeta(mom,mass));
+    double beta = particleBeta(mom,mass);
+// pdg formulat
+//    double radfrac = fabs(pathlen*_invx0);
+//    double sigpdg = 0.0136*sqrt(radfrac)*(1.0+0.088*log10(radfrac))/(beta*mom);
+// old Kalman formula
+//    double oldsig = 0.011463*sqrt(radfrac)/(mom*particleBeta(mom,mass));
+// DNB 20/1/2011  Updated to use Dahl-Lynch formula from  NIMB58 (1991)
+    double invmom2 = 1.0/pow(mom,2);
+    double invb2 = 1.0/pow(beta,2);
+// convert to path in gm/cm^2!!!
+    double path = fabs(pathlen)*_density;
+    double chic2 = _chic2*path*invb2*invmom2;
+    double chia2 = _chia2_1*(1.0 + _chia2_2*invb2)*invmom2;
+    double omega = chic2/chia2;
+    static double vfactor = 0.5/(1-_scatterfrac);
+    double v = vfactor*omega;
+    static double sig2factor = 1.0/(1+_scatterfrac*_scatterfrac);
+    double sig2 = sig2factor*chic2*( (1+v)*log(1+v)/v - 1);
+// protect against underflow
+    double sigdl = sqrt(std::max(0.0,sig2));
+// check
+    double sigh = highlandSigma(mom,pathlen,mass);
+    return sigdl;
   } else
     return 1.0; // 'infinite' scattering
 }
-
-
-/********************** New Routines **************************/ 
-
 
 double
 DetMaterial::dEdx(double mom,dedxtype type,double mass) const {
@@ -265,19 +288,18 @@ DetMaterial::energyDeposit(double mom, double pathlen, double mass) const {
 //
 double
 DetMaterial::energyLossRMS(double mom,double pathlen,double mass) const {
-  const double minkappa(1.0e-4);
   double beta = particleBeta(mom,mass);
-  double emax = _emax(mom,mass);
-  double xi = _xi(beta,fabs(pathlen));
+  double emax = eloss_emax(mom,mass);
+  double xi = eloss_xi(beta,fabs(pathlen));
   double kappa = xi/emax;
-  double gam = sqrt(1.0-0.5*sqr(beta));;
+  double gam = sqrt(1.0-0.5*pow(beta,2));
 // formula comes from GFLUCT.F in gphys dnb Jun 4 2004
 //
 // this formula seriously overestimates the rms when kappa<0.001
 // This only really affects electrons
 // as for heavier particles resolution effects already dominate when we get to
 // this range.  I'll truncate
-  if(kappa < minkappa)kappa = minkappa;
+  if(kappa < _minkappa)kappa = _minkappa;
   double elossrms = xi*sqrt(gam/kappa);
 //  cout << "beta = " << beta
 //       << " emax = " << emax
@@ -291,21 +313,21 @@ DetMaterial::energyLossRMS(double mom,double pathlen,double mass) const {
 //  Functions needed for energy loss calculation, see reference above
 //
 double
-DetMaterial::_emax(double mom,double mass){
+DetMaterial::eloss_emax(double mom,double mass){
 	static double emass =Pdt::mass(PdtPid::electron);
   double beta = particleBeta(mom,mass);
   double gamma = particleGamma(mom,mass);
 	double mratio = emass/mass;
-  double emax = 2*emass*sqr(beta)*sqr(gamma)/
-    (1+2*gamma*mratio + sqr(mratio));
+  double emax = 2*emass*pow(beta,2)*pow(gamma,2)/
+    (1+2*gamma*mratio + pow(mratio,2));
   if(mass <= emass)
     emax *= 0.5;
   return emax;
 }
 
 double
-DetMaterial::_xi(double beta,double pathlen) const{
-  return _dgev*_za*_density*fabs(pathlen)/sqr(beta);
+DetMaterial::eloss_xi(double beta,double pathlen) const{
+  return _dgev*_za*_density*fabs(pathlen)/pow(beta,2);
 }
 
 void
@@ -318,8 +340,8 @@ DetMaterial::printAll(ostream& os) const {
   os << "Material " << _name << " has properties : " << endl
   << "  Effective Z = " << _zeff << endl
   << "  Effective A = " << _aeff << endl
-  << "  Density (g/cm^3) = " << _density*cm*cm*cm << endl
-  << "  Radiation Length (g/cm^2) = " << _radthick*cm*cm<< endl
+  << "  Density (g/cm^3) = " << _density*cm*cm*cm  << endl
+  << "  Radiation Length (g/cm^2) = " << _radthick*cm*cm << endl
   << "  Interaction Length (g/cm^2) = " << _intLength << endl
 //   << "  Mean Ionization energy (MeV) = " << _meanion << endl
   << "  Mean Ionization energy (MeV) = " << _eexc << endl;
@@ -335,9 +357,29 @@ DetMaterial::maxStepdEdx(double mom,double mass,double dEdx,double tol) {
     double maxstep = -tol*energy/dEdx;
 // Modify for steep rise at low momentum
     if(betagamma<2.0)
-      maxstep *= sqr(betagamma)/betapower;
+      maxstep *= pow(betagamma,2)/betapower;
     return maxstep;
   }
   else
     return 1.0e6; // large step 
 }
+
+
+double
+DetMaterial::nSingleScatter(double mom,double pathlen, double mass) const {
+  double beta = particleBeta(mom,mass);
+  return pathlen*_nbar/pow(beta,2);
+}
+
+
+// note the scaterring momentum here is hard-coded to the simplified Highland formula,
+// this should only be used as a reference, not as a real estimate of the scattering sigma!!!!!
+double
+DetMaterial::highlandSigma(double mom,double pathlen, double mass) const {
+  if(mom>0.0){
+    double radfrac = _invx0*fabs(pathlen);
+    return _msmom*sqrt(radfrac)/(mom*particleBeta(mom,mass));
+  } else
+    return 1.0;
+}
+
