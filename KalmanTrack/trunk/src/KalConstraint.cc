@@ -154,7 +154,7 @@ KalConstraint::nDof(TrkEnums::TrkViewInfo) const {
 // view info can't be used since TrksimpTraj doesn't provide it
   unsigned ndof(0);
   unsigned npar = _cparams.parameterVector().num_row();
-  for(unsigned ipar=0;ipar<npar;ipar++)
+  for(unsigned ipar=0;ipar<npar;++ipar)
     if(_constrain[ipar]) ndof++;
   return ndof;
 }
@@ -199,8 +199,8 @@ KalConstraint::maskWeight() {
     unsigned idof(0);
     for(unsigned ipar=0;ipar<npar;ipar++){
       if(_constrain[ipar]){
-	reduce[idof][ipar] = 1.0;
-	idof++;
+        reduce[idof][ipar] = 1.0;
+        idof++;
       }
     }
 // project out the unconstrained parameters
