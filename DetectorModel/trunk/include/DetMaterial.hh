@@ -23,7 +23,7 @@
 //
 #include "BaBar/Constants.hh"
 #include "BaBar/PdtPid.hh"
-#include "PDT/Pdt.hh"
+#include "BaBar/Pdt.hh"
 #include "DetectorModel/DetMtrProp.hh"
 #include <iostream>
 #include <string>
@@ -48,14 +48,6 @@ public:
 //
   bool operator == (const DetMaterial& other) const {
     return _name == other._name; }
-//
-//  Functions; Multiple scattering RMS,energy loss, and loss RMS
-//  (pion is the default particle).
-//
-  double scatterAngleRMS(double mom,double pathlen,
-			 PdtPid::PidType ipart = PdtPid::pion) const {
-				return scatterAngleRMS(mom,pathlen,Pdt::mass(ipart));	}
-	double scatterAngleRMS(double mom,double pathlen,double mass) const;
 			
 // DNB 3/13/00.  added energyGain to pair with energyLoss, to account
 // for cases where the momentum is known _after_ traversal through the
@@ -90,12 +82,34 @@ public:
 			return energyLossRMS(mom,pathlen,Pdt::mass(ipart));	}
 
 	double energyLossRMS(double mom,double pathlen,double mass) const;
-		
+// functions to describe scattering
+// highland formula (without log term)
+  double highlandSigma(double mom,double pathlen,
+  PdtPid::PidType ipart=PdtPid::pion) const {
+    return highlandSigma(mom,pathlen,Pdt::mass(ipart));
+  }
+  double highlandSigma(double mom,double pathlen, double mass) const;
+// average number of singla scatters
+  double nSingleScatter(double mom,double pathlen,
+  PdtPid::PidType ipart=PdtPid::pion) const {
+    return nSingleScatter(mom,pathlen,Pdt::mass(ipart));
+  }
+  double nSingleScatter(double mom,double pathlen, double mass) const;
+// terms used in first-principles single scattering model
+  double aParam(double mom) const { return 2.66e-6*pow(_zeff,0.33333333333333)/mom; }
+  double bParam(double mom) const { return    0.14/(mom*pow(_aeff,0.33333333333333)); }
+//
+// Single Gaussian approximation, used in Kalman filtering
+  double scatterAngleRMS(double mom,double pathlen,
+  PdtPid::PidType ipart = PdtPid::pion) const {
+    return scatterAngleRMS(mom,pathlen,Pdt::mass(ipart));
+  }
+  double scatterAngleRMS(double mom,double pathlen,double mass) const;
 //
 //  Generic kinematic functions
 //
   static double particleEnergy(double mom,PdtPid::PidType ipart)  {
-		return particleEnergy(mom,Pdt::mass(ipart)); }
+    return particleEnergy(mom,Pdt::mass(ipart)); }
 	static double particleEnergy(double mom,double mass) {
 		return sqrt(pow(mom,2)+pow(mass,2)); }
 
@@ -129,20 +143,13 @@ public:
 	static double particleBetaGamma(double mom,double mass) {
 	  return mom/mass; }
 
-private:
 //
-//  Constants used in material calculations
+//  functions used to compute energy loss
 //
-  static const double _msmom; // momentum characterizing multiple scattering
-  static const double _dgev; // energy characterizing energy loss
-//
-//  primitive functions; many of these are static since they
-//  don't depend on the data members
-//
-  static double _gamma(double beta)  {
-    return 1.0/sqrt(1-pow(beta,2)); }
-  static double _emax(double mom,double mass) ;
-  double _xi(double beta,double pathlen) const;
+    static double eloss_emax(double mom,double mass) ;
+    double eloss_xi(double beta,double pathlen) const;
+  double kappa(double mom,double pathlen,double mass) const { 
+    return eloss_xi(particleBeta(mom,mass),pathlen)/eloss_emax(mom,mass);}
 //
 // return the maximum step one can make through this material
 // for a given momentum and particle type without dE/dx changing
@@ -150,6 +157,16 @@ private:
 // function, based on a crude model of dE/dx.
   static double maxStepdEdx(double mom,double mass,
 			    double dEdx,double tol=0.05);
+private:
+//
+//  Constants used in material calculations
+//
+  static double _msmom; // constant in Highland scattering formula
+  static double _minkappa; // ionization randomization parameter
+  static double _dgev; // energy characterizing energy loss
+  static const double _alpha; // fine structure constant
+  static double _scatterfrac; // fraction of scattering distribution to include in RMS
+
 //
 //  Specific data for this material
 //
@@ -180,6 +197,13 @@ private:
   std::vector< double >* _vecClow;
   std::vector< double >* _vecZ;
   double _taul;
+  
+// cached values to speed calculations
+  double _invx0;
+  double _nbar;
+  double _chic2;
+  double _chia2_1;
+  double _chia2_2;
 
 public:
 // baseic accessors
@@ -197,6 +221,7 @@ public:
   double mPower()const {return _mpower;}
   double bigC()const {return _bigc;}
   double density()const {return _density;}
+  double inverseX0() const { return _invx0; }
 // returns fraction of radiation lengths traversed for a given
 // physical distance through this material
   double radiationFraction(double pathlen) const {
@@ -204,9 +229,15 @@ public:
   void print(std::ostream& os) const;
   void printAll(std::ostream& os ) const;
 
-  static double scatterMomentum() { return _msmom; }
-//  static void setScatterMomentum(double mom) { _msmom = mom; }
-    
+// parameters used in ionization energy loss
+  static double energyLossScale() { return _dgev; }
+  static void setEnergyLossScale(double dgev) { _dgev = dgev; }
+// parameters used in ionization energy loss randomization
+  static double minKappa() { return _minkappa; }
+  static void setMinimumKappa(double minkappa) { _minkappa = minkappa; }
+// scattering parameter
+  static double scatterFraction() { return _scatterfrac;}
+  static void setScatterFraction(double scatterfrac) {_scatterfrac = scatterfrac;}
 };
 #endif
 
