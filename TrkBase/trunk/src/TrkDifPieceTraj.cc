@@ -127,6 +127,29 @@ TrkDifPieceTraj::TrkDifPieceTraj(const std::vector<TrkSimpTraj*>& trajs)
   }
 }
 
+TrkDifPieceTraj::TrkDifPieceTraj(std::vector<TrkSimpTraj*>& trajs,double gstart)
+{
+// set Initial global flightlength 
+  _globalrange.push_back(gstart);
+  for(std::vector<TrkSimpTraj*>::const_iterator itraj=trajs.begin();itraj!=trajs.end();itraj++){
+    TrkSimpTraj* newtraj = *itraj;
+    assert(newtraj != 0);
+// check
+    if(_localtraj.size()>0){
+      HepPoint oldps = position(_globalrange.back());
+      HepPoint newps = newtraj->position(newtraj->lowRange());
+      if(oldps.distanceTo(newps) > 1e-3 ){
+        ErrMsg(error) << "traj points don't match" << endmsg;
+      }
+    }
+    _globalrange.push_back(_globalrange.back() + newtraj->hiRange() - newtraj->lowRange());
+    _localtraj.push_back(newtraj);
+  }
+// set the global range
+  flightrange[0] = _globalrange.front();
+  flightrange[1] = _globalrange.back();
+}
+
 TrkDifPieceTraj::~TrkDifPieceTraj()
 {
   std::for_each(_localtraj.begin(),
