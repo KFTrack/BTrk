@@ -117,7 +117,14 @@ TrkExchangePar TrkHelixUtils::helixFromMom(const HepPoint& pos,
 
 //----------------------------------------------------------------------
 void TrkHelixUtils::helixFromMom(HepVector& pars, double& fltlen, const HepPoint& pos, 
-       	      const Hep3Vector& pmom, double sign, const BField& fieldmap) {
+const Hep3Vector& pmom, double sign, const BField& fieldmap) {
+  helixFromMom(pars,fltlen,pos,pmom,sign,fieldmap.bFieldNominal());
+}
+
+
+//----------------------------------------------------------------------
+void TrkHelixUtils::helixFromMom(HepVector& pars, double& fltlen, const HepPoint& pos, 
+const Hep3Vector& pmom, double sign, double Bval) {
 //----------------------------------------------------------------------
   // Before September 2005 this used the equations
   //As documented in 
@@ -136,13 +143,11 @@ void TrkHelixUtils::helixFromMom(HepVector& pars, double& fltlen, const HepPoint
   pt=sqrt(px*px+py*py);
   if (pt < small)   pt = small;  // hack to avoid pt=0 tracks
   if (fabs(px) < small) px = (px<0.0) ? -small : small; // hack to avoid pt=0 tracks
-  
-  double Bval = fieldmap.bFieldNominal();
-  
+    
   pars(3)=-BField::cmTeslaToGeVc*Bval*sign/pt;  //omega
   pars(5)=pmom.z()/pt;  //tandip
   rho=1./pars(3);
-  double radius = fabs(rho);
+//  double radius = fabs(rho);
   phip=atan2(py,px);
 //  double cosphip=px/pt; double sinphip=py/pt; // this should be more efficient; test!
   double cosphip=cos(phip);
@@ -166,10 +171,19 @@ void TrkHelixUtils::helixFromMom(HepVector& pars, double& fltlen, const HepPoint
     d0 = cy/cphi0-rho;
   pars(1) = d0;
   pars(2) = phi0;
-  double translen = rho*BbrAngle(phip-pars(2)).rad();    
+  double translen = rho*BbrAngle(phip-pars(2)).rad();
   pars(4) = pos.z()-translen*pars(5); // z0
+  double oldflt = fltlen;
 // flightlength; measured in 3-space!!!
-  fltlen = translen*sqrt(1.0+pars(5)*pars(5));
+  double ffact = sqrt(1.0+pars(5)*pars(5));
+  fltlen = translen*ffact;
+// adjust flightlength and z0 to correspond to the same # of loops as the input
+  if(fabs(fltlen - oldflt) > fabs(rho)){
+    double floop = rho*Constants::twoPi*ffact;
+    int nloop = (int)rint((oldflt-fltlen)/floop);
+    fltlen += nloop*floop;
+    pars(4) -= nloop*rho*Constants::twoPi*pars(5);
+  }
 }
 
 //----------------------------------------------------------------------
