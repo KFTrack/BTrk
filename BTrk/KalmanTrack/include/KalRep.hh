@@ -327,6 +327,8 @@ public:
 // fill vectors of trajectories corresponding to fit requests and constraints
   void fitTrajectories(std::vector<TrkSimpTraj*>& fits,const char* stream="Default") const;
   void constraintTrajectories(std::vector<TrkSimpTraj*>& fits) const;
+  double lowFitRange() { return _fitrange[0];}
+  double hiFitRange() { return _fitrange[1];}
 private:
   double _maxdist; // maximum distance between new and ref. trajectory, used to measure convergence
   double _maxfltdif; // maximum distance between new and ref. trajectory, used to measure convergence
