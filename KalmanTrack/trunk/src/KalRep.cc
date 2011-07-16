@@ -61,8 +61,8 @@ const double KalRep::_minfltlen(0.1); // minimum flight length allowed for a Kal
 const double KalRep::_minmom(0.01); // minimum momentum = 10 MeV
 const double KalRep::_fltepsilon(0.001); // small flight length buffer
 const double KalRep::_maxintrange(7500.0); // maximum bfield integration range
-const double KalRep::_divergeflt(3000.0); // flight length change to signify a diverging fit
-const double KalRep::_mindot(0.85);  // minimum direction dot product change for a traj to be 'reasonable'
+const double KalRep::_divergeflt(1e8); // flight length change to signify a diverging fit
+const double KalRep::_mindot(0.0);  // minimum direction dot product change for a traj to be 'reasonable'
 
 // predicates for site updating
 
