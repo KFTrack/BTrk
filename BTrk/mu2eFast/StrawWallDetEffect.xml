@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+ 
+<!--
+This document is a part of the sample experiment description in a format
+which would eventually turn into EDML:
+ 
+  "Experiment Description Markup (or Modelling) Language"
+ 
+Right now we don't have any formal schema for EDML. Therefore
+the current implementation of a EDML parser would check both
+syntax and semantics of the model. Besides, introducing the formal
+XML schema for EDML may  result in some changes in a syntax
+of EDML.
+-->
+ 
+<edml>
+  <config>
+
+    <!-- ROOT file to save results to -->
+    <param name="outputfile" type="string"> testStrawWall.root</param>
+
+    <!-- Prints out Positon/Momentum/Parameter Info (make sure numtracks isn't large!!) -->
+    <param name="verbose" type="bool"> false</param>
+
+    <!-- Number of tracks to generate -->
+    <param name="numtracks" type="long"> 1000000</param>
+
+    <!-- printing frequency -->
+    <param name="printfreq" type="long"> 1000</param>
+
+    <!-- Momentum range -->
+    <param name="plow" type="double"> 0.1</param>
+    <param name="phigh" type="double"> 0.1</param>
+    
+    <!-- thickness range -->
+    <param name="tlow" type="double"> 0.0015</param>
+    <param name="thigh" type="double"> 0.0015</param>
+    
+    <!-- material -->
+    <param name="material" type="string"> straw-wall</param>
+    
+    <!--  particle -->
+    <param name="PdtPdg" type="int" > 11</param> <!-- pion-->
+<!--    <param name="PdtPdg" type="int" > 2212</param> <!-- proton-->
+    
+    <sect name="Materials">
+        <param name="materials" type="string" > mu2eFast/MaterialsList.data</param>
+    </sect>
+
+  </config>
+  <include file="PacSim/Material_simulation.xml" />
+  
+</edml>
