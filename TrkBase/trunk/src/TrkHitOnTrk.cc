@@ -89,7 +89,7 @@ TrkHitOnTrk::~TrkHitOnTrk()
   const TrkRecoTrk *parentTrack = _parentRep==0?0: _parentRep->parentTrack();
 
   if (_parentRep!=0 && parentTrack!=0 && _parentRep->particleType() == parentTrack->defaultType() ) {
-    setUnusedHit();
+//    setUnusedHit();
   }
 }
 
@@ -166,7 +166,7 @@ TrkHitOnTrk::setUsedHit()
 void
 TrkHitOnTrk::setUnusedHit()
 {
-  if (hit() != 0) hit()->setUnusedHit(this);
+//  if (hit() != 0) hit()->setUnusedHit(this);
 }
 
 bool TrkHitOnTrk::operator==(const TrkHitOnTrk &rhs) const
