@@ -88,10 +88,9 @@ KalMaterial::~KalMaterial(){;}
 //
 bool
 KalMaterial::update(const TrkDifPieceTraj* newtraj,double newmom) {
-// update the intersection trajectory; global length stays the same
-  _dinter.trajet = newtraj;
+// update intersection
+  _active = _dinter.delem->reIntersect(newtraj,_dinter);
   _momentum = newmom;
-  _active = true; // assume it's now active
   updateCache(newtraj);
   return true;
 }
