@@ -136,6 +136,7 @@ TrkRep::operator== (const TrkRep& rhs)
 void
 TrkRep::addHot(TrkHitOnTrk *newHot)
 {
+  newHot->setParent(this);
   if (newHot->isActive()) setCurrent(false);
   hotList()->append(newHot);
 }

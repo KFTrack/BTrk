@@ -107,6 +107,10 @@ public:
   TrkErrCode getFitStuff(HepVector& derivs, double& deltaChi) const;
   TrkErrCode getFitStuff(double& deltaChi) const;
 
+// allow updating POCA, as this can be used in other contexts (ie material model)
+
+  TrkErrCode updatePoca(const TrkDifTraj *trkTraj);
+
   // return the *external* residual (this calls the Rep, which may call
   // down to the internal residual -- the Rep is responsible for computing
   // this quantity. In the case of a KalRep, this could be the unbiased 
@@ -177,7 +181,6 @@ protected:
   void setUsedHit();               // tell underlying hit 
   void setUnusedHit(); 
   virtual TrkErrCode updateMeasurement(const TrkDifTraj* traj, bool maintainAmbiguity) = 0;
-  TrkErrCode updatePoca(const TrkDifTraj *trkTraj, bool maintainAmbiguity) ;
 private:
   TrkHitOnTrk&   operator= (const TrkHitOnTrk&);    // Preempt 
   TrkHitOnTrk(const TrkHitOnTrk& hit);  // preempt; use 1st protected ctor

@@ -210,15 +210,14 @@ TrkHitOnTrk::residual() const
 }
 
 TrkErrCode
-TrkHitOnTrk::updatePoca(const TrkDifTraj* trkTraj, bool maintainAmb)
+TrkHitOnTrk::updatePoca(const TrkDifTraj* trkTraj)
 {
-    _trkTraj = (trkTraj!=0?trkTraj:&(getParentRep()->traj()));
+    if (trkTraj==0)trkTraj = &getParentRep()->traj();
     if (_poca==0) {
-        _poca = new TrkPoca(*_trkTraj,fltLen(),
-                            *hitTraj(), hitLen(),_tolerance);
+      _poca = new TrkPoca(*trkTraj,fltLen(),
+	  *hitTraj(), hitLen(),_tolerance);
     } else {
-        *_poca = TrkPoca(*_trkTraj,fltLen(),
-                         *hitTraj(), hitLen(),_tolerance);
+      *_poca = TrkPoca(*trkTraj,fltLen(),*hitTraj(), hitLen(),_tolerance);
     }
     if(_poca->status().failure()) {
         if(isActive())ErrMsg(routine) << " TrkPoca failed in TrkHitOnTrk::updatePoca"
@@ -228,8 +227,7 @@ TrkHitOnTrk::updatePoca(const TrkDifTraj* trkTraj, bool maintainAmb)
     }
     _trkLen = _poca->flt1();
     _hitLen = _poca->flt2();
-    double dca=_poca->doca();
-    if (!maintainAmb) setAmbig(dca>0?+1:-1);
+    _trkTraj = trkTraj;
     return TrkErrCode(TrkErrCode::succeed);
 }
 
