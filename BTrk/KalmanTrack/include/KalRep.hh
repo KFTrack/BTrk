@@ -165,6 +165,9 @@ public:
 // fast constructor taking DetIntersections from outside.
  KalRep(const TrkSimpTraj&,TrkHotList* hots,const std::vector<DetIntersection>& dlist,
  	TrkRecoTrk*,const KalContext& context,PdtPid::PidType hypo);
+// same, supplying also piecetraj as initial ref traj.
+ KalRep(const TrkDifPieceTraj*,TrkHotList* hots,const std::vector<DetIntersection>& dlist,
+     TrkRecoTrk*,const KalContext& context,PdtPid::PidType hypo);
 // copy constructor to move rep to a new track
   KalRep(const KalRep&, TrkRecoTrk*);
 // copy constructor to add new mass hypo to existing track
@@ -225,6 +228,8 @@ public:
   void setConstraints(bool* cparams);
 // find nearest material site with rad thickness about the threshold
   const KalMaterial* findMaterial(double flt,double minrad) const;
+// add a material site
+  void addInter(DetIntersection const& detinter);
 // add a generic site.  This function will take ownership of the site
   void addSite(KalSite* site);
 //******************************************
