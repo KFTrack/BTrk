@@ -77,6 +77,9 @@ public:
 //  lower limit is >= the upper limit, the range is ignored.
 //
   virtual int intersect(const Trajectory*,DetIntersection&) const = 0;
+// re-interesect with (potentially) an updated trajectory.  Default implementation just
+// updates the trajectory in the intersection, but doesn't recompute any geometric quantities
+  virtual bool reIntersect(const Trajectory*,DetIntersection&) const;
 //
 //  Material information from an intersection.  Default base class versions
 //  are provided which assume any given intersection goes through only

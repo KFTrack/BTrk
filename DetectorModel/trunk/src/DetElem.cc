@@ -173,3 +173,11 @@ DetElem::match(const DetAlignElem& ae) const {
     ( elementName().find(ae.elementName()) != std::string::npos );
 }
 
+bool 
+DetElem::reIntersect(const Trajectory* traj,DetIntersection& dinter) const {
+// update the intersection trajectory; global length stays the same
+  dinter.delem = this;
+  dinter.trajet = traj;
+  return true;
+}
+
