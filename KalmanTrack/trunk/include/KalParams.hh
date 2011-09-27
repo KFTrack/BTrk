@@ -49,16 +49,16 @@ public:
     if(matrixOK() && other.matrixOK()){
       _pvector += other._pvector;
       _pcov += other._pcov;
-    } else
-      _status = -1;
+    } else if(other.matrixOK())
+      *this = other;
     return *this; }
 // subtraction operation, used to _remove_ the effect of one parameter from the other
   KalParams& operator -= (const KalParams& other) {
     if(matrixOK() && other.matrixOK()){
       _pvector -= other._pvector;
       _pcov -= other._pcov;
-    } else
-      _status = -1;
+    } else if(other.matrixOK())
+      *this = other;
     return *this; }
 // Same for HepVector (changes paremeters, not covariance)
   KalParams& operator += (const HepVector& transvec) {

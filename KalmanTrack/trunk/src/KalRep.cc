@@ -47,7 +47,7 @@
 #include "TrkBase/TrkHitUse.hh"
 #include "ErrLogger/ErrLog.hh"
 #include "PDT/Pdt.hh"
-#include "DchGeom/DchDetector.hh"
+//#include "DchGeom/DchDetector.hh"
 
 #include <algorithm>
 #include <vector>
@@ -179,6 +179,54 @@ KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
   updateEndSites(_kalcon->smearFactor(),true);
 //  On construction, the track is neither current or valid
 }
+
+// construct from hots and intersections and reference trajectory
+KalRep::KalRep(const TrkDifPieceTraj* rtraj, TrkHotList* hotl,
+	const std::vector<DetIntersection>& dinters,
+	TrkRecoTrk* trk, const KalContext& context,
+	PdtPid::PidType hypo) : TrkRep(hotl,trk,hypo,true), _maxdist(0),_maxfltdif(0),
+	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),_integrator(0),
+	_kalcon(&context),
+	_seedtraj(0),
+	_stopsite(0)
+{
+// clone the ref traj
+  _reftraj = rtraj->clone();
+  assert(_reftraj != 0);
+// create the seed from a piece of the piecetraj
+  double locflt;
+  double midflt = 0.5*(_reftraj->lowRange() + _reftraj->hiRange());
+  const TrkSimpTraj* loctraj = _reftraj->localTrajectory(midflt, locflt);
+  if(loctraj != 0)_seedtraj = loctraj->clone();
+  assert(_seedtraj != 0);
+// basic initialization
+  initRep();
+// build the hit sites
+  buildHitSites();
+// build the KalMaterial sites
+  if(_kalcon->materialSites()){
+// convert the intersections to use the new reftraj;
+    std::vector<DetIntersection> tlist(dinters);
+    for(std::vector<DetIntersection>::iterator iinter = tlist.begin();iinter!= tlist.end();iinter++)
+      iinter->trajet = _reftraj;
+    buildMaterialSites(_fitrange,tlist);
+  }
+  // build the bend sites
+  if(_kalcon->bendSites()){
+    if(buildIntegrator())
+      buildBendSites(_fitrange);
+    else
+      ErrMsg(error) << "Error building the BField integrator: continuing" << endmsg;
+  }
+// re-find hit sites
+  findHitSites();
+// create the end sites from the helix.  increase the smearing
+  updateEndSites(_kalcon->smearFactor(),true);
+//  On construction, the track is neither current or valid
+}
+
+
+
 //
 //  Copy constructor to change mass hypo. Note that the copy is ALWAYS invalid and
 //  must be fit.  No protection is provided against copying to the same mass hypo,
@@ -997,6 +1045,20 @@ KalRep::removeHot(TrkHitOnTrk* thehot) {
 // remove the hot from the rep hotlist, no matter what
   TrkRep::removeHot(thehot);
 }
+// add intersection to the track
+void
+KalRep::addInter(DetIntersection const& detinter){
+// use the reference  momentum; should be site-specific, FIXME!!!!
+  double sitemom = _refmom;
+//  Build the KalMaterial site on this new piece
+  KalMaterial* newmat = new KalMaterial(detinter,_reftraj,sitemom,particleType());
+  assert(newmat != 0);
+// insert this into the sites and update
+  _sites.push_back(newmat);
+// refind the hit sites; this also reorders material sites
+  findHitSites();
+  resetFit(); // force refitting
+}
 //
 //  Extend the track
 //
@@ -1044,10 +1106,10 @@ KalRep::extendThrough(double newf) {
 //  Get the top-level detector set
 // For now, use an empty detector set.  In future, this should come from the geometry service DNB_RKK
 //    static const DetSet* trkmodel = new DetSet("dummy",1);
-	  const DetSet* trkmodel= &(DchDetector::GetInstance()->dchSet());
+//	  const DetSet* trkmodel= &(DchDetector::GetInstance()->dchSet());
 //  Find the material intersections, and create KalMaterial sites for them
 	  std::vector<DetIntersection> tlist; tlist.reserve(16);
-	  trkmodel->intersection(tlist,_reftraj,piecerange);
+//	  trkmodel->intersection(tlist,_reftraj,piecerange);
 // get the momentum at the current end of the track
 	  double loclen;
 	  double extendmom;
@@ -1782,9 +1844,12 @@ KalRep::smoothedTraj(const KalHit* hitsite,TrkSimpTraj* traj) const {
   if(ifnd != _sites.end()) {
 // find the sites on either side: if none, mark them as the end of the container
     std::vector<KalSite*>::const_iterator iprev = ifnd;
-    if(iprev != _sites.begin())iprev--;
+    if(iprev != _sites.begin())
+      --iprev;
+    else
+      iprev = _sites.end();
     std::vector<KalSite*>::const_iterator inext = ifnd;
-    inext++;
+    ++inext;
     if(iprev != _sites.end() && inext != _sites.end()){
   // both bounding sites exist; merge their parameters
       KalParams smoothed;

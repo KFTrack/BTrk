@@ -112,9 +112,9 @@ KalWeight::operator += (const KalWeight& other) {
   if(matrixOK() && other.matrixOK()){
     _wvector += other._wvector;
     _wcov += other._wcov;
-  } else
-    _status = -1;
-
+  } else if(other.matrixOK()){
+    *this = other;
+  }
 #ifdef KALDEBUG
   double wdet = _wcov.determinant();
   if(isnan(wdet)){
