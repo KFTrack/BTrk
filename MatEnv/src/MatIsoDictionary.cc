@@ -42,6 +42,7 @@ using std::fstream;
 //-------------------------------
 // Collaborating Class Headers --
 //-------------------------------
+#include "Mu2eUtilities/inc/ConfigFileLookupPolicy.hh"
 
 // Create Constructor 
 
@@ -74,12 +75,17 @@ MatIsoDictionary::MatIsoDictionary()
 
   FillIsoDict(isoList);
   delete toUse;*/
+  mu2e::ConfigFileLookupPolicy findFile;
+  std::string fullPath = findFile("BaBar/MatEnv/IsotopesList.data");
+  MatIsotopeList* mtrList = new MatIsotopeList(fullPath);
+  FillIsoDict(mtrList);
+
 }
 
 void MatIsoDictionary::FillIsoDict(MatIsotopeList* isoList)
 {
   std::vector<MatIsotopeObj*>* isoVec = isoList->getIsotopeVector();
-  int nisotope = isoVec->size();        
+  size_t nisotope = isoVec->size();        
   for (size_t is=0; is<nisotope; is++)
     {
       // copy the object into the dictionary. The disctionary now has

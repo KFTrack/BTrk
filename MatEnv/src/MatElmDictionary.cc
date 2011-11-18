@@ -45,6 +45,7 @@ using std::fstream;
 //-------------------------------
 // Collaborating Class Headers --
 //-------------------------------
+#include "Mu2eUtilities/inc/ConfigFileLookupPolicy.hh"
 
 // Create Constructor 
 
@@ -77,14 +78,16 @@ MatElmDictionary::MatElmDictionary()
   
   FillElmDict(elmList);
   delete toUse;*/
-  MatElementList* elmList = new MatElementList("BaBar/MatEnv/ElementsList.data");
+  mu2e::ConfigFileLookupPolicy findFile;
+  std::string fullPath = findFile("BaBar/MatEnv/ElementsList.data");
+  MatElementList* elmList = new MatElementList(fullPath);
   FillElmDict(elmList);
 }
 
 void MatElmDictionary::FillElmDict(MatElementList* elmList)
 {
   std::vector<MatElementObj*>* elmVec = elmList->getElementVector();
-  int nelement = elmVec->size();        
+  size_t nelement = elmVec->size();        
   for (size_t ie=0; ie<nelement; ie++) {
     //
     // copy the object into the dictionary. The disctionary now has

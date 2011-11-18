@@ -38,7 +38,6 @@ using std::ifstream;
 // Collaborating Class Headers --
 //-------------------------------
 
-
 // Constructor to create an Element
 
 MatElementList::MatElementList()
@@ -114,7 +113,7 @@ MatElementList::MatElementList(const std::string& elementsFile)
        elmObj->setAeff(aeff);
        elmObj->setNbrIsotope(nisotopes);
        isoentry = Isoabundance.size();
-       for (size_t idx=isoentry-nisotopes; idx<isoentry; idx++)
+       for (int idx=isoentry-nisotopes; idx<isoentry; idx++)
        {
           elmObj->setWeight(Isoabundance[idx]);
           elmObj->setIsotopeName(Isoname[idx]);
