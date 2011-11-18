@@ -46,6 +46,7 @@ using std::fstream;
 //-------------------------------
 // Collaborating Class Headers --
 //-------------------------------
+#include "Mu2eUtilities/inc/ConfigFileLookupPolicy.hh"
 
 // Create Constructor 
 
@@ -76,14 +77,16 @@ MatMtrDictionary::MatMtrDictionary()
       << endmsg; 
   }
   */
-  MatMaterialList* mtrList = new MatMaterialList("BaBar/MatEnv/MaterialsList.data");
+  mu2e::ConfigFileLookupPolicy findFile;
+  std::string fullPath = findFile("BaBar/MatEnv/MaterialsList.data");
+  MatMaterialList* mtrList = new MatMaterialList(fullPath);
   FillMtrDict(mtrList);
 }
 
 void MatMtrDictionary::FillMtrDict(MatMaterialList* mtrList)
 {
   std::vector<MatMaterialObj*>* mtrVec = mtrList->getMaterialVector();
-  int nmaterial = mtrVec->size();        
+  size_t nmaterial = mtrVec->size();        
   for (size_t im=0; im<nmaterial; im++){
     //
     // copy the object into the dictionary. The disctionary now has
