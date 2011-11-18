@@ -20,9 +20,9 @@ if non_plugin_cc:
     env.SharedLibrary('#/lib/'+local_lib_name, non_plugin_cc,
                       LIBS=[ 'art_Framework_Core',
                              'GeometryService',
-                             'Mu2eUtilities',
                              'GeneralUtilities',
                              'CLHEP',
+                             'cetlib',
                            ],
                       )
     libs=[ local_lib_name ]
