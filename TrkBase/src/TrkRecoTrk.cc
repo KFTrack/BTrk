@@ -66,7 +66,7 @@ TrkRecoTrk::TrkRecoTrk(PdtPid::PidType defaultPart, const TrkContext& ctext,
   _id(ctext.getId()),
   _fitNumber(PdtPid::nPidType,(int)0),
   _defaultType(defaultPart),
-  _trackT0(t0),
+  _trackT0(t0),_trackT0err(-1.0),
   _bField( ctext.bField() )
 {
   // No TrkRep is defined here; must be created in appropriate FitMaker.
@@ -83,7 +83,7 @@ TrkRecoTrk::TrkRecoTrk(PdtPid::PidType defaultPart,long idnum,double t0) :
   _id(idnum),
   _fitNumber(PdtPid::nPidType,(int)0),
   _defaultType(defaultPart),
-  _trackT0(t0),
+  _trackT0(t0),_trackT0err(-1.0),
   _bField(0)
 {
   // No TrkRep is defined here; must be created in appropriate FitMaker.
@@ -134,12 +134,6 @@ const TrkId&
 TrkRecoTrk::id() const
 {
   return _id;
-}
-
-double
-TrkRecoTrk::trackT0() const
-{
-  return _trackT0;
 }
 
 PdtPid::PidType
@@ -240,10 +234,11 @@ TrkRecoTrk::addFit(PdtPid::PidType hypo,bool fit)
 }
 
 void
-TrkRecoTrk::resetT0(double t)
+TrkRecoTrk::resetT0(double t0, double t0err)
 {
-  _trackT0 = t;
-  updateReps();
+  _trackT0 = t0;
+  _trackT0err = t0err;
+//  updateReps();
 }
 
 void
