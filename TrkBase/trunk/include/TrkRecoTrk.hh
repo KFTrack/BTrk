@@ -69,12 +69,13 @@ public:
   PdtPid::PidType   defaultType()                   const {return _defaultType;}
   PdtPid::PidType   whichFit(PdtPid::PidType hypo)  const;
   int               fitNumber(PdtPid::PidType hypo) const;
-  double            trackT0()                       const;
+  double            trackT0()                       const { return _trackT0; }
+  double            trackT0err()		    const { return _trackT0err; }
   const BField&     bField()                        const {return *_bField;}
 
   TrkErrCode        addFit(PdtPid::PidType hypo,bool fit=true);  // also fits if requested
   // Note: resetT0() requires refit to make fit current
-  void              resetT0(double time);         // also updates hits
+  void              resetT0(double t0, double t0err);         // also updates hits
 
   //**********************************************************
   // To get information about the track as fitted to a particular mass
@@ -164,6 +165,7 @@ private:
   std::map<std::string,std::set<TrkStoreHypo> > _storage;
   PdtPid::PidType _defaultType;
   double _trackT0;
+  double _trackT0err;
   const BField* _bField;
 protected:
 public:
