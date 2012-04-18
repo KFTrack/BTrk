@@ -46,8 +46,8 @@
 //-------------------------------
 #include "BaBar/Constants.hh"
 #include "CLHEP/Vector/ThreeVector.h"
-#include "DchGeomBase/DchGFileParser.hh"
-#include "DchGeomBase/DchGeomFileReader.hh"
+//#include "DchGeomBase/DchGFileParser.hh"
+//#include "DchGeomBase/DchGeomFileReader.hh"
 #include "ErrLogger/ErrLog.hh"  
 using std::ostream;
 
@@ -70,6 +70,7 @@ using std::ostream;
 // Constructor  --
 //----------------
 
+/*
 DchGDch::DchGDch( const std::string& fileName ) 
 {
   ErrMsg(trace) << "DchGDch: using" << fileName << endmsg;
@@ -350,7 +351,7 @@ DchGDch::DchGDch( const std::string& fileName )
   _nLayers = i;
 
 
-}
+}*/
 
 // copy constructor
 DchGDch::DchGDch( const DchGDch& other ) 

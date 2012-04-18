@@ -37,7 +37,7 @@
 #include "CLHEP/Geometry/Transformation.h"
 #include "DchGeom/DchLayer.hh"
 #include "DchGeomBase/DchWirePar.hh"
-#include "DetectorModel/DetAlignElem.hh"
+//#include "DetectorModel/DetAlignElem.hh"
 #include "ErrLogger/ErrLog.hh"
 using std::endl;
 using std::ostream;
@@ -65,6 +65,7 @@ DchSWire::~DchSWire( )
 //-------------
 // Modifiers --
 //-------------
+/*
 void
 DchSWire::wireAlign( const DchWirePar& corr ) 
 {
@@ -142,6 +143,7 @@ DchSWire::wireAlign( const HepTransformation& reartransf,
   _twist = (fPphi - rPphi) * 0.5;   
   _traj = DchSagTraj(_sag,_rear,_forward);
 }
+*/
 
 Hep3Vector
 DchSWire::yAxis( double z )
