@@ -48,7 +48,7 @@ extern "C" {
 class HepTransformation;
 class DchLayer;
 class DchWirePar;
-class DetAlignElem;
+//class DetAlignElem;
 #include <iosfwd>
 
 //		---------------------
@@ -124,13 +124,13 @@ public:
   const Hep3Vector& zAxis( void ) const { return _traj.rawDirection(); }
 
   // alignment member functions
-  void wireAlign( const DchWirePar& corr );   // single wire correction
-  void wireAlign( const DetAlignElem& align );  // DetAlignElem
+//  void wireAlign( const DchWirePar& corr );   // single wire correction
+//  void wireAlign( const DetAlignElem& align );  // DetAlignElem
                                                       // correction
-  void wireAlign( const HepTransformation& transf );  // global transform 
+//  void wireAlign( const HepTransformation& transf );  // global transform 
                                                       // correction
-  void wireAlign( const HepTransformation& reartransf,   // plates misalignment
-		  const HepTransformation& forwtransf ); // correction
+//  void wireAlign( const HepTransformation& reartransf,   // plates misalignment
+//		  const HepTransformation& forwtransf ); // correction
 
   void print(std::ostream &o) const;
   void printInfo(std::ostream &o) const;
