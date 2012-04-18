@@ -83,7 +83,7 @@ class DchGDch {
 public:
 
 // Constructor
-  DchGDch( const std::string& fileName ); // construct from ascii file db
+//  DchGDch( const std::string& fileName ); // construct from ascii file db
   DchGDch( int lay );  // "dummy" constructor, used to build the geometry
                        // from the persistent geometry 
   DchGDch( const DchGDch& ); // copy construct

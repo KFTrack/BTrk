@@ -99,7 +99,7 @@ public:
 
 private:
   friend class DchGDchCmpr;
-  friend class DchWireAlignCmpr;
+//  friend class DchWireAlignCmpr;
   friend class DchPlateDeflCmpr;
   // Data members
   int    _ID;                    // wire identifier
