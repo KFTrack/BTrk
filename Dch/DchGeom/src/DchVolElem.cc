@@ -127,7 +127,8 @@ DchVolElem::intersect(const Trajectory* traj, DetIntersection& dinter) const
 
       //  maybe track is generated or dies inside Dch gas volume 
       //  
-      if (ilist.size() < 2) {
+      bool beginfrominside=insideVolume(traj->position(dinter.pathrange[0]));
+      if (ilist.size() < 2||beginfrominside) {
 
         if (ErrLogging(debugging)) {
           ErrMsg outst(debugging);
@@ -141,7 +142,7 @@ DchVolElem::intersect(const Trajectory* traj, DetIntersection& dinter) const
         }
 
         //  check if it's generated inside the Dch gas volume
-        if (insideVolume(traj->position(dinter.pathrange[0]))) {
+        if (beginfrominside) {
           _entrance = dinter.pathrange[0];
           _exitp = ilist[0].pathLength();
           if (ErrLogging(debugging)) {
@@ -177,8 +178,9 @@ DchVolElem::intersect(const Trajectory* traj, DetIntersection& dinter) const
           dinter.flag[0] = ilist[0].side();
           dinter.flag[1] = -1;
           success = true;
-          ErrMsg(debugging) << "found track end inside Dch gas volume"
-              << endmsg;
+          if (ErrLogging(debugging))
+	    ErrMsg(debugging) << "found track end inside Dch gas volume"
+			      << endmsg;
         } else {
           _oldTraj = 0;
           if (ErrLogging(debugging)) {
