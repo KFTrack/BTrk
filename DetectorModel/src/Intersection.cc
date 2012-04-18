@@ -282,7 +282,7 @@ Intersection::findProximity(double& flen,double fmin,double fmax,
   DetSurface::intertype inter = surf.distTo(pos,dir,delta,mode);
   double angleChange = delta*theCurvature;
   if((inter == DetSurface::intersect || inter == DetSurface::localmin) &&
-     delta <= range && fabs(angleChange) < Constants::pi ) {
+     delta <= range && fabs(angleChange) < Constants::pi/3 ) {
 // success!
     flen += delta;
   } else {
