@@ -23,6 +23,7 @@
 //----------------------
 #include <string>
 #include <vector>
+#include <ostream>
 
 #include "MatEnv/MatMaterialObj.hh"
 //-------------------------------
@@ -39,6 +40,8 @@ public:
   MatMaterialList();
   MatMaterialList(const std::string& MaterialsFile); 
   MatMaterialList(const std::vector<MatMaterialObj*>& vector);
+
+  void print(std::ostream& out = std::cout);
 
   // Destructor
   virtual ~MatMaterialList();
