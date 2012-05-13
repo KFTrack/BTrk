@@ -154,6 +154,74 @@ MatMaterialList::MatMaterialList(const std::string& materialsFile)
 
 }
 
+void MatMaterialList::print(std::ostream& out) 
+{
+
+  std::string tagname;
+
+//  print tag name
+  tagname = "Materials_list";
+  out<<tagname<<std::endl;
+
+// write Materials data (Name, Zeff, Aeff, nComp ...)
+  std::string name;
+  std::string cpname;
+  std::string state;
+  std::vector<double> Compweight;
+  std::vector<std::string> Compname;
+  std::vector<int> Compflag;
+  int nbrcomp = 0;
+  double density = 0.;
+  double zeff = 0.;
+  double aeff = 0.;
+  double radlen = 0.;
+  double intlen = 0.;
+  double refindex = 0.;
+  double temperature = 0.;
+  double pressure = 0.;
+  std::vector<MatMaterialObj*>::iterator it=_vector.begin();
+  for(;it!=_vector.end();it++)
+    {
+        MatMaterialObj* matObj = (*it);
+	name     = matObj->getName();
+	density  = matObj->getDensity();
+	zeff     = matObj->getZeff();
+	aeff     = matObj->getAeff();
+	nbrcomp  = matObj->getNbrComp();
+	Compflag.resize(abs(nbrcomp));
+	Compweight.resize(abs(nbrcomp));
+	Compname.resize(abs(nbrcomp));
+	for (size_t idx=0; idx<abs(nbrcomp); idx++)
+	  {
+	    Compflag[idx]  =matObj->getIflg(idx);
+	    Compweight[idx]=matObj->getWeight(idx);
+	    Compname[idx]  =matObj->getCompName(idx); 
+	  }
+
+	radlen   = matObj->getRadLength();
+	intlen   = matObj->getIntLength();
+	refindex = matObj->getRefIndex();
+	temperature = matObj->getTemperature();
+	pressure = matObj->getPressure();
+	state    = matObj->getState();
+
+
+	out<< name;
+	out<<" "<< density <<" "<< zeff <<" "<< aeff <<" "<< nbrcomp;
+	for (unsigned int i=0; i<abs(nbrcomp); i++) 
+	  { 
+	    out <<" "<< Compweight[i] <<" "<< Compname[i] <<" "<< Compflag[i];
+	  }
+	
+	out <<" "<< radlen <<" "<< intlen <<" "<< refindex <<" "<< temperature 
+	    <<" "<< pressure <<" "<< state;
+	
+	out << std::endl;
+    }
+}  
+
+
+
 MatMaterialList::~MatMaterialList() 
 {
   std::for_each(_vector.begin(), _vector.end(), DeleteObject());
