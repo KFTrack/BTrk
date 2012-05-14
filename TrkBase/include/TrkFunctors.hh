@@ -50,13 +50,12 @@ namespace TrkBase { namespace Functors {
         class updateMeasurement : public std::unary_function<TrkHitOnTrk,TrkErrCode> {
         public:
                 TrkErrCode operator()(TrkHitOnTrk& h) const
-                { return h.updateMeasurement(_t,_m); }
+                { return h.updateMeasurement(_t); }
         private:
                 // Only TrkHitOnTrkUpdater can create one of these...
                 friend class ::TrkHitOnTrkUpdater;
-                updateMeasurement(const TrkDifTraj* traj=0,bool maintainAmbiguity=false) : _t(traj), _m(maintainAmbiguity) {}
+                updateMeasurement(const TrkDifTraj* traj=0) : _t(traj) {}
                 const TrkDifTraj *_t;
-                bool _m;
         };
 
         class setActive : public std::unary_function<TrkHitOnTrk,void> {
