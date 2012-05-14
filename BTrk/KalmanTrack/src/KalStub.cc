@@ -195,7 +195,7 @@ KalStub::chisquared(const TrkHitUse& hituse,double& chisq,const TrkHitOnTrk*& re
     if(hot == 0) {
       return TrkErrCode(TrkErrCode::fail,63,"Couldn't create HOT");      
     }    
-    kalhit = new KalHit(_ptraj,hot,_kalcon.forbidAmbigFlips());
+    kalhit = new KalHit(_ptraj,hot);
     if (kalhit == 0 ) {
       delete hot;
       return TrkErrCode(TrkErrCode::fail,62,"Couldn't create KalHit");      

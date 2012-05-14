@@ -250,6 +250,8 @@ public:
   bool filterTraj(double fltlen,trkDirection dir,TrkSimpTraj* traj) const;
 // smoothed trajectory EXCLUDING the measurement content of the given site
   bool smoothedTraj(const KalHit* hit,TrkSimpTraj* traj) const;
+  bool smoothedTraj(std::vector<KalSite*>::const_iterator ifirst,
+    std::vector<KalSite*>::const_iterator isecond, TrkSimpTraj* traj) const;
 // 
 //******************************************
 // iteration convergence testing
