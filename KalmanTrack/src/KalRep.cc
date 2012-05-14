@@ -505,7 +505,7 @@ KalRep::hitChisq(const TrkHitUse& hituse) const {
 // create a HOT for this hit usage
     TrkHitOnTrk* hot = hituse.createHitOnTrk(*this);
     if(hot != 0) {
-      KalHit kalhit(_ptraj,hot,_kalcon->forbidAmbigFlips());
+      KalHit kalhit(_ptraj,hot);
 // compute the chisquared using this hit
       kalhit.chisquared(chisq,&trajsite,trkIn);
       kalhit.deleteHOT();
@@ -981,8 +981,9 @@ KalRep::addHot(TrkHitOnTrk* thehot) {
   unsigned index;
   KalHit* thesite = findHotSite(thehot,index);
   if(thesite == 0){
+    TrkRep::addHot(thehot);
 // create a new KalHit from this hot
-    thesite = new KalHit(_reftraj,thehot,_kalcon->forbidAmbigFlips());
+    thesite = new KalHit(_reftraj,thehot);
     _sites.push_back(thesite);
 // refind the hit sites
     findHitSites();
@@ -1013,7 +1014,7 @@ KalRep::addHot(TrkHitOnTrk* thehot) {
       }
     }
 // add the hot to the rep.  This will reset the current flag as needed
-    TrkRep::addHot(thehot);
+//    TrkRep::addHot(thehot);
   } else
     ErrMsg(error) << "cannot add HOT already on this rep" << endmsg;
 }
@@ -1371,8 +1372,7 @@ KalRep::buildHitSites() {
   for(TrkHotList::nc_hot_iterator ihit=hots->begin();ihit!=end;ihit++){
 //  Only 'useable' hots should be made into sites
     if(ihit->isUsable()){
-      KalHit* newhit = new KalHit(_reftraj,ihit.get(),
-				  _kalcon->forbidAmbigFlips());
+      KalHit* newhit = new KalHit(_reftraj,ihit.get());
       assert(newhit != 0);
       _sites.push_back(newhit);
     }
@@ -1838,35 +1838,41 @@ KalRep::filterTraj(double fltlen,
 
 bool
 KalRep::smoothedTraj(const KalHit* hitsite,TrkSimpTraj* traj) const {
-  bool retval(false);
-// find this site
+  // find this site
   std::vector<KalSite*>::const_iterator ifnd = std::find(_sites.begin(),_sites.end(),hitsite);
   if(ifnd != _sites.end()) {
-// find the sites on either side: if none, mark them as the end of the container
-    std::vector<KalSite*>::const_iterator iprev = ifnd;
+   return smoothedTraj(ifnd,ifnd,traj);
+  } else
+    return false;
+}
+
+bool
+KalRep::smoothedTraj(std::vector<KalSite*>::const_iterator ifirst,
+    std::vector<KalSite*>::const_iterator isecond, TrkSimpTraj* traj) const {
+  bool retval(false);
+    // find the sites on either side: if none, mark them as the end of the container
+    std::vector<KalSite*>::const_iterator iprev = ifirst;
     if(iprev != _sites.begin())
       --iprev;
     else
       iprev = _sites.end();
-    std::vector<KalSite*>::const_iterator inext = ifnd;
+    std::vector<KalSite*>::const_iterator inext = isecond;
     ++inext;
-    if(iprev != _sites.end() && inext != _sites.end()){
-  // both bounding sites exist; merge their parameters
-      KalParams smoothed;
-      (*iprev)->mergeParams(*inext,smoothed);
-      if(smoothed.matrixOK()){
-        retval = true;      
-        *(traj->parameters()) = smoothed.trackParameters();
-      }
-    } else if(iprev != _sites.end()){
-      retval = (*iprev)->setTrajState(trkOut,traj);      
-    } else if(inext != _sites.end()) {
-      retval = (*inext)->setTrajState(trkIn,traj);
+   if(iprev != _sites.end() && inext != _sites.end()){
+    // both bounding sites exist; merge their parameters
+    KalParams smoothed;
+    (*iprev)->mergeParams(*inext,smoothed);
+    if(smoothed.matrixOK()){
+      retval = true;      
+      *(traj->parameters()) = smoothed.trackParameters();
     }
+  } else if(iprev != _sites.end()){
+    retval = (*iprev)->setTrajState(trkOut,traj);      
+  } else if(inext != _sites.end()) {
+    retval = (*inext)->setTrajState(trkIn,traj);
   }
   return retval;
 }
-
 
 void
 KalRep::updateRefMom() {

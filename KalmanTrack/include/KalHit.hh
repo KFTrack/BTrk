@@ -33,7 +33,7 @@ class TrkRep;
 class KalHit : public KalSite, TrkHitOnTrkUpdater {
 public:
 //  Constructors
-  KalHit(const TrkDifPieceTraj*,TrkHitOnTrk*,bool ambigflip=false);
+  KalHit(const TrkDifPieceTraj*,TrkHitOnTrk*);
 // copy constructor
   KalHit(const KalHit&);
 // clone function
@@ -85,7 +85,6 @@ private:
   double _residual; // residual vector
   HepVector _linrel; // hit derrivatives
   bool _hotstate; // record the state of the HOT
-  bool _ambigflip; // whether to allow ambiguity flips on updating
   double _fltdif; // flightlength difference since last iteration
 // private functions
   bool updateCache(const TrkDifPieceTraj*); // update the above elements when necessary

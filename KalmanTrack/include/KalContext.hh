@@ -62,7 +62,6 @@ public:
     return _mindof[view]; }
   double maxMomDiff() const { return _maxmomdiff; }
   bool stopHots() const { return _stophots; }
-  bool forbidAmbigFlips() const { return _ambigflip; }
   double momUpdateFactor() const { return _momfac; }
 // Set functions
   void setMinGap(double mingap) { _mingap = mingap; }
@@ -76,7 +75,6 @@ public:
   void setMaterialSites(bool matsites)  {_matsites = matsites; }
   void setBendSites(bool bends)  { _bends = bends; }
   void setStopHots(bool stop)  { _stophots = stop; }
-  void setForbidAmbigFlips(bool flip)  { _ambigflip = flip; }
   void setMomUpdateFactor(double factor) { _momfac = fabs(factor); }
   void setSmearFactor(double smearfactor)  { _smearfactor = smearfactor; }
   void setMaxSiteDMom(double sitethresh)  { _sitethresh = sitethresh; }
@@ -129,7 +127,6 @@ private:
   ulong _mindof[3]; // minimum number of DOFs to allow fit to succeed (can be 0)
   double _maxmomdiff; // maximum momentum difference before forcing iteration
   bool _stophots; // deactivate hots beyond the dE/dx stopping point
-  bool _ambigflip; // allow ambiguity flips when updating HOTs
   double _momfac; // factor for updating momentum on iteration; 0=full update,
 // infinity = don't update at all.  Scale is set by track momentum
 //disallow
