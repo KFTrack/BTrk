@@ -38,8 +38,8 @@ class TrkHitOnTrkUpdater
 public:
   virtual ~TrkHitOnTrkUpdater() = 0;
 protected:
-  TrkErrCode updateMeasurement(TrkHitOnTrk &hot, const TrkDifTraj* traj=0, bool maintainAmbiguity=false) const
-    { return hot.updateMeasurement(traj,maintainAmbiguity);}
+  TrkErrCode updateMeasurement(TrkHitOnTrk &hot, const TrkDifTraj* traj=0) const
+    { return hot.updateMeasurement(traj);}
 // allow subclasses (essentially TrkReps) to set hot activity directly
   void setActivity(TrkHitOnTrk& hot,bool active) const {
     hot.setActive(active); }
@@ -48,8 +48,8 @@ protected:
     hot._parentRep = parent;
   }
 
-  TrkBase::Functors::updateMeasurement updateMeasurement( const TrkDifTraj* traj=0, bool maintainAmbiguity=false) const 
-  { return TrkBase::Functors::updateMeasurement(traj,maintainAmbiguity); }
+  TrkBase::Functors::updateMeasurement updateMeasurement( const TrkDifTraj* traj=0) const 
+  { return TrkBase::Functors::updateMeasurement(traj); }
   TrkBase::Functors::setParent setParent(TrkRep* parent) const 
   { return TrkBase::Functors::setParent(parent); }
   TrkBase::Functors::setActive setActive(bool active) const 

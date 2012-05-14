@@ -73,7 +73,7 @@ TrkHotListFull::dfltCapac()
 void
 TrkHotListFull::updateHots()
 {
-  std::for_each(begin(),end(),updateMeasurement(0,false));
+  std::for_each(begin(),end(),updateMeasurement(0));
   sort();
 }
 
