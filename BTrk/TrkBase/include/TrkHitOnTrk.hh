@@ -180,7 +180,7 @@ protected:
   TrkRep* parentRep() const { return _parentRep;}
   void setUsedHit();               // tell underlying hit 
   void setUnusedHit(); 
-  virtual TrkErrCode updateMeasurement(const TrkDifTraj* traj, bool maintainAmbiguity) = 0;
+  virtual TrkErrCode updateMeasurement(const TrkDifTraj* traj) = 0;
 private:
   TrkHitOnTrk&   operator= (const TrkHitOnTrk&);    // Preempt 
   TrkHitOnTrk(const TrkHitOnTrk& hit);  // preempt; use 1st protected ctor
