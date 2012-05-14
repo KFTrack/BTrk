@@ -26,10 +26,9 @@ using std::ostream;
 //
 //  Constructor
 //
-KalHit::KalHit(const TrkDifPieceTraj* straj,TrkHitOnTrk* hot,
-	       bool ambigflip) :
+KalHit::KalHit(const TrkDifPieceTraj* straj,TrkHitOnTrk* hot) :
   KalSite(hitSite),_hot(hot),_residual(0.0),_hotstate(_hot->isActive()),
-  _ambigflip(ambigflip),_fltdif(0.0)
+  _fltdif(0.0)
 { updateCache(straj); }
 //
 //  copy constructor
@@ -40,7 +39,6 @@ KalHit::KalHit(const KalHit& other) :
   _residual(other._residual),
   _linrel(other._linrel),
   _hotstate(other._hotstate),
-  _ambigflip(other._ambigflip),
   _fltdif(other._fltdif)
 {;}
 // clone function
@@ -99,7 +97,7 @@ KalHit::updateCache(const TrkDifPieceTraj* reftraj){
   double oldlen=_hot->fltLen();
   bool retval(true);
   if(setTraj(reftraj,oldlen) || reftraj != _hot->trkTraj()){
-    TrkErrCode residerr = updateMeasurement(*_hot,reftraj,_ambigflip);
+    TrkErrCode residerr = updateMeasurement(*_hot,reftraj);
     if(residerr.success())
       residerr = _hot->getFitStuff(_linrel,_residual);
     retval = residerr.success();

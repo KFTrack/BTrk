@@ -41,7 +41,6 @@ KalContext::KalContext() :
   _defpid(PdtPid::pion),
   _maxmomdiff(0.05),
   _stophots(false),
-  _ambigflip(true),
   _momfac(0.0)
 {
 // max par diff in units chi^2 units: note trkOut=0, trkIn=1 !!!
