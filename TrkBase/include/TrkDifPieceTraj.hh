@@ -73,6 +73,7 @@ public:
 //***
 //  DifPieceTraj specific functions
 //***
+  const std::deque<TrkSimpTraj*>& localTrajectory() const { return _localtraj; }
   const TrkSimpTraj* localTrajectory(double,double&) const; // const version
 // test validity of the local range given a global flightlength.
   bool locallyValid(double glen,double tol=0.0) const;
