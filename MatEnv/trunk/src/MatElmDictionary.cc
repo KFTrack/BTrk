@@ -45,7 +45,7 @@ using std::fstream;
 //-------------------------------
 // Collaborating Class Headers --
 //-------------------------------
-#include "Mu2eUtilities/inc/ConfigFileLookupPolicy.hh"
+#include "ConfigTools/inc/ConfigFileLookupPolicy.hh"
 
 // Create Constructor 
 
