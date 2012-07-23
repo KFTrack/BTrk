@@ -23,7 +23,6 @@
 #include "CLHEP/Matrix/Matrix.h"
 //
 class TrkDifPieceTraj;
-class TrkRecoTrk;
 class TrkParams;
 class TrkRep;
 

@@ -19,15 +19,16 @@
 #include "DetectorModel/DetMaterial.hh"
 #include "TrkBase/TrkDifPieceTraj.hh"
 #include "TrkBase/TrkParams.hh"
+#include "TrkBase/TrkParticle.hh"
 #include <assert.h>
 using std::endl;
 using std::ostream;
 //
 
 KalMaterial::KalMaterial(const DetIntersection& dinter,const TrkDifPieceTraj* reftraj,
-			 double momentum,PdtPid::PidType pid):
+			 double momentum,TrkParticle const& tpart):
   KalSite(matSite),
-  _partid(pid),
+  _tpart(tpart),
   _dinter(dinter),
   _momentum(momentum),
   _active(true),
@@ -41,7 +42,7 @@ KalMaterial::KalMaterial(const DetIntersection& dinter,const TrkDifPieceTraj* re
 //
 KalMaterial::KalMaterial(const KalMaterial& other) :
   KalSite(other),
-  _partid(other._partid),
+  _tpart(other._tpart),
   _dinter(other._dinter),
   _transport(other._transport),
   _momentum(other._momentum),
@@ -59,13 +60,13 @@ KalMaterial::clone(const KalRep* krep) const {
   KalMaterial* newmat = new KalMaterial(*this);
 // see if the PID has changed: if not, we can reset the traj
 // and use the existing cache
-  if(newmat->_partid == krep->particleType()){
+  if(newmat->_tpart == krep->particleType()){
 // set the trajectory to the new rep's reference trajectory
 // For now, assume the length doesn't change
     newmat->setTraj(krep->referenceTraj(),globalLength());
   } else {
 //  If the PID has changed, we need to re-compute the cache
-    newmat->setPID(krep->particleType());
+    newmat->setParticle(krep->particleType());
     newmat->update(krep->referenceTraj(),krep->refMomentum());
 // activate the new material
     newmat->setActivity(true);
@@ -159,7 +160,7 @@ void
 KalMaterial::updateCache(const TrkDifPieceTraj* reftraj){
 //  Get the material interaction information from the element.  By convention the momentum
 // provided is outwards of this site
-	detElem()->materialInfo(_dinter,_momentum,_partid,
+	detElem()->materialInfo(_dinter,_momentum,_tpart,
 		_deflectrms,_pfractrms,_pfract,trkIn);
 // Set the trajectory parameters
 // only update derivatives if the parameters have changed
@@ -223,7 +224,7 @@ KalMaterial::setActivity(bool active) {
 
 double
 KalMaterial::energyChange(trkDirection tdir) const {
-  double energy = DetMaterial::particleEnergy(_momentum,_partid);
+  double energy = DetMaterial::particleEnergy(_momentum,_tpart);
   return momentumChange(tdir)*_momentum/energy;
 }
 

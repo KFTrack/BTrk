@@ -23,13 +23,12 @@
 #include "KalmanTrack/KalContext.hh"
 #include "TrkBase/TrkRep.hh"
 #include "TrkBase/TrkErrCode.hh"
-#include "BaBar/PdtPid.hh"
+#include "TrkBase/TrkParticle.hh"
 #include "TrkBase/TrkDirection.hh"
 #include "TrkBase/TrkDifPieceTraj.hh"
 #include "DetectorModel/DetIntersection.hh"
 #include <iostream>
 
-class TrkRecoTrk;
 class TrkHotList;
 class TrkDifTraj;
 class TrkExchangePar;
@@ -41,6 +40,7 @@ class KalMaterial;
 class KalHit;
 class KalStub;
 class KalEndSite;
+class BField;
 class BFieldIntegrator;
 class TrkHitUse;
 #include <vector>
@@ -164,19 +164,19 @@ public:
 //******************************************
 // fast constructor taking DetIntersections from outside.
  KalRep(const TrkSimpTraj&,TrkHotList* hots,const std::vector<DetIntersection>& dlist,
- 	TrkRecoTrk*,const KalContext& context,PdtPid::PidType hypo);
+ 	const KalContext& context,TrkParticle const& tpart);
 // same, supplying also piecetraj as initial ref traj.
  KalRep(const TrkDifPieceTraj*,TrkHotList* hots,const std::vector<DetIntersection>& dlist,
-     TrkRecoTrk*,const KalContext& context,PdtPid::PidType hypo);
+     const KalContext& context,TrkParticle const& tpart);
 // copy constructor to move rep to a new track
-  KalRep(const KalRep&, TrkRecoTrk*);
+  KalRep(const KalRep& );
 // copy constructor to add new mass hypo to existing track
-  KalRep(const KalRep& other,PdtPid::PidType hypo);
+  KalRep(const KalRep& other,TrkParticle const& tpart);
 // destructor
   virtual ~KalRep();
 // specific clone operation for this class
-  KalRep* clone(TrkRecoTrk*) const; // covariant return
-  TrkRep* cloneNewHypo(PdtPid::PidType hypo);
+  KalRep* clone() const; // covariant return
+  TrkRep* cloneNewHypo(TrkParticle const& tpart);
 //******************************************
 // Fitting and such
 //******************************************
@@ -360,11 +360,9 @@ private:
   double _refmom; // momentum of reference trajectory
   double _refmomfltlen;  // flight length along reference traj where seed mom is valid
   int _charge; // particle charge
-
 //
 // private functions
 //
-  KalRep(const KalRep&);   // preempt normal copy constructor and equivalence operator
   KalRep& operator = (const KalRep&);
   void setFit(trkDirection idir) {_siteflag[idir] = true;}
 // set the fit range according to the specified volumes and trajectory

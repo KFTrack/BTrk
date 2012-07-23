@@ -23,7 +23,7 @@
 #include <math.h>
 #include "TrkBase/TrkDirection.hh"
 #include "TrkBase/TrkEnums.hh"
-#include "BaBar/PdtPid.hh"
+#include "TrkBase/TrkParticle.hh"
 #include <math.h>
 class TrkVolume;
 
@@ -56,7 +56,7 @@ public:
   double bFieldDivMaxStep() const { return _bdivmaxstep; }
   double bFieldDivMaxFraction() const { return _bdivmaxfrac; }
   double bFieldDivTolerance() const { return _bdivtolerance; }
-  PdtPid::PidType defaultType() const { return (PdtPid::PidType)_defpid; }
+  TrkParticle const& defaultType() const { return _deftpart; }
 // minimum DOFs required for each view.  bothview means 'overall DOFs'
   unsigned minDOF(TrkEnums::TrkViewInfo view=TrkEnums::bothView) const { 
     return _mindof[view]; }
@@ -94,8 +94,8 @@ public:
     _bdivmaxfrac = divmaxfrac;
     _bdivtolerance = divtolerance;
   }
-  void setDefaultType(PdtPid::PidType newdefaulttype) {
-    _defpid = newdefaulttype; }
+  void setDefaultType(TrkParticle const& newdefaulttype) {
+    _deftpart = newdefaulttype; }
   void setMinDOF(unsigned mindof,TrkEnums::TrkViewInfo view) {
     _mindof[view] = mindof; }
   void setMaxMomDiff(double momdiff) {
@@ -123,7 +123,7 @@ private:
   double _bdivmaxstep;
   double _bdivmaxfrac;
   double _bdivtolerance;
-  ulong _defpid; // default PID to use in Kalman fit
+  TrkParticle _deftpart; // default PID to use in Kalman fit
   ulong _mindof[3]; // minimum number of DOFs to allow fit to succeed (can be 0)
   double _maxmomdiff; // maximum momentum difference before forcing iteration
   bool _stophots; // deactivate hots beyond the dE/dx stopping point

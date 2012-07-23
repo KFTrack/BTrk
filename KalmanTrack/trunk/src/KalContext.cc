@@ -17,6 +17,7 @@
 #include "BaBar/BaBar.hh"
 #include "KalmanTrack/KalContext.hh"
 #include "TrkBase/TrkCentralVolume.hh"
+#include "TrkBase/TrkParticle.hh"
 
 KalContext::KalContext() :
   _disttol(0.1), // spatial separation between trajs to continue iterating
@@ -38,7 +39,7 @@ KalContext::KalContext() :
   _bdivmaxstep(5.0),
   _bdivmaxfrac(0.1),
   _bdivtolerance(0.01),
-  _defpid(PdtPid::pion),
+  _deftpart(TrkParticle(TrkParticle::e_minus)),
   _maxmomdiff(0.05),
   _stophots(false),
   _momfac(0.0)

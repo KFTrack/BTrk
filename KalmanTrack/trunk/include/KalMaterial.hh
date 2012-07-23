@@ -30,7 +30,7 @@ public:
 //  Constructors; note that the intersection trajectory MUST be a TrkDifPieceTraj
 //
   KalMaterial(const DetIntersection&,const TrkDifPieceTraj*,
-	      double momentum,PdtPid::PidType pid);
+	      double momentum,TrkParticle const& tpart);
 // copy constructor
   KalMaterial(const KalMaterial&);
 // clone operator
@@ -60,14 +60,14 @@ public:
 // momentum on the specificed _side_ of the material
   double momentum(trkDirection idir) const {
     return idir == trkOut ? _momentum : _momentum + momentumChange(trkIn); }
-  PdtPid::PidType particle() const { return _partid; }
+  TrkParticle const& particle() const { return _tpart; }
 // number of radation lengths through this site
   double radiationFraction() const;
 // material doesn't contribute to chisquared
 // override invert
   virtual void invert();
 private:
-  PdtPid::PidType _partid; // define the particle type (and hence mass)
+  TrkParticle _tpart; // define the particle type (and hence mass)
   DetIntersection _dinter; // intersection with this element
   KalParams _transport; // parameter transport (column matrix, P' = P + DP) for small dE/dx
 //  HepMatrix _covrot; // covariance similarity transform for energy loss
@@ -83,6 +83,6 @@ private:
 // override setting the trajectory to deal with the detectorintersection
   virtual bool setTraj(const TrkDifPieceTraj*,double globlen);
 // reset the PID
-  void setPID(PdtPid::PidType newtype) { _partid = newtype; }
+  void setParticle(TrkParticle const& newtype) { _tpart = newtype; }
 };
 #endif
