@@ -3,7 +3,7 @@
 //      $Id: TrkVertex.hh,v 1.4 2005/11/14 23:48:12 brownd Exp $
 //
 // Description:
-// Base class for describing TrkRecoTrk-based verteices
+// Base class for describing TrkRep-based verteices
 //
 // Environment:
 //      Software developed for the BaBar Detector at the SLAC B-Factory.
@@ -19,34 +19,30 @@
 #include "BbrGeom/BbrLorentzVectorErr.hh"
 #include "TrkBase/TrkErrCode.hh"
 #include "ProbTools/ChisqConsistency.hh"
-#include "BaBar/PdtPid.hh"
 #include <vector>
 #include <map>
 
-class TrkRecoTrk;
-class PdtEntry;
+class TrkRep;
 
 class TrkVtxInfo {
 public:
-  TrkVtxInfo(const double& doca, const double& fltlen, const PdtPid::PidType& type) :
-    _doca(doca),_fltlen(fltlen),_type(type){}
-  TrkVtxInfo() : _doca(0.0),_fltlen(0.0),_type(PdtPid::null) {}
-  TrkVtxInfo(const TrkVtxInfo& other): _doca(other._doca),_fltlen(other._fltlen),_type(other._type){}
+  TrkVtxInfo(const double& doca, const double& fltlen) :
+    _doca(doca),_fltlen(fltlen){}
+  TrkVtxInfo() : _doca(0.0),_fltlen(0.0) {}
+  TrkVtxInfo(const TrkVtxInfo& other): _doca(other._doca),_fltlen(other._fltlen){}
   double doca() const { return _doca; }
   double flightLength() const { return _fltlen; }
-  PdtPid::PidType particleType() const { return _type; }
 private:
   double _doca;
   double _fltlen;
-  PdtPid::PidType _type;
 };
 
 class TrkVertex {  
 public:
-  typedef std::vector<const TrkRecoTrk*> trkcontainer;
-  typedef std::map<const TrkRecoTrk*,TrkVtxInfo> trkinfocontainer;
+  typedef std::vector<const TrkRep*> trkcontainer;
+  typedef std::map<const TrkRep*,TrkVtxInfo> trkinfocontainer;
 
-  TrkVertex(const PdtEntry* vtype=0);
+  TrkVertex();
   TrkVertex(const TrkVertex& other);
   TrkVertex& operator = (const TrkVertex& other);
   bool operator == (const TrkVertex& other) { return _usedtracks==other._usedtracks; }
@@ -63,16 +59,13 @@ public:
   const BbrLorentzVectorErr& p4() const { return _p4 ; }  
   const TrkErrCode& status() const { return _status ; }
 // information about particular tracks in the vertex: returns true if track is really in vtx
-  bool trackInfo(const TrkRecoTrk* trk,TrkVtxInfo& info) const;
-// vertex particle type
-  const PdtEntry* vertexType() const { return _vtype; }
+  bool trackInfo(const TrkRep* trk,TrkVtxInfo& info) const;
 protected:
   trkcontainer _usedtracks ;
   trkinfocontainer _info;
   BbrPointErr _position ;
   BbrLorentzVectorErr _p4 ; 
   TrkErrCode _status ;
-  const PdtEntry* _vtype; // particle type assigned to this vertex
 // to update chisq in subclasses
   void setConsistency(double chisq,int nDof);
 private:

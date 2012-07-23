@@ -22,7 +22,6 @@
 
 #include "TrkBase/TrkVertex.hh"
 
-class TrkRecoTrk ;
 class TrkPocaVertex;
 
 class TrkPrimaryVertex : public TrkVertex

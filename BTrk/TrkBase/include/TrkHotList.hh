@@ -14,7 +14,6 @@
 #ifndef TRKHOTLIST_HH
 #define TRKHOTLIST_HH
 
-class TrkFundHit;
 class TrkHitOnTrk;
 class TrkRep;
 class TrkView;
@@ -56,7 +55,6 @@ public:
   virtual void         append(TrkHitOnTrk* ) = 0;
   virtual void         remove(TrkHitOnTrk* ) = 0;
   virtual void         updateHots() = 0;
-  virtual TrkHitOnTrk* findHot(const TrkFundHit*) const = 0;
   virtual void         sort();
 
   void                 print(std::ostream &o) const;

@@ -17,6 +17,7 @@
 #define TRKFIT_HH
 
 #include "TrkBase/TrkAbsFit.hh"
+#include "TrkBase/TrkParticle.hh"
 
 // Class interface //
 class TrkFit : public TrkAbsFit {
@@ -27,7 +28,7 @@ public:
   void printType(std::ostream& ostr) const;
 
   virtual int                 nActive()                   const = 0;
-  virtual PdtPid::PidType     particleType()              const = 0;
+  virtual TrkParticle const&     particleType()              const = 0;
   virtual TrkExchangePar    helix(double fltL)            const = 0;
   virtual double            arrivalTime(double fltL)      const = 0;
   virtual double            startFoundRange()             const = 0;

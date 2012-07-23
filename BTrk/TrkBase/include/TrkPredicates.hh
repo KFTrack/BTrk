@@ -18,7 +18,6 @@
 //------------------------------------------------------------------------
 #include <functional>
 
-#include "TrkBase/TrkRecoTrk.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkFitStatus.hh"
 
@@ -33,7 +32,7 @@ namespace TrkBase { namespace Predicates {
   public:
        isLayer(int layer) : _layer(layer) {}
        bool operator()(const TrkHitOnTrk& h) const
-       { return h.layerNumber() == _layer; }
+       { return (int)h.layerNumber() == _layer; }
   private:
        int _layer;
   };
@@ -55,22 +54,6 @@ namespace TrkBase { namespace Predicates {
   };
 
 
-  class hotMatchesFundHit : public TrkHitOnTrk::predicate_type {
-  public:
-       hotMatchesFundHit(const TrkFundHit *h) : _h(h) { }
-       bool operator()(const TrkHitOnTrk& h) const
-       { return h.hit()==_h; }
-  private:
-       const TrkFundHit *_h;
-  };
-
-
-  struct isHotOnTrack : std::binary_function<TrkHitOnTrk,const TrkRecoTrk*, bool>
-  {
-       bool operator()(const TrkHitOnTrk& h, const TrkRecoTrk* const & t) const
-       { return h.parentTrack() == t; }
-  };
-
   struct isFitValid : TrkFitStatus::predicate_type {
           bool operator()( const TrkFitStatus& t) const
           { return (t.fitValid()); }
@@ -80,18 +63,5 @@ namespace TrkBase { namespace Predicates {
           bool operator()( const TrkFitStatus& t) const
           { return (t.fitCurrent()); }
   };
-
-  // note that we use 'has' in here, not 'is' as above.... subtly distinction ;-)
-
-  struct hasFitValid : TrkRecoTrk::predicate_type {
-          bool operator()( const TrkRecoTrk& t) const
-          { const TrkFitStatus *x = t.status(); return x!=0 && isFitValid()(*x); }
-  };
-
-  struct hasFitCurrent : TrkRecoTrk::predicate_type {
-          bool operator()( const TrkRecoTrk& t) const
-          { const TrkFitStatus *x = t.status(); return x!=0 && isFitCurrent()(*x); }
-  };
-
 
 } };

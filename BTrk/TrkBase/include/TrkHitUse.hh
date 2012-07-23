@@ -15,7 +15,6 @@
 #ifndef TRKHITUSE_HH
 #define TRKHITUSE_HH
 
-class TrkFundHit;
 class TrkHitOnTrk;
 class TrkRep;
 
@@ -23,14 +22,14 @@ class TrkRep;
 class TrkHitUse {
 
 public:
-  TrkHitUse(const TrkFundHit&, double fltLen, bool active=true, 
+  TrkHitUse(TrkHitOnTrk const& hot, double fltLen, bool active=true, 
 	    int usable=1);
   virtual ~TrkHitUse();
 
   bool                      isActive() const                {return _isActive;}
   int                       isUsable() const                {return _isUsable;}
   double                    fltLen()   const                {return _fltLen;}
-  const TrkFundHit&         hit()      const                {return _hit;}
+  TrkHitOnTrk const&         hit()      const                {return _hit;}
  
   virtual TrkHitOnTrk*      createHitOnTrk(const TrkRep&) const = 0;
   void                      setFltLen(double flt)           {_fltLen = flt;}
@@ -41,7 +40,7 @@ public:
   virtual bool operator==(const TrkHitUse&) const = 0;
   
 private:	
-  const TrkFundHit& _hit;
+  TrkHitOnTrk const& _hit;
   bool _isActive;
   int _isUsable;
   double _fltLen;

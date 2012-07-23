@@ -18,7 +18,7 @@
 #ifndef TRKFITSUMMARY_HH
 #define TRKFITSUMMARY_HH
 
-#include "BaBar/PdtPid.hh"
+#include "TrkBase/TrkParticle.hh"
 #include "TrkBase/TrkEnums.hh"
 
 class TrkSimpTraj;
@@ -27,7 +27,7 @@ class TrkFitSummary {
 public:
 // construct from input information
   TrkFitSummary();
-  TrkFitSummary(PdtPid::PidType type,
+  TrkFitSummary(TrkParticle const& tpart,
 		TrkEnums::PackFlag flag,
 		double chisqprob,
 		TrkSimpTraj* traj);
@@ -38,13 +38,13 @@ public:
   bool operator == (const TrkFitSummary& other) const;
   virtual ~TrkFitSummary();
 // obvious accessors
-  PdtPid::PidType pidType() const { return _type; }
+  TrkParticle const& particleType() const { return _tpart; }
   TrkEnums::PackFlag fitFlag() const { return _flag; }
   double chisqProb() const { return _chisqprob; }
   const TrkSimpTraj* traj() const { return _traj; }
   TrkSimpTraj* traj() { return _traj; }
 private:
-  PdtPid::PidType _type;
+  TrkParticle _tpart;
   TrkEnums::PackFlag _flag;
   double _chisqprob;
   TrkSimpTraj* _traj;

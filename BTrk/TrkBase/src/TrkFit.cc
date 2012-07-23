@@ -14,7 +14,6 @@
 #include "BaBar/BaBar.hh"
 #include "TrkBase/TrkFit.hh"
 #include <iostream>
-#include "PDT/Pdt.hh"
 using std::ostream;
 
 //------------------------------------------------------------------------
@@ -30,7 +29,7 @@ TrkFit::TrkFit() {
 void 
 TrkFit::printType(ostream& ostr) const 
 {
-  ostr << "Particle type: " << Pdt::lookup( particleType() )->name();
+  ostr << "Particle type: " << particleType().name();
 }
 
 // default implementation of validFlightLength

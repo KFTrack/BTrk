@@ -3,7 +3,7 @@
 //      $Id: TrkVertex.cc,v 1.6 2005/11/21 22:28:22 ttanabe Exp $
 //
 // Description:
-// Base class for describing TrkRecoTrk-based verteices
+// Base class for describing TrkRep-based verteices
 //
 // Environment:
 //      Software developed for the BaBar Detector at the SLAC B-Factory.
@@ -17,8 +17,8 @@
 #include <utility>
 #include <algorithm>
 
-TrkVertex::TrkVertex(const PdtEntry* vtype) :
-  _status(TrkErrCode::fail),_vtype(vtype)
+TrkVertex::TrkVertex() :
+  _status(TrkErrCode::fail)
 {}
 
 
@@ -30,7 +30,6 @@ TrkVertex::TrkVertex(const TrkVertex& other) :
   _position(other._position),
   _p4(other._p4),
   _status(other._status),
-  _vtype(other._vtype),
   _chisqcon(other._chisqcon)
 {}
 
@@ -44,7 +43,6 @@ TrkVertex::operator = (const TrkVertex& other) {
     _p4 = other._p4;
     _status = other._status;
     _chisqcon = other._chisqcon;
-    _vtype = other._vtype;
   }
   return *this;
 }
@@ -72,7 +70,7 @@ TrkVertex::setConsistency(double chisq, int nDof) {
 }
 
 bool
-TrkVertex::trackInfo(const TrkRecoTrk* trk,TrkVtxInfo& info) const {
+TrkVertex::trackInfo(const TrkRep* trk,TrkVtxInfo& info) const {
   trkinfocontainer::const_iterator ifnd = _info.find(trk);
   bool retval = ifnd != _info.end();
   if(retval)info = ifnd->second;
