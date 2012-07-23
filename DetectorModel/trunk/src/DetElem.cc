@@ -119,7 +119,7 @@ DetElem::physicalOutline(std::vector<HepPoint>& pvec) const {
 void
 DetElem::materialInfo(const DetIntersection& dinter,
 		      double momentum,
-		      PdtPid::PidType pid,
+		      TrkParticle const& tpart,
 		      double& deflectRMS,
 		      double& pFractionRMS,
 		      double& pFraction,
@@ -134,16 +134,16 @@ DetElem::materialInfo(const DetIntersection& dinter,
 //
 //  Pass everything to the material, to get the answers
 //
-    deflectRMS = mat.scatterAngleRMS(momentum,thickness,pid);
-    double echange = dedxdir == trkOut ? mat.energyLoss(momentum,thickness,pid)
-      : mat.energyGain(momentum,thickness,pid);
-    double elossRMS = mat.energyLossRMS(momentum,thickness,pid);
+    deflectRMS = mat.scatterAngleRMS(momentum,thickness,tpart);
+    double echange = dedxdir == trkOut ? mat.energyLoss(momentum,thickness,tpart)
+      : mat.energyGain(momentum,thickness,tpart);
+    double elossRMS = mat.energyLossRMS(momentum,thickness,tpart);
 //
 //  Convert to (dimensionless) momentum fractions
 //
-    double energy = DetMaterial::particleEnergy(momentum,pid);
+    double energy = DetMaterial::particleEnergy(momentum,tpart);
     double newenergy = energy+echange;
-    pFraction = DetMaterial::particleMomentum(newenergy,pid)/momentum - 1.0;
+    pFraction = DetMaterial::particleMomentum(newenergy,tpart)/momentum - 1.0;
     pFractionRMS = elossRMS*energy/(momentum*momentum);
   } else {
     deflectRMS = 1.0;

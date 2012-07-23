@@ -16,6 +16,7 @@
 #include "BaBar/BaBar.hh"
 #include "DetectorModel/DetMaterial.hh"
 #include "CLHEP/Units/PhysicalConstants.h"
+#include "TrkBase/TrkParticle.hh"
 #include <iostream>
 #include <cfloat>
 #include <string>
@@ -146,8 +147,9 @@ DetMaterial::dEdx(double mom,dedxtype type,double mass) const {
     beta2 = beta*beta ;
     gamma2 = gamma*gamma ;
     bg2 = beta2*gamma2 ;
-  
-    double RateMass = Pdt::mass(PdtPid::electron) / mass;
+ 
+    static TrkParticle epart(TrkParticle::e_minus);
+    double RateMass = epart.mass() / mass;
   
     Tmax = 2.*electron_mass_c2*bg2
       /(1.+2.*gamma*RateMass+RateMass*RateMass) ;
@@ -314,13 +316,13 @@ DetMaterial::energyLossRMS(double mom,double pathlen,double mass) const {
 //
 double
 DetMaterial::eloss_emax(double mom,double mass){
-	static double emass =Pdt::mass(PdtPid::electron);
+  static TrkParticle epart(TrkParticle::e_minus);
   double beta = particleBeta(mom,mass);
   double gamma = particleGamma(mom,mass);
-	double mratio = emass/mass;
-  double emax = 2*emass*pow(beta,2)*pow(gamma,2)/
+  double mratio = epart.mass()/mass;
+  double emax = 2*epart.mass()*pow(beta*gamma,2)/
     (1+2*gamma*mratio + pow(mratio,2));
-  if(mass <= emass)
+  if(mass <= epart.mass())
     emax *= 0.5;
   return emax;
 }
