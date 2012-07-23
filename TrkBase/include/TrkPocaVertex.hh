@@ -17,21 +17,20 @@
 
 #include "TrkBase/TrkPoca.hh"
 #include "TrkBase/TrkVertex.hh"
-#include "BaBar/PdtPid.hh"
+#include "TrkBase/TrkParticle.hh"
 
-class TrkRecoTrk ;
+class TrkRep ;
 
 class TrkPocaVertex : public TrkVertex {  
 public:
   TrkPocaVertex();
-  TrkPocaVertex(const TrkRecoTrk* trk1, double flt1, PdtPid::PidType pid1,
-		const TrkRecoTrk* trk2, double flt2, PdtPid::PidType pid2,
-		const PdtEntry* vtype=0,
+  TrkPocaVertex(const TrkRep* trk1, double flt1, TrkParticle const& tpart1,
+		const TrkRep* trk2, double flt2, TrkParticle const& tpart2,
 		double precision=1.e-5) ;
   
-  TrkPocaVertex(const TrkRecoTrk* trk, double flt, PdtPid::PidType pid,
+  TrkPocaVertex(const TrkRep* trk, double flt, TrkParticle const& tpart,
  		const BbrPointErr& pt,
-		const PdtEntry* vtype=0,double precision=1.e-5);
+		double precision=1.e-5);
 
 
   TrkPocaVertex(const TrkPocaVertex& other);

@@ -95,14 +95,6 @@ TrkHotListFull::remove(TrkHitOnTrk* deadHot)
     ErrMsg(error) << " you asked to remove a hit which I don't have! " << endmsg;
 }
 
-TrkHitOnTrk*
-TrkHotListFull::findHot(const TrkFundHit* theHit) const
-{
-  TrkBase::Predicates::hotMatchesFundHit match(theHit);
-  TrkHotList::hot_iterator i = std::find_if(begin(),end(),match);
-  return i==end()?0:const_cast<TrkHitOnTrk*>( i.get() );  // FIXME: return (non)const TrkHitOnTrk from (non)const
-}
-
 int
 TrkHotListFull::nActive(TrkEnums::TrkViewInfo view) const
 {

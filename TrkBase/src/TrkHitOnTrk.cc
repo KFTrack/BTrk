@@ -17,8 +17,6 @@
 #include "BaBar/BaBar.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
 #include <assert.h>
-#include "TrkBase/TrkRecoTrk.hh"
-#include "TrkBase/TrkFundHit.hh"
 #include "TrkBase/TrkRep.hh"
 #include "TrkBase/TrkDifTraj.hh"
 #include "TrkBase/TrkPoca.hh"
@@ -29,9 +27,8 @@ using std::endl;
 using std::ostream;
 
 
-TrkHitOnTrk::TrkHitOnTrk(const TrkFundHit* hit,double tolerance) :
+TrkHitOnTrk::TrkHitOnTrk(double tolerance) :
   _parentRep(0),
-  _theHit(const_cast<TrkFundHit*>(hit)),
   _isActive(true),
   _isUsable(true),
   //make caches invalid
@@ -47,7 +44,6 @@ TrkHitOnTrk::TrkHitOnTrk(const TrkFundHit* hit,double tolerance) :
 TrkHitOnTrk::TrkHitOnTrk(const TrkHitOnTrk &oldHit, TrkRep *newRep,
                          const TrkDifTraj *trkTraj)
   : _parentRep(newRep),
-    _theHit(oldHit._theHit),
     _isActive(oldHit._isActive),
     _isUsable(oldHit._isUsable),
     _hitRms(oldHit._hitRms),
@@ -77,20 +73,11 @@ TrkHitOnTrk::TrkHitOnTrk(const TrkHitOnTrk &oldHit, TrkRep *newRep,
 
        }
   }
-  // Only record hots if on default TrkRep
-  const TrkRep* rep = getParentRep();
-  if (rep->particleType() == rep->parentTrack()->defaultType()) setUsedHit();
 }
 
 TrkHitOnTrk::~TrkHitOnTrk()
 {
   delete _poca;
-
-  const TrkRecoTrk *parentTrack = _parentRep==0?0: _parentRep->parentTrack();
-
-  if (_parentRep!=0 && parentTrack!=0 && _parentRep->particleType() == parentTrack->defaultType() ) {
-//    setUnusedHit();
-  }
 }
 
 void
@@ -139,34 +126,10 @@ TrkHitOnTrk::printAll(ostream& o) const
   print(o);
 }
 
-TrkRecoTrk*
-TrkHitOnTrk::parentTrack() const
-{
-  return parentRep()->parentTrack();
-}
-
-const TrkRecoTrk*
-TrkHitOnTrk::getParentTrack() const
-{
-  return getParentRep()->parentTrack();
-}
-
-PdtPid::PidType
+TrkParticle const&
 TrkHitOnTrk::particleType() const
 {
   return getParentRep()->particleType();
-}
-
-void
-TrkHitOnTrk::setUsedHit()
-{
-  if (hit() != 0) hit()->setUsedHit(this);
-}
-
-void
-TrkHitOnTrk::setUnusedHit()
-{
-//  if (hit() != 0) hit()->setUnusedHit(this);
 }
 
 bool TrkHitOnTrk::operator==(const TrkHitOnTrk &rhs) const

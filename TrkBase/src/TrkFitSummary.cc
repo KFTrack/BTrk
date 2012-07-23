@@ -18,18 +18,18 @@
 #include "TrkBase/TrkFitSummary.hh"
 
 TrkFitSummary::TrkFitSummary() :
-  _type(PdtPid::null),_flag(TrkEnums::KalFit),_chisqprob(-1.0),_traj(0)
+  _tpart(TrkParticle(TrkParticle::e_minus)),_flag(TrkEnums::KalFit),_chisqprob(-1.0),_traj(0)
 {}
 
-TrkFitSummary::TrkFitSummary(PdtPid::PidType type,
+TrkFitSummary::TrkFitSummary(TrkParticle const& type,
 		TrkEnums::PackFlag flag,
 		double chisqprob,
 			       TrkSimpTraj* traj) :
-  _type(type),_flag(flag),_chisqprob(chisqprob),_traj(traj)
+  _tpart(type),_flag(flag),_chisqprob(chisqprob),_traj(traj)
 {}
 
 TrkFitSummary::TrkFitSummary(const TrkFitSummary& other) :
-  _type(other._type),
+  _tpart(other._tpart),
   _flag(other._flag),
   _chisqprob(other._chisqprob),
   _traj(other._traj)
@@ -38,7 +38,7 @@ TrkFitSummary::TrkFitSummary(const TrkFitSummary& other) :
 TrkFitSummary&
 TrkFitSummary::operator =(const TrkFitSummary& other) {
   if(this != &other){
-    _type = other._type;
+    _tpart = other._tpart;
     _flag = other._flag;
     _chisqprob = other._chisqprob;
     _traj = other._traj;
@@ -52,7 +52,7 @@ TrkFitSummary::~TrkFitSummary()
 
 bool
 TrkFitSummary::operator == (const TrkFitSummary& other) const {
-  return _type == other._type &&
+  return _tpart == other._tpart &&
     _flag == other._flag &&
     _traj == other._traj;
 }

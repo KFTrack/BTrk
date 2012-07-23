@@ -1,4 +1,3 @@
-//--------------------------------------------------------------------------
 // File and Version Information:
 //      $Id: TrkHotListFull.hh,v 1.18 2003/10/25 21:58:49 brownd Exp $
 //
@@ -21,7 +20,6 @@
 #include "TrkBase/TrkHitOnTrkUpdater.hh"
 #include "TrkBase/TrkFunctors.hh"
 
-class TrkFundHit;
 class TrkHitOnTrk;
 class TrkRep;
 
@@ -45,7 +43,6 @@ public:
 
   void              append(TrkHitOnTrk* );
   void              remove(TrkHitOnTrk* );
-  TrkHitOnTrk*      findHot(const TrkFundHit*) const;
   void              updateHots();
 
 protected:
