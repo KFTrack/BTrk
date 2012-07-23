@@ -16,7 +16,7 @@
 #include "TrkBase/TrkHitUse.hh"
 
 //------------------------------------------------------------------------
-TrkHitUse::TrkHitUse(const TrkFundHit& theHit, double flt, bool active, 
+TrkHitUse::TrkHitUse(TrkHitOnTrk const& theHit, double flt, bool active, 
 		     int usable) : _hit(theHit) {
 //------------------------------------------------------------------------
    _fltLen = flt;

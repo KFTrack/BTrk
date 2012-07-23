@@ -24,17 +24,15 @@
 
 #ifndef TRKHITONTRK_HH
 #define TRKHITONTRK_HH
-#include "BaBar/PdtPid.hh"
+#include "TrkBase/TrkParticle.hh"
 #include "TrkBase/TrkEnums.hh"
 #include <iostream>
 #include <functional>
 
-class TrkFundHit;
 #include "CLHEP/Matrix/Vector.h"
 class TrkRep;
 class TrkDifTraj;
 class Trajectory;
-class TrkRecoTrk;
 class TrkErrCode;
 class TrkDifPoca;
 class TrkPoca;
@@ -48,7 +46,6 @@ namespace TrkBase { namespace Functors {
 
 class TrkHitOnTrk {
   friend class TrkHotList;
-  friend class TrkRecoTrk;
 // allow TrkRep to set activity
   friend class TrkRep;
 public:
@@ -56,7 +53,7 @@ public:
   //****************
   // Constructors and such
   //****************
-  TrkHitOnTrk(const TrkFundHit*,double tolerance); 
+  TrkHitOnTrk(double tolerance); 
   virtual ~TrkHitOnTrk();
   virtual TrkHitOnTrk* clone(TrkRep* parentRep, const TrkDifTraj* trkTraj=0) const = 0;
 protected:
@@ -66,11 +63,8 @@ public:
   //****************
   // Accessors -- current state of hit
   //****************
-  const TrkRecoTrk* getParentTrack() const;
   const TrkRep* getParentRep() const                       {return _parentRep;}
-  PdtPid::PidType particleType() const;
-  const TrkFundHit* hit() const                                   {return _theHit;}
-  TrkFundHit* hit()                                   {return _theHit;}
+  TrkParticle const& particleType() const;
   const TrkDifTraj* trkTraj() const { return _trkTraj;}
 
 
@@ -136,7 +130,6 @@ public:
   // then, in 'absolute' units (relative to the trigger time)
   virtual bool timeAbsolute(double& time,double& error) const = 0;
 
-  TrkRecoTrk* parentTrack() const; // this requires non-const access to TrkRep
   //****************
   // Set values
   //****************
@@ -164,7 +157,6 @@ public:
 
 protected:
   TrkRep* _parentRep;
-  TrkFundHit* _theHit;
   bool _isActive;
   int  _isUsable;
   double _hitRms;

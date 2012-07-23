@@ -20,8 +20,7 @@
 #include "BaBar/BaBar.hh"
 #include "TrkBase/TrkPrimaryVertex.hh"
 #include "TrkBase/TrkPocaVertex.hh"
-#include "TrkBase/TrkRecoTrk.hh"
-#include "PDT/Pdt.hh"
+#include "TrkBase/TrkRep.hh"
 #include <algorithm>
 
 
@@ -73,11 +72,11 @@ TrkPrimaryVertex::TrkPrimaryVertex(const trkcontainer& seedtrklist,
        it1 != tracks.end() && !foundseed; ++it1) {
     trkcontainer::iterator it2 = it1 ;
     for( ++it2; it2 != tracks.end() && !foundseed; ++it2) {
-      const TrkRecoTrk* trk1 = *it1;
-      const TrkRecoTrk* trk2 = *it2;
+      const TrkRep* trk1 = *it1;
+      const TrkRep* trk2 = *it2;
 
-      TrkPocaVertex pocavertex( trk1, 0, trk1->defaultType(), 
-				trk2, 0, trk2->defaultType()) ;
+      TrkPocaVertex pocavertex( trk1, 0, trk1->particleType(), 
+				trk2, 0, trk2->particleType()) ;
       if(pocavertex.status().success() && 
 	 pocavertex.chisq()<maxSeedChisqPerDof) {
 	_status   = pocavertex.status() ;
@@ -134,12 +133,12 @@ TrkPrimaryVertex::addTracks(const trkcontainer& tracks, double maxdchisq,
   bool retval(false);
   for( trkcontainer::const_iterator it = tracks.begin() ;
        it != tracks.end() ; it++) {
-    const TrkRecoTrk* trk = *it;
-    TrkPocaVertex pocavertex( trk, 0, trk->defaultType(), _position) ;
+    const TrkRep* trk = *it;
+    TrkPocaVertex pocavertex( trk, 0, trk->particleType(), _position) ;
     if( pocavertex.status().success() && 
 	pocavertex.chisq() < pocavertex.nDof()*maxdchisq) {
       _usedtracks.push_back(trk) ;
-      _info[trk] = TrkVtxInfo(pocavertex.doca(),pocavertex.flt1(),trk->defaultType());
+      _info[trk] = TrkVtxInfo(pocavertex.doca(),pocavertex.flt1());
       nDof  += pocavertex.nDof() ;
       chisq += pocavertex.chisq() ;
       _p4    += pocavertex.p4() ;
@@ -150,9 +149,9 @@ TrkPrimaryVertex::addTracks(const trkcontainer& tracks, double maxdchisq,
   return retval;
 }
 
-inline bool trkptsort(const TrkRecoTrk* lhs, const TrkRecoTrk* rhs) 
+inline bool trkptsort(const TrkRep* lhs, const TrkRep* rhs) 
 {
-  return fabs(lhs->fitResult()->pt(0))>fabs(rhs->fitResult()->pt(0)) ;
+  return fabs(lhs->pt(0))>fabs(rhs->pt(0)) ;
 }
 
 TrkPrimaryVertex::trkcontainer

@@ -64,13 +64,11 @@
 
 #include "BaBar/BaBar.hh"
 #include "TrkBase/TrkPocaVertex.hh"
-#include "TrkBase/TrkFit.hh"
-#include "TrkBase/TrkRecoTrk.hh"
+#include "TrkBase/TrkRep.hh"
 #include "TrkBase/TrkDifTraj.hh"
 #include "CLHEP/Matrix/Vector.h"
 #include "CLHEP/Matrix/Matrix.h"
 #include "CLHEP/Matrix/SymMatrix.h"
-#include "PDT/Pdt.hh"
 #include <math.h>
 
 template<class T>
@@ -94,25 +92,22 @@ TrkPocaVertex::crossproduct(const HepVector& v1,const HepVector& v2)
   return rc ;
 } 
 
-TrkPocaVertex::TrkPocaVertex(const TrkRecoTrk* trk1, double flt1, PdtPid::PidType pid1,
-			     const TrkRecoTrk* trk2, double flt2, PdtPid::PidType pid2,
-			     const PdtEntry* vtype,
-			     double precision) : TrkVertex(vtype)
+TrkPocaVertex::TrkPocaVertex(const TrkRep* fit1, double flt1, TrkParticle const& tpart1,
+			     const TrkRep* fit2, double flt2, TrkParticle const& tpart2,
+			     double precision) : TrkVertex()
 {
-  _usedtracks.push_back(trk1);
-  _usedtracks.push_back(trk2);
-  const TrkFit* fit1 = trk1->fitResult(pid1);
-  const TrkFit* fit2 = trk2->fitResult(pid2);
+  _usedtracks.push_back(fit1);
+  _usedtracks.push_back(fit2);
   if(fit1 != 0 && fit2 != 0)
     _poca = TrkPoca(fit1->traj(), flt1, fit2->traj(), flt2, precision );
-  _info[trk1] = TrkVtxInfo(_poca.doca(),_poca.flt1(),pid1);
-  _info[trk2] = TrkVtxInfo(_poca.doca(),_poca.flt2(),pid2);
+  _info[fit1] = TrkVtxInfo(_poca.doca(),_poca.flt1());
+  _info[fit2] = TrkVtxInfo(_poca.doca(),_poca.flt2());
   _status = _poca.status();
   if(_status.success()) {
     const TrkAbsFit* trkfit[2]  ;
     double  flt[2], mass[2] ;
-    trkfit[0] = fit1 ; flt[0] = _poca.flt1() ; mass[0] = Pdt::lookup(pid1)->mass();
-    trkfit[1] = fit2 ; flt[1] = _poca.flt2() ; mass[1] = Pdt::lookup(pid2)->mass();
+    trkfit[0] = fit1 ; flt[0] = _poca.flt1() ; mass[0] = tpart1.mass();
+    trkfit[1] = fit2 ; flt[1] = _poca.flt2() ; mass[1] = tpart2.mass();
  
     HepSymMatrix cov[2] ;
     HepVector    pos[2] ;
@@ -186,21 +181,20 @@ TrkPocaVertex::TrkPocaVertex(const TrkRecoTrk* trk1, double flt1, PdtPid::PidTyp
   }
 }
 
-TrkPocaVertex::TrkPocaVertex(const TrkRecoTrk* trk, double flt, PdtPid::PidType pid,
+TrkPocaVertex::TrkPocaVertex(const TrkRep* fit, double flt, TrkParticle const& tpart,
 			     const BbrPointErr& point, 
-			     const PdtEntry* vtype, double precision) : TrkVertex(vtype)
+			     double precision) : TrkVertex()
 {
-  _usedtracks.push_back(trk);  
-  const TrkFit* fit = trk->fitResult(pid);
+  _usedtracks.push_back(fit);  
   if(fit != 0)
     _poca = TrkPoca(fit->traj(), flt, point, precision );
-  _info[trk] = TrkVtxInfo(_poca.doca(),_poca.flt1(),pid);
+  _info[fit] = TrkVtxInfo(_poca.doca(),_poca.flt1());
   _status = _poca.status();
   if(_status.success()) {
 
     HepSymMatrix cov[2] ;
     HepVector    pos[2] ;
-    double mass = Pdt::lookup(pid)->mass();
+    double mass = tpart.mass();
 
     BbrPointErr position = fit->positionErr(_poca.flt1()) ;
     cov[0] = position.covMatrix() ;

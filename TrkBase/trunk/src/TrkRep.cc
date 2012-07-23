@@ -17,16 +17,14 @@
 //------------------------------------------------------------------------
 #include "BaBar/BaBar.hh"
 #include "BaBar/Constants.hh"
+#include "BField/BFieldFixed.hh"
 #include <assert.h>
 #include <algorithm>
 #include <iostream>
 #include "TrkBase/TrkRep.hh"
-#include "PDT/Pdt.hh"
-#include "PDT/PdtEntry.hh"
 #include "TrkBase/TrkDifTraj.hh"
 #include "TrkBase/TrkHotListFull.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
-#include "TrkBase/TrkRecoTrk.hh"
 #include "TrkBase/TrkFunctors.hh"
 #include "TrkBase/TrkErrCode.hh"
 #include "difAlgebra/DifPoint.hh"
@@ -38,55 +36,45 @@
 using std::cout;
 using std::endl;
 
-TrkRep::TrkRep(TrkRecoTrk* trk, PdtPid::PidType hypo,bool createHotList)
-  : _partHypo(hypo),
-    _parentTrack(trk),
+TrkRep::TrkRep(TrkParticle const& hypo,bool createHotList)
+  : _tpart(hypo),
     _betainv(-999999.),
     _hotList( createHotList?new TrkHotListFull:0 )
 {
-  assert(parentTrack()!=0);
 }
 
-TrkRep::TrkRep(const TrkHotList& hotlist, TrkRecoTrk* trk,
-               PdtPid::PidType hypo)
-  : _partHypo(hypo),
-    _parentTrack(trk),
+TrkRep::TrkRep(const TrkHotList& hotlist, 
+               TrkParticle const& hypo)
+  : _tpart(hypo),
     _betainv(-999999.),
     _hotList( hotlist.clone(TrkBase::Functors::cloneHot(this)) )
 {
-  assert(parentTrack()!=0);
 }
 
-TrkRep::TrkRep(TrkHotList& hotlist, TrkRecoTrk* trk,
-               PdtPid::PidType hypo, bool stealHots)
-  : _partHypo(hypo),
-    _parentTrack(trk),
+TrkRep::TrkRep(TrkHotList& hotlist, 
+               TrkParticle const& hypo, bool stealHots)
+  : _tpart(hypo),
     _betainv(-999999.),
     _hotList( stealHots? new TrkHotListFull(hotlist,setParent(this))
                        : hotlist.clone(TrkBase::Functors::cloneHot(this)) )
 {
-  assert(parentTrack()!=0);
 }
 
-TrkRep::TrkRep(const TrkHotList* hotlist, TrkRecoTrk* trk,
-               PdtPid::PidType hypo)
-  : _partHypo(hypo),
-    _parentTrack(trk),
+TrkRep::TrkRep(const TrkHotList* hotlist, 
+               TrkParticle const& hypo)
+  : _tpart(hypo),
     _betainv(-999999.),
     _hotList( hotlist!=0?
                   hotlist->clone(TrkBase::Functors::cloneHot(this)):
                   new TrkHotListFull )
 {
-  assert(parentTrack()!=0);
 }
 
-TrkRep::TrkRep(TrkHotList* hotlist, TrkRecoTrk* trk,
-               PdtPid::PidType hypo,bool takeownership)
-  : _partHypo(hypo),
-    _parentTrack(trk),
+TrkRep::TrkRep(TrkHotList* hotlist, 
+               TrkParticle const& hypo,bool takeownership)
+  : _tpart(hypo),
     _betainv(-999999.)
 {
-  assert(parentTrack()!=0);
   if (!takeownership) {
     _hotList.reset( hotlist!=0?
                     hotlist->clone(TrkBase::Functors::cloneHot(this)):
@@ -98,13 +86,11 @@ TrkRep::TrkRep(TrkHotList* hotlist, TrkRecoTrk* trk,
 }
 
 // copy ctor
-TrkRep::TrkRep(const TrkRep& oldRep, TrkRecoTrk* trk, PdtPid::PidType hypo) :
+TrkRep::TrkRep(const TrkRep& oldRep,  TrkParticle const& hypo) :
   TrkFitStatus(oldRep),
-    _partHypo(hypo),
-    _parentTrack(trk),
+    _tpart(hypo),
     _betainv(-999999.)
 {
-  assert(parentTrack()!=0);
   // Hots and hotlist have to be cloned in the derived classes
 }
 
@@ -112,19 +98,16 @@ TrkRep&
 TrkRep::operator= (const TrkRep& right)
 {
   if(&right != this){
-    _partHypo=right._partHypo;
-    _parentTrack=right._parentTrack;
+    _tpart=right._tpart;
     _betainv=right._betainv;
     _hotList.reset( right._hotList->clone(this) );
     TrkFitStatus::operator=(right);
   }
-  assert(parentTrack()!=0);
   return *this;
 }
 
 TrkRep::~TrkRep()
 {
-  assert(parentTrack()!=0);
 }
 
 bool
@@ -192,20 +175,14 @@ TrkRep::arrivalTime(double fltL) const
   static double cinv = 1./Constants::c;
   // Initialize cache
   if (_betainv < 0.0) {
-    double mass2 = Pdt::lookup(particleType())->mass();
+    double mass2 = particleType().mass();
     mass2 = mass2 * mass2;
     double ptot2 = momentum(0.).mag2();
     assert(ptot2 != 0.0);
     _betainv = sqrt( (ptot2 +  mass2)/ ptot2);
   }
   double tof = fltL * _betainv * cinv;
-  return trackT0() + tof;
-}
-
-double
-TrkRep::trackT0() const
-{
-  return parentTrack()->trackT0();
+  return _trkt0.t0() + tof;
 }
 
 BbrPointErr
@@ -299,12 +276,6 @@ TrkRep::endFoundRange() const
   return hotList()->endFoundRange();
 }
 
-PdtPid::PidType
-TrkRep::particleType() const
-{
-  return _partHypo;
-}
-
 void
 TrkRep::updateHots()
 {
@@ -339,4 +310,11 @@ TrkRep::chisqConsistency() const {
     return ChisqConsistency(chisq(),nDof());
   else
     return ChisqConsistency();
+}
+
+BField const&
+TrkRep::bField() {
+// this should be built from the Mu2e field: FIXME!!!
+  static BField* bfield = new BFieldFixed(0.0,0.0,1.0);
+  return *bfield;
 }
