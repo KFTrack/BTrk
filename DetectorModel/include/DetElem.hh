@@ -22,10 +22,8 @@
 //----------------
 // BaBar header --
 //----------------
-#if defined( HP1022 ) && !defined( BABAR_HH )
 #include "BaBar/BaBar.hh"
 #include "ErrLogger/ErrLog.hh"
-#endif // HP1022 && !BABAR_HH
 //
 //  global includes
 //
@@ -37,7 +35,7 @@
 //  Local includes
 //
 #include "DetectorModel/DetType.hh"
-#include "BaBar/PdtPid.hh"
+#include "TrkBase/TrkParticle.hh"
 #include "TrkBase/TrkDirection.hh"
 //
 class TrkDifTraj;
@@ -101,7 +99,7 @@ public:
   virtual const DetMaterial& material(const DetIntersection&) const;
   virtual void materialInfo(const DetIntersection&,
 			    double momentum,
-			    PdtPid::PidType pid,
+			    TrkParticle const& tpart,
 			    double& deflectRMS,
 			    double& pFractionRMS,
 			    double& pFraction,
