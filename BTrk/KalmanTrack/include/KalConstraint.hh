@@ -20,7 +20,6 @@
 #include "CLHEP/Matrix/SymMatrix.h"
 
 class TrkDifPieceTraj;
-class TrkRecoTrk;
 class TrkParams;
 class TrkRep;
 

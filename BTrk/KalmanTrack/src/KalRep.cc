@@ -40,13 +40,11 @@
 #include "CLHEP/Vector/ThreeVector.h"
 #include "BField/BFieldIntegrator.hh"
 #include "TrkBase/TrkMomCalculator.hh"
-#include "TrkBase/TrkRecoTrk.hh"
 #include "TrkBase/TrkSimpTraj.hh"
 #include "TrkBase/TrkHotListFull.hh"
 #include "TrkBase/TrkHotList.hh"
 #include "TrkBase/TrkHitUse.hh"
 #include "ErrLogger/ErrLog.hh"
-#include "PDT/Pdt.hh"
 //#include "DchGeom/DchDetector.hh"
 
 #include <algorithm>
@@ -112,9 +110,9 @@ KalRep::initRep() {
 // set the seed mom to the begining of the hit range
   _refmomfltlen = _fitrange[0];
 // compute the seed momentum from this (+ the bfield)
-  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,parentTrack()->bField(),_refmomfltlen);
+  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,bField(),_refmomfltlen);
   _refmom = momvec.mag();
-  _charge = TrkMomCalculator::charge(*_seedtraj,parentTrack()->bField(),_refmomfltlen);
+  _charge = TrkMomCalculator::charge(*_seedtraj,bField(),_refmomfltlen);
 // build the initial reference trajectory
   if(_reftraj == 0)buildRefTraj();
 // Initialize _ptraj to _reftraj. This is needed
@@ -147,8 +145,8 @@ KalRep::initSites() {
 // construct from hots and intersections
 KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
 	const std::vector<DetIntersection>& dinters,
-	TrkRecoTrk* trk, const KalContext& context,
-	PdtPid::PidType hypo) : TrkRep(hotl,trk,hypo,true), _maxdist(0),_maxfltdif(0),
+	const KalContext& context,
+	TrkParticle const& tpart) : TrkRep(hotl,tpart,true), _maxdist(0),_maxfltdif(0),
 	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),_integrator(0),
 	_kalcon(&context),
 	_seedtraj((TrkSimpTraj*)(seed.clone())),
@@ -183,8 +181,8 @@ KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
 // construct from hots and intersections and reference trajectory
 KalRep::KalRep(const TrkDifPieceTraj* rtraj, TrkHotList* hotl,
 	const std::vector<DetIntersection>& dinters,
-	TrkRecoTrk* trk, const KalContext& context,
-	PdtPid::PidType hypo) : TrkRep(hotl,trk,hypo,true), _maxdist(0),_maxfltdif(0),
+	const KalContext& context,
+	TrkParticle const& tpart) : TrkRep(hotl,tpart,true), _maxdist(0),_maxfltdif(0),
 	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),_integrator(0),
 	_kalcon(&context),
 	_seedtraj(0),
@@ -228,12 +226,12 @@ KalRep::KalRep(const TrkDifPieceTraj* rtraj, TrkHotList* hotl,
 
 
 //
-//  Copy constructor to change mass hypo. Note that the copy is ALWAYS invalid and
-//  must be fit.  No protection is provided against copying to the same mass hypo,
+//  Copy constructor to change mass tpart. Note that the copy is ALWAYS invalid and
+//  must be fit.  No protection is provided against copying to the same mass tpart,
 //  this is provided by the 'cloneNewHypo' function.
 //
-KalRep::KalRep(const KalRep& other,PdtPid::PidType hypo) :
-  TrkRep(other,(TrkRecoTrk*)other.parentTrack(),hypo),
+KalRep::KalRep(const KalRep& other,TrkParticle const& tpart) :
+  TrkRep(other,tpart),
   _maxdist(0),_maxfltdif(0),  _niter(0), _ninter(0),
   _ptraj(0),
   _reftraj(other._reftraj->clone()),
@@ -263,7 +261,7 @@ KalRep::KalRep(const KalRep& other,PdtPid::PidType hypo) :
   _ptraj = _reftraj;
 // reset the initial momentum to the seed value: this makes sure lower-mass states aren't
 // found to 'stop'
-  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,parentTrack()->bField(),_refmomfltlen);
+  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,bField(),_refmomfltlen);
   _refmom = momvec.mag();
 // clone-Copy the sites
   for(unsigned isite=0;isite<other._sites.size();isite++){
@@ -281,8 +279,8 @@ KalRep::KalRep(const KalRep& other,PdtPid::PidType hypo) :
 //
 //  Copy constructor to move rep to a new track.
 //
-KalRep::KalRep(const KalRep& other, TrkRecoTrk* newtrk) : 
-  TrkRep(other,newtrk, other.particleType()),
+KalRep::KalRep(const KalRep& other ) : 
+  TrkRep(other,other.particleType()),
   _maxdist(other._maxdist),
   _maxfltdif(other._maxfltdif),
   _niter(other._niter),
@@ -343,14 +341,14 @@ KalRep::~KalRep(){
 //  Clone operator
 //
 KalRep*
-KalRep::clone(TrkRecoTrk* newtrk) const {
-  return new KalRep(*this,newtrk);
+KalRep::clone() const {
+  return new KalRep(*this);
 }
 
 TrkRep*
-KalRep::cloneNewHypo(PdtPid::PidType hypo) {
-  if(hypo != particleType()) {
-    KalRep* newrep = new KalRep(*this, hypo);
+KalRep::cloneNewHypo(TrkParticle const& tpart) {
+  if(tpart != particleType()) {
+    KalRep* newrep = new KalRep(*this, tpart);
     newrep->setValid(false);
     return newrep;
   }
@@ -691,15 +689,15 @@ KalRep::fit(){
       ErrMsg(error) << "Can't find local trajectory for charge measurement!" << endmsg;
       loctraj = _seedtraj;
     }
-    _charge = TrkMomCalculator::charge(*loctraj,parentTrack()->bField(),loclen);
+    _charge = TrkMomCalculator::charge(*loctraj,bField(),loclen);
   }  else {
    // make sure a failed fit is neither valid nor current
        setValid(false);
        setCurrent(false);
   }
   // update the track itself for the new status: this is only relevant in mini-refit jobs
-  parentTrack()->status(particleType())->setValid(fitValid());
-  parentTrack()->status(particleType())->setCurrent(fitCurrent());
+  setValid(fitValid());
+  setCurrent(fitCurrent());
   return fiterr;
 }
 // iteration, used to converge in the fit
@@ -1119,7 +1117,7 @@ KalRep::extendThrough(double newf) {
 	    localTrajectory(_sites.front()->globalLength(),loclen);
 	  if(reftraj != 0){
 // get the momentum from this using the mom calculator
-	    Hep3Vector momvec = TrkMomCalculator::vecMom(*reftraj,parentTrack()->bField(),loclen);
+	    Hep3Vector momvec = TrkMomCalculator::vecMom(*reftraj,bField(),loclen);
 	    extendmom = momvec.mag();
 	  } else
 	    return TrkErrCode(TrkErrCode::fail,KalCodes::momentum,
@@ -1407,7 +1405,7 @@ KalRep::buildIntegrator() {
 // we need a new integrator
 // create the integrator if necessary
   if(_integrator == 0){
-    _integrator = new BFieldIntegrator(parentTrack()->bField());
+    _integrator = new BFieldIntegrator(bField());
     if(_integrator == 0){
       ErrMsg(error) << "ERROR, unable to create BField Integrator,"
 		    << " no bfield corrections will be applied" << endmsg;
@@ -1463,38 +1461,32 @@ KalRep::createBendSites(double range[2], std::vector<KalSite*>& sites) const {
 Hep3Vector 
 KalRep::momentum(double fltL) const {
 //----------------------------------------------------------------------
-//  const BField& theField = parentTrack()->bField();
+//  const BField& theField = bField();
   // kludge DNB_RKK
-  static const BField* theField = new BFieldFixed(0.0,0.0,1.0);
+//  static const BField* theField = new BFieldFixed(0.0,0.0,1.0);
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
-  return TrkMomCalculator::vecMom(*locTraj, *theField, localFlt);
+  return TrkMomCalculator::vecMom(*locTraj, bField(), localFlt);
 }
 
 //----------------------------------------------------------------------
 double 
 KalRep::pt(double fltL) const {
 //----------------------------------------------------------------------
-//  const BField& theField = parentTrack()->bField();
-  // kludge DNB_RKK
-  static const BField* theField = new BFieldFixed(0.0,0.0,1.0);
-  
-  double localFlt = 0.;
-  const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
-  return TrkMomCalculator::ptMom(*locTraj, *theField, localFlt);
+  Hep3Vector mom = momentum(fltL);
+  return mom.perp();
 }
 
 //----------------------------------------------------------------------
 BbrVectorErr 
 KalRep::momentumErr(double fltL) const {
 //----------------------------------------------------------------------
-//  const BField& theField = parentTrack()->bField();
+//  const BField& theField = bField();
   // kludge DNB_RKK
-  static const BField* theField = new BFieldFixed(0.0,0.0,1.0);
   
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
-  return TrkMomCalculator::errMom(*locTraj, *theField, localFlt);
+  return TrkMomCalculator::errMom(*locTraj, bField(), localFlt);
 }
 
 
@@ -1543,7 +1535,7 @@ KalRep::parameterDifference(trkDirection tdir) const {
 HepMatrix 
 KalRep::posmomCov(double fltL) const {
 //------------------------------------------------------------------------
-  const BField& theField = parentTrack()->bField();
+  const BField& theField = bField();
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
   return TrkMomCalculator::posmomCov(*locTraj, theField, localFlt);
@@ -1556,7 +1548,7 @@ KalRep::getAllCovs(double fltL,
 			HepSymMatrix& ppCov,
 			HepMatrix&    xpCov)      const {
 //------------------------------------------------------------------------
-  const BField& theField = parentTrack()->bField();
+  const BField& theField = bField();
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
   TrkMomCalculator::getAllCovs(*locTraj, theField, localFlt,
@@ -1572,7 +1564,7 @@ KalRep::getAllWeights(double fltL,
 				 HepSymMatrix& ppWeight,
 				 HepMatrix&    xpWeight) const {
 //------------------------------------------------------------------------
-  const BField& theField = parentTrack()->bField();
+  const BField& theField = bField();
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
   TrkMomCalculator::getAllWeights(*locTraj, theField, localFlt,
@@ -1881,7 +1873,7 @@ KalRep::updateRefMom() {
   const TrkSimpTraj* reftraj = localTrajectory(_refmomfltlen,loclen);
   if(reftraj != 0){
 // get the momentum from this using the mom calculator
-    Hep3Vector momvec = TrkMomCalculator::vecMom(*reftraj,parentTrack()->bField(),loclen);
+    Hep3Vector momvec = TrkMomCalculator::vecMom(*reftraj,bField(),loclen);
     double delmom = momvec.mag()-_refmom;
     double momfac = 1.0;
     double floor = 0.5 ;
@@ -2074,7 +2066,7 @@ KalRep::estimatedMomDiff() const {
   double avgmom = (curmom + refMomentum())/2.0;
 // estimated change in momentum scales as mass^2/momentum^3
   double energy = DetMaterial::particleEnergy(refMomentum(),particleType());
-  double ddmom = dedxfactor*dmom*energy*sqr(Pdt::mass(particleType()))/
+  double ddmom = dedxfactor*dmom*energy*sqr(particleType().mass())/
     sqr(sqr(avgmom));
   return ddmom;
 }
@@ -2375,24 +2367,6 @@ KalRep::validFlightLength(double fltL,double tolerance) const {
     fltL <= _ptraj->hiRange()+tolerance;
 // if there are no hots, include test on found range
   return retval;
-}
-
-
-void
-KalRep::fitTrajectories(std::vector<TrkSimpTraj*>& fits,const char* stream) const {
-// get the storage requests
-  const TrkRecoTrk* trk = parentTrack();
-  assert(trk != 0);
-  const std::set<TrkStoreHypo>& store = trk->storageRequests(stream);
-  double localflt;
-  for(std::set<TrkStoreHypo>::const_iterator istore=store.begin();istore!=store.end();++istore){
-    if(istore->hypo() == particleType()){
-// make sure we enter each fit only once.
-      TrkSimpTraj* traj = const_cast<TrkSimpTraj*>(localTrajectory(istore->flightLength(),localflt));
-      if(std::find(fits.begin(),fits.end(),traj) == fits.end())
-        fits.push_back(traj);
-    }
-  }
 }
 
 void
