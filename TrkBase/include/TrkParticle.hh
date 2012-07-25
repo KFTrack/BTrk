@@ -25,7 +25,7 @@ class TrkParticle {
 	He4 = 100002004
   };
 // construct from a type
-  TrkParticle(type ptype);
+  TrkParticle(type ptype=e_minus);
   TrkParticle(TrkParticle const& other);
   ~TrkParticle();
 // basic accessor
