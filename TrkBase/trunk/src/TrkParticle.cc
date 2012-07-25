@@ -89,46 +89,48 @@ TrkParticle::charge() const {
 std::string const&
 TrkParticle::name() const {
 // avoid calling the ConditionsService each call by buffering results in statics
+// I can't use HepPDT for the names as those include Latex characters and so conflict
+// with many standard software lexicons (like root).
   static GlobalConstantsHandle<ParticleDataTable> pdt;
   switch (_type) {
     case e_minus: {
-      static std::string e_minus_name = pdt->particle(PDGCode::e_minus).ref().name();
+      static std::string e_minus_name = "eMinus";  // pdt->particle(PDGCode::e_minus).ref().name();
       return e_minus_name;
     }
     case e_plus: {
-      static std::string e_plus_name = pdt->particle(PDGCode::e_plus).ref().name();
+      static std::string e_plus_name = "ePlus"; //pdt->particle(PDGCode::e_plus).ref().name();
       return e_plus_name;
     }
     case mu_minus: {
-      static std::string mu_minus_name = pdt->particle(PDGCode::mu_minus).ref().name();
+      static std::string mu_minus_name = "muMinus"; //pdt->particle(PDGCode::mu_minus).ref().name();
       return mu_minus_name;
     }
     case mu_plus: {
-      static std::string mu_plus_name = pdt->particle(PDGCode::mu_plus).ref().name();
+      static std::string mu_plus_name = "muPlus"; //pdt->particle(PDGCode::mu_plus).ref().name();
       return mu_plus_name;
     }
     case pi_minus: {
-      static std::string pi_minus_name = pdt->particle(PDGCode::pi_minus).ref().name();
+      static std::string pi_minus_name = "piMinus"; //pdt->particle(PDGCode::pi_minus).ref().name();
       return pi_minus_name;
     }
     case pi_plus: {
-      static std::string pi_plus_name = pdt->particle(PDGCode::pi_plus).ref().name();
+      static std::string pi_plus_name = "piPlus"; // pdt->particle(PDGCode::pi_plus).ref().name();
       return pi_plus_name;
     }
     case K_minus: {
-      static std::string K_minus_name = pdt->particle(PDGCode::K_minus).ref().name();
+      static std::string K_minus_name = "KMinus"; //pdt->particle(PDGCode::K_minus).ref().name();
       return K_minus_name;
     }
     case K_plus: {
-      static std::string K_plus_name = pdt->particle(PDGCode::K_plus).ref().name();
+      static std::string K_plus_name = "KPlus"; //pdt->particle(PDGCode::K_plus).ref().name();
       return K_plus_name;
     }
     case anti_p_minus: {
-      static std::string anti_p_minus_name = pdt->particle(PDGCode::anti_p_minus).ref().name();
+      static std::string anti_p_minus_name = "pMinus"; //pdt->particle(PDGCode::anti_p_minus).ref().name();
       return anti_p_minus_name;
     }
     case p_plus: {
-      static std::string p_plus_name = pdt->particle(PDGCode::p_plus).ref().name();
+      static std::string p_plus_name = "pPlus"; //pdt->particle(PDGCode::p_plus).ref().name();
       return p_plus_name;
     }
     default: {
