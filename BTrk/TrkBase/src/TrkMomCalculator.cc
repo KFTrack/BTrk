@@ -323,7 +323,7 @@ TrkMomCalculator::calcCurvVecMom(const Hep3Vector& direction,
   double cosdip = sqrt(arg);
 
   double momMag =
-           fabs( BField::cmTeslaToGeVc*theField.bFieldNominal()*
+           fabs( BField::mmTeslaToMeVc*theField.bFieldNominal()*
 		cosdip/curvature );
 
   Hep3Vector momVec = direction;
@@ -350,7 +350,7 @@ TrkMomCalculator::momMag(const HelixTraj& theTraj,
   DifNumber dipDf = atan(tanDipDf);
   DifNumber cosdip = cos(dipDf);
   DifNumber momMag =
-    BField::cmTeslaToGeVc*theField.bFieldNominal() / (cosdip * omegaDf);
+    BField::mmTeslaToMeVc*theField.bFieldNominal() / (cosdip * omegaDf);
   momMag.absolute();
   return momMag;
 }
@@ -377,7 +377,7 @@ TrkMomCalculator::calcCurvErrMom(const TrkSimpTraj& theTraj,
     DifNumber cosdip = sqrt(arg);
     
     DifNumber momMag =
-      BField::cmTeslaToGeVc*theField.bFieldNominal()*cosdip /
+      BField::mmTeslaToMeVc*theField.bFieldNominal()*cosdip /
       delDirDif.length();
     momMag.absolute();
 
@@ -523,7 +523,7 @@ TrkMomCalculator::calcCurvPosmomCov(const TrkSimpTraj& theTraj,
 
 
     DifNumber momMag =
-      BField::cmTeslaToGeVc*theField.bFieldNominal()*cosdip /
+      BField::mmTeslaToMeVc*theField.bFieldNominal()*cosdip /
       delDirDif.length();
     momMag.absolute();
 
@@ -634,7 +634,7 @@ TrkMomCalculator::calcCurvAllCovs(const TrkSimpTraj& theTraj,
   double cosphi0 = cos(phi0);
   double sinphi = sin(phi);
   double cosphi = cos(phi);
-  double pt = fabs( BField::cmTeslaToGeVc * theField.bFieldNominal() / omega );
+  double pt = fabs( BField::mmTeslaToMeVc * theField.bFieldNominal() / omega );
   double r = 1.0/omega;
   
   // Calculate derivatives for Jacobian matrix
@@ -782,7 +782,7 @@ TrkMomCalculator::calcCurvAllCovsOLD(const TrkSimpTraj& theTraj,
     DifNumber cosdip = sqrt(arg);
 
     DifNumber momMag =
-      BField::cmTeslaToGeVc*theField.bFieldNominal()*cosdip /
+      BField::mmTeslaToMeVc*theField.bFieldNominal()*cosdip /
       delDirDif.length();
     momMag.absolute();
 
@@ -906,7 +906,7 @@ TrkMomCalculator::calcCurvAllWeights(const TrkSimpTraj& theTraj,
   double cosphi0 = cos(phi0);
   double sinphi = sin(phi);
   double cosphi = cos(phi);
-  double C = BField::cmTeslaToGeVc * theField.bFieldNominal();
+  double C = BField::mmTeslaToMeVc * theField.bFieldNominal();
   double q(1.0); 
   -omega>0 ? q=1.0: q=-1.0;
   double qC = q*C;
@@ -1095,7 +1095,7 @@ TrkMomCalculator::calcCurvAllWeightsOLD(const TrkSimpTraj& theTraj,
     DifNumber cosdip = sqrt(arg);
     
     momMag =
-      BField::cmTeslaToGeVc*theField.bFieldNominal()*cosdip /
+      BField::mmTeslaToMeVc*theField.bFieldNominal()*cosdip /
       delDirDif.length();
     momMag.absolute();
 

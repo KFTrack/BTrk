@@ -144,7 +144,7 @@ const Hep3Vector& pmom, double sign, double Bval) {
   if (pt < small)   pt = small;  // hack to avoid pt=0 tracks
   if (fabs(px) < small) px = (px<0.0) ? -small : small; // hack to avoid pt=0 tracks
     
-  pars(3)=-BField::cmTeslaToGeVc*Bval*sign/pt;  //omega
+  pars(3)=-BField::mmTeslaToMeVc*Bval*sign/pt;  //omega
   pars(5)=pmom.z()/pt;  //tandip
   rho=1./pars(3);
 //  double radius = fabs(rho);
@@ -215,11 +215,11 @@ TrkExchangePar TrkHelixUtils::helixFromMomErr(const BbrPointErr& pos,
   //    Bval = small;
   //  }
 
-//  pars(3) = -BField::cmTeslaToGeVc*Bval*sign/pt;
+//  pars(3) = -BField::mmTeslaToMeVc*Bval*sign/pt;
   pars(3) = invpt;
   pars(3) *= sign;
   pars(3) *= Bval;
-  pars(3) *= -BField::cmTeslaToGeVc;
+  pars(3) *= -BField::mmTeslaToMeVc;
 
 //  pars(5) = pzDF / pt;  //tandip
   pars(5) = pzDF;
