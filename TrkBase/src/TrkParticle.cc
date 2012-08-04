@@ -70,12 +70,12 @@ TrkParticle::charge() const {
   static GlobalConstantsHandle<ParticleDataTable> pdt;
   switch (_type) {
     case e_minus: case mu_minus: case pi_minus: case K_minus: case anti_p_minus: {
-      static double minus_charge = pdt->particle(PDGCode::e_minus).ref().mass().value();
+      static double minus_charge = pdt->particle(PDGCode::e_minus).ref().charge();
       return minus_charge;
     }
 
     case e_plus: case mu_plus: case pi_plus: case K_plus: case p_plus: {
-      static double plus_charge = pdt->particle(PDGCode::e_plus).ref().mass().value();
+      static double plus_charge = pdt->particle(PDGCode::e_plus).ref().charge();
       return plus_charge;
     }
 
