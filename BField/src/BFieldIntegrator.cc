@@ -62,7 +62,7 @@ BFieldIntegrator::deltaMomentum(const Trajectory *traj, double slo, double sup) 
     bMid -= _bNominal;
     Hep3Vector dir = traj->direction(smid);
     Hep3Vector temp = dir * deltas;
-    temp *= BField::cmTeslaToGeVc;
+    temp *= BField::mmTeslaToMeVc;
     return temp.cross(bMid);
   } else {
     return deltaMomentum(traj, slo, smid) + deltaMomentum(traj, smid, sup);
