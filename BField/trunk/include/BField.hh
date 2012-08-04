@@ -96,7 +96,7 @@ public:
   virtual void print(std::ostream& o)const;
 
   // for converting radius*field to GeV/c of transverse momentum
-  static const double cmTeslaToGeVc;
+  static const double mmTeslaToMeVc;
 
 private:
 // momentum can be defined without knowledge of the position since the

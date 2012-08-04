@@ -41,7 +41,7 @@ using std::ostream;
 
 // RKK: this is now badly named.
 // Units are now:  mm, ns, MeV, T
-const double BField::cmTeslaToGeVc = Constants::c/1.0E3;
+const double BField::mmTeslaToMeVc = Constants::c/1.0E3;
 
 //		----------------------------------------
 // 		-- Public Function Member Definitions --
@@ -82,7 +82,7 @@ double
 BField::momentum(const Hep3Vector& direction, double curvature) const 
 {
   double cosdip=direction.perp();
-  return  fabs(cmTeslaToGeVc*bFieldNominal()*cosdip/curvature);
+  return  fabs(mmTeslaToMeVc*bFieldNominal()*cosdip/curvature);
 }
 
 Hep3Vector
@@ -111,7 +111,7 @@ BField::momentumDfVector(const HepPoint& where, const DifVector& direction,
   DifNumber sindip=field.unit()*direction;
   DifNumber cosdip=sqrt(1.0-sindip*sindip);
 
-  DifNumber mag = cmTeslaToGeVc*bFieldNominal()*cosdip/curvature;
+  DifNumber mag = mmTeslaToMeVc*bFieldNominal()*cosdip/curvature;
   mag.absolute();
   mom *= mag;
   return mom;
@@ -127,7 +127,7 @@ BField::curvature(const HepPoint& where,const Hep3Vector& momentum,
   double sindip=field.unit()*momentum.unit();
   double cosdip=sqrt(1.0-sindip*sindip);
 
-  return -charge*cmTeslaToGeVc*bFieldNominal()*cosdip/momentum.mag();
+  return -charge*mmTeslaToMeVc*bFieldNominal()*cosdip/momentum.mag();
 }
 
 double 
