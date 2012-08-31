@@ -33,10 +33,15 @@ class TrkParticle {
   bool operator == (TrkParticle const& other) const { return _type == other._type; }
   bool operator != (TrkParticle const& other) const { return ! this->operator==(other); }
   TrkParticle & operator =(TrkParticle const& other);
-// return information; for now, just the mass and charge
+// return basic information
   double mass() const;
   double charge() const;
   std::string const& name() const;
+// basic kinematics; provide momentum in CLHEP units
+  double energy(double momentum) const; // return value in CLHEP units
+  double beta(double momentum) const;
+  double betagamma(double momentum) const;
+  double gamma(double momentum) const;
   private:
   type _type;
 };

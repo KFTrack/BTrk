@@ -19,11 +19,12 @@
 #include "CLHEP/Matrix/SymMatrix.h"
 #include "CLHEP/Vector/ThreeVector.h"
 #include <math.h>
-#include "TrkBase/TrkExchangePar.hh"
+#include "TrkBase/HelixParams.hh"
 #include "BField/BField.hh"
 #include "BbrGeom/BbrAngle.hh"
 #include "BbrGeom/BbrPointErr.hh"
 #include "BbrGeom/BbrVectorErr.hh"
+#include "BbrGeom/Trajectory.hh"
 #include "difAlgebra/DifNumber.hh"
 #include "difAlgebra/DifArray.hh"
 #include "BaBar/Constants.hh"
@@ -31,7 +32,7 @@
 const double TrkHelixUtils::small(1e-14);
 
 //------------------------------------------------------------------------
-HepMatrix TrkHelixUtils::jacobianExtrapolate(const TrkExchangePar& par, 
+HepMatrix TrkHelixUtils::jacobianExtrapolate(const HelixParams& par, 
 					  double fltNew) {
 //------------------------------------------------------------------------
   
@@ -100,19 +101,20 @@ HepMatrix TrkHelixUtils::jacobianExtrapolate(const TrkExchangePar& par,
 
 
 //----------------------------------------------------------------------
-HepSymMatrix TrkHelixUtils::extrapolateCov(TrkExchangePar& par, 
+HepSymMatrix TrkHelixUtils::extrapolateCov(HelixParams& par, 
 					   double fltNew) {
 //----------------------------------------------------------------------
 
   return par.covariance().similarity(jacobianExtrapolate(par, fltNew));  
 }
 
-TrkExchangePar TrkHelixUtils::helixFromMom(const HepPoint& pos, 
+HelixParams TrkHelixUtils::helixFromMom(const HepPoint& pos, 
        	      const Hep3Vector& pmom, double sign, const BField& fieldmap) {
 	static HepVector pars(5);
 	static double fltlen;
+	static HepSymMatrix dummy(5,1);
 	helixFromMom(pars,fltlen,pos,pmom,sign,fieldmap);
-	return TrkExchangePar(pars);
+	return HelixParams(pars,dummy);
 }
 
 //----------------------------------------------------------------------
@@ -187,7 +189,7 @@ const Hep3Vector& pmom, double sign, double Bval) {
 }
 
 //----------------------------------------------------------------------
-TrkExchangePar TrkHelixUtils::helixFromMomErr(const BbrPointErr& pos,
+HelixParams TrkHelixUtils::helixFromMomErr(const BbrPointErr& pos,
               const BbrVectorErr& pmom,const HepMatrix& cxp, double sign, 
               const BField& fieldmap) {
 //----------------------------------------------------------------------
@@ -271,12 +273,12 @@ TrkExchangePar TrkHelixUtils::helixFromMomErr(const BbrPointErr& pos,
   }
   for (i = 1; i <= 5; ++i) {
  // make the array of DifNums into a HepVector
- // (needed for TrkExchangePar init)
+ // (needed for HelixParams init)
     parsVec(i) = pars(i).number();
   }
 // Now calculate error on the helix pars--the real calculation
 
-  return TrkExchangePar(parsVec,posandmomErr.similarity(pars.jacobian()) );
+  return HelixParams(parsVec,posandmomErr.similarity(pars.jacobian()) );
 }
 //----------------------------------------------------------------------
 NeutParams TrkHelixUtils::lineFromMomErr(const BbrPointErr& pos,
@@ -366,7 +368,7 @@ NeutParams TrkHelixUtils::lineFromMomErr(const BbrPointErr& pos,
   }
   for (i = 1; i <= 6; ++i) {
  // make the array of DifNums into a HepVector
- // (needed for TrkExchangePar init)
+ // (needed for HelixParams init)
     parsVec(i) = pars(i).number();
   }
 // Now calculate error on the helix pars--the real calculation
@@ -374,7 +376,7 @@ NeutParams TrkHelixUtils::lineFromMomErr(const BbrPointErr& pos,
 }
 
 //------------------------------------------------------------------------
-double TrkHelixUtils::fltToRad(const TrkExchangePar& hel, double rad) {
+double TrkHelixUtils::fltToRad(const HelixParams& hel, double rad) {
 //------------------------------------------------------------------------
   double d0 = hel.d0();
   double omega = hel.omega();
@@ -396,3 +398,19 @@ double TrkHelixUtils::fltToRad(const TrkExchangePar& hel, double rad) {
   }
   return dist2d * sqrt(1. + tanDip*tanDip);
 }
+
+bool
+TrkHelixUtils::findZFltlen(Trajectory const& traj, double zval, double& zflt, double tol) {
+  static const unsigned maxniter(10);
+  double dz;
+  unsigned niter = 0;
+  do {
+    double ztraj = traj.position(zflt).z();
+    // assuming constant dip, the fltlen is given by the 
+    dz = zval - ztraj;
+    zflt += dz/traj.direction(zflt).z();
+    niter++;
+  } while(fabs(dz) > tol && niter < maxniter );
+  return fabs(dz) < tol;
+}
+

@@ -32,13 +32,12 @@
 #include "difAlgebra/DifIndepPar.hh"
 #include "ProbTools/ChisqConsistency.hh"
 #include "ErrLogger/ErrLog.hh"
-#include "TrkBase/TrkExchangePar.hh"
+#include "TrkBase/HelixParams.hh"
 using std::cout;
 using std::endl;
 
 TrkRep::TrkRep(TrkParticle const& hypo,bool createHotList)
   : _tpart(hypo),
-    _betainv(-999999.),
     _hotList( createHotList?new TrkHotListFull:0 )
 {
 }
@@ -46,7 +45,6 @@ TrkRep::TrkRep(TrkParticle const& hypo,bool createHotList)
 TrkRep::TrkRep(const TrkHotList& hotlist, 
                TrkParticle const& hypo)
   : _tpart(hypo),
-    _betainv(-999999.),
     _hotList( hotlist.clone(TrkBase::Functors::cloneHot(this)) )
 {
 }
@@ -54,7 +52,6 @@ TrkRep::TrkRep(const TrkHotList& hotlist,
 TrkRep::TrkRep(TrkHotList& hotlist, 
                TrkParticle const& hypo, bool stealHots)
   : _tpart(hypo),
-    _betainv(-999999.),
     _hotList( stealHots? new TrkHotListFull(hotlist,setParent(this))
                        : hotlist.clone(TrkBase::Functors::cloneHot(this)) )
 {
@@ -63,7 +60,6 @@ TrkRep::TrkRep(TrkHotList& hotlist,
 TrkRep::TrkRep(const TrkHotList* hotlist, 
                TrkParticle const& hypo)
   : _tpart(hypo),
-    _betainv(-999999.),
     _hotList( hotlist!=0?
                   hotlist->clone(TrkBase::Functors::cloneHot(this)):
                   new TrkHotListFull )
@@ -72,8 +68,7 @@ TrkRep::TrkRep(const TrkHotList* hotlist,
 
 TrkRep::TrkRep(TrkHotList* hotlist, 
                TrkParticle const& hypo,bool takeownership)
-  : _tpart(hypo),
-    _betainv(-999999.)
+  : _tpart(hypo)
 {
   if (!takeownership) {
     _hotList.reset( hotlist!=0?
@@ -88,8 +83,7 @@ TrkRep::TrkRep(TrkHotList* hotlist,
 // copy ctor
 TrkRep::TrkRep(const TrkRep& oldRep,  TrkParticle const& hypo) :
   TrkFitStatus(oldRep),
-    _tpart(hypo),
-    _betainv(-999999.)
+    _tpart(hypo)
 {
   // Hots and hotlist have to be cloned in the derived classes
 }
@@ -99,7 +93,6 @@ TrkRep::operator= (const TrkRep& right)
 {
   if(&right != this){
     _tpart=right._tpart;
-    _betainv=right._betainv;
     _hotList.reset( right._hotList->clone(this) );
     TrkFitStatus::operator=(right);
   }
@@ -172,17 +165,12 @@ TrkRep::direction(double fltL) const
 double
 TrkRep::arrivalTime(double fltL) const
 {
-  static double cinv = 1./Constants::c;
-  // Initialize cache
-  if (_betainv < 0.0) {
-    double mass2 = particleType().mass();
-    mass2 = mass2 * mass2;
-    double ptot2 = momentum(0.).mag2();
-    assert(ptot2 != 0.0);
-    _betainv = sqrt( (ptot2 +  mass2)/ ptot2);
-  }
-  double tof = fltL * _betainv * cinv;
-  return _trkt0.t0() + tof;
+// average momentum between flt0 and this flight.  Should really integrate, FIXME!!!
+  double mom0 = momentum(_flt0).mag();
+  double momend = momentum(fltL).mag();
+  double avgmom = 0.5*(mom0+momend);
+  double beta = _tpart.beta(avgmom);
+  return _trkt0.t0() + (fltL-_flt0)/(beta*Constants::c);
 }
 
 BbrPointErr

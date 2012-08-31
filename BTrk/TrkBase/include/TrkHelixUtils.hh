@@ -17,7 +17,7 @@
 #define TRKHELIXUTILS_HH
 
 #include "CLHEP/Matrix/Matrix.h"
-class TrkExchangePar;
+class HelixParams;
 class HepPoint;
 #include "CLHEP/Vector/ThreeVector.h"
 #include "CLHEP/Matrix/SymMatrix.h"
@@ -25,6 +25,7 @@ class BField;
 class BbrPointErr;
 class BbrVectorErr;
 class NeutParams;
+class Trajectory;
 // Class interface //
 class TrkHelixUtils {
 
@@ -40,26 +41,29 @@ public:
 
      // Create a helix-set from a position and a momentum.
      // Uses nominal B field to determine curvature. 
-  static TrkExchangePar helixFromMom(const HepPoint& vertex, 
+  static HelixParams helixFromMom(const HepPoint& vertex, 
 		const Hep3Vector& p, double sign, const BField&);
 
      // Does the same, but gives *real* errors on the parameters
      // (instead of a default error matrix)
      // Uses nominal B field to determine curvature. 
-  static TrkExchangePar helixFromMomErr(const BbrPointErr& vertex,
+  static HelixParams helixFromMomErr(const BbrPointErr& vertex,
                 const BbrVectorErr& p,const HepMatrix& cxp,  double sign, const BField&);
      // Does the same but for neutrals
   static NeutParams lineFromMomErr(const BbrPointErr& vertex,
                 const BbrVectorErr& p,const HepMatrix& cxp,  double sign, const BField&); 
 
      // Jacobian for transforming std helix params to new set defined at fltNew
-  static HepMatrix jacobianExtrapolate(const TrkExchangePar&, double fltNew);
+  static HepMatrix jacobianExtrapolate(const HelixParams&, double fltNew);
 
      // Actually transform the error matrix, as above
-  static HepSymMatrix extrapolateCov(TrkExchangePar &, double fltNew);
+  static HepSymMatrix extrapolateCov(HelixParams &, double fltNew);
 
      // Path length (3-d) to intersection with cylinder at radius rad.
-  static double fltToRad(const TrkExchangePar& hel, double rad);
+  static double fltToRad(const HelixParams& hel, double rad);
+
+     // path length (3-d) to intersection with given Z plane, starting from estimate
+  static bool findZFltlen(Trajectory const& traj, double zplane, double& zflt, double tol=0.1);
 
 private:	
   // Preempt 
