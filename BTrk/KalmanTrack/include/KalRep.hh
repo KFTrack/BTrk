@@ -31,7 +31,7 @@
 
 class TrkHotList;
 class TrkDifTraj;
-class TrkExchangePar;
+class HelixParams;
 class TrkHitOnTrk;
 class TrkFundHit;
 class TrkVolume;
@@ -56,7 +56,7 @@ public:
 //******************************************
 // Local helix parameters and trajectory access
 //******************************************
-  TrkExchangePar helix(double fltLen) const;
+  HelixParams helix(double fltLen) const;
   const TrkSimpTraj* localTrajectory(double fltlen,double& loclen) const;
   const TrkDifTraj& traj() const { return (TrkDifTraj&)pieceTraj(); }
   const TrkDifPieceTraj& pieceTraj() const;
@@ -409,7 +409,7 @@ private:
   void setFitRange(double lowrange, double highrange);
   void setExtendable(trkDirection idir); 
 // helper allowing similar constructors to share code
-  void init(const TrkExchangePar&);
+  void init(const HelixParams&);
 // same, using seed parameters
   void initFromSeed();
 	void initRep();
