@@ -15,7 +15,7 @@
 #include "ErrLogger/ErrLog.hh"
 #include "TrkBase/TrkPocaXY.hh"
 #include "TrkBase/TrkPoca.hh"
-#include "TrkBase/TrkExchangePar.hh"
+#include "TrkBase/HelixParams.hh"
 #include "TrkBase/HelixTraj.hh"
 #include "TrajGeom/TrkLineTraj.hh"
 #include "CLHEP/Vector/ThreeVector.h"

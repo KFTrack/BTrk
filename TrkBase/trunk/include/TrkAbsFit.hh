@@ -24,7 +24,7 @@ class BbrVectorErr;
 class TrkDifTraj;
 class TrkSimpTraj;
 #include <iosfwd>
-class TrkExchangePar;
+class HelixParams;
 class ChisqConsistency;
 
 

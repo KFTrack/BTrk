@@ -9,16 +9,15 @@
 
 class TrkVisitor;
 #include "CLHEP/Matrix/Vector.h"
-class TrkExchangePar;
+class HelixParams;
 
 class HelixTraj : public TrkSimpTraj {
 public:
 //  Define the parameters 
-  enum ParIndex {d0Index=0, phi0Index, omegaIndex, z0Index, tanDipIndex}; 
-  enum {NHLXPRM = 5};
+  enum ParIndex {d0Index=0, phi0Index, omegaIndex, z0Index, tanDipIndex, NHLXPRM};
   HelixTraj(const HepVector&,const HepSymMatrix&, double lowlim=-99999.,
 	    double hilim=99999., const HepPoint& refpoint = _theOrigin);
-  HelixTraj(const TrkExchangePar&, double lowlim=-99999.,
+  HelixTraj(const HelixParams&, double lowlim=-99999.,
 	    double hilim=99999., const HepPoint& refpoint = _theOrigin);
   HelixTraj(const TrkParams&, double lowlim=-99999.,
 	    double hilim=99999., const HepPoint& refpoint = _theOrigin);

@@ -29,7 +29,7 @@ public:
 
   virtual int                 nActive()                   const = 0;
   virtual TrkParticle const&     particleType()              const = 0;
-  virtual TrkExchangePar    helix(double fltL)            const = 0;
+  virtual HelixParams    helix(double fltL)            const = 0;
   virtual double            arrivalTime(double fltL)      const = 0;
   virtual double            startFoundRange()             const = 0;
   virtual double            endFoundRange()               const = 0;

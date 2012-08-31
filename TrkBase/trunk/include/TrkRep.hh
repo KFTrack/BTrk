@@ -34,7 +34,7 @@ class TrkHitOnTrk;
 #include <iosfwd>
 class TrkDifTraj;
 class TrkErrCode;
-class TrkExchangePar;
+class HelixParams;
 #include "CLHEP/Vector/ThreeVector.h"
 class HepPoint;
 class TrkVolume;
@@ -81,9 +81,11 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitOnTrkUpdater {
     virtual double            endFoundRange()   const;
     //  t0
     TrkT0 const& t0() const { return _trkt0; }
+    // flightlength associated with t0.
+    double flt0() const { return _flt0; }
     TrkParticle const& particleType() const { return _tpart; }
-    // for now, allow setting these
-    void setT0(TrkT0 const& t0) { _trkt0 = t0; }
+    // for now, allow setting t0.  Must be coherent with flt0
+    void setT0(TrkT0 const& t0,double flt0) { _trkt0 = t0; _flt0 = flt0;}
     // static function to return the BaBar BField.
     static BField const& bField();
 
@@ -129,9 +131,9 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitOnTrkUpdater {
   private:
     // new data members for mu2e
     TrkT0 _trkt0; // t0 value
+    double _flt0; // flightlength associated with t=t0.
     TrkParticle _tpart;
     TrkId _id;  // track identifier
-    mutable double   _betainv;   // cache for arrivalTime
   protected:
     //protected, not private, so derived classes can create in copy ctor
     // note: cloning a hotlist requires parentRep to be set first, so
