@@ -12,7 +12,7 @@
 //------------------------------------------------------------------------
 #include "BaBar/BaBar.hh"
 #include "TrkBase/NeutParams.hh"
-#include "TrkBase/TrkExchangePar.hh"
+#include "TrkBase/HelixParams.hh"
 #include "ErrLogger/ErrLog.hh"
 
 // construct from vector and covariance matrix

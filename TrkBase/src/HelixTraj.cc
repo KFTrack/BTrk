@@ -15,7 +15,7 @@
 #include "difAlgebra/DifPoint.hh"
 #include "difAlgebra/DifVector.hh"
 #include "BbrGeom/BbrAngle.hh"
-#include "TrkBase/TrkExchangePar.hh"
+#include "TrkBase/HelixParams.hh"
 #include "ErrLogger/ErrLog.hh"
 using std::endl;
 using std::ostream;
@@ -40,7 +40,7 @@ HelixTraj::HelixTraj(const HepVector& pvec, const HepSymMatrix& pcov,
 }
 
 
-HelixTraj::HelixTraj(const TrkExchangePar& inpar,
+HelixTraj::HelixTraj(const HelixParams& inpar,
                      double lowlim, double hilim, const HepPoint& refpoint) :
   TrkSimpTraj(inpar.params(), inpar.covariance(), lowlim,hilim,refpoint)
 {
