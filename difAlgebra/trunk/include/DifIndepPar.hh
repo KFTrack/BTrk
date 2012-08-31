@@ -53,7 +53,7 @@ public:
   void print(std::ostream& os = std::cout) const;
   void printAll(std::ostream& os = std::cout) const;
 
-private:
+protected:
   //data
   HepVector parvec;                 //  Vector of parameters
   HepSymMatrix parcov;                 //  Covariance matrix on the parameters
