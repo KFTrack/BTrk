@@ -33,7 +33,7 @@
 #include "BField/BField.hh"
 #include "BField/BFieldFixed.hh"
 #include "TrkBase/TrkDifTraj.hh"
-#include "TrkBase/TrkExchangePar.hh"
+#include "TrkBase/HelixParams.hh"
 #include "TrkBase/TrkVolume.hh"
 #include "TrkBase/TrkSimpTraj.hh"
 #include "TrkBase/HelixTraj.hh"
@@ -72,7 +72,7 @@ struct FindMatBendSites {
 
 
 void
-KalRep::init(const TrkExchangePar& inPar)
+KalRep::init(const HelixParams& inPar)
 {
 //  Construct the seed traj as a helix from the input parameters, using the origin
   _seedtraj = new HelixTraj(inPar);
@@ -359,7 +359,7 @@ KalRep::cloneNewHypo(TrkParticle const& tpart) {
 //
 //  Return exchange par of rep.
 //
-TrkExchangePar
+HelixParams
 KalRep::helix(double fltlen) const {
   double locflight;
   const TrkSimpTraj* ltraj = localTrajectory(fltlen,locflight);
@@ -367,14 +367,14 @@ KalRep::helix(double fltlen) const {
 // set origin to a nominal value DNB_RKK
   static const HepPoint origin(0.0,0.0,0.0);
   if(ltraj->referencePoint() == origin){
-    return TrkExchangePar(ltraj->parameters()->parameter(), 
+    return HelixParams(ltraj->parameters()->parameter(), 
 			  ltraj->parameters()->covariance());
   } else {
 // clone the trajectory, and change its reference point to the origin
     TrkSimpTraj* otraj = ltraj->clone();
     double olen = locflight - fltlen;
     otraj->changePoint(origin,olen);
-    TrkExchangePar outpar(otraj->parameters()->parameter(), 
+    HelixParams outpar(otraj->parameters()->parameter(), 
 			  otraj->parameters()->covariance());
     delete otraj;
     return outpar;
