@@ -19,12 +19,12 @@
 //
 // Revision History:
 //	20020409  M. Kelsey -- Collapse duplicate helixPath() functions
-//		  into one.  Replace HelixTraj& argument with TrkExchangePar
+//		  into one.  Replace HelixTraj& argument with HelixParams
 //		  and HepPoint.
 //	20020411  Add DchSWire data member.
 //		  bug fix -- operator<< ought to take const DchCell&
 //	20020419  BUG FIX -- Undo part of changes made 20020409 above:
-//		  helixPath MUST take HelixTraj&, and not TrkExchangePar.
+//		  helixPath MUST take HelixTraj&, and not HelixParams.
 //	20020425  Protect debugging messages and calculations with #ifdef
 //	20020428  Modify helixPath() to compute arc lengths from hit position
 //		  directly, rather than from helix base, protected by #ifdef.
@@ -72,7 +72,7 @@
 #include "TrkBase/HelixTraj.hh"
 #include "TrkBase/TrkDifTraj.hh"
 #include "TrkBase/TrkErrCode.hh"
-#include "TrkBase/TrkExchangePar.hh"
+#include "TrkBase/HelixParams.hh"
 #include "TrkBase/TrkFit.hh"
 #include "TrkBase/TrkParams.hh"
 #include "TrkBase/TrkPoca.hh"
@@ -308,8 +308,8 @@ DchCell::helixPath(const TrkFit* traj, double fltlen) const
 double
 DchCell::helixPath(const HelixTraj& theHelix, double fltlen) const
 {
-  // NOTE:  Must convert TrkParams to TrkExchangePar by hand
-  TrkExchangePar pars(theHelix.parameters()->parameter(),
+  // NOTE:  Must convert TrkParams to HelixParams by hand
+  HelixParams pars(theHelix.parameters()->parameter(),
 		      theHelix.parameters()->covariance());
 
   // Return path length from helix at built-in reference point
@@ -326,7 +326,7 @@ DchCell::helixPath(const HelixTraj& theHelix, double fltlen) const
 // both of the public interfaces above.
 
 double
-DchCell::helixPath(const TrkExchangePar& helix, const HepPoint& ref,
+DchCell::helixPath(const HelixParams& helix, const HepPoint& ref,
 		   const HepPoint& hit, double fltlen) const
 {
 #ifdef DCHGEOM_DEBUG
