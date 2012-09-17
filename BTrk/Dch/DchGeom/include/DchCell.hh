@@ -18,7 +18,7 @@
 //	Copyright (C) 1997	INFN-Pd
 //
 //	20020411  Bug fix -- operator<< ought to take const DchCell&
-//	20020419  Add protected helixPath(TrkExchangePar...), called from
+//	20020419  Add protected helixPath(HelixParams...), called from
 //		  both TrkFit* and HelixTraj& public interfaces.
 //------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ class HepPoint;
 class Trajectory;
 class TrkFit;
 class HelixTraj;
-class TrkExchangePar;
+class HelixParams;
 
 class DchCell {
 
@@ -110,7 +110,7 @@ public:
   const std::vector<DchFWire*>& cellWires() const { return _cellWires; }
 
 protected:
-  double helixPath(const TrkExchangePar& helix, const HepPoint& ref,
+  double helixPath(const HelixParams& helix, const HepPoint& ref,
 		   const HepPoint& hit, double fltlen) const;
 
 private:
