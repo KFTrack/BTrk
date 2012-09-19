@@ -100,10 +100,6 @@ TrkHitOnTrk::setUsability(int usability)
     _isActive = false;
     if(getParentRep() != 0)parentRep()->deactivateHot(this);
   }
-  if (!isActive() && mustUse()) {
-    _isActive = true;
-    if(getParentRep() != 0)parentRep()->activateHot(this);
-  }
 }
 
 double
