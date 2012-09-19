@@ -192,7 +192,6 @@ private:
 // Inline functions
 inline bool TrkHitOnTrk::isActive() const {return _isActive;}
 inline bool TrkHitOnTrk::isUsable() const {return (_isUsable > 0);}
-inline bool TrkHitOnTrk::mustUse()  const {return (_isUsable > 1);}
 
 std::ostream& operator<<(std::ostream& o, const TrkHitOnTrk& x) ;
 #endif
