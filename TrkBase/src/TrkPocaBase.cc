@@ -22,23 +22,24 @@
 #include <assert.h>
 #include "ErrLogger/ErrLog.hh"
 
+#include <iostream>
 #include <iomanip>
 #include <algorithm>
 
-TrkPocaBase::TrkPocaBase(double f1, double f2, double prec)
-        :  _precision(prec), _flt1(f1), _flt2(f2),_status(TrkErrCode::fail)
+  TrkPocaBase::TrkPocaBase(double f1, double f2, double prec)
+:  _precision(prec), _flt1(f1), _flt2(f2),_status(TrkErrCode::fail)
 {
   assert(prec > 0.);
 }
 
-TrkPocaBase::TrkPocaBase()
-        :  _precision(1.0e-5), _flt1(0.0), _flt2(0.0),_status(TrkErrCode::fail)
+  TrkPocaBase::TrkPocaBase()
+:  _precision(1.0e-5), _flt1(0.0), _flt2(0.0),_status(TrkErrCode::fail)
 {
 }
 
-TrkPocaBase::TrkPocaBase(const TrkPocaBase& other)
-  :  _precision(other._precision), _flt1(other._flt1), _flt2(other._flt2),
-     _status(other._status)
+  TrkPocaBase::TrkPocaBase(const TrkPocaBase& other)
+:  _precision(other._precision), _flt1(other._flt1), _flt2(other._flt2),
+  _status(other._status)
 {
 }
 
@@ -53,9 +54,9 @@ TrkPocaBase::operator = (const TrkPocaBase& other) {
   return *this;
 }
 
-void 
+  void 
 TrkPocaBase::minimize(TrkPocaTraj& ptraj1,
-                      TrkPocaTraj& ptraj2)
+    TrkPocaTraj& ptraj2)
 {
   // Last revision: Jan 2003, WDH
   const int maxnOscillStep = 5 ;
@@ -64,7 +65,7 @@ TrkPocaBase::minimize(TrkPocaTraj& ptraj1,
 
   // initialize
   _status = TrkErrCode::succeed;
-  
+
   static HepPoint newPos1, newPos2 ;
   double delta(0), prevdelta(0) ;
   int nOscillStep(0) ;
@@ -78,7 +79,7 @@ TrkPocaBase::minimize(TrkPocaTraj& ptraj1,
     double prevflt2  = ptraj2._flt ;
     double prevprevdelta = prevdelta ;
     prevdelta = delta;
-    
+
     stepTowardPoca(ptraj1, ptraj2);
     if( status().failure() ) {
       // failure in stepTowardPoca
@@ -91,69 +92,80 @@ TrkPocaBase::minimize(TrkPocaTraj& ptraj1,
       double step2 = ptraj2._flt - prevflt2;
       int pathDir1 = (step1 > 0.) ? 1 : -1;
       int pathDir2 = (step2 > 0.) ? 1 : -1;
-      
+
       // Can we stop stepping?
       double distToErr1 = ptraj1._traj.distTo1stError(prevflt1, precision(), pathDir1);
       double distToErr2 = ptraj2._traj.distTo1stError(prevflt2, precision(), pathDir2);
-      
+
       // converged if very small steps, or if parallel
       finished = 
-	(fabs(step1) < distToErr1 && fabs(step2) < distToErr2 ) ||
-	(status().success() == 3) ;
- 
+        (fabs(step1) < distToErr1 && fabs(step2) < distToErr2 ) ||
+        (status().success() == 3) ;
+
       // we have to catch some problematic cases
       if( !finished && istep>2 && delta > prevdelta) {
-      // we can get stuck if a flt range is restricted
-	if(ptraj1._rflt && step1==0.0 ||
-	   ptraj2._rflt && step2==0.0) {
-	  if(++nStuck > maxnStuck){
-	  // downgrade to a point poca
-	    if(ptraj2._rflt)
-	      minimize(ptraj1,newPos2);
-	    else
-	      minimize(ptraj2,newPos1);
-	    _status.setSuccess(22,"Stuck poca.");
-	    finished = true;
-	  }
-	} else if( prevdelta > prevprevdelta) {
-	  // diverging
-	  if(++nDivergingStep>maxnDivergingStep) { 
-	    _status.setFailure(2) ; // code for `Failed to converge'
-	    finished = true ;
-	  }
-	} else {
- 	  nDivergingStep=0;
-	  // oscillating
-	  if(++nOscillStep>maxnOscillStep) {
-	    // bail out of oscillation. since the previous step was
-	    // better, use that one.
-	    ptraj1._flt = prevflt1 ;
-	    ptraj2._flt = prevflt2 ;
-	    _status.setSuccess(21, "Oscillating poca.") ;
-	    finished = true ;
-	  } else {
-	    // we might be oscillating, but we could also just have
-	    // stepped over the minimum. choose a solution `in
-	    // between'.
-	    setFlt(prevflt1 + 0.5*step1,ptraj1);
-	    setFlt(prevflt2 + 0.5*step2,ptraj2);
-	    newPos1 = ptraj1._traj.position(ptraj1._flt) ;
-	    newPos2 = ptraj2._traj.position(ptraj2._flt) ;
-	    delta = (newPos1 - newPos2).mag() ;
-	  }
-	}
+        // we can get stuck if a flt range is restricted
+        if( (ptraj1._rflt && step1==0.0) ||
+            (ptraj2._rflt && step2==0.0) ) {
+          if(++nStuck > maxnStuck){
+            // downgrade to a point poca
+            if(ptraj2._rflt)
+              minimize(ptraj1,newPos2);
+            else
+              minimize(ptraj2,newPos1);
+            _status.setSuccess(22,"Stuck poca.");
+            finished = true;
+          }
+        } else if( prevdelta > prevprevdelta) {
+          // diverging
+          if(++nDivergingStep>maxnDivergingStep) { 
+            _status.setFailure(2) ; // code for `Failed to converge'
+            finished = true ;
+          }
+        } else {
+          nDivergingStep=0;
+          // oscillating
+          if(++nOscillStep>maxnOscillStep) {
+            // bail out of oscillation. since the previous step was
+            // better, use that one.
+            ptraj1._flt = prevflt1 ;
+            ptraj2._flt = prevflt2 ;
+            _status.setSuccess(21, "Oscillating poca.") ;
+            finished = true ;
+          } else {
+            // we might be oscillating, but we could also just have
+            // stepped over the minimum. choose a solution `in
+            // between'.
+            setFlt(prevflt1 + 0.5*step1,ptraj1);
+            setFlt(prevflt2 + 0.5*step2,ptraj2);
+            newPos1 = ptraj1._traj.position(ptraj1._flt) ;
+            newPos2 = ptraj2._traj.position(ptraj2._flt) ;
+            delta = (newPos1 - newPos2).mag() ;
+          }
+        }
       } 
     }
   }
-  if(!finished) _status.setSuccess(2) ; // code for 'not converged' (yet)
+  if(!finished){
+    // check for failure: either flightlen NAN.  Why doesn't the exception handling do this????
+    if( ptraj1._flt != ptraj1._flt || ptraj2._flt != ptraj2._flt ||
+        delta != delta){
+#ifdef DEBUG
+      std::cout << "NAN in POCA" << std::endl;
+#endif
+      _status.setFailure(2);
+    }  else {
+      _status.setSuccess(2) ; // code for 'not converged' (yet)
+    }
+  }
 }
 
-TrkPocaBase::TrkPocaBase(double f1, double prec) 
-  : _precision(prec), _flt1(f1), _flt2(0), _status(TrkErrCode::fail)
+  TrkPocaBase::TrkPocaBase(double f1, double prec) 
+: _precision(prec), _flt1(f1), _flt2(0), _status(TrkErrCode::fail)
 {
 }
 
-void
+  void
 TrkPocaBase::minimize(TrkPocaTraj& ptraj,const HepPoint& pt )
 {
   _status=TrkErrCode::succeed;
@@ -190,8 +202,8 @@ TrkPocaBase::minimize(TrkPocaTraj& ptraj,const HepPoint& pt )
     if (nOscills > 2) {
       mustStep = false;
       ErrMsg(warning) << "Alleged oscillation detected. "
-                      << step << "  " << fltLast-fltBeforeLast
-                      << "  " << i << "  " << endmsg;
+        << step << "  " << fltLast-fltBeforeLast
+        << "  " << i << "  " << endmsg;
     }
     if (!mustStep) return;
     fltBeforeLast = fltLast;
@@ -205,12 +217,12 @@ TrkPocaBase::~TrkPocaBase()
 {}
 
 
-void 
+  void 
 TrkPocaBase::stepTowardPoca(TrkPocaTraj& ptraj1,
-			    TrkPocaTraj& ptraj2)
+    TrkPocaTraj& ptraj2)
 { 
   // Last revision: Jan 2003, WDH
-  
+
   // A bunch of unsightly uninitialized variables:
   static Hep3Vector dir1, dir2;
   static Hep3Vector delDir1, delDir2;
@@ -225,25 +237,25 @@ TrkPocaBase::stepTowardPoca(TrkPocaTraj& ptraj1,
   double cbb = dir2.mag2() - delta.dot(delDir2);
   double cab = -dir1.dot(dir2);
   double det = caa * cbb - cab * cab;
-  
+
   if(det<0) {
-  // get rid of second order terms
+    // get rid of second order terms
     caa = dir1.mag2() ;
     cbb = dir2.mag2() ;
     det = caa * cbb - cab * cab;
   }
-  
+
   if ( det < 1.e-8) {
     // If they are parallel (in quadratic approximation) give up
     _status.setSuccess(3);
     return;
   }
-  
+
   double df1 = (ua * cbb - ub * cab)/det;
   int pathDir1 = (df1 > 0) ? 1 : -1;
   double df2 = (ub * caa - ua * cab)/det;
   int pathDir2 = (df2 > 0) ? 1 : -1;
-  
+
   // Don't try going farther than worst parabolic approximation will
   // allow: Since ` _extrapToler' is large, this cut effectively only
   // takes care that we don't make large jumps past the kink in a
@@ -251,7 +263,7 @@ TrkPocaBase::stepTowardPoca(TrkPocaTraj& ptraj1,
 
   double distToErr1 = ptraj1._traj.distTo2ndError(ptraj1._flt, _extrapToler, pathDir1);
   double distToErr2 = ptraj2._traj.distTo2ndError(ptraj2._flt, _extrapToler, pathDir2);
-  
+
   // Factor to push just over border of piecewise traj (essential!)
   const double smudge = 1.01 ; 
   if( fabs(df1) > smudge*distToErr1 ) {
@@ -271,7 +283,7 @@ TrkPocaBase::stepTowardPoca(TrkPocaTraj& ptraj1,
       df1 = smudge*distToErr1 * pathDir1 ;
     }
   }
-  
+
   setFlt(ptraj1._flt+df1,ptraj1);
   setFlt(ptraj2._flt+df2,ptraj2);
 
@@ -280,10 +292,10 @@ TrkPocaBase::stepTowardPoca(TrkPocaTraj& ptraj1,
     _status.setSuccess(3) ;
 }
 
-void 
+  void 
 TrkPocaBase::stepToPointPoca(TrkPocaTraj& ptraj, const HepPoint& pt) 
 {
-// Unsightly uninitialized variables:
+  // Unsightly uninitialized variables:
   static Hep3Vector dir, delDir;
   static HepPoint trajPos;
 
@@ -312,9 +324,9 @@ int TrkPocaBase::_maxTry = 500;
 double TrkPocaBase::_extrapToler = 2.;
 
 void
-TrkPocaBase::setFlt(double flt,TrkPocaTraj& ptraj) {
-  if(!ptraj._rflt)
-    ptraj._flt = flt;
-  else
-    ptraj._flt = std::max(std::min(ptraj._traj.hiRange(),flt),ptraj._traj.lowRange());
-}
+  TrkPocaBase::setFlt(double flt,TrkPocaTraj& ptraj) {
+    if(!ptraj._rflt)
+      ptraj._flt = flt;
+    else
+      ptraj._flt = std::max(std::min(ptraj._traj.hiRange(),flt),ptraj._traj.lowRange());
+  }
