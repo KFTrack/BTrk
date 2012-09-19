@@ -549,12 +549,12 @@ KalRep::hitChi(const TrkHitOnTrk* hot,
 // merge the inner and outer parameters
 	if(prevsite != 0 && nextsite != 0)
 	  prevsite->mergeParams(nextsite,smoothed);
-      } else if(index == _hitrange[0] ) {
+      } else if(index <= _hitrange[0] ) {
 	if(exclude)
 	  refsite = nextActive(index,trkOut);
 	if(refsite != 0)
 	  smoothed = refsite->filterParameters(trkIn);
-      } else if(index == _hitrange[1] ) {
+      } else if(index >= _hitrange[1] ) {
 	if(exclude)
 	  refsite = nextActive(index,trkIn);
 	if(refsite != 0)
@@ -1947,7 +1947,7 @@ KalRep::updateSites( int startindex,int endindex,
     if( thesite->update(_reftraj,sitemom)){
 // note update resets the activity flag of the material
 // reset material sites
-      if(thesite->kalMaterial() != 0){
+      if(thesite->kalMaterial() != 0 && thesite->isActive()){
         KalMaterial* mat = thesite->kalMaterial();
 // if we're going out (losing energy), check for the track stopping
         if(dedxdir==trkOut && stopsIn(mat)){
@@ -1965,7 +1965,7 @@ KalRep::updateSites( int startindex,int endindex,
         sitemom = std::max(sitemom,_minmom);
     }
 // check hot sites for flightlenght changes
-      if(thesite->kalHit() != 0)
+      if(thesite->kalHit() != 0 && thesite->isActive())
 	_maxfltdif = std::max(_maxfltdif,thesite->kalHit()->flightLengthChange());
     }
 // move to the next site
