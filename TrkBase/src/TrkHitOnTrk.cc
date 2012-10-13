@@ -83,7 +83,7 @@ TrkHitOnTrk::~TrkHitOnTrk()
 void
 TrkHitOnTrk::setActivity(bool turnOn)
 {
-  if (!isUsable() || isActive()==turnOn) return;
+  if (isActive()==turnOn || (!isUsable()) ) return;
   if (getParentRep() != 0) {    // needed until Rep-less HoTs go away
     turnOn ? parentRep()->activateHot(this)
            : parentRep()->deactivateHot(this);
@@ -96,10 +96,17 @@ void
 TrkHitOnTrk::setUsability(int usability)
 {
   _isUsable = usability;
-  if (isActive() && !isUsable()) {
+  if (isActive() && (!isUsable()) ) {
     _isActive = false;
     if(getParentRep() != 0)parentRep()->deactivateHot(this);
   }
+<<<<<<< .mine
+  if (mustUse() && (!isActive()) ) {
+    _isActive = true;
+    if(getParentRep() != 0)parentRep()->activateHot(this);
+  }
+=======
+>>>>>>> .r568
 }
 
 double
