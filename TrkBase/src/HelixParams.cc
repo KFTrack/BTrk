@@ -22,8 +22,8 @@ using std::ostream;
 HelixParams::HelixParams(const HepVector& params, const HepSymMatrix& pcov) 
   :  TrkParams(params,pcov) { 
 //----------------------------------------------------------------------
-    assert(parvec.num_row() == nParam);
-    assert(parcov.num_row() == nParam);
+    assert(parvec.num_row() == NHLXPRM);
+    assert(parcov.num_row() == NHLXPRM);
     parvec[phi0Index] = BbrAngle(parvec[phi0Index]).rad();
 }
 
