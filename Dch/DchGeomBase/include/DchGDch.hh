@@ -30,6 +30,7 @@
 #include <fstream>
 #include <assert.h>
 #include <string>
+#include <vector>
 
 // collaborating class headers
 #include "DchGeomBase/DchSimpleCyl.hh"
@@ -156,6 +157,31 @@ public:
 // more complete printing
   void printAll(std::ostream& o=std::cout) const;
 
+  std::string GasMat() const { return _GasMaterial; }
+  std::string ICMat()  const { return _ICMaterial; }
+  std::string OCMat()  const { return _OCMaterial; }
+  std::string REPMat(int iSub=0) const { return _REPMaterialSubs.at(iSub); }
+  std::string FEPMat(int iSub=0) const { return _FEPMaterialSubs.at(iSub); }
+  //  rear end plate (REP)
+  size_t REPnSubs() const { return _RearCylSubs.size(); }
+  double REPInRad(int iSub) const {return _RearCylSubs.at(iSub).getInnerRadius();}
+  double REPOutRad(int iSub) const {return _RearCylSubs.at(iSub).getOuterRadius();}
+  double REPLength(int iSub) const {return _RearCylSubs.at(iSub).getLength();}
+  const DchSimpleCyl& getRearCyl(int iSub) const {return _RearCylSubs.at(iSub);}
+  const double* REPPos(int iSub) const {return _REPPosSubs.at(iSub);}
+  double REPPosX(int iSub) const {return _REPPosSubs.at(iSub)[0];}
+  double REPPosY(int iSub) const {return _REPPosSubs.at(iSub)[1];}
+  double REPPosZ(int iSub) const {return _REPPosSubs.at(iSub)[2];}
+  //  forward end plate (REP)
+  size_t FEPnSubs() const { return _ForwCylSubs.size(); }
+  double FEPInRad(int iSub) const {return _ForwCylSubs.at(iSub).getInnerRadius();}
+  double FEPOutRad(int iSub) const {return _ForwCylSubs.at(iSub).getOuterRadius();}
+  double FEPLength(int iSub) const {return _ForwCylSubs.at(iSub).getLength();}
+  const DchSimpleCyl& getForwCyl(int iSub) const {return _ForwCylSubs.at(iSub);}
+  const double* FEPPos(int iSub) const {return _FEPPosSubs.at(iSub);}
+  double FEPPosX(int iSub) const {return _FEPPosSubs.at(iSub)[0];}
+  double FEPPosY(int iSub) const {return _FEPPosSubs.at(iSub)[1];}
+  double FEPPosZ(int iSub) const {return _FEPPosSubs.at(iSub)[2];}
 
 private:
 
@@ -172,14 +198,23 @@ private:
   int _nLayers;
   DchSimpleCyl _GasCyl;
   double _GasPos[3];
+  std::string _GasMaterial;
   DchSimpleCyl _InnerCyl;
   double _ICPos[3];
+  std::string _ICMaterial;
   DchSimpleCyl _OuterCyl;
   double _OCPos[3];
+  std::string _OCMaterial;
   DchSimpleCyl _RearCyl;
   double _REPPos[3];
+  std::vector<DchSimpleCyl> _RearCylSubs;
+  std::vector<double*> _REPPosSubs;
+  std::vector<std::string> _REPMaterialSubs;
   DchSimpleCyl _ForwCyl;
   double _FEPPos[3];
+  std::vector<DchSimpleCyl> _ForwCylSubs;
+  std::vector<double*> _FEPPosSubs;
+  std::vector<std::string> _FEPMaterialSubs;
   senseWire _sWires[nLayer];
   cellStruct _cellStruc[nLayer];
   double _rOffset[nLayer];

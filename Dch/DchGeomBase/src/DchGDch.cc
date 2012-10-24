@@ -356,6 +356,10 @@ DchGDch::DchGDch( const std::string& fileName )
 // copy constructor
 DchGDch::DchGDch( const DchGDch& other ) 
   : _version(999)
+  , _RearCylSubs(other._RearCylSubs)
+  , _REPMaterialSubs(other._REPMaterialSubs)
+  , _ForwCylSubs(other._ForwCylSubs)
+  , _FEPMaterialSubs(other._FEPMaterialSubs)
 {
   // volumes for Kalman filter
   // gas volume 
@@ -379,6 +383,21 @@ DchGDch::DchGDch( const DchGDch& other )
     _FEPPos[i] = other._FEPPos[i];
   }
 
+  _GasMaterial = other._GasMaterial;
+  _ICMaterial  = other._ICMaterial;
+  _OCMaterial  = other._OCMaterial;
+  for (size_t  ipos = 0; ipos<other._REPPosSubs.size(); ++ipos) {
+          _REPPosSubs.push_back(new double[3]);
+          for ( int i=0; i<3; i++ ) {
+                  _REPPosSubs.back()[i]= other._REPPosSubs.at(ipos)[i];
+          }
+  }
+  for (size_t  ipos = 0; ipos<other._FEPPosSubs.size(); ++ipos) {
+          _FEPPosSubs.push_back(new double[3]);
+          for ( int i=0; i<3; i++ ) {
+                  _FEPPosSubs.back()[i]= other._FEPPosSubs.at(ipos)[i];
+          }
+  }
   
   // copy wires
   for ( int layer=0; layer<_nLayers; layer++ ) {
@@ -442,15 +461,27 @@ DchGDch::DchGDch( int lay )
   _InnerCyl = cyl;
   _OuterCyl = cyl;
   _RearCyl = cyl;
+  _RearCylSubs.push_back(cyl);
+  _REPPosSubs.push_back(new double[3]);
   _ForwCyl = cyl;
+  _ForwCylSubs.push_back(cyl);
+  _FEPPosSubs.push_back(new double[3]);
 
   for ( int j=0; j<3; j++ ) {
     _GasPos[j] = 0.;
     _ICPos[j] = 0.;
     _OCPos[j] = 0.;
     _REPPos[j] = 0.;
+    _REPPosSubs.back()[j] = 0.;
     _FEPPos[j] = 0.;
+    _FEPPosSubs.back()[j] = 0.;
   }
+
+  _GasMaterial="";
+  _ICMaterial="";
+  _OCMaterial="";
+  _REPMaterialSubs.push_back("");
+  _FEPMaterialSubs.push_back("");
 
   for ( int i=0; i<_nLayers; i++ ) {
     _rOffset[i] = 0.;
@@ -466,6 +497,12 @@ DchGDch::DchGDch( int lay )
 //--------------
 
 DchGDch::~DchGDch() {
+        for (size_t  ipos = 0; ipos<_REPPosSubs.size(); ++ipos) {
+                delete _REPPosSubs.at(ipos);
+        }
+        for (size_t  ipos = 0; ipos<_FEPPosSubs.size(); ++ipos) {
+                delete _FEPPosSubs.at(ipos);
+        }
 }
   
 //              -----------------------------------------
