@@ -52,7 +52,7 @@ class TrkVolume;
 class TrkFit;
 class DchGDch;
 #include <iosfwd>
-#include <iosfwd>
+#include <vector>
 //class HepString;
 
 class DchDetector {
@@ -193,6 +193,8 @@ private:
   DchCylType*     _outCylType;  // outer cylinder
   DchVolType*     _rEPType;     // rear End Plate
   DchVolType*     _fEPType;     // forward End Plate
+  std::vector<DchVolType*>     _rEPSubsType;     // rear End Plate sub emelents
+  std::vector<DchVolType*>     _fEPSubsType;     // forward End Plate sub emelents
 
   DchVolType*     _gasVolType;
   std::vector<std::vector<DchSWire*> >  _senseWire;  // pointer to all the sense wires
