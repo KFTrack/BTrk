@@ -1,24 +1,24 @@
 //--------------------------------------------------------------------------
 // File and Version Information:
-// 	$Id: DchVolElem.hh 123 2010-04-29 14:41:45Z stroili $
+// 	$Id:  $
 //
 // Description:
-//	Class DchVolElem
+//	Class DchPhiSegmVolElem
 //
 // Environment:
-//	Software developed for the BaBar Detector at the SLAC B-Factory.
+//
 //
 // Author List:
-//	R. Stroili		originator
 //	
 //
+//
 // Copyright Information:
-//	Copyright (C) 1997	R. Stroili
+//
 //
 //------------------------------------------------------------------------
 
-#ifndef DCHVOLELEM_HH
-#define DCHVOLELEM_HH
+#ifndef DCHPHISEGMVOLELEM_HH
+#define DCHPHISEGMVOLELEM_HH
 
 #include <vector>
 
@@ -40,7 +40,7 @@ class Transformation;
 // 		-- Class Interface --
 //		---------------------
 
-class DchVolElem : public DetVolumeElem {
+class DchPhiSegmVolElem : public DetVolumeElem {
 
   //--------------------
   // Instance Members --
@@ -49,23 +49,20 @@ class DchVolElem : public DetVolumeElem {
 public:
 
   // Constructors
-  DchVolElem(DchVolType* itsType, const char* name, int id,
+  DchPhiSegmVolElem(DchVolType* itsType, const char* name, int id,
       const HepTransformation& theAlignment);
   // Copy Constructor
-  //    DchVolElem( const DchVolElem& );
+  //    DchPhiSegmVolElem( const DchPhiSegmVolElem& );
 
   // Destructor
   virtual
-  ~DchVolElem();
+  ~DchPhiSegmVolElem();
 
   // Operators
 
   // Selectors (const)
   virtual int
   intersect(const Trajectory*, DetIntersection&) const;
-  virtual void
-  sideIntersect(const Trajectory*, std::vector<DetVolSideIntersection>&,
-      double flightDistance, double* arrayOfRange) const;
 
   bool
   debug(void) const
@@ -83,15 +80,7 @@ public:
 
 protected:
 
-  // Helper functions
-  void
-  setStep(void) const;
-  void setStartStepSize(double stepsize);
-
 private:
-
-  bool _extSettedStrtStp;
-  double _strtSTEP;
 
   //  input point is in the BaBar reference frame
   bool

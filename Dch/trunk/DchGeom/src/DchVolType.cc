@@ -61,7 +61,7 @@ const double _tolerance = 1.0e-10;
 DchVolType::DchVolType(const char* name, double rmin, double rmax, double zmin,
     double zmax, const DetMaterial* theMat, int idnum) :
   DetVolumeType(name, idnum), _rmin(rmin), _rmax(rmax), _zmin(zmin),
-      _zmax(zmax), _theMaterial(theMat), _debug(false)
+      _zmax(zmax), _theMaterial(theMat), _debug(false), _isPhiSegmented(false)
 {
   HepTransformation nullTransf;
   DetCylinder* inCyl = 0;
@@ -116,6 +116,8 @@ DchVolType::insideLimitsOf(int side, const SurfacePoint& thisPoint) const
       && (radius > _rmin && radius < _rmax)) || ((fabs(radius - _rmin)
       < _tolerance || fabs(radius - _rmax) < _tolerance) && (z > _zmin && z
       < _zmax))) {
+//if ( (z - _zmin) > -_tolerance && (z - _zmax) < _tolerance
+//    && (radius - _rmin) > -_tolerance && (radius - _rmax) < _tolerance) {
     answer = true;
   } else {
     if (ErrLogging(debugging)) {

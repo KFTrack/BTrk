@@ -455,7 +455,8 @@ DchGDch::DchGDch( const DchGDch& other )
 DchGDch::DchGDch( int lay ) 
   : _version(999), _nLayers(lay)
 {
-  DchSimpleCyl cyl;
+  //DchSimpleCyl cyl;
+  DchPhiSegmCyl cyl;
   _name         = "DCH Detector";
   _GasCyl = cyl;
   _InnerCyl = cyl;

@@ -34,6 +34,7 @@
 
 // collaborating class headers
 #include "DchGeomBase/DchSimpleCyl.hh"
+#include "DchGeomBase/DchPhiSegmCyl.hh"
 
 #include <iosfwd>
 #include "CLHEP/Vector/ThreeVector.h"
@@ -111,6 +112,15 @@ public:
   double ICPosX(void) const {return _ICPos[0];}
   double ICPosY(void) const {return _ICPos[1];}
   double ICPosZ(void) const {return _ICPos[2];}
+  //  cylinder layer of inner guard wires (IWGrd)
+  double IWGrdInRad(void) const {return _InnerWGrdCyl.getInnerRadius();}
+  double IWGrdOutRad(void) const {return _InnerWGrdCyl.getOuterRadius();}
+  double IWGrdLength(void) const {return _InnerWGrdCyl.getLength();}
+  const DchSimpleCyl& getInnerWGrdCyl(void) const {return _InnerWGrdCyl;}
+  const double* IWGrdPos(void) const {return _IWGrdPos;}
+  double IWGrdPosX(void) const {return _IWGrdPos[0];}
+  double IWGrdPosY(void) const {return _IWGrdPos[1];}
+  double IWGrdPosZ(void) const {return _IWGrdPos[2];}
   //  outer cylinder (OC)
   double OCInRad(void) const {return _OuterCyl.getInnerRadius();}
   double OCOutRad(void) const {return _OuterCyl.getOuterRadius();}
@@ -159,6 +169,7 @@ public:
 
   std::string GasMat() const { return _GasMaterial; }
   std::string ICMat()  const { return _ICMaterial; }
+  std::string IWGrdMat()  const { return _IWGrdMaterial; }
   std::string OCMat()  const { return _OCMaterial; }
   std::string REPMat(int iSub=0) const { return _REPMaterialSubs.at(iSub); }
   std::string FEPMat(int iSub=0) const { return _FEPMaterialSubs.at(iSub); }
@@ -167,6 +178,31 @@ public:
   double REPInRad(int iSub) const {return _RearCylSubs.at(iSub).getInnerRadius();}
   double REPOutRad(int iSub) const {return _RearCylSubs.at(iSub).getOuterRadius();}
   double REPLength(int iSub) const {return _RearCylSubs.at(iSub).getLength();}
+  bool   REPisPhiSegmented(int iSub) const {return _RearCylSubs.at(iSub).isPhiSegmented();}
+  double REPPhi0(int iSub) const {
+          if (_RearCylSubs.at(iSub).getInnerRadius()) {
+                  //return ((DchPhiSegmCyl*) &_RearCylSubs.at(iSub))->getPhi0();
+                  return _RearCylSubs.at(iSub).getPhi0();
+          } else {
+                  return 0.0;
+          }
+  }
+  double REPsolidDPhi(int iSub) const {
+          if (_RearCylSubs.at(iSub).getInnerRadius()) {
+                  //return ((DchPhiSegmCyl*) &_RearCylSubs.at(iSub))->getSolidDeltaPhi();
+                  return _RearCylSubs.at(iSub).getSolidDeltaPhi();
+          } else {
+                  return 0.0;
+          }
+  }
+  double REPhollowDPhi(int iSub) const {
+          if (_RearCylSubs.at(iSub).getInnerRadius()) {
+                  //return ((DchPhiSegmCyl*) &_RearCylSubs.at(iSub))->getHollowDeltaPhi();
+                  return _RearCylSubs.at(iSub).getHollowDeltaPhi();
+          } else {
+                  return 0.0;
+          }
+  }
   const DchSimpleCyl& getRearCyl(int iSub) const {return _RearCylSubs.at(iSub);}
   const double* REPPos(int iSub) const {return _REPPosSubs.at(iSub);}
   double REPPosX(int iSub) const {return _REPPosSubs.at(iSub)[0];}
@@ -182,6 +218,31 @@ public:
   double FEPPosX(int iSub) const {return _FEPPosSubs.at(iSub)[0];}
   double FEPPosY(int iSub) const {return _FEPPosSubs.at(iSub)[1];}
   double FEPPosZ(int iSub) const {return _FEPPosSubs.at(iSub)[2];}
+  bool   FEPisPhiSegmented(int iSub) const {return _RearCylSubs.at(iSub).isPhiSegmented();}
+  double FEPPhi0(int iSub) const {
+          if (_ForwCylSubs.at(iSub).getInnerRadius()) {
+                  //return ((DchPhiSegmCyl*) &_ForwCylSubs.at(iSub))->getPhi0();
+                  return _ForwCylSubs.at(iSub).getPhi0();
+          } else {
+                  return 0.0;
+          }
+  }
+  double FEPsolidDPhi(int iSub) const {
+          if (_ForwCylSubs.at(iSub).getInnerRadius()) {
+                  //return ((DchPhiSegmCyl*) &_ForwCylSubs.at(iSub))->getSolidDeltaPhi();
+                  return _ForwCylSubs.at(iSub).getSolidDeltaPhi();
+          } else {
+                  return 0.0;
+          }
+  }
+  double FEPhollowDPhi(int iSub) const {
+          if (_ForwCylSubs.at(iSub).getInnerRadius()) {
+                  //return ((DchPhiSegmCyl*) &_ForwCylSubs.at(iSub))->getHollowDeltaPhi();
+                  return _ForwCylSubs.at(iSub).getHollowDeltaPhi();
+          } else {
+                  return 0.0;
+          }
+  }
 
 private:
 
@@ -202,17 +263,22 @@ private:
   DchSimpleCyl _InnerCyl;
   double _ICPos[3];
   std::string _ICMaterial;
+  DchSimpleCyl _InnerWGrdCyl;
+  double _IWGrdPos[3];
+  std::string _IWGrdMaterial;
   DchSimpleCyl _OuterCyl;
   double _OCPos[3];
   std::string _OCMaterial;
   DchSimpleCyl _RearCyl;
   double _REPPos[3];
-  std::vector<DchSimpleCyl> _RearCylSubs;
+  //std::vector<DchSimpleCyl> _RearCylSubs;
+  std::vector<DchPhiSegmCyl> _RearCylSubs;
   std::vector<double*> _REPPosSubs;
   std::vector<std::string> _REPMaterialSubs;
   DchSimpleCyl _ForwCyl;
   double _FEPPos[3];
-  std::vector<DchSimpleCyl> _ForwCylSubs;
+  //std::vector<DchSimpleCyl> _ForwCylSubs;
+  std::vector<DchPhiSegmCyl> _ForwCylSubs;
   std::vector<double*> _FEPPosSubs;
   std::vector<std::string> _FEPMaterialSubs;
   senseWire _sWires[nLayer];
