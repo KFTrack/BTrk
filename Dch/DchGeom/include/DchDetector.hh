@@ -190,7 +190,9 @@ private:
 
   //  main volumes
   DchCylType*     _inCylType;   // inner cylinder
+  //DchVolType*     _inCylType;   // inner cylinder
   DchCylType*     _outCylType;  // outer cylinder
+  DchVolType*     _inwgrdCylType;   // cylinder layer for the inner guard wire
   DchVolType*     _rEPType;     // rear End Plate
   DchVolType*     _fEPType;     // forward End Plate
   std::vector<DchVolType*>     _rEPSubsType;     // rear End Plate sub emelents

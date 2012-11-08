@@ -54,6 +54,9 @@
 #include "DchGeom/DchCylType.hh"
 #include "DchGeom/DchVolType.hh"
 #include "DchGeom/DchVolElem.hh"
+#include "DchGeom/DchPhiSegmVolType.hh"
+#include "DchGeom/DchPhiSegmVolElem.hh"
+#include "DetectorModel/DetVolumeType.hh"
 //#include "DchGeom/DchGlobalAlign.hh"
 //#include "DchGeom/DchPlateAlign.hh"
 //#include "DchGeom/DchPlateDefl.hh"
@@ -157,8 +160,42 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     DetSurfaceElem* inelem = new DetSurfaceElem(_inCylType,
         "Dch Inner Cylinder", 1, incyl);
 
-    //    *_dchset += *inelem;
+//    _inCylType = new DchVolType("Dch inner cylinder", radii[0], radii[1], -length/2.0,
+//                    length/2.0, material, 1);
+//
+//    DchVolElem* inelem = new DchVolElem(_inCylType,
+//        "Dch Inner Cylinder", 1, tr0);
+//    inelem->setStartStepSize((radii[1]-radii[0])*0.5);
+//    _inCylType->setDebug(_debug);
+//    inelem->setDebug(_debug);
+
+    //*_dchset += *inelem;
     *_dchgasset += *inelem;
+
+    radii[0] = gdch.IWGrdInRad();
+    radii[1] = gdch.IWGrdOutRad();
+    length = gdch.IWGrdLength();
+    if (gdch.IWGrdMat().empty()) {
+            matName = "ITgasAuto";
+    } else {
+            matName = gdch.IWGrdMat();
+    }
+    material = mtdbinfo->findDetMaterial(matName.c_str());
+    (const_cast<DetMaterial*> (material))->setScatterFraction(0.99999999);
+    if(material)material->printAll(std::cout);
+    //assert(0 != material);
+
+    _inwgrdCylType = new DchVolType("Dch inner layer for guard wire cylinder", radii[0], radii[1], -length/2.0,
+                    length/2.0, material, 2);
+
+    DchVolElem* iwgelem = new DchVolElem(_inwgrdCylType,
+        "Dch Inner layer for Guard Wire  Cylinder", 2, tr0);
+    iwgelem->setStartStepSize(10.0);
+    _inwgrdCylType->setDebug(_debug);
+    iwgelem->setDebug(_debug);
+
+    //*_dchset += *iwgelem;
+    *_dchgasset += *iwgelem;
 
     // outer cylinder
     radii[0] = gdch.OCInRad();
@@ -172,13 +209,13 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     if(material)material->printAll(std::cout);
     //assert(0 != material);
     _outCylType = new DchCylType("Dch outer cylinder", radii, length, material,
-        2);
+        3);
     Hep3Vector x1(gdch.OCPosX(), gdch.OCPosY(), gdch.OCPosZ());
     HepTransformation tr1(x1, euler);
     DetCylinder outcyl(tr1, radii[0]);
     DetSurfaceElem* outelem = new DetSurfaceElem(_outCylType,
-        "Dch Outer Cylinder", 2, outcyl);
-    //    *_dchset += *outelem;
+        "Dch Outer Cylinder", 3, outcyl);
+    //*_dchset += *outelem;
     *_dchgasset += *outelem;
 
     elemID=50;//31
@@ -190,16 +227,21 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     //assert(0 != material);
 
     char subEPname[80];
+    double minVolDim=0;
     if (gdch.REPnSubs()==1) {
             Hep3Vector rEPpos(gdch.REPPosX(), gdch.REPPosY(), gdch.REPPosZ());
             HepTransformation rEP_tr(rEPpos, euler);
             material = mtdbinfo->findDetMaterial(gdch.REPMat().c_str());
+
+            minVolDim = radii[1]-radii[0];
+            if (length<minVolDim) minVolDim = length;
             _rEPType = new DchVolType("Dch rear end-plate", radii[0], radii[1], -length
                             / 2., length / 2., material, elemID);
-            DetVolumeElem* repelem = new DetVolumeElem(_rEPType, "Dch rear endplate",
+            DchPhiSegmVolElem* repelem = new DchPhiSegmVolElem(_rEPType, "Dch rear endplate",
                             elemID, rEP_tr);
 
-            *_dchgasset += *repelem;
+            *_dchset += *repelem;
+            //*_dchgasset += *repelem;
     } else {
             _rEPType = new DchVolType("Dch rear end-plate", radii[0], radii[1], -length
                             / 2., length / 2., material, elemID);
@@ -208,19 +250,31 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                     //std::cout<<"adding REP sub "<<iSub<<std::endl;
                     Hep3Vector subREPpos(gdch.REPPosX(iSub), gdch.REPPosY(iSub), gdch.REPPosZ(iSub));
                     HepTransformation subREP_tr(subREPpos, euler);
+                    material = mtdbinfo->findDetMaterial(gdch.REPMat(iSub).c_str());
+
                     radii[0] = gdch.REPInRad(iSub);
                     radii[1] = gdch.REPOutRad(iSub);
                     length = gdch.REPLength(iSub);
-                    material = mtdbinfo->findDetMaterial(gdch.REPMat(iSub).c_str());
+                    minVolDim = radii[1]-radii[0];
+                    if (length<minVolDim) minVolDim = length;
                     snprintf(subEPname,80,"Dch rear end-plate_sub%i",iSub);
                     ++elemID;
-                    _rEPSubsType.push_back( new DchVolType(subEPname, radii[0], radii[1], -length
-                                    / 2., length / 2., material, elemID) );
+                    if (gdch.REPisPhiSegmented(iSub)) {
+                            //std::cout<<"for REP: Phi0 "<<gdch.REPPhi0(iSub) <<" solDPhi "<< gdch.REPsolidDPhi(iSub)<<" holDPhi "<<  gdch.REPhollowDPhi(iSub)<<std::endl;
+                            _rEPSubsType.push_back( new DchPhiSegmVolType(subEPname, radii[0], radii[1], -length
+                                            / 2., length / 2.,
+                                            gdch.REPPhi0(iSub), gdch.REPsolidDPhi(iSub), gdch.REPhollowDPhi(iSub),
+                                            material, elemID) );
+                    } else {
+                            _rEPSubsType.push_back( new DchVolType(subEPname, radii[0], radii[1], -length
+                                            / 2., length / 2., material, elemID) );
+                    }
                     snprintf(subEPname,80,"Dch rear endplate_sub%i",iSub);
-                    DetVolumeElem* repelem = new DetVolumeElem(_rEPSubsType.back(), subEPname,
+                    DchPhiSegmVolElem* repelem = new DchPhiSegmVolElem(_rEPSubsType.back(), subEPname,
                                     elemID, subREP_tr);
                     //repelem->printAll(std::cout);
-                    *_dchgasset += *repelem;
+                    *_dchset += *repelem;
+                    //*_dchgasset += *repelem;
             }
 
     }
@@ -238,14 +292,17 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     if (gdch.FEPnSubs()==1) {
             Hep3Vector fEPpos(gdch.FEPPosX(), gdch.FEPPosY(), gdch.FEPPosZ());
             HepTransformation fEP_tr(fEPpos, euler);
-
             material = mtdbinfo->findDetMaterial(gdch.FEPMat().c_str());
+
+            minVolDim = radii[1]-radii[0];
+            if (length<minVolDim) minVolDim = length;
             _fEPType = new DchVolType("Dch forward end-plate", radii[0], radii[1],
                             -length / 2., length / 2., material, elemID);
-            DetVolumeElem* fepelem = new DetVolumeElem(_fEPType,
+            DchPhiSegmVolElem* fepelem = new DchPhiSegmVolElem(_fEPType,
                             "Dch forward endplate", elemID, fEP_tr);
 
-            *_dchgasset += *fepelem;
+            *_dchset += *fepelem;
+            //*_dchgasset += *fepelem;
     } else {
             _fEPType = new DchVolType("Dch forward end-plate", radii[0], radii[1], -length
                             / 2., length / 2., material, elemID);
@@ -254,19 +311,30 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                     //std::cout<<"adding FEP sub "<<iSub<<std::endl;
                     Hep3Vector subFEPpos(gdch.FEPPosX(iSub), gdch.FEPPosY(iSub), gdch.FEPPosZ(iSub));
                     HepTransformation subFEP_tr(subFEPpos, euler);
+                    material = mtdbinfo->findDetMaterial(gdch.FEPMat(iSub).c_str());
+
                     radii[0] = gdch.FEPInRad(iSub);
                     radii[1] = gdch.FEPOutRad(iSub);
                     length = gdch.FEPLength(iSub);
-                    material = mtdbinfo->findDetMaterial(gdch.FEPMat(iSub).c_str());
+                    minVolDim = radii[1]-radii[0];
+                    if (length<minVolDim) minVolDim = length;
                     snprintf(subEPname,80,"Dch forward end-plate_sub%i",iSub);
                     ++elemID;
-                    _fEPSubsType.push_back( new DchVolType(subEPname, radii[0], radii[1], -length
-                                    / 2., length / 2., material, elemID) );
+                    if (gdch.FEPisPhiSegmented(iSub)) {
+                            _fEPSubsType.push_back( new DchPhiSegmVolType(subEPname, radii[0], radii[1], -length
+                                            / 2., length / 2.,
+                                            gdch.FEPPhi0(iSub), gdch.FEPsolidDPhi(iSub), gdch.FEPhollowDPhi(iSub),
+                                            material, elemID) );
+                    } else {
+                            _fEPSubsType.push_back( new DchVolType(subEPname, radii[0], radii[1], -length
+                                            / 2., length / 2., material, elemID) );
+                    }
                     snprintf(subEPname,80,"Dch forward endplate_sub%i",iSub);
-                    DetVolumeElem* fepelem = new DetVolumeElem(_fEPSubsType.back(), subEPname,
+                    DchPhiSegmVolElem* fepelem = new DchPhiSegmVolElem(_fEPSubsType.back(), subEPname,
                                     elemID, subFEP_tr);
                     //fepelem->printAll(std::cout);
-                    *_dchgasset += *fepelem;
+                    *_dchset += *fepelem;
+                    //*_dchgasset += *fepelem;
             }
 
     }
@@ -282,6 +350,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
           matName = gdch.GasMat();
   }
   const DetMaterial* material = mtdbinfo->findDetMaterial(matName.c_str());//gblEnv->getGen()->findDetMaterial("GasWire");
+  (const_cast<DetMaterial*> (material))->setScatterFraction(0.99999999);
   material->printAll(std::cout);
   //assert(0 != material);
 
@@ -297,6 +366,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
       / 2., length / 2., material, elemID);
   DchVolElem* gasvol =
       new DchVolElem(_gasVolType, "Dch volume gas", elemID, vol_tr);
+  gasvol->setStartStepSize(10.0);
   _gasVolType->setDebug(_debug);
   gasvol->setDebug(_debug);
 

@@ -76,7 +76,7 @@ double _stepSize = 0.;
 //----------------
 DchVolElem::DchVolElem(DchVolType* itsType, const char* name, int id,
     const HepTransformation& theAlignment) :
-  DetVolumeElem(itsType, name, id, theAlignment), _debug(false)
+  DetVolumeElem(itsType, name, id, theAlignment), _extSettedStrtStp(false), _debug(false)
 {
   ;
 }
@@ -451,7 +451,9 @@ DchVolElem::insideVolume(const HepPoint& point) const
       * locPoint.y());
 
   if (pointRad > volType->rmin() && pointRad < volType->rmax() && locPoint.z()
-      > volType->zmin() && locPoint.z() < volType->zmax()) return true;
+      > volType->zmin() && locPoint.z() < volType->zmax()) {
+          return true;
+  }
 
   return false;
 }
@@ -459,7 +461,11 @@ DchVolElem::insideVolume(const HepPoint& point) const
 void
 DchVolElem::setStep() const
 {
-  _samples = (int) ((_exitp - _entrance) / STEP);
+  if (_extSettedStrtStp) {
+          _samples = (int) ((_exitp - _entrance) / _strtSTEP);
+  } else {
+          _samples = (int) ((_exitp - _entrance) / STEP);
+  }
   if (_samples < 0) {
     ErrMsg(warning) << "negative number of samples... something must be wrong"
         << endmsg;
@@ -474,3 +480,10 @@ DchVolElem::setStep() const
 
 }
 
+void
+DchVolElem::setStartStepSize(double stepsize) {
+        if (stepsize>0 && stepsize<1.e8) {
+                _strtSTEP = stepsize;
+                _extSettedStrtStp = true;
+        }
+}

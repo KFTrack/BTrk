@@ -35,12 +35,12 @@ extern "C" {
 // Constructors --
 //----------------
 DchSimpleCyl::DchSimpleCyl()
-  : _innerRadius(0.), _outerRadius(0.), _length(0.)
+  : _innerRadius(0.), _outerRadius(0.), _length(0.), _isPhiSegmented(false)
 {
 }
 
-DchSimpleCyl::DchSimpleCyl( double inR, double outR, double length )
-  : _innerRadius(inR), _outerRadius(outR), _length(length)
+DchSimpleCyl::DchSimpleCyl( double inR, double outR, double length, bool isPhiSegmented )
+  : _innerRadius(inR), _outerRadius(outR), _length(length), _isPhiSegmented(isPhiSegmented)
 {
 }
 
@@ -49,6 +49,7 @@ DchSimpleCyl::DchSimpleCyl( const DchSimpleCyl& c )
   _innerRadius = c.getInnerRadius();
   _outerRadius = c.getOuterRadius();
   _length = c.getLength();
+  _isPhiSegmented = c.isPhiSegmented();
 }
 
 //--------------
@@ -66,6 +67,7 @@ DchSimpleCyl::operator= ( const DchSimpleCyl& c )
   _innerRadius = c.getInnerRadius();
   _outerRadius = c.getOuterRadius();
   _length = c.getLength();
+  _isPhiSegmented = c.isPhiSegmented();
 
   return *this;
 }

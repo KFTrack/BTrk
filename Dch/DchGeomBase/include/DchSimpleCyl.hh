@@ -38,7 +38,7 @@ public:
 
   // Constructors
   DchSimpleCyl();
-  DchSimpleCyl( double inR, double outR, double length );
+  DchSimpleCyl( double inR, double outR, double length, bool isPhiSegmented=false );
   DchSimpleCyl( const DchSimpleCyl& );       // Copy Constructor
 
   // Destructor
@@ -51,8 +51,9 @@ public:
   double getInnerRadius(void) const { return _innerRadius; }
   double getOuterRadius(void) const { return _outerRadius; }
   double getLength(void) const { return _length; }
+  bool   isPhiSegmented(void) const { return _isPhiSegmented; }
 
-private:
+protected:
 
   friend class DchGDchCmpr;
   //Note: if your class needs a copy constructor or an assignment operator, 
@@ -62,6 +63,7 @@ private:
   double _innerRadius;         // inner radius
   double _outerRadius;         // outer radius
   double _length;              // cylinder length
+  bool   _isPhiSegmented;
 
 };
 

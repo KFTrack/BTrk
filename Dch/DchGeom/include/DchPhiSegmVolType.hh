@@ -1,9 +1,9 @@
 //--------------------------------------------------------------------------
 // File and Version Information:
-// 	$Id: DchVolType.hh 123 2010-04-29 14:41:45Z stroili $
+// 	$Id: DchPhiSegmVolType.hh 123 2010-04-29 14:41:45Z stroili $
 //
 // Description:
-//	Class DchVolType
+//	Class DchPhiSegmVolType
 //
 // Environment:
 //	Software developed for the BaBar Detector at the SLAC B-Factory.
@@ -17,8 +17,8 @@
 //
 //------------------------------------------------------------------------
 
-#ifndef DCHVOLTYPE_HH
-#define DCHVOLTYPE_HH
+#ifndef DCHPHISEGMVOLTYPE_HH
+#define DCHPHISEGMVOLTYPE_HH
 
 //-------------
 // C Headers --
@@ -31,7 +31,7 @@
 //----------------------
 // Base Class Headers --
 //----------------------
-#include "DetectorModel/DetVolumeType.hh"
+#include "DchGeom/DchVolType.hh"
 
 //-------------------------------
 // Collaborating Class Headers --
@@ -46,7 +46,7 @@ class HepPoint;
 // 		-- Class Interface --
 //		---------------------
 
-class DchVolType : public DetVolumeType {
+class DchPhiSegmVolType : public DchVolType {
 
 //--------------------
 // Declarations     --
@@ -61,57 +61,50 @@ class DchVolType : public DetVolumeType {
 public:
 
   // Constructors
-  DchVolType(const char* name, double rmin, double rmax, double zmin, double zmax,
+  DchPhiSegmVolType(const char* name, double rmin, double rmax, double zmin, double zmax,
+                  double phi0, double solidDeltaPhi, double hollowDeltaPhi,
 	     const DetMaterial*, int);
 
 
   // Destructor
-  virtual ~DchVolType( );
+  virtual ~DchPhiSegmVolType( );
 
   // Operators
     
-//    virtual Boolean operator==( const DchVolType& ) const;
-//            Boolean operator!=( const DchVolType& ) const;
+//    virtual Boolean operator==( const DchPhiSegmVolType& ) const;
+//            Boolean operator!=( const DchPhiSegmVolType& ) const;
 
   // Selectors (const)
-  const DetMaterial& material( const TypeCoord* here ) const;
-  bool insideLimitsOf( int aSide,const SurfacePoint& thisPoint ) const;
+//  bool insideLimitsOf( int aSide,const SurfacePoint& thisPoint ) const;
   
-  // Modifiers
-  void setDebug(bool deb) { _debug = deb; }
-
-  // Accessors
-  double rmin(void)  const { return _rmin;  }
-  double rmax(void)  const { return _rmax;  }
-  double zmin(void)  const { return _zmin;  }
-  double zmax(void)  const { return _zmax;  }
-  bool   debug(void) const { return _debug; }
-  bool   isPhiSegmented(void) const { return _isPhiSegmented; }
+  double phi0(void)  const { return _phi0;  }
+  double solidDeltaPhi(void)  const { return _solidDeltaPhi;  }
+  double hollowDeltaPhi(void)  const { return _hollowDeltaPhi;  }
+  double totDeltaPhi(void) const { return _deltaPhi;  }
+  double maxNRotation(void) const { return _nRot;  }
 
 protected:
 
   // Helper functions
-  bool insideLine( const SurfacePoint& thisPoint,
-		   const SurfacePoint& p1,
-		   const SurfacePoint& p2 ) const;
+//  bool insideLine( const SurfacePoint& thisPoint,
+//		   const SurfacePoint& p1,
+//		   const SurfacePoint& p2 ) const;
 
-//private:
+private:
 
   // Friends
   friend class DchVolElem;
 
   // Data members
-  double _rmin;
-  double _rmax;
-  double _zmin;
-  double _zmax;
-  const DetMaterial* _theMaterial; // material of this type
-  bool _debug;
-  bool  _isPhiSegmented;
+  double _phi0;
+  double _solidDeltaPhi;
+  double _hollowDeltaPhi;
+  double _deltaPhi;
+  double _nRot;
 
   // Copy Constructor
-  DchVolType( const DchVolType& );
-  DchVolType&       operator= ( const DchVolType& );
+  DchPhiSegmVolType( const DchPhiSegmVolType& );
+  DchPhiSegmVolType&       operator= ( const DchPhiSegmVolType& );
 };
 
 #endif
