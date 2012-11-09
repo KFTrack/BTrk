@@ -190,7 +190,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
 
     DchVolElem* iwgelem = new DchVolElem(_inwgrdCylType,
         "Dch Inner layer for Guard Wire  Cylinder", 2, tr0);
-    iwgelem->setStartStepSize(10.0);
+    //iwgelem->setStartStepSize(10.0);
     _inwgrdCylType->setDebug(_debug);
     iwgelem->setDebug(_debug);
 
@@ -366,7 +366,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
       / 2., length / 2., material, elemID);
   DchVolElem* gasvol =
       new DchVolElem(_gasVolType, "Dch volume gas", elemID, vol_tr);
-  gasvol->setStartStepSize(10.0);
+  //gasvol->setStartStepSize(10.0);
   _gasVolType->setDebug(_debug);
   gasvol->setDebug(_debug);
 
