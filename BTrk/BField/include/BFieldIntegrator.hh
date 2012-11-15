@@ -13,7 +13,23 @@
 class Trajectory;
 class BField;
 
+struct BFieldIntConfig {
+  double _maxRange; // maximum bfield integration range
+  double _intTolerance;		// tolerence of field variation
+  double _intPathMin;		// minimum path size to split
+  double _divTolerance;		// tolerence of field variation
+  double _divPathMin;		// minimum path size to split
+  double _divStepCeiling;	// maximum step size
+};
 
+struct BFieldIntRange{
+  double _slo;
+  double _smid;
+  double _shi;
+  double range() const { return _shi-_slo; }
+  void invert() { double temp = _slo; _slo = _shi; _shi = temp; }
+  BFieldIntRange(double slo, double shi) : _slo(slo), _smid(0.5*(slo+shi)),_shi(shi) {}
+};
 
 // class interface //
 class BFieldIntegrator {
@@ -21,86 +37,31 @@ class BFieldIntegrator {
 public:
 
   //construct
-  BFieldIntegrator(const BField &bField);
-  BFieldIntegrator(const BField &bField,const Hep3Vector& bnom);
-
-public:
+  BFieldIntegrator(const BField &bField,BFieldIntConfig const& config);
+  BFieldIntegrator(const BField &bField,BFieldIntConfig const& config,const Hep3Vector& bnom);
 
   //destroy
   virtual ~BFieldIntegrator();
 
-public:
-
   //integrate
   Hep3Vector deltaMomentum
-  (const Trajectory *traj,	// trajectory to integrate
-   double range[2])const;	// integration range
-
-  Hep3Vector deltaMomentum	
-  (const Trajectory *traj,	// trajectory to integrate
-   double slo,			// lower integration limit
-   double sup)const;		// upper integration limit
-
-  void 
-  divideRange	
-  (const Trajectory *traj,	// trajectoyr to divide
-   double range[2],		// range of interest
-   std::vector<double>&)const;	// STL list of site positions
- 
-  void 
-  divideRange
-  (const Trajectory *traj,	// trajector to divide
-   double slo,			// lower end of range
-   double sup,			// upper end of range
-   std::vector<double>& posList)const;// list of site positions
-
-public:
-  
-  //set
-  void setTolerance(double val) {_tolerance=val;}
-  void setPathMin(double val) {_pathMin=val;}
-  void setStepFrac(double val) {_stepFrac=val;}
-  void setStepCeiling(double val) {_stepCeiling=val;}
-  void setDivTolerance(double val) {_divTolerance=val;}
-  void setDivPathMin(double val) {_divPathMin=val;}
-  void setDivStepFrac(double val) {_divStepFrac=val;}
-  void setDivStepCeiling(double val) {_divStepCeiling=val;}
-
-  //access
-  double tolerance()const {return _tolerance;}
-  double pathMin()const {return _pathMin;}
-  double stepFrac() const {return _stepFrac;}
-  double stepCeiling() const {return _stepCeiling;}
-  double divTolerance()const {return _divTolerance;}
-  double divPathMin()const {return _divPathMin;}
-  double divStepFrac() const {return _divStepFrac;}
-  double divStepCeiling() const {return _divStepCeiling;}
-
-protected:
-
+  (const Trajectory *traj,BFieldIntRange const& range) const;
+// subdivide a range
+  void divideRange(const Trajectory *traj,	// trajectoyr to divide
+    BFieldIntRange const& range, // initial range
+   std::vector<BFieldIntRange>& rdiv)const; // subdivided ranges
+ // accessors 
+  const BFieldIntConfig& config() const { return _config; }
+  const BField &field()const {return _field;}
+  double bNominal()const {return _bNominal.z();}
+  const Hep3Vector& nominalField() const { return _bNominal; }
 
 private:
   //data
 
-  const BField &_field;		// full field
+  const BField& _field;		// full field
+  BFieldIntConfig _config;
   Hep3Vector _bNominal;		// nominal field
-  double _tolerance;		// tolerence of field variation
-  double _pathMin;		// minimum path size to split
-  double _stepFrac;	        // fraction of radius for step
-  double _stepCeiling;	        // maximum step size
-  double _divTolerance;		// tolerence of field variation
-  double _divPathMin;		// minimum path size to split
-  double _divStepFrac;	        // fraction of radius for step
-  double _divStepCeiling;	// maximum step size
-
-public:
-  //functions
-   
-  const BField &field()const {return _field;}
-  double bNominal()const {return _bNominal.z();}
-  const Hep3Vector& nominalField() const { return _bNominal; }
-  
-private:
   // Preempt copy constructor and operator=
   BFieldIntegrator&   operator= (const BFieldIntegrator&);
   BFieldIntegrator(const BFieldIntegrator &);
