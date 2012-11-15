@@ -30,15 +30,12 @@
 #include "DetectorModel/DetMaterial.hh"
 #include "TrkBase/TrkHitOnTrk.hh"
 #include "TrkBase/TrkHotList.hh"
-#include "BField/BField.hh"
-#include "BField/BFieldFixed.hh"
 #include "TrkBase/TrkDifTraj.hh"
 #include "TrkBase/HelixParams.hh"
 #include "TrkBase/TrkVolume.hh"
 #include "TrkBase/TrkSimpTraj.hh"
 #include "TrkBase/HelixTraj.hh"
 #include "CLHEP/Vector/ThreeVector.h"
-#include "BField/BFieldIntegrator.hh"
 #include "TrkBase/TrkMomCalculator.hh"
 #include "TrkBase/TrkSimpTraj.hh"
 #include "TrkBase/TrkHotListFull.hh"
@@ -54,13 +51,6 @@ using std::endl;
 using std::ostream;
 using std::min;
 using std::max;
-
-const double KalRep::_minfltlen(0.1); // minimum flight length allowed for a KalRep
-const double KalRep::_minmom(0.01); // minimum momentum = 10 MeV
-const double KalRep::_fltepsilon(0.001); // small flight length buffer
-const double KalRep::_maxintrange(7500.0); // maximum bfield integration range
-const double KalRep::_divergeflt(1e8); // flight length change to signify a diverging fit
-const double KalRep::_mindot(0.0);  // minimum direction dot product change for a traj to be 'reasonable'
 
 // predicates for site updating
 
@@ -97,8 +87,8 @@ KalRep::initRep() {
   _chisq[trkIn] = _chisq[trkOut] = -1.;
 // set the initial fitrange according to the hots
   if(hotList()->nActive() > 0){
-    _fitrange[0] = hotList()->startFoundRange()-_fltepsilon;
-    _fitrange[1] = hotList()->endFoundRange()+_fltepsilon;
+    _fitrange[0] = hotList()->startFoundRange()-_kalcon.fltEpsilon();
+    _fitrange[1] = hotList()->endFoundRange()+_kalcon.fltEpsilon();
   } else {
 // not hots! set a small but non-null range
     _fitrange[0] = 0.0;
@@ -110,9 +100,9 @@ KalRep::initRep() {
 // set the seed mom to the begining of the hit range
   _refmomfltlen = _fitrange[0];
 // compute the seed momentum from this (+ the bfield)
-  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,bField(),_refmomfltlen);
+  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,_kalcon.bField(),_refmomfltlen);
   _refmom = momvec.mag();
-  _charge = TrkMomCalculator::charge(*_seedtraj,bField(),_refmomfltlen);
+  _charge = TrkMomCalculator::charge(*_seedtraj,_kalcon.bField(),_refmomfltlen);
 // build the initial reference trajectory
   if(_reftraj == 0)buildRefTraj();
 // Initialize _ptraj to _reftraj. This is needed
@@ -124,21 +114,18 @@ KalRep::initSites() {
 // build the hit sites
   buildHitSites();
 // build the KalMaterial sites
-  if(_kalcon->materialSites()){
+  if(_kalcon.materialSites()){
 		std::vector<DetIntersection> tlist; tlist.reserve(64);
 		buildMaterialSites(_fitrange,tlist);
   }
 // build the bend sites
-  if(_kalcon->bendSites()){
-    if(buildIntegrator())
-      buildBendSites(_fitrange);
-    else
-      ErrMsg(error) << "Error building the BField integrator: continuing" << endmsg;
+  if(_kalcon.bendSites()){
+    buildBendSites(_fitrange);
   }
 // re-find hit sites
   findHitSites();
 // create the end sites from the helix.  increase the smearing
-  updateEndSites(_kalcon->smearFactor(),true);
+  updateEndSites(_kalcon.smearFactor(),true);
 //  On construction, the track is neither current or valid
 }
 
@@ -147,8 +134,8 @@ KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
 	const std::vector<DetIntersection>& dinters,
 	const KalContext& context,
 	TrkParticle const& tpart) : TrkRep(hotl,tpart,true), _maxdist(0),_maxfltdif(0),
-	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),_integrator(0),
-	_kalcon(&context),
+	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),
+	_kalcon(context),
 	_seedtraj((TrkSimpTraj*)(seed.clone())),
 	_stopsite(0)
 {
@@ -157,7 +144,7 @@ KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
 // build the hit sites
   buildHitSites();
 // build the KalMaterial sites
-  if(_kalcon->materialSites()){
+  if(_kalcon.materialSites()){
 // convert the intersections to use the new reftraj;
 		std::vector<DetIntersection> tlist(dinters);
 		for(std::vector<DetIntersection>::iterator iinter = tlist.begin();iinter!= tlist.end();iinter++)
@@ -165,16 +152,13 @@ KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
 		buildMaterialSites(_fitrange,tlist);
   }
 // build the bend sites
-  if(_kalcon->bendSites()){
-    if(buildIntegrator())
-      buildBendSites(_fitrange);
-    else
-      ErrMsg(error) << "Error building the BField integrator: continuing" << endmsg;
+  if(_kalcon.bendSites()){
+    buildBendSites(_fitrange);
   }
 // re-find hit sites
   findHitSites();
 // create the end sites from the helix.  increase the smearing
-  updateEndSites(_kalcon->smearFactor(),true);
+  updateEndSites(_kalcon.smearFactor(),true);
 //  On construction, the track is neither current or valid
 }
 
@@ -183,8 +167,8 @@ KalRep::KalRep(const TrkDifPieceTraj* rtraj, TrkHotList* hotl,
 	const std::vector<DetIntersection>& dinters,
 	const KalContext& context,
 	TrkParticle const& tpart) : TrkRep(hotl,tpart,true), _maxdist(0),_maxfltdif(0),
-	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),_integrator(0),
-	_kalcon(&context),
+	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),
+	_kalcon(context),
 	_seedtraj(0),
 	_stopsite(0)
 {
@@ -202,7 +186,7 @@ KalRep::KalRep(const TrkDifPieceTraj* rtraj, TrkHotList* hotl,
 // build the hit sites
   buildHitSites();
 // build the KalMaterial sites
-  if(_kalcon->materialSites()){
+  if(_kalcon.materialSites()){
 // convert the intersections to use the new reftraj;
     std::vector<DetIntersection> tlist(dinters);
     for(std::vector<DetIntersection>::iterator iinter = tlist.begin();iinter!= tlist.end();iinter++)
@@ -210,16 +194,13 @@ KalRep::KalRep(const TrkDifPieceTraj* rtraj, TrkHotList* hotl,
     buildMaterialSites(_fitrange,tlist);
   }
   // build the bend sites
-  if(_kalcon->bendSites()){
-    if(buildIntegrator())
-      buildBendSites(_fitrange);
-    else
-      ErrMsg(error) << "Error building the BField integrator: continuing" << endmsg;
+  if(_kalcon.bendSites()){
+    buildBendSites(_fitrange);
   }
 // re-find hit sites
   findHitSites();
 // create the end sites from the helix.  increase the smearing
-  updateEndSites(_kalcon->smearFactor(),true);
+  updateEndSites(_kalcon.smearFactor(),true);
 //  On construction, the track is neither current or valid
 }
 
@@ -235,7 +216,6 @@ KalRep::KalRep(const KalRep& other,TrkParticle const& tpart) :
   _maxdist(0),_maxfltdif(0),  _niter(0), _ninter(0),
   _ptraj(0),
   _reftraj(other._reftraj->clone()),
-  _integrator(0),
   _kalcon(other._kalcon),
   _seedtraj(other._seedtraj->clone()),
   _stopsite(0),
@@ -261,7 +241,7 @@ KalRep::KalRep(const KalRep& other,TrkParticle const& tpart) :
   _ptraj = _reftraj;
 // reset the initial momentum to the seed value: this makes sure lower-mass states aren't
 // found to 'stop'
-  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,bField(),_refmomfltlen);
+  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,_kalcon.bField(),_refmomfltlen);
   _refmom = momvec.mag();
 // clone-Copy the sites
   for(unsigned isite=0;isite<other._sites.size();isite++){
@@ -274,7 +254,7 @@ KalRep::KalRep(const KalRep& other,TrkParticle const& tpart) :
   }
 // Locate the first and last hit site
   findHitSites();
-  updateEndSites(_kalcon->smearFactor(),true);
+  updateEndSites(_kalcon.smearFactor(),true);
 }
 //
 //  Copy constructor to move rep to a new track.
@@ -287,7 +267,6 @@ KalRep::KalRep(const KalRep& other ) :
   _ninter(other._ninter),
   _ptraj(0),
   _reftraj(other._reftraj->clone()),
-  _integrator(0), // integrator will be rebuilt if needed
   _kalcon(other._kalcon),
   _seedtraj( other._seedtraj->clone()),
   _stopsite(0),
@@ -323,7 +302,7 @@ KalRep::KalRep(const KalRep& other ) :
 // Locate the first and last hit site
   findHitSites();
 // create end sites
-  updateEndSites(_kalcon->smearFactor());
+  updateEndSites(_kalcon.smearFactor());
 }
 //  Destructor
 KalRep::~KalRep(){
@@ -335,7 +314,6 @@ KalRep::~KalRep(){
   if(_reftraj != _ptraj)
     delete _ptraj;
 // delete integrator
-  delete _integrator;
 }
 //
 //  Clone operator
@@ -487,9 +465,9 @@ KalRep::enoughDofs() const {
     zdof += _sites[isite]->nDof(TrkEnums::zView);
     isite++;
     retval = 
-      dof >= (int)_kalcon->minDOF(TrkEnums::bothView) &&
-      xydof >= (int)_kalcon->minDOF(TrkEnums::xyView) &&
-      zdof >= (int)_kalcon->minDOF(TrkEnums::zView);
+      dof >= (int)_kalcon.minDOF(TrkEnums::bothView) &&
+      xydof >= (int)_kalcon.minDOF(TrkEnums::xyView) &&
+      zdof >= (int)_kalcon.minDOF(TrkEnums::zView);
   }
   return retval;
 }
@@ -679,7 +657,7 @@ KalRep::fit(){
       setCurrent(true);
 // The fit iterator leaves _niter at one more than maxIterations 
 // when there is no convergence
-      if(_niter == _kalcon->maxIterations() + 1)
+      if(_niter == _kalcon.maxIterations() + 1)
 	fiterr = TrkErrCode(TrkErrCode::succeed,2);
     }
 // re-compute the charge using the fit result.  Rarely this will differ from the seed charge
@@ -689,7 +667,7 @@ KalRep::fit(){
       ErrMsg(error) << "Can't find local trajectory for charge measurement!" << endmsg;
       loctraj = _seedtraj;
     }
-    _charge = TrkMomCalculator::charge(*loctraj,bField(),loclen);
+    _charge = TrkMomCalculator::charge(*loctraj,_kalcon.bField(),loclen);
   }  else {
    // make sure a failed fit is neither valid nor current
        setValid(false);
@@ -704,7 +682,7 @@ KalRep::fit(){
 TrkErrCode
 KalRep::iterateFit(){
   TrkErrCode fiterr(TrkErrCode::fail);
-  while(_niter <= _kalcon->maxIterations() && !converged()){
+  while(_niter <= _kalcon.maxIterations() && !converged()){
 // iteration sequence: update, fit, build the trajectory
 // Check status after every step
     if (ErrLogging(debugging))
@@ -810,7 +788,7 @@ KalRep::buildTraj(){
       isite++;
     while(isite<_hitrange[1] && ( _sites[isite]->nDof()> 0 || 
 				  (!_sites[isite]->isActive()) ||
-				  (_sites[isite]->globalLength()-oldlen<_kalcon->minGap())));
+				  (_sites[isite]->globalLength()-oldlen<_kalcon.minGap())));
 // test for loop termination
     if(isite>=_hitrange[1])break;
     KalSite* thesite = _sites[isite];
@@ -836,7 +814,7 @@ KalRep::buildTraj(){
 // set the range on this trajectory
       double fltrng[2];
       fltrng[0] = thesite->localLength();
-      fltrng[1] = fltrng[0] + std::max(_fitrange[1] - sitelen,_minfltlen);
+      fltrng[1] = fltrng[0] + std::max(_fitrange[1] - sitelen,_kalcon.minFltLen());
       straj->setFlightRange(fltrng);
 //  append this to the piecetraj
       double gap(0);
@@ -858,7 +836,7 @@ KalRep::buildTraj(){
 // test the new trajectory before making it official
   double hflt = _sites[_hitrange[0]]->globalLength();
   double dot = newtraj->direction(hflt).dot(_ptraj->direction(hflt));
-  if( dot > _mindot || _niter <= 1){
+  if( dot > _kalcon.minDot() || _niter <= 1){
 //  Delete the old trajectory, and set the new one
     if(_ptraj != _reftraj)
       delete _ptraj;
@@ -1101,7 +1079,7 @@ KalRep::extendThrough(double newf) {
       }
 //  Don't bother doing anything if the traj wasn't really extended
       if(piecerange[1] > piecerange[0]){
-	if(_kalcon->materialSites()){
+	if(_kalcon.materialSites()){
 //  Get the top-level detector set
 // For now, use an empty detector set.  In future, this should come from the geometry service DNB_RKK
 //    static const DetSet* trkmodel = new DetSet("dummy",1);
@@ -1117,7 +1095,7 @@ KalRep::extendThrough(double newf) {
 	    localTrajectory(_sites.front()->globalLength(),loclen);
 	  if(reftraj != 0){
 // get the momentum from this using the mom calculator
-	    Hep3Vector momvec = TrkMomCalculator::vecMom(*reftraj,bField(),loclen);
+	    Hep3Vector momvec = TrkMomCalculator::vecMom(*reftraj,_kalcon.bField(),loclen);
 	    extendmom = momvec.mag();
 	  } else
 	    return TrkErrCode(TrkErrCode::fail,KalCodes::momentum,
@@ -1135,9 +1113,8 @@ KalRep::extendThrough(double newf) {
 	  }
 	}
 // Add the bend sites
-	if(_kalcon->bendSites()){
-	  if(fieldIntegrator() != 0)
-	    createBendSites(piecerange,_sites);
+	if(_kalcon.bendSites()){
+	  createBendSites(piecerange,_sites);
 	}
 // refind the hit sites (in case they've moved)
 	findHitSites();
@@ -1156,8 +1133,8 @@ KalRep::extendThrough(double newf) {
 // if the extension was successfull, update the fit range
 // update fitrange
 	if(retval.success()){
-	  _fitrange[0] = std::min(_fitrange[0],newf-_fltepsilon);
-	  _fitrange[1] = std::max(_fitrange[1],newf+_fltepsilon);
+	  _fitrange[0] = std::min(_fitrange[0],newf-_kalcon.fltEpsilon());
+	  _fitrange[1] = std::max(_fitrange[1],newf+_kalcon.fltEpsilon());
 // update the range of the trajectory
 	  _ptraj->setFlightRange(_fitrange);
 	  _reftraj->setFlightRange(_fitrange);
@@ -1202,12 +1179,12 @@ KalRep::updateSites() {
     updateSites(losite,0,_refmom,trkIn);
     updateSites(losite+1,_sites.size()-1,_refmom,trkOut);
 // update the end sites
-    updateEndSites(_kalcon->smearFactor());
+    updateEndSites(_kalcon.smearFactor());
 // if the flightlength of the hit sites has changed a lot, this means the
 // intersection and field integrals may no longer be correct, so rebuild the
 // material and bend sites
-    if( _kalcon->materialSites() && _maxfltdif > _kalcon->intersectionTolerance() && 
-	_ninter < _kalcon->maxIntersections())
+    if( _kalcon.materialSites() && _maxfltdif > _kalcon.intersectionTolerance() && 
+	_ninter < _kalcon.maxIntersections())
       reIntersect();
     return TrkErrCode(TrkErrCode::succeed);
   } else{
@@ -1244,21 +1221,21 @@ void
 KalRep::setFitRange(const Trajectory* traj) {
 //  If initial volumes have been specified, use them to extend these limits
   double range;
-  const TrkVolume* invol = _kalcon->trkVolume(trkIn);
-  const TrkVolume* outvol = _kalcon->trkVolume(trkOut);
+  const TrkVolume* invol = _kalcon.trkVolume(trkIn);
+  const TrkVolume* outvol = _kalcon.trkVolume(trkOut);
   if( invol != 0 && invol->extendThrough( traj,range,trkIn))
     _fitrange[0] = std::min(_fitrange[0],range);
   if(outvol != 0 && outvol->extendThrough( traj,range,trkOut))
     _fitrange[1] = std::max(_fitrange[1],range);
 // use the seed to start the reference piece traj (initialy 1 piece)
 // require a non-zero flight range
-  if( (_fitrange[1] - _fitrange[0]) < _minfltlen ){
+  if( (_fitrange[1] - _fitrange[0]) < _kalcon.minFltLen() ){
 // this is really bad: the track has <=1 hit and _no_ extension volumes.  This
 // track will be unfittable no matter what, but I don't want it crash.  Thus
 // we create a phony range.
     double midrange = (_fitrange[0] + _fitrange[1] )/2.0;
-    _fitrange[0] = midrange - _minfltlen/2.0;
-    _fitrange[1] = midrange + _minfltlen/2.0;
+    _fitrange[0] = midrange - _kalcon.minFltLen()/2.0;
+    _fitrange[1] = midrange + _kalcon.minFltLen()/2.0;
   }
 }
 
@@ -1382,78 +1359,38 @@ KalRep::buildHitSites() {
 // error, so just adjust the fit range appropriately
   if( _hitrange[0]<_sites.size() && _hitrange[1]>=0){
     if(_extendable[trkIn] && _fitrange[0] > _sites[_hitrange[0]]->globalLength())
-      _fitrange[0] = _sites[_hitrange[0]]->globalLength() - _fltepsilon;
+      _fitrange[0] = _sites[_hitrange[0]]->globalLength() - _kalcon.fltEpsilon();
     if(_extendable[trkOut] && _fitrange[1]< _sites[_hitrange[1]]->globalLength())
-      _fitrange[1] = _sites[_hitrange[1]]->globalLength() + _fltepsilon;
+      _fitrange[1] = _sites[_hitrange[1]]->globalLength() + _kalcon.fltEpsilon();
   }
 }
 //
 // same thing for bend sites
 void
 KalRep::buildBendSites(double frange[2]) {
-  if(fieldIntegrator() != 0 && frange[0]<frange[1]){
 // create the bend sites all at once
-    createBendSites(frange,_sites);
-// refind the hit sites
-    findHitSites();
-  }
-}
-
-bool
-KalRep::buildIntegrator() {
-// see if the field has changed since last time; if so,
-// we need a new integrator
-// create the integrator if necessary
-  if(_integrator == 0){
-    _integrator = new BFieldIntegrator(bField());
-    if(_integrator == 0){
-      ErrMsg(error) << "ERROR, unable to create BField Integrator,"
-		    << " no bfield corrections will be applied" << endmsg;
-      return false;
-    }
-// set parameters from KalContext
-    _integrator->setTolerance(_kalcon->bFieldIntTolerance());
-    _integrator->setPathMin(_kalcon->bFieldIntMinStep());
-    _integrator->setStepCeiling(_kalcon->bFieldIntMaxStep());
-    _integrator->setStepFrac(_kalcon->bFieldIntMaxFraction());
-    _integrator->setDivTolerance(_kalcon->bFieldDivTolerance());
-    _integrator->setDivPathMin(_kalcon->bFieldDivMinStep());
-    _integrator->setDivStepCeiling(_kalcon->bFieldDivMaxStep());
-    _integrator->setDivStepFrac(_kalcon->bFieldDivMaxFraction());
-  }
-  return true;
+  createBendSites(frange,_sites);
+  // refind the hit sites
+  findHitSites();
 }
 
 void
 KalRep::createBendSites(double range[2], std::vector<KalSite*>& sites) const {
 // divide the trajectory range; split it at 0.0 if possible to minimize end
 // effects at the origin
-
-// sanity check
-    if(range[1]-range[0] >  _maxintrange  ){
-      ErrMsg(warning) << " Field integration range " << range[1] -range[0] 
-		    << " is too large, truncating " <<  endmsg;
-      range[1] = range[0] + _maxintrange;
+  BFieldIntRange brange(range[0],range[1]);
+  if(range[0]>range[1]){
+    ErrMsg(warning) << "Reversed integration range, inverting" <<  endmsg;
+    brange.invert();
   }
-  std::vector<double> rangevals;
-
-  if(range[0] < 0.0 && range[1] > 0.0) {
-    _integrator->divideRange(_reftraj,range[0],0.0,rangevals);
-    _integrator->divideRange(_reftraj,0.0,range[1],rangevals);
-  } else
-    _integrator->divideRange(_reftraj,range,rangevals);
+  std::vector<BFieldIntRange> ranges;
+  _kalcon.bFieldIntegrator().divideRange(_reftraj,brange,ranges);
 // loop over the divisions, creating the bend sites.
-  for(size_t irange=0;irange+1<rangevals.size();irange++){
-    double intrange[2];
-    intrange[0] = rangevals[irange];
-    intrange[1] = rangevals[irange+1];
-    if(intrange[0] != intrange[1]) {
+  for(size_t irange=0;irange<ranges.size();++irange){
 // reference momentum is good enough for bend corrections
-      KalBend* bendsite = new KalBend(*_integrator,_reftraj,intrange,
-				      _refmom,_charge);
-      assert(bendsite != 0);
-      sites.push_back(bendsite);
-    }
+    KalBend* bendsite = new KalBend(_kalcon.bFieldIntegrator(),_reftraj,ranges[irange],_refmom,_charge);
+    assert(bendsite != 0);
+    sites.push_back(bendsite);
   }
 }
 
@@ -1461,12 +1398,12 @@ KalRep::createBendSites(double range[2], std::vector<KalSite*>& sites) const {
 Hep3Vector 
 KalRep::momentum(double fltL) const {
 //----------------------------------------------------------------------
-//  const BField& theField = bField();
+//  const BField& theField = _kalcon.bField();
   // kludge DNB_RKK
 //  static const BField* theField = new BFieldFixed(0.0,0.0,1.0);
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
-  return TrkMomCalculator::vecMom(*locTraj, bField(), localFlt);
+  return TrkMomCalculator::vecMom(*locTraj, _kalcon.bField(), localFlt);
 }
 
 //----------------------------------------------------------------------
@@ -1481,12 +1418,12 @@ KalRep::pt(double fltL) const {
 BbrVectorErr 
 KalRep::momentumErr(double fltL) const {
 //----------------------------------------------------------------------
-//  const BField& theField = bField();
+//  const BField& theField = _kalcon.bField();
   // kludge DNB_RKK
   
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
-  return TrkMomCalculator::errMom(*locTraj, bField(), localFlt);
+  return TrkMomCalculator::errMom(*locTraj, _kalcon.bField(), localFlt);
 }
 
 
@@ -1535,7 +1472,7 @@ KalRep::parameterDifference(trkDirection tdir) const {
 HepMatrix 
 KalRep::posmomCov(double fltL) const {
 //------------------------------------------------------------------------
-  const BField& theField = bField();
+  const BField& theField = _kalcon.bField();
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
   return TrkMomCalculator::posmomCov(*locTraj, theField, localFlt);
@@ -1548,7 +1485,7 @@ KalRep::getAllCovs(double fltL,
 			HepSymMatrix& ppCov,
 			HepMatrix&    xpCov)      const {
 //------------------------------------------------------------------------
-  const BField& theField = bField();
+  const BField& theField = _kalcon.bField();
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
   TrkMomCalculator::getAllCovs(*locTraj, theField, localFlt,
@@ -1564,7 +1501,7 @@ KalRep::getAllWeights(double fltL,
 				 HepSymMatrix& ppWeight,
 				 HepMatrix&    xpWeight) const {
 //------------------------------------------------------------------------
-  const BField& theField = bField();
+  const BField& theField = _kalcon.bField();
   double localFlt = 0.;
   const TrkSimpTraj* locTraj = localTrajectory(fltL,localFlt);
   TrkMomCalculator::getAllWeights(*locTraj, theField, localFlt,
@@ -1598,9 +1535,9 @@ KalRep::append(KalStub& stub) {
     stubsites.clear();
 // extend the track range
     if(stub.direction() == trkOut)
-      _fitrange[1] = std::max(_fitrange[1],stub.hitRange(trkOut)+_fltepsilon);
+      _fitrange[1] = std::max(_fitrange[1],stub.hitRange(trkOut)+_kalcon.fltEpsilon());
     else
-      _fitrange[0] = std::min(_fitrange[0],stub.hitRange(trkIn)-_fltepsilon);
+      _fitrange[0] = std::min(_fitrange[0],stub.hitRange(trkIn)-_kalcon.fltEpsilon());
 // find the new hits
     findHitSites();
 // User is responsable for the refit
@@ -1716,14 +1653,14 @@ KalRep::converged() const {
   if(hotList()->hitCapable()){
 // several convergence tests, do them roughly in order of importance.
 // trajectory convergence  
-    if(converged) converged = _maxdist < _kalcon->distanceTolerance();
+    if(converged) converged = _maxdist < _kalcon.distanceTolerance();
 // momentum convergence
-    if(converged) converged = fabs(estimatedMomDiff()) < _kalcon->maxMomDiff();
+    if(converged) converged = fabs(estimatedMomDiff()) < _kalcon.maxMomDiff();
 //  Parameter convergence; if the parameter differences tolerance is set < 0.0  skip the test
-    if(converged) converged = _kalcon->maxParamDiff(trkOut) < 0.0 ||
-		    parameterDifference(trkOut) < _kalcon->maxParamDiff(trkOut);
-    if(converged) converged = _kalcon->maxParamDiff(trkIn) < 0.0 ||
-		    parameterDifference(trkIn) < _kalcon->maxParamDiff(trkIn);
+    if(converged) converged = _kalcon.maxParamDiff(trkOut) < 0.0 ||
+		    parameterDifference(trkOut) < _kalcon.maxParamDiff(trkOut);
+    if(converged) converged = _kalcon.maxParamDiff(trkIn) < 0.0 ||
+		    parameterDifference(trkIn) < _kalcon.maxParamDiff(trkIn);
   }
   if(_niter<=1) converged=false;
   //std::cout<<"converged "<<converged<<" "<<_niter<<std::endl;
@@ -1873,13 +1810,13 @@ KalRep::updateRefMom() {
   const TrkSimpTraj* reftraj = localTrajectory(_refmomfltlen,loclen);
   if(reftraj != 0){
 // get the momentum from this using the mom calculator
-    Hep3Vector momvec = TrkMomCalculator::vecMom(*reftraj,bField(),loclen);
+    Hep3Vector momvec = TrkMomCalculator::vecMom(*reftraj,_kalcon.bField(),loclen);
     double delmom = momvec.mag()-_refmom;
     double momfac = 1.0;
     double floor = 0.5 ;
 // damp momentum update after 3rd iteration
       if(_niter>3) {
-         double arguement = (_niter-3) * _kalcon->momUpdateFactor();
+         double arguement = (_niter-3) * _kalcon.momUpdateFactor();
          momfac = floor + (1-floor)*exp(-arguement);
       }
    _refmom += momfac*delmom;
@@ -1926,13 +1863,13 @@ void
 KalRep::updateSites( int startindex,int endindex,
 		     double initialmom,trkDirection dedxdir) {
 // require a minimum momentum
-  double sitemom = std::max(initialmom,_minmom);
+  double sitemom = std::max(initialmom,_kalcon.minMom());
   int step = dedxdir==trkOut ? 1 : -1;
   int nstep = dedxdir==trkOut ? endindex-startindex+1 : startindex-endindex+1;
   int iindex(startindex);
 // reset extendability (outwards)
   if(dedxdir == trkOut && !_extendable[dedxdir]){
-    _fitrange[1] = std::max(_fitrange[1],_sites.back()->globalLength()+_fltepsilon);
+    _fitrange[1] = std::max(_fitrange[1],_sites.back()->globalLength()+_kalcon.fltEpsilon());
     _extendable[dedxdir] = true;
   }
   while(nstep>0) {
@@ -1942,7 +1879,7 @@ KalRep::updateSites( int startindex,int endindex,
 // of the effect of this site)
     if(dedxdir == trkOut && thesite->isActive()){
       sitemom += thesite->momentumChange(dedxdir);
-      sitemom = std::max(sitemom,_minmom);
+      sitemom = std::max(sitemom,_kalcon.minMom());
     }
     if( thesite->update(_reftraj,sitemom)){
 // note update resets the activity flag of the material
@@ -1953,7 +1890,7 @@ KalRep::updateSites( int startindex,int endindex,
         if(dedxdir==trkOut && stopsIn(mat)){
           _stopsite = mat;
           _extendable[dedxdir] = false;
-          _fitrange[1] = std::max(thesite->globalLength()+_fltepsilon,_fitrange[0]+ _minfltlen);
+          _fitrange[1] = std::max(thesite->globalLength()+_kalcon.fltEpsilon(),_fitrange[0]+ _kalcon.minFltLen());
         }
 // deactivate the materials past the stopping site
         if(_stopsite != 0 && _stopsite->globalLength() <= mat->globalLength())
@@ -1962,7 +1899,7 @@ KalRep::updateSites( int startindex,int endindex,
 // update momentum for inwards processing
       if(dedxdir == trkIn && thesite->isActive()){
         sitemom += thesite->momentumChange(dedxdir);
-        sitemom = std::max(sitemom,_minmom);
+        sitemom = std::max(sitemom,_kalcon.minMom());
     }
 // check hot sites for flightlenght changes
       if(thesite->kalHit() != 0 && thesite->isActive())
@@ -1988,9 +1925,9 @@ KalRep::fixupSites() {
 // error, so just adjust the fit range appropriately
   if( _hitrange[0]<_sites.size() && _hitrange[1]>0){
     if(_extendable[trkIn] && _fitrange[0] > _sites[_hitrange[0]]->globalLength())
-      _fitrange[0] = _sites[_hitrange[0]]->globalLength()+_fltepsilon;
+      _fitrange[0] = _sites[_hitrange[0]]->globalLength()+_kalcon.fltEpsilon();
     if(_extendable[trkOut] && _fitrange[1]< _sites[_hitrange[1]]->globalLength())
-      _fitrange[1] = _sites[_hitrange[1]]->globalLength()+_fltepsilon;
+      _fitrange[1] = _sites[_hitrange[1]]->globalLength()+_kalcon.fltEpsilon();
   }
 }
 
@@ -2045,8 +1982,7 @@ KalRep::createStub(const TrkVolume& extendvolume,
 // explicitly sort the sites
     std::sort(sites.begin(),sites.end(),babar::Collection::PtrLess());
 // create the KalStub from these
-    retval = new KalStub(*this,extenddir,tolerance,xrange,sites,
-			 kalcon != 0 ? *kalcon : *_kalcon);
+    retval = new KalStub(*this,extenddir,tolerance,xrange,sites,_kalcon);
 // cleanup
     findHitSites();
   }
@@ -2079,9 +2015,9 @@ KalRep::isFitable(TrkErrCode& err) const {
   if(enoughDofs()){
 // Check for stopping in material before the last hit; use a tolerance, since the intersections aren't perfect
     if(_stopsite == 0 ||
-       (_sites[_hitrange[1]]->globalLength() <= _stopsite->globalLength() + _kalcon->intersectionTolerance() )){
+       (_sites[_hitrange[1]]->globalLength() <= _stopsite->globalLength() + _kalcon.intersectionTolerance() )){
 // check for parameters diverging
-      if(_maxfltdif > _divergeflt){
+      if(_maxfltdif > _kalcon.divergeFlt()){
 	if (ErrLogging(debugging)) {
 	  std::cout<<"max fligth difference "<<_maxfltdif<<std::endl;
 	}
@@ -2093,7 +2029,7 @@ KalRep::isFitable(TrkErrCode& err) const {
 	if(_stopsite!=0)
 	  std::cout<<"Will stop must be on "<<_sites[_hitrange[1]]->globalLength()<<" "
 		   <<" but stop on length "<<_stopsite->globalLength()
-		   <<" eps "<<_kalcon->intersectionTolerance()<<std::endl;
+		   <<" eps "<<_kalcon.intersectionTolerance()<<std::endl;
       }
       fitable = false;
       err = TrkErrCode(TrkErrCode::fail,KalCodes::stops,
@@ -2121,7 +2057,7 @@ KalRep::resetFit() {
     _sites[isite]->invalidateSite(trkOut);
   }
 // update the end sites
-  updateEndSites(_kalcon->smearFactor());
+  updateEndSites(_kalcon.smearFactor());
 }
 
 // reset everything about the fit to construction level quantities
@@ -2208,11 +2144,11 @@ KalRep::buildTraj(trkDirection tdir) {
 // buffer the range slightly to avoid problems with degenerate pathlength sites 
   double range[2];
   if(tdir == trkOut){
-    range[0] = lastsite->globalLength()- _minfltlen;
-    range[1] = std::max(_fitrange[1],range[0]+ _minfltlen);
+    range[0] = lastsite->globalLength()- _kalcon.minFltLen();
+    range[1] = std::max(_fitrange[1],range[0]+ _kalcon.minFltLen());
   } else {
-    range[1] = lastsite->globalLength()+ _minfltlen;
-    range[0] = std::min(_fitrange[0],range[1]- _minfltlen);
+    range[1] = lastsite->globalLength()+ _kalcon.minFltLen();
+    range[0] = std::min(_fitrange[0],range[1]- _kalcon.minFltLen());
   }
   straj->setFlightRange(range);
 // build the new piece traj starting with this piece
@@ -2253,7 +2189,7 @@ KalRep::extendTraj(int startsite,trkDirection tdir) {
       if(thesite->nDof() == 0 && thesite->isActive()){
         KalSite* nextsite = nsites>1 ? _sites[isite+sitestep] : 0;
         if( nextsite == 0 ||
-            fabs(thesite->globalLength() -nextsite->globalLength())> _kalcon->minGap()){
+            fabs(thesite->globalLength() -nextsite->globalLength())> _kalcon.minGap()){
           double sitelen = thesite->globalLength();
 // build the extra trajectory pieces for these sites
 // clone the seed traj: cast it back to a simptraj
@@ -2309,18 +2245,18 @@ KalRep::setExtendable(trkDirection idir) {
 // make sure the fit range covers the sites
   switch(idir) {
   case trkIn:
-    _fitrange[0] = std::min(_fitrange[0],_sites.front()->globalLength()-_fltepsilon);
+    _fitrange[0] = std::min(_fitrange[0],_sites.front()->globalLength()-_kalcon.fltEpsilon());
     break;
   case trkOut:
-    _fitrange[1] = std::max(_fitrange[1],_sites.back()->globalLength()+_fltepsilon);
+    _fitrange[1] = std::max(_fitrange[1],_sites.back()->globalLength()+_kalcon.fltEpsilon());
     break;
   }
 }
 
 bool
 KalRep::stopsIn(const KalMaterial* mat) const {
-  return fabs(mat->momFraction()) > _kalcon->maxSiteDMom() ||
-    fabs(mat->momentumChange(trkIn)) > _kalcon->maxDMom();
+  return fabs(mat->momFraction()) > _kalcon.maxSiteDMom() ||
+    fabs(mat->momentumChange(trkIn)) > _kalcon.maxDMom();
 }
 
 TrkErrCode
@@ -2393,13 +2329,13 @@ KalRep::reIntersect() {
   std::for_each(mid,_sites.end(),babar::Collection::DeleteObject());
   _sites.erase(mid,_sites.end());
 // re-calculate the fitrange
-  _fitrange[0] = hotList()->startFoundRange()-_fltepsilon;
-  _fitrange[1] = hotList()->endFoundRange()+_fltepsilon;
+  _fitrange[0] = hotList()->startFoundRange()-_kalcon.fltEpsilon();
+  _fitrange[1] = hotList()->endFoundRange()+_kalcon.fltEpsilon();
   setFitRange(_reftraj);
 // re-make materials and bends using current ref traj
 	std::vector<DetIntersection> tlist; tlist.reserve(64);
   buildMaterialSites(_fitrange,tlist);
-  if(_kalcon->bendSites() && buildIntegrator())
+  if(_kalcon.bendSites() )
     buildBendSites(_fitrange);
 }
 
