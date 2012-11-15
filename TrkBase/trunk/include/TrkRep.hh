@@ -38,7 +38,6 @@ class HelixParams;
 #include "CLHEP/Vector/ThreeVector.h"
 class HepPoint;
 class TrkVolume;
-class TrkContext;
 class BField;
 
 // Class interface //
@@ -86,8 +85,6 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitOnTrkUpdater {
     TrkParticle const& particleType() const { return _tpart; }
     // for now, allow setting t0.  Must be coherent with flt0
     void setT0(TrkT0 const& t0,double flt0) { _trkt0 = t0; _flt0 = flt0;}
-    // static function to return the BaBar BField.
-    static BField const& bField();
 
     //******************************************
     // Information about track at a given position
@@ -127,7 +124,6 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitOnTrkUpdater {
     TrkId const& id() const { return _id; }
   protected:
     TrkRep&   operator= (const TrkRep&);
-    const TrkContext& trkContext() const;
   private:
     // new data members for mu2e
     TrkT0 _trkt0; // t0 value
