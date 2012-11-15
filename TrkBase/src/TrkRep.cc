@@ -300,9 +300,3 @@ TrkRep::chisqConsistency() const {
     return ChisqConsistency();
 }
 
-BField const&
-TrkRep::bField() {
-// this should be built from the Mu2e field: FIXME!!!
-  static BField* bfield = new BFieldFixed(0.0,0.0,1.0);
-  return *bfield;
-}
