@@ -41,7 +41,6 @@ class KalHit;
 class KalStub;
 class KalEndSite;
 class BField;
-class BFieldIntegrator;
 class TrkHitUse;
 #include <vector>
 
@@ -314,10 +313,7 @@ public:
 // find the first site of a given type
   const KalSite* findSite(KalSite::siteType stype) const;
 // config information
-  const KalContext& kalContext() const { return *_kalcon; }
-  void setKalContext(const KalContext* kalcon) { _kalcon = kalcon; }
-// access to integrator
-  const BFieldIntegrator* fieldIntegrator() const { return _integrator; }
+  const KalContext& kalContext() const { return _kalcon; }
 //******************************************
 // access to KalSites
 //******************************************
@@ -345,8 +341,7 @@ protected:
 private:
   TrkDifPieceTraj* _ptraj; // piecewise trajectory
   TrkDifPieceTraj* _reftraj; // reference for derivatives + residuals
-  BFieldIntegrator* _integrator; // field integrator
-  const KalContext* _kalcon; // context for this rep
+  KalContext const& _kalcon; // context for this rep
   TrkSimpTraj* _seedtraj; // seed trajectory for the fit
   KalMaterial* _stopsite;// stopping info
 
@@ -382,10 +377,7 @@ private:
   void buildHitSites();
 // build the bend sites
   void buildBendSites(double[2]);
-// BField integrator
   void createBendSites(double range[2],std::vector<KalSite*>& sites) const;
-// setup bfield integrator
-  bool buildIntegrator();
 //  process sites in a given direction (= filtering).  The return
 //  value tells whether any sites were changed.
   bool process(KalSite*,int,int,trkDirection);
@@ -443,13 +435,5 @@ protected:
   bool stopsIn(const KalMaterial* mat) const;
   KalSite* nextActive(unsigned index,trkDirection tdir) const;
 
-// some static constants
-private:
-  static const double _minfltlen;
-  static const double _minmom;
-  static const double _fltepsilon;
-  static const double _maxintrange;
-  static const double _divergeflt;
-  static const double _mindot;
 };
 #endif
