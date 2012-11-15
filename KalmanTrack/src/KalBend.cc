@@ -18,14 +18,11 @@ using std::endl;
 using std::ostream;
 
 KalBend::KalBend(const BFieldIntegrator& integrator,
-		 const TrkDifPieceTraj* reftraj,double fltrange[2],
+		 const TrkDifPieceTraj* reftraj,BFieldIntRange const& range,
 		 double momentum, int charge) :
-  KalSite(KalSite::bendSite),_integrator(integrator),_momentum(momentum),
+  KalSite(KalSite::bendSite),_integrator(integrator),_range(range),_momentum(momentum),
   _charge(charge)
 {
-// set the range
-  _range[0] = fltrange[0];
-  _range[1] = fltrange[1];
 // update the cache
   updateCache(reftraj);
 }
@@ -33,6 +30,7 @@ KalBend::KalBend(const BFieldIntegrator& integrator,
 KalBend::KalBend(const KalBend& other) :
   KalSite(other),
   _integrator(other._integrator),
+  _range(other._range),
   _momentum(other._momentum),
   _charge(other._charge),
   _delmom(other._delmom),
@@ -41,9 +39,6 @@ KalBend::KalBend(const KalBend& other) :
   _thetahat(other._thetahat),
   _phihat(other._phihat)
 {
-// set the range
-  _range[0] = other._range[0];
-  _range[1] = other._range[1];
 }
 //
 KalBend::~KalBend() {;}
@@ -101,8 +96,8 @@ KalBend::printAll(ostream& os) const {
   os << "Bend ";
   KalSite::printAll(os);
 // print specific information.
-  os << "Bend integral from " << _range[0] << " to "
-     << _range[1] << endl;
+  os << "Bend integral from " << _range._slo << " to "
+     << _range._shi << endl;
   os << "Momentum change over integral = " << _delmom << endl;
   os << "Parameter transport over integral = " << _transport.parameterVector() << endl;
 }
@@ -110,9 +105,7 @@ KalBend::printAll(ostream& os) const {
 void
 KalBend::invert() {
 // Invert the range
-  double temp = _range[0];
-  _range[0] = -1.*_range[1];
-  _range[1] = -1.*temp;
+  _range.invert();
 // charge is inverted too!
   _charge =-_charge;
 // call down to base

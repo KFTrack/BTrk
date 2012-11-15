@@ -25,7 +25,7 @@ public:
 // construct from the field integrator, the trajectory, range,
 // and momentum (direction from the middle of the range)
   KalBend(const BFieldIntegrator&,
-	  const TrkDifPieceTraj*,double fltrange[2],
+	  const TrkDifPieceTraj*,BFieldIntRange const& range,
 	  double momentum, int charge);
 // copy constructor
   KalBend(const KalBend& other);
@@ -45,16 +45,16 @@ public:
     return _charge*_delmom.dot(_phihat)/_momentum; }
   double deltaMomentum() const { return _delmom.mag(); }
   double momentum() const { return _momentum; }
-  double lowRange() const { return _range[0]; }
-  double hiRange() const { return _range[1]; }
-  double range() const { return _range[1]-_range[0]; }
+  double lowRange() const { return _range._slo; }
+  double hiRange() const { return _range._shi; }
+  double range() const { return _range.range(); }
 // informative print
   virtual void printAll(std::ostream& os=std::cout) const;
 // override invert
   virtual void invert();
 private:
   const BFieldIntegrator& _integrator; // integrator
-  double _range[2]; // integral range
+  BFieldIntRange _range; // integral range
   double _momentum; // momentum magnitude (unsigned)
   int _charge; // particle charge
   Hep3Vector _delmom; // momentum change
@@ -65,6 +65,6 @@ private:
   Hep3Vector _momhat;
   Hep3Vector _thetahat;
   Hep3Vector _phihat;
-  double midpoint() const { return (_range[1] + _range[0])/2.0; }
+  double midpoint() const { return _range._smid; }
 };
 #endif
