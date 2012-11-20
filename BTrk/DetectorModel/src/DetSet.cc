@@ -21,7 +21,7 @@
 using std::endl;
 using std::ostream;
 static const double _epsilon = 1.0e-4;
-static const int _MAXINTER = 1000; // maximum # of successive intersections of a single element
+static const int _MAXINTER = 3000; // maximum # of successive intersections of a single element
 //
 //  Define the list functions for printing
 //

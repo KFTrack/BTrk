@@ -32,10 +32,10 @@ using namespace CLHEP;
 //  the average material interior to the tracking volume at dip=~30 degrees
 //
 
-double DetMaterial::_msmom = 15.0*MeV;
+//double DetMaterial::_msmom = 15.0*MeV;
 double DetMaterial::_dgev = 0.153536*MeV*cm*cm;
 double DetMaterial::_minkappa(1.0e-3);
-double DetMaterial::_scatterfrac(0.9999); // integrate 99.99% percent of the tail by default, this should be larger
+//double DetMaterial::_scatterfrac(0.9999); // integrate 99.99% percent of the tail by default, this should be larger
 // if the materials are very thin.
 const double bg2lim = 0.0169;
 const double taulim = 8.4146e-3 ;
@@ -50,6 +50,8 @@ const double DetMaterial::_alpha(1.0/137.036);
 //
 
 DetMaterial::DetMaterial(const char* detMatName, const DetMtrProp* detMtrProp):
+  _msmom(15.0*MeV),
+  _scatterfrac(0.9999),
   _name(detMatName),
   _za(detMtrProp->getZ()/detMtrProp->getA()),
   _zeff(detMtrProp->getZ()),

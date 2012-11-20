@@ -56,20 +56,20 @@ class DetMaterial{
     double energyLoss(double mom,double pathlen,
 	TrkParticle const& tpart) const {
       return energyLoss(mom,pathlen,tpart.mass()); }
-    double energyLoss(double mom,double pathlen,double mass) const;
+    virtual double energyLoss(double mom,double pathlen,double mass) const;
 
     double energyGain(double mom,double pathlen,
 	TrkParticle const& tpart) const {
       return energyGain(mom,pathlen,tpart.mass());	}
-    double energyGain(double mom,double pathlen, double mass) const;
+    virtual double energyGain(double mom,double pathlen, double mass) const;
 
     double energyDeposit(double mom, double pathlen,
 	TrkParticle const& tpart) const {
       return energyDeposit(mom,pathlen,tpart.mass());	}
-    double energyDeposit(double mom, double pathlen,double mass) const;
+    virtual double energyDeposit(double mom, double pathlen,double mass) const;
 
     // raw dE/dx function, used by the above
-    double dEdx(double mom,dedxtype type,
+    virtual double dEdx(double mom,dedxtype type,
 	TrkParticle const& tpart) const {
       return dEdx(mom,type,tpart.mass());	}
 
@@ -155,15 +155,15 @@ class DetMaterial{
     // function, based on a crude model of dE/dx.
     static double maxStepdEdx(double mom,double mass,
 	double dEdx,double tol=0.05);
-  private:
+  protected:
     //
     //  Constants used in material calculations
     //
-    static double _msmom; // constant in Highland scattering formula
+    double _msmom; // constant in Highland scattering formula
     static double _minkappa; // ionization randomization parameter
     static double _dgev; // energy characterizing energy loss
     static const double _alpha; // fine structure constant
-    static double _scatterfrac; // fraction of scattering distribution to include in RMS
+    double _scatterfrac; // fraction of scattering distribution to include in RMS
 
     //
     //  Specific data for this material
@@ -234,8 +234,8 @@ class DetMaterial{
     static double minKappa() { return _minkappa; }
     static void setMinimumKappa(double minkappa) { _minkappa = minkappa; }
     // scattering parameter
-    static double scatterFraction() { return _scatterfrac;}
-    static void setScatterFraction(double scatterfrac) {_scatterfrac = scatterfrac;}
+    double scatterFraction() const { return _scatterfrac;}
+    void setScatterFraction(double scatterfrac) {_scatterfrac = scatterfrac;}
 };
 #endif
 
