@@ -75,6 +75,7 @@
 #include "CLHEP/Vector/ThreeVector.h"
 //#include "CLHEP/String/Strings.h"
 #include "DetectorModel/DetMaterial.hh"
+#include "DetectorModel/DetLgtMaterial.hh"
 #include "DetectorModel/DetSet.hh"
 #include "DetectorModel/DetSurfaceElem.hh"
 #include "DetectorModel/DetSurfaceSet.hh"
@@ -151,7 +152,9 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     } else {
             matName = gdch.ICMat();
     }
-    const DetMaterial* material = mtdbinfo->findDetMaterial(matName.c_str());// gblEnv->getGen()->findDetMaterial("Beryllium");
+    //const DetMaterial* material = mtdbinfo->findDetMaterial(matName.c_str(),true);// gblEnv->getGen()->findDetMaterial("Beryllium");
+    const DetMaterial* material = mtdbinfo->findDetMaterial<DetLgtMaterial>(matName.c_str());
+    (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
     if(material)material->printAll(std::cout); 
     //assert(0 != material);
     _inCylType = new DchCylType("Dch inner cylinder", radii, length, material,
@@ -180,8 +183,9 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     } else {
             matName = gdch.IWGrdMat();
     }
-    material = mtdbinfo->findDetMaterial(matName.c_str());
-    (const_cast<DetMaterial*> (material))->setScatterFraction(0.99999999);
+    //material = mtdbinfo->findDetMaterial(matName.c_str(),true);
+    material = mtdbinfo->findDetMaterial<DetLgtMaterial>(matName.c_str());
+    //(const_cast<DetMaterial*> (material))->setScatterFraction(0.99999999);
     if(material)material->printAll(std::cout);
     //assert(0 != material);
 
@@ -204,7 +208,9 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     if (gdch.OCMat().empty()) {
             material = 0;
     } else {
-            material = mtdbinfo->findDetMaterial(gdch.OCMat().c_str());
+            //material = mtdbinfo->findDetMaterial(gdch.OCMat().c_str(),true);
+            material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.OCMat().c_str());
+            (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
     }
     if(material)material->printAll(std::cout);
     //assert(0 != material);
@@ -231,7 +237,11 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     if (gdch.REPnSubs()==1) {
             Hep3Vector rEPpos(gdch.REPPosX(), gdch.REPPosY(), gdch.REPPosZ());
             HepTransformation rEP_tr(rEPpos, euler);
-            material = mtdbinfo->findDetMaterial(gdch.REPMat().c_str());
+            //material = mtdbinfo->findDetMaterial(gdch.REPMat().c_str(),true);
+            material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.REPMat().c_str());
+            if (gdch.REPMat().find("ITGas")==std::string::npos ) {
+                    (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
+            }
 
             minVolDim = radii[1]-radii[0];
             if (length<minVolDim) minVolDim = length;
@@ -250,7 +260,11 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                     //std::cout<<"adding REP sub "<<iSub<<std::endl;
                     Hep3Vector subREPpos(gdch.REPPosX(iSub), gdch.REPPosY(iSub), gdch.REPPosZ(iSub));
                     HepTransformation subREP_tr(subREPpos, euler);
-                    material = mtdbinfo->findDetMaterial(gdch.REPMat(iSub).c_str());
+                    //material = mtdbinfo->findDetMaterial(gdch.REPMat(iSub).c_str(),true);
+                    material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.REPMat(iSub).c_str());
+                    if (gdch.REPMat(iSub).find("ITGas")==std::string::npos ) {
+                            (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
+                    }
 
                     radii[0] = gdch.REPInRad(iSub);
                     radii[1] = gdch.REPOutRad(iSub);
@@ -292,7 +306,11 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     if (gdch.FEPnSubs()==1) {
             Hep3Vector fEPpos(gdch.FEPPosX(), gdch.FEPPosY(), gdch.FEPPosZ());
             HepTransformation fEP_tr(fEPpos, euler);
-            material = mtdbinfo->findDetMaterial(gdch.FEPMat().c_str());
+            //material = mtdbinfo->findDetMaterial(gdch.FEPMat().c_str(),true);
+            material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.FEPMat().c_str());
+            if (gdch.FEPMat().find("ITGas")==std::string::npos ) {
+                    (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
+            }
 
             minVolDim = radii[1]-radii[0];
             if (length<minVolDim) minVolDim = length;
@@ -311,7 +329,11 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                     //std::cout<<"adding FEP sub "<<iSub<<std::endl;
                     Hep3Vector subFEPpos(gdch.FEPPosX(iSub), gdch.FEPPosY(iSub), gdch.FEPPosZ(iSub));
                     HepTransformation subFEP_tr(subFEPpos, euler);
-                    material = mtdbinfo->findDetMaterial(gdch.FEPMat(iSub).c_str());
+                    //material = mtdbinfo->findDetMaterial(gdch.FEPMat(iSub).c_str(),true);
+                    material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.FEPMat(iSub).c_str());
+                    if (gdch.FEPMat(iSub).find("ITGas")==std::string::npos ) {
+                            (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
+                    }
 
                     radii[0] = gdch.FEPInRad(iSub);
                     radii[1] = gdch.FEPOutRad(iSub);
@@ -349,8 +371,9 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
   } else {
           matName = gdch.GasMat();
   }
-  const DetMaterial* material = mtdbinfo->findDetMaterial(matName.c_str());//gblEnv->getGen()->findDetMaterial("GasWire");
-  (const_cast<DetMaterial*> (material))->setScatterFraction(0.99999999);
+  //const DetMaterial* material = mtdbinfo->findDetMaterial(matName.c_str(),true);//gblEnv->getGen()->findDetMaterial("GasWire");
+  const DetMaterial* material = mtdbinfo->findDetMaterial<DetLgtMaterial>(matName.c_str());
+  //(const_cast<DetMaterial*> (material))->setScatterFraction(0.99999999);
   material->printAll(std::cout);
   //assert(0 != material);
 
