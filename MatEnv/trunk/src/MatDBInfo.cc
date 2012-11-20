@@ -16,10 +16,11 @@
 //------------------------------------------------------------------------
 #include "BaBar/BaBar.hh"
 #include "MatEnv/MatDBInfo.hh"
-#include "MatEnv/RecoMatFactory.hh"
+//#include "MatEnv/RecoMatFactory.hh"
 #include "DetectorModel/DetMaterial.hh"
-#include "ErrLogger/ErrLog.hh"
-#include "MatEnv/MtrPropObj.hh"
+#include "DetectorModel/DetLgtMaterial.hh"
+//#include "ErrLogger/ErrLog.hh"
+//#include "MatEnv/MtrPropObj.hh"
 //#include "BbrStdUtils/String.hh"
 
 #include <string>
@@ -41,25 +42,25 @@ MatDBInfo::~MatDBInfo() {
   _matList.clear();
 }
 
-DetMaterial* 
-MatDBInfo::createMaterial( const std::string& db_name,
-			   const std::string& detMatName ) const
-{
-  MtrPropObj* genMtrProp;
-  DetMaterial* theMat;
-  
-  if (_genMatFactory == 0)
-    that()->_genMatFactory = RecoMatFactory::getInstance();
-  
-  genMtrProp = _genMatFactory->GetMtrProperties(db_name);
-  if(genMtrProp != 0){
-    theMat = new DetMaterial( detMatName.c_str(), genMtrProp ) ;
-    that()->_matList[new std::string( detMatName )] = theMat;
-    return theMat;
-  } else {
-    return 0;
-  }
-}
+//DetMaterial*
+//MatDBInfo::createMaterial( const std::string& db_name,
+//			   const std::string& detMatName ) const
+//{
+//  MtrPropObj* genMtrProp;
+//  DetMaterial* theMat;
+//
+//  if (_genMatFactory == 0)
+//    that()->_genMatFactory = RecoMatFactory::getInstance();
+//
+//  genMtrProp = _genMatFactory->GetMtrProperties(db_name);
+//  if(genMtrProp != 0){
+//    theMat = new DetMaterial( detMatName.c_str(), genMtrProp ) ;
+//    that()->_matList[new std::string( detMatName )] = theMat;
+//    return theMat;
+//  } else {
+//    return 0;
+//  }
+//}
 
 void 
 MatDBInfo::declareMaterial( const std::string& db_name,
@@ -75,21 +76,23 @@ MatDBInfo::findDetMaterial( const std::string& matName ) const
 {
   if (_genMatFactory == 0)
     that()->_genMatFactory = RecoMatFactory::getInstance();
-  
+
   DetMaterial* theMat;
   std::map< std::string*, DetMaterial*, PtrLess >::const_iterator pos;
   if ((pos = _matList.find((std::string*)&matName)) != _matList.end()) {
-    theMat = pos->second; 
+    theMat = pos->second;
   } else {
 // first, look for aliases
     std::string theName;
     std::map< std::string, std::string >::const_iterator matNamePos;
     if ((matNamePos = _matNameMap.find(matName)) != _matNameMap.end()) {
       theName = matNamePos->second;
-      theMat = createMaterial( theName, matName);
+      //theMat = createMaterial( theName, matName);
+      theMat = createMaterial<DetMaterial>( theName, matName);
     } else {
 //then , try to find the material name directly
-      theMat = createMaterial( matName, matName);
+      //theMat = createMaterial( matName, matName);
+      theMat = createMaterial<DetMaterial>( matName, matName);
 // if we created a new material directly, add it to the list
       if(theMat != 0)that()->declareMaterial(matName,matName);
     }
