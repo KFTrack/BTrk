@@ -84,7 +84,10 @@ private:
 
   //  input point is in the BaBar reference frame
   bool
-  insideVolume(const HepPoint& point) const;
+  insideVolume(const HepPoint& point, double &extraDelta, int nRot=-1) const;
+
+  bool
+  chckIntrsctInAglLmts(const Trajectory*, DetIntersection&) const;
 
   // Friends
   friend class DchDetector;

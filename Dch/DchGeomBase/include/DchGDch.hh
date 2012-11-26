@@ -208,7 +208,7 @@ public:
   double REPPosX(int iSub) const {return _REPPosSubs.at(iSub)[0];}
   double REPPosY(int iSub) const {return _REPPosSubs.at(iSub)[1];}
   double REPPosZ(int iSub) const {return _REPPosSubs.at(iSub)[2];}
-  //  forward end plate (REP)
+  //  forward end plate (FEP)
   size_t FEPnSubs() const { return _ForwCylSubs.size(); }
   double FEPInRad(int iSub) const {return _ForwCylSubs.at(iSub).getInnerRadius();}
   double FEPOutRad(int iSub) const {return _ForwCylSubs.at(iSub).getOuterRadius();}
@@ -218,7 +218,7 @@ public:
   double FEPPosX(int iSub) const {return _FEPPosSubs.at(iSub)[0];}
   double FEPPosY(int iSub) const {return _FEPPosSubs.at(iSub)[1];}
   double FEPPosZ(int iSub) const {return _FEPPosSubs.at(iSub)[2];}
-  bool   FEPisPhiSegmented(int iSub) const {return _RearCylSubs.at(iSub).isPhiSegmented();}
+  bool   FEPisPhiSegmented(int iSub) const {return _ForwCylSubs.at(iSub).isPhiSegmented();}
   double FEPPhi0(int iSub) const {
           if (_ForwCylSubs.at(iSub).getInnerRadius()) {
                   //return ((DchPhiSegmCyl*) &_ForwCylSubs.at(iSub))->getPhi0();
