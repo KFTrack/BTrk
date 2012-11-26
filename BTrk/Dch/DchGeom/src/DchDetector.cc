@@ -239,7 +239,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
             HepTransformation rEP_tr(rEPpos, euler);
             //material = mtdbinfo->findDetMaterial(gdch.REPMat().c_str(),true);
             material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.REPMat().c_str());
-            if (gdch.REPMat().find("ITGas")==std::string::npos ) {
+            //if (gdch.REPMat().find("ITGas")==std::string::npos && gdch.REPMat().find("ITgas")==std::string::npos) {
+            if (material->density()>0.1) {
                     (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
             }
 
@@ -262,7 +263,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                     HepTransformation subREP_tr(subREPpos, euler);
                     //material = mtdbinfo->findDetMaterial(gdch.REPMat(iSub).c_str(),true);
                     material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.REPMat(iSub).c_str());
-                    if (gdch.REPMat(iSub).find("ITGas")==std::string::npos ) {
+                    //if (gdch.REPMat(iSub).find("ITGas")==std::string::npos && gdch.REPMat(iSub).find("ITgas")==std::string::npos ) {
+                    if (material->density()>0.1) {
                             (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
                     }
 
@@ -308,7 +310,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
             HepTransformation fEP_tr(fEPpos, euler);
             //material = mtdbinfo->findDetMaterial(gdch.FEPMat().c_str(),true);
             material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.FEPMat().c_str());
-            if (gdch.FEPMat().find("ITGas")==std::string::npos ) {
+            //if (gdch.FEPMat().find("ITGas")==std::string::npos && gdch.FEPMat().find("ITgas")==std::string::npos) {
+            if (material->density()>0.1) {
                     (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
             }
 
@@ -331,7 +334,8 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                     HepTransformation subFEP_tr(subFEPpos, euler);
                     //material = mtdbinfo->findDetMaterial(gdch.FEPMat(iSub).c_str(),true);
                     material = mtdbinfo->findDetMaterial<DetLgtMaterial>(gdch.FEPMat(iSub).c_str());
-                    if (gdch.FEPMat(iSub).find("ITGas")==std::string::npos ) {
+                    //if (gdch.FEPMat(iSub).find("ITGas")==std::string::npos && gdch.FEPMat(iSub).find("ITgas")==std::string::npos) {
+                    if (material->density()>0.1) {
                             (const_cast<DetMaterial*> (material))->setScatterFraction(0.9999);
                     }
 
