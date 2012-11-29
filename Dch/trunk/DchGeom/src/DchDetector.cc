@@ -86,6 +86,7 @@
 #include "TrkBase/TrkFit.hh"
 #include "TrkBase/TrkDifTraj.hh"
 //#include "TrkGeom/TrkSimpVolume.hh"
+#include "TrkBase/TrkCentralVolume.hh"
 #include "BaBar/BbrCollectionUtils.hh"
 #include "MatEnv/MatDBInfo.hh"
 using std::endl;
@@ -120,7 +121,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
 
   //  "common" euler angles
   EulerAngles euler(0., 0., 0.);
-  double zR = 0., zF = 0.;
+  //double zR = 0., zF = 0.;
 
   // Inner cylinder reference surface
   Hep3Vector x0(gdch.ICPosX(), gdch.ICPosY(), gdch.ICPosZ());
@@ -231,6 +232,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
     length = gdch.REPLength();
     material = 0;//gblEnv->getGen()->findDetMaterial("Aluminum");
     //assert(0 != material);
+    //zR = gdch.REPPosZ() - length * .5;
 
     char subEPname[80];
     double minVolDim=0;
@@ -257,7 +259,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
             _rEPType = new DchVolType("Dch rear end-plate", radii[0], radii[1], -length
                             / 2., length / 2., material, elemID);
 
-            for ( int iSub=0; iSub<gdch.REPnSubs(); ++iSub) {
+            for ( size_t iSub=0; iSub<gdch.REPnSubs(); ++iSub) {
                     //std::cout<<"adding REP sub "<<iSub<<std::endl;
                     Hep3Vector subREPpos(gdch.REPPosX(iSub), gdch.REPPosY(iSub), gdch.REPPosZ(iSub));
                     HepTransformation subREP_tr(subREPpos, euler);
@@ -273,7 +275,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                     length = gdch.REPLength(iSub);
                     minVolDim = radii[1]-radii[0];
                     if (length<minVolDim) minVolDim = length;
-                    snprintf(subEPname,80,"Dch rear end-plate_sub%i",iSub);
+                    snprintf(subEPname,80,"Dch rear end-plate_sub%i",(int)iSub);
                     ++elemID;
                     if (gdch.REPisPhiSegmented(iSub)) {
                             //std::cout<<"for REP: Phi0 "<<gdch.REPPhi0(iSub) <<" solDPhi "<< gdch.REPsolidDPhi(iSub)<<" holDPhi "<<  gdch.REPhollowDPhi(iSub)<<std::endl;
@@ -285,7 +287,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                             _rEPSubsType.push_back( new DchVolType(subEPname, radii[0], radii[1], -length
                                             / 2., length / 2., material, elemID) );
                     }
-                    snprintf(subEPname,80,"Dch rear endplate_sub%i",iSub);
+                    snprintf(subEPname,80,"Dch rear endplate_sub%i",(int)iSub);
                     DchPhiSegmVolElem* repelem = new DchPhiSegmVolElem(_rEPSubsType.back(), subEPname,
                                     elemID, subREP_tr);
                     //repelem->printAll(std::cout);
@@ -295,14 +297,13 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
 
     }
 
-    zR = gdch.REPPosZ() - length * .5;
-
     // forward end plate
     radii[0] = gdch.FEPInRad();
     radii[1] = gdch.FEPOutRad();
     length = gdch.FEPLength();
     material = 0;//gblEnv->getGen()->findDetMaterial("Aluminum");
     //assert(0 != material);
+    //zF = gdch.FEPPosZ() + length * .5;
 
     ++elemID;
     if (gdch.FEPnSubs()==1) {
@@ -328,7 +329,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
             _fEPType = new DchVolType("Dch forward end-plate", radii[0], radii[1], -length
                             / 2., length / 2., material, elemID);
 
-            for ( int iSub=0; iSub<gdch.FEPnSubs(); ++iSub) {
+            for ( size_t iSub=0; iSub<gdch.FEPnSubs(); ++iSub) {
                     //std::cout<<"adding FEP sub "<<iSub<<std::endl;
                     Hep3Vector subFEPpos(gdch.FEPPosX(iSub), gdch.FEPPosY(iSub), gdch.FEPPosZ(iSub));
                     HepTransformation subFEP_tr(subFEPpos, euler);
@@ -344,7 +345,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                     length = gdch.FEPLength(iSub);
                     minVolDim = radii[1]-radii[0];
                     if (length<minVolDim) minVolDim = length;
-                    snprintf(subEPname,80,"Dch forward end-plate_sub%i",iSub);
+                    snprintf(subEPname,80,"Dch forward end-plate_sub%i",(int)iSub);
                     ++elemID;
                     if (gdch.FEPisPhiSegmented(iSub)) {
                             _fEPSubsType.push_back( new DchPhiSegmVolType(subEPname, radii[0], radii[1], -length
@@ -355,7 +356,7 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
                             _fEPSubsType.push_back( new DchVolType(subEPname, radii[0], radii[1], -length
                                             / 2., length / 2., material, elemID) );
                     }
-                    snprintf(subEPname,80,"Dch forward endplate_sub%i",iSub);
+                    snprintf(subEPname,80,"Dch forward endplate_sub%i",(int)iSub);
                     DchPhiSegmVolElem* fepelem = new DchPhiSegmVolElem(_fEPSubsType.back(), subEPname,
                                     elemID, subFEP_tr);
                     //fepelem->printAll(std::cout);
@@ -364,8 +365,6 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
             }
 
     }
-
-    zF = gdch.FEPPosZ() + length * .5;
 
 
   }
@@ -411,12 +410,15 @@ DchDetector::DchDetector(const DchGDch& gdch, bool deb) :
 
   //  set volume radii == end-plate radii as they're larger than the gas 
   //  volume ones
-  radii[0] = gdch.REPInRad();
-  radii[1] = gdch.REPOutRad();
+  //radii[0] = gdch.REPInRad();
+  //radii[1] = gdch.REPOutRad();
 
   double tol(.2);
   //_trkVolume = new TrkSimpVolume("Dch Tracking Volume", radii[0] - tol,
   //    radii[1] + tol, zR - tol, zF + tol);
+  tol = 5.0;
+  _trkVolume = new TrkCentralVolume("Dch Tracking Volume",
+      _gasVolType->rmax() + tol, _gasVolType->zmin() + tol, _gasVolType->zmax() - tol);
 
   // tracking chamber
   // ================
