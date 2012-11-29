@@ -19,7 +19,7 @@
 #include "BField/BFieldIntegrator.hh"
 #include <assert.h>
 
-KalContext::KalContext() : _bint(0)
+KalContext::KalContext() : _bint(0), _trkmodel(0)
 {}
 
 KalContext::~KalContext(){

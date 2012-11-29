@@ -1087,6 +1087,10 @@ KalRep::extendThrough(double newf) {
 //  Find the material intersections, and create KalMaterial sites for them
 	  std::vector<DetIntersection> tlist; tlist.reserve(16);
 //	  trkmodel->intersection(tlist,_reftraj,piecerange);
+	  if (_kalcon.getDetModel()!=0) {
+	    _kalcon.getDetModel()->intersection(tlist,_reftraj,piecerange);
+	  }
+
 // get the momentum at the current end of the track
 	  double loclen;
 	  double extendmom;
@@ -1315,10 +1319,16 @@ KalRep::buildMaterialSites(double range[2],std::vector<DetIntersection>& tlist) 
 //    static const DetSet* trkmodel = new DetSet("dummy",1);
 //    const DetSet* trkmodel= &(DchDetector::GetInstance()->dchSet());
 // find the intersections with the reference trajectory, if no intersections provided
-    if(tlist.size() == 0)
-      std::cout << "No detector " << std::endl;
+    if (ErrLogging(debugging)){
+      if(tlist.size() == 0)
+        std::cout << "No detector " << std::endl;
+    }
 //      trkmodel->intersection(tlist,_reftraj,range);
 //    std::cout<<"Intersections n="<<tlist.size()<<std::endl;
+    if (_kalcon.getDetModel()!=0) {
+      _kalcon.getDetModel()->intersection(tlist,_reftraj,range);
+      if (ErrLogging(debugging)){ std::cout<<"Intersections n="<<tlist.size()<<std::endl; }
+    }
 // split the intersection list into those before and after the reference momentum
     unsigned below(0);
     while(below<tlist.size() && tlist[below].pathlen<_refmomfltlen)

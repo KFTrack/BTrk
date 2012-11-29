@@ -23,6 +23,7 @@
 #include "TrkBase/TrkParticle.hh"
 #include "TrkBase/TrkDirection.hh"
 #include "BField/BFieldIntegrator.hh"
+#include "DetectorModel/DetSet.hh"
 
 #include <math.h>
 class TrkVolume;
@@ -59,6 +60,7 @@ public:
   double fltEpsilon() const { return _fltepsilon; }
   double divergeFlt() const { return _divergeflt; }
   double minDot() const { return _mindot; }
+  const DetSet *getDetModel () const { return _trkmodel; }
 protected:
 // configuration data
   double _disttol; // tolerance on the maximum distance for iteration
@@ -83,6 +85,9 @@ protected:
 // infinity = don't update at all.  Scale is set by track momentum
   BFieldIntConfig _bintconfig;
   mutable BFieldIntegrator* _bint; // field integrator, created on first access
+
+  const DetSet* _trkmodel;//detector material description
+
 //disallow
   KalContext(const KalContext& other);
   KalContext& operator = (const KalContext& other);
