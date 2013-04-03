@@ -56,6 +56,7 @@ MtrPropObj::MtrPropObj()
     _intLength(0),
     _dEdxFactor(0),
     _meanExciEnergy(0),
+    _energyTcut(0),
     _zeff( 0 ),
     _aeff( 0 ),
     _temp( 0 ),
@@ -92,6 +93,7 @@ MtrPropObj::MtrPropObj( MatMaterialObj* theMaterial )
     _taul(0),
     _radLength( theMaterial->getRadLength() ),
     _intLength( theMaterial->getIntLength() ),
+    _energyTcut( theMaterial->getTcut() ),
     _zeff( theMaterial->getZeff() ),
     _aeff( theMaterial->getAeff() ),
     _temp( theMaterial->getTemperature()+STP_Temperature ),
@@ -187,6 +189,7 @@ MtrPropObj::MtrPropObj(const MtrPropObj& matcp)
       = new std::vector< double >( matcp.getShellCorrectionVector() );
     _radLength = matcp.getRadLength();
     _intLength = matcp.getIntLength();
+    _energyTcut = matcp.getEnergyTcut();
 
 }
 
@@ -208,6 +211,8 @@ MtrPropObj::operator= (const MtrPropObj& matrl)
     *_shellCorrectionVector = matrl.getShellCorrectionVector();
     _radLength = matrl.getRadLength();
     _intLength = matrl.getIntLength();
+    _energyTcut = matrl.getEnergyTcut();
+    *_state = matrl.getState();
 
     return *this;
 }
@@ -228,7 +233,7 @@ MtrPropObj::operator==(const MtrPropObj& other) const
        _meanExciEnergy != other.getMeanExciEnergy() ||
        _radLength != other.getRadLength() ||
        _intLength != other.getIntLength() 
-       ) equal=false; 
+       ) equal=false;
 
   const std::vector< double >& myV = *_shellCorrectionVector;
   const std::vector< double >& otherV = other.getShellCorrectionVector();
@@ -303,6 +308,12 @@ const std::vector< double >&
 MtrPropObj::getVecZ()    const
 {
   return *_theZVector;
+}
+
+const std::string&
+MtrPropObj::getState() const
+{
+  return *_state;
 }
 
 // AddElement -- composition by atom count

@@ -45,7 +45,7 @@ class MatMaterialObj
                 std::vector<std::string>* compName, 
                 double radLength, double intLength, double refIndex,
                 double temperature, double pressure, 
-                const std::string& state);
+                const std::string& state, double Tcut=0.0);
 
 // Destructor
     virtual ~MatMaterialObj();
@@ -78,6 +78,7 @@ class MatMaterialObj
     double getTemperature() const { return _matTemperature; };           
     double getPressure() const { return _matPressure; };  
     std::string getState() const { return std::string(_matState); };              
+    double getTcut() const { return _matTcut; };
 
     void setName(const std::string Name) {_matName=Name; };
     void setDensity(double Density) {_matDensity=Density; };
@@ -95,6 +96,7 @@ class MatMaterialObj
     void setTemperature(double Temperature) {_matTemperature=Temperature; };
     void setPressure(double Pressure) {_matPressure=Pressure; };
     void setState(const std::string State) {_matState=State; };
+    void setTcut(double Tcut) {_matTcut=Tcut; };
 
 
   private:
@@ -119,6 +121,7 @@ class MatMaterialObj
     double _matTemperature;       // Material Temperature
     double _matPressure;          // Material Pressure
     std::string _matState;        // Material State (Gas, liquid, ...)
+    double _matTcut;              // Maximum energy transfer allowed per interaction step (this means that for the dE/dx is used the restricted energy loss rate parameterization instead of the Bethe-Bloch)
 
     friend bool testCdb(const MatMaterialObj*, const MatMaterialObj*);
 };

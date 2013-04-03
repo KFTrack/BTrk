@@ -91,6 +91,7 @@ public:
   virtual double getDEdxFactor() const { return _dEdxFactor; }
   virtual double getMeanExciEnergy() const { return _meanExciEnergy; }
   virtual const std::vector< double >& getShellCorrectionVector() const;
+  virtual double getEnergyTcut() const { return _energyTcut; }
 
   virtual double getRadLength() const { return _radLength; }
   virtual double getIntLength() const { return _intLength; }
@@ -108,6 +109,8 @@ public:
 
   virtual double getZ() const;           
   virtual double getA() const;
+
+  virtual const std::string& getState() const;
 
 private:
 
@@ -136,6 +139,7 @@ private:
   double _dEdxFactor;
   double _meanExciEnergy;
   std::vector< double >* _shellCorrectionVector;
+  double _energyTcut;
 
   double _zeff;
   double _aeff;

@@ -20,6 +20,7 @@
 // C++ Headers --
 //----------------------
 #include <fstream>
+#include <sstream>
 #include <stdlib.h>
 #include <assert.h>
 #include <algorithm>
@@ -83,7 +84,7 @@ MatMaterialList::MatMaterialList(const std::string& materialsFile)
   std::vector<double> Compweight;
   std::vector<std::string> Compname;
   std::vector<int> Compflag;
-  int matentry = 0;
+  size_t matentry = 0;
   int nbrcomp = 0;
   int iflag = 0;
   double density = 0.;
@@ -95,6 +96,7 @@ MatMaterialList::MatMaterialList(const std::string& materialsFile)
   double refindex = 0.;
   double temperature = 0.;
   double pressure = 0.;
+  double Tcut = 0.;
   materials >> name;
   while( !materials.eof())
     {
@@ -107,7 +109,7 @@ MatMaterialList::MatMaterialList(const std::string& materialsFile)
 	materials >> density >> zeff >> aeff >> nbrcomp;
 	if(nbrcomp != 0) {
 	  for (int i=0; i<abs(nbrcomp); i++) 
-	    { 
+	    {
 	      materials >> weight >> cpname >> iflag;
 	      Compflag.push_back(iflag);
 	      Compweight.push_back(weight);
@@ -121,6 +123,9 @@ MatMaterialList::MatMaterialList(const std::string& materialsFile)
 	}            
 	materials >> radlen >> intlen >> refindex >> temperature 
 		  >> pressure >> state;
+
+	getline(materials, fline);
+	std::istringstream iss(fline);
 
 	MatMaterialObj* matObj = new MatMaterialObj();
 	matObj->setName(name);
@@ -141,6 +146,9 @@ MatMaterialList::MatMaterialList(const std::string& materialsFile)
 	matObj->setTemperature(temperature);
 	matObj->setPressure(pressure);
 	matObj->setState(state);
+        if (iss>>Tcut) {
+                matObj->setTcut(Tcut);
+        }
 
 	_vector.push_back(matObj);
 
@@ -179,6 +187,7 @@ void MatMaterialList::print(std::ostream& out)
   double refindex = 0.;
   double temperature = 0.;
   double pressure = 0.;
+  double energyCut = 0.;
   std::vector<MatMaterialObj*>::iterator it=_vector.begin();
   for(;it!=_vector.end();it++)
     {
@@ -204,6 +213,7 @@ void MatMaterialList::print(std::ostream& out)
 	temperature = matObj->getTemperature();
 	pressure = matObj->getPressure();
 	state    = matObj->getState();
+	energyCut = matObj->getTcut();
 
 
 	out<< name;
@@ -215,6 +225,7 @@ void MatMaterialList::print(std::ostream& out)
 	
 	out <<" "<< radlen <<" "<< intlen <<" "<< refindex <<" "<< temperature 
 	    <<" "<< pressure <<" "<< state;
+	if (energyCut>0.0) { out <<" "<< energyCut; }
 	
 	out << std::endl;
     }
