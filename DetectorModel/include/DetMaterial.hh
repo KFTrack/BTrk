@@ -164,6 +164,8 @@ class DetMaterial{
     static double _dgev; // energy characterizing energy loss
     static const double _alpha; // fine structure constant
     double _scatterfrac; // fraction of scattering distribution to include in RMS
+    double _cutOffEnergy; // cut on max energy loss
+    dedxtype _elossType;
 
     //
     //  Specific data for this material
@@ -236,6 +238,9 @@ class DetMaterial{
     // scattering parameter
     double scatterFraction() const { return _scatterfrac;}
     void setScatterFraction(double scatterfrac) {_scatterfrac = scatterfrac;}
+    double cutOffEnergy() const { return _cutOffEnergy;}
+    void setCutOffEnergy(double cutOffEnergy) {_cutOffEnergy = cutOffEnergy; _elossType = deposit; }
+    void setDEDXtype(dedxtype elossType) { _elossType = elossType;}
 };
 #endif
 

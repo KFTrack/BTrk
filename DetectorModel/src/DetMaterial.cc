@@ -52,6 +52,8 @@ const double DetMaterial::_alpha(1.0/137.036);
 DetMaterial::DetMaterial(const char* detMatName, const DetMtrProp* detMtrProp):
   _msmom(15.0*MeV),
   _scatterfrac(0.9999),
+  _cutOffEnergy(1000.),
+  _elossType(loss),
   _name(detMatName),
   _za(detMtrProp->getZ()/detMtrProp->getA()),
   _zeff(detMtrProp->getZ()),
@@ -86,6 +88,14 @@ DetMaterial::DetMaterial(const char* detMatName, const DetMtrProp* detMtrProp):
   _chic2 = 1.57e1*_zeff*(_zeff+1)/_aeff;  
   _chia2_1 = 2.007e-5*pow(_zeff,2.0/3.0);
   _chia2_2 = 3.34*pow(_zeff*_alpha,2);
+
+  if (detMtrProp->getEnergyTcut()>0.0) {
+          _cutOffEnergy = detMtrProp->getEnergyTcut();
+          _elossType = deposit;
+  }
+  if (detMtrProp->getState() == "gas" && detMtrProp->getDensity()<0.01) {
+          _scatterfrac = 0.999999;
+  }
 }
 
 DetMaterial::~DetMaterial()
@@ -156,14 +166,13 @@ DetMaterial::dEdx(double mom,dedxtype type,double mass) const {
     Tmax = 2.*electron_mass_c2*bg2
       /(1.+2.*gamma*RateMass+RateMass*RateMass) ;
 
-    const double cutOffEnergy = 50.;
-    rcut =  ( cutOffEnergy< Tmax) ? cutOffEnergy/Tmax : 1;
-
     dedx = log(2.*electron_mass_c2*bg2*Tmax/Eexc2);
     if(type == loss)
       dedx -= 2.*beta2;
-    else
+    else {
+      rcut =  ( _cutOffEnergy< Tmax) ? _cutOffEnergy/Tmax : 1;
       dedx += log(rcut)-(1.+rcut)*beta2;
+    }
   
 // density correction 
     x = log(bg2)/twoln10 ;
@@ -211,7 +220,7 @@ double
 DetMaterial::energyLoss(double mom, double pathlen,double mass) const {
 // make sure we take positive lengths!
   pathlen = fabs(pathlen);
-  double dedx = dEdx(mom,loss,mass);
+  double dedx = dEdx(mom,_elossType,mass);
 // see how far I can step, within tolerance, given this energy loss
   double maxstep = maxStepdEdx(mom,mass,dedx);
 // if this is larger than my path, I'm done
@@ -229,7 +238,7 @@ DetMaterial::energyLoss(double mom, double pathlen,double mass) const {
       if(newenergy>mass){
 // compute the new dedx given the new momentum
         double newmom = particleMomentum(newenergy,mass);
-        deltae = step*dEdx(newmom,loss,mass);
+        deltae = step*dEdx(newmom,_elossType,mass);
 // compute the loss in this step
         eloss += deltae;
         newenergy += deltae;
@@ -248,7 +257,7 @@ double
 DetMaterial::energyGain(double mom, double pathlen, double mass) const {
   // make sure we take positive lengths!
   pathlen = fabs(pathlen);
-  double dedx = dEdx(mom,loss,mass);
+  double dedx = dEdx(mom,_elossType,mass);
 // see how far I can step, within tolerance, given this energy loss
   double maxstep = maxStepdEdx(mom,mass,dedx);
 // if this is larger than my path, I'm done
@@ -266,7 +275,7 @@ DetMaterial::energyGain(double mom, double pathlen, double mass) const {
     for(unsigned istep=0;istep<nstep-1;istep++){
 // compute the new dedx given the new momentum
       double newmom = particleMomentum(newenergy,mass);
-      double deltae = -step*dEdx(newmom,loss,mass);
+      double deltae = -step*dEdx(newmom,_elossType,mass);
       egain += deltae;
       newenergy += deltae;
     }
