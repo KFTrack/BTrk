@@ -46,7 +46,8 @@ MatMaterialObj::MatMaterialObj()
     _refIndex(0),
     _matTemperature(0),
     _matPressure(0),
-    _matState(" ")
+    _matState(" "),
+    _matTcut(0)
 {
 }
 
@@ -57,7 +58,7 @@ MatMaterialObj::MatMaterialObj(const std::string& name, double density,
                          std::vector<std::string>* compName, 
                          double radLength, double intLength, double refIndex,
                          double temperature, double pressure, 
-                         const std::string& state)
+                         const std::string& state, double Tcut)
 {
     _matName = name;
     _matDensity = density;
@@ -70,6 +71,7 @@ MatMaterialObj::MatMaterialObj(const std::string& name, double density,
     _matTemperature = temperature;
     _matPressure = pressure;
     _matState = state;
+    _matTcut = Tcut;
 
     for (int i=0; i<abs(nbrComp); i++) {
        _iflg.push_back((*iflg)[i]); 
@@ -102,7 +104,8 @@ MatMaterialObj::MatMaterialObj(const MatMaterialObj& matcp)
     _refIndex = matcp.getRefIndex();
     _matTemperature = matcp.getTemperature();
     _matPressure = matcp.getPressure();
-    _matState = matcp.getState();        
+    _matState = matcp.getState();
+    _matTcut = matcp.getTcut();
 }
 
 MatMaterialObj& MatMaterialObj::operator= (const MatMaterialObj& matrl)
@@ -126,6 +129,7 @@ MatMaterialObj& MatMaterialObj::operator= (const MatMaterialObj& matrl)
     _matTemperature = matrl.getTemperature();
     _matPressure = matrl.getPressure();
     _matState = matrl.getState();            
+    _matTcut = matrl.getTcut();
 
     return *this;
 }
@@ -165,7 +169,9 @@ void MatMaterialObj::print()
   } 
   cout << "RadLength: " << getRadLength() << "  IntLength: " << getIntLength() 
        << " RefIndex: " << getRefIndex()  << "  Temperature: " << getTemperature() 
-       << "  Pressure: " << getPressure() << "  State: " << getState() << endl; 
+       << "  Pressure: " << getPressure() << "  State: " << getState();
+  if (_matTcut>0.0) { cout<< " Tcut: "<<getTcut(); }
+  cout << endl;
 }
 
 
