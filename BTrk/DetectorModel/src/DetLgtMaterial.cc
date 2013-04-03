@@ -30,24 +30,26 @@ const double taulim = 8.4146e-3 ;
 const double twoln10 = 2.0*log(10.);
 const double betapower = 1.667; // most recent PDG gives beta^-5/3 as dE/dx
 const int maxnstep = 10; // maximum number of steps through a single material
-const double cutOffEnergy = 5.;//maximum allowed energy loss
+//const double cutOffEnergy = 5.;//maximum allowed energy loss
                                //(if particle will loose more - than it will be not reconstructable)
-const double cutOffEnergybyMean=5;// variable cut as cutOffEnergybyMean x MeandEdX on step
+//const double cutOffEnergybyMean=5.;// variable cut as cutOffEnergybyMean x MeandEdX on step
 
 //
 //  Constructor
 //
 
 DetLgtMaterial::DetLgtMaterial(const char* detMatName, const DetMtrProp* detMtrProp):
-                DetMaterial(detMatName, detMtrProp)
+                DetMaterial(detMatName, detMtrProp),
+                _cutOffEnergybyMean(5.)
 {
    _msmom = ((13.6-0.5)*MeV);
   _scatterfrac = 0.99999999;
+  _cutOffEnergy = 5.;
 }
 
 double DetLgtMaterial::dEdx(double mom,DetMaterial::dedxtype type,
         TrkParticle const& tpart) const {
-      return dEdx(mom,type,tpart.mass(),cutOffEnergy);
+      return dEdx(mom,type,tpart.mass(),_cutOffEnergy);
 }
 
 double
@@ -78,6 +80,9 @@ DetLgtMaterial::dEdx(double mom,DetMaterial::dedxtype type,double mass,double cu
     rcut =  ( cutE< Tmax) ? cutE/Tmax : 1;
 
     dedx = log(2.*electron_mass_c2*bg2*Tmax/Eexc2);
+    /*if(type == loss)
+      dedx -= 2.*beta2;
+    else*/
     dedx += log(rcut)-(1.+rcut)*beta2;
   
 // density correction 
@@ -125,11 +130,13 @@ double
 DetLgtMaterial::energyLoss(double mom, double pathlen,double mass) const {
 // make sure we take positive lengths!
   pathlen = fabs(pathlen);
-  double dedx = dEdx(mom,loss,mass,cutOffEnergy);
-  double cutTail=std::min(fabs(dedx)*cutOffEnergybyMean*pathlen,cutOffEnergy);
+  double dedx = dEdx(mom,loss,mass,_cutOffEnergy);
+  double cutTail=std::min(fabs(dedx)*_cutOffEnergybyMean*pathlen,_cutOffEnergy);
+  std::cout<<"dedx "<<dedx<<" cutOff0 "<<fabs(dedx)*_cutOffEnergybyMean*pathlen<<" cutTail "<<cutTail<<std::endl;
   //  double beta  = particleBeta(mom,mass) ;
   // double cutTail=_dgev*_density*_za / beta/beta*fabs(pathlen)*exp(0.2);
   dedx=dEdx(mom,loss,mass,cutTail);
+  std::cout<<"dedx_1 "<<dedx<<std::endl;
 // see how far I can step, within tolerance, given this energy loss
   double maxstep = maxStepdEdx(mom,mass,dedx);
 // if this is larger than my path, I'm done
@@ -165,8 +172,8 @@ double
 DetLgtMaterial::energyGain(double mom, double pathlen, double mass) const {
   // make sure we take positive lengths!
   pathlen = fabs(pathlen);
-  double dedx = dEdx(mom,loss,mass,cutOffEnergy);
-  double cutTail=std::min(fabs(dedx)*cutOffEnergybyMean*pathlen,cutOffEnergy);
+  double dedx = dEdx(mom,loss,mass,_cutOffEnergy);
+  double cutTail=std::min(fabs(dedx)*_cutOffEnergybyMean*pathlen,_cutOffEnergy);
   //double beta  = particleBeta(mom,mass) ;
   //double cutTail=_dgev*_density*_za / beta/beta*fabs(pathlen)*exp(0.2);
   dedx=dEdx(mom,loss,mass,cutTail);
@@ -201,7 +208,7 @@ DetLgtMaterial::energyGain(double mom, double pathlen, double mass) const {
 //
 double 
 DetLgtMaterial::energyDeposit(double mom, double pathlen, double mass) const {
-  double dedx = dEdx(mom,deposit,mass,cutOffEnergy);
+  double dedx = dEdx(mom,deposit,mass,_cutOffEnergy);
   return dedx*fabs(pathlen);
 }
 

@@ -20,6 +20,9 @@
 #include "DetectorModel/DetMaterial.hh"
 
 class DetLgtMaterial : public DetMaterial {
+  private:
+    double _cutOffEnergybyMean;// variable cut as cutOffEnergybyMean x MeandEdX on step
+
   public:
     //  Constructor
     // new style
@@ -39,6 +42,9 @@ class DetLgtMaterial : public DetMaterial {
     double dEdx(double mom,DetMaterial::dedxtype type,double mass,double cutE) const;
 
     virtual void printAll(std::ostream& os) const;
+
+    double cutOffEnergybyMean() const { return _cutOffEnergybyMean;}
+    void setCutOffEnergybyMean(double cutOffEnergybyMean) {_cutOffEnergybyMean = cutOffEnergybyMean;}
 
 };
 #endif

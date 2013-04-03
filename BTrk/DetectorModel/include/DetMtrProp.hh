@@ -39,6 +39,7 @@ public:
   virtual double getDEdxFactor() const = 0;
   virtual double getMeanExciEnergy() const = 0;
   virtual const std::vector< double >& getShellCorrectionVector() const = 0;
+  virtual double getEnergyTcut() const = 0;
   virtual const std::vector< double >& getVecTau0() const = 0;
   virtual const std::vector< double >& getVecAlow() const = 0;
   virtual const std::vector< double >& getVecBlow() const = 0;
@@ -56,6 +57,8 @@ public:
 
   virtual double getZ() const = 0;           
   virtual double getA() const = 0;
+
+  virtual const std::string& getState() const = 0;
 
 };
 
