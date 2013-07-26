@@ -164,7 +164,7 @@ TrkHitOnTrk::resid(double &resid, double &residErr, bool exclude) const
 double
 TrkHitOnTrk::residual() const
 {
-    assert (_trkTraj == &(getParentRep()->traj()));
+//    assert (_trkTraj == &(getParentRep()->traj()));
     return _resid;
 }
 
