@@ -464,7 +464,7 @@ HelixTraj::derivPFract(double fltlen) const
 //  This function computes the column matrix of derrivatives for the change
 //  in parameters from a (fractional) change in the track momentum,
 //  holding the direction and position constant.  The momentum change can
-//  come from energy loss or bfield inhomogeneities.
+//  come from energy loss.
 //
 //  For a helix, dp/P = -domega/omega,
 //  dParam/d(domega/omega) = -omega*dParam/ddomega
