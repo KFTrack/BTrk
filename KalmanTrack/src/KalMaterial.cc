@@ -186,14 +186,13 @@ KalMaterial::updateCache(const TrkDifPieceTraj* reftraj){
       HepMatrix t2displace = localTrajectory()->derivDisplace(localLength(),theta2);
       // add these together according to formulas in PDG section 23.3, scaled by the path
       // length (converts angle to transverse displacement)
-      static const double corfactor = 0.5;
-      const double uncorfactor = 0.5*_dinter.pathLength()/sqrt(3.0);
       // add scattering effects: first correlated angle and displacement (2 views are uncorrelated)
-      const double cfac = corfactor*_dinter.pathLength();
+      static const double invsqrt3(1.0/sqrt(3.0));
+      double cfac = 0.5*_dinter.pathLength();
+      double ufac = cfac*invsqrt3;
       HepMatrix t1cor = t1deflect + cfac*t1displace;
       HepMatrix t2cor = t2deflect + cfac*t2displace;
       // then uncorrelated displacement effects
-      double ufac = uncorfactor*_dinter.pathLength();
       HepMatrix t1uncor = ufac*t1displace;
       HepMatrix t2uncor = ufac*t2displace;
       // now create the effect matrices by expanding these into the parameter space
