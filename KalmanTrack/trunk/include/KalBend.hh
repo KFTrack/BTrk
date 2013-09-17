@@ -52,6 +52,8 @@ public:
   virtual void printAll(std::ostream& os=std::cout) const;
 // override invert
   virtual void invert();
+// set errors.
+  static void setErrors(double efac,double berr) { _efac = efac; _berr = berr; }
 private:
   const BFieldIntegrator& _integrator; // integrator
   BFieldIntRange _range; // integral range
@@ -66,5 +68,9 @@ private:
   Hep3Vector _thetahat;
   Hep3Vector _phihat;
   double midpoint() const { return _range._smid; }
+  // error fractor
+  static double _efac;
+  // Precision of the field measurement
+  static double _berr;
 };
 #endif
