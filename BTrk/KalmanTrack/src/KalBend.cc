@@ -96,10 +96,10 @@ KalBend::updateCache(const TrkDifPieceTraj* reftraj) {
     HepVector dvect(t1displace*dtheta*_range.range() + t2displace*dphi*_range.range());
 // compute the dimensionless error matrix.  The first term is from the uncertainty in the
 // field measurement and interpolation, the second from the tracjectory
-// notice I use the total momentum, not the transverse, as the field errors can be in any direction.  The 0.5 accounts
-// for assigning this error along two transverse directions.
-    double berr2 = pow(0.5*BField::mmTeslaToMeVc*_range.range()*_berr/_momentum,2);
-    double eerr2 = pow(0.5*_efac*_delmom.mag()/_momentum,2);
+// notice I use the total momentum, not the transverse, as the field errors can be in any direction
+    double berr2 = pow(BField::mmTeslaToMeVc*_range.range()*_berr/_momentum,2);
+// the correction error scales as the sqrt of the correction, so that it is additive
+    double eerr2 = _efac*_delmom.mag()/_momentum;
     static const HepSymMatrix unit(1,1);
     HepSymMatrix emat = unit*(berr2 + eerr2);
     static const double invsqrt3(1.0/sqrt(3.0));

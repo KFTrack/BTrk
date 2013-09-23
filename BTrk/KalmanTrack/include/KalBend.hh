@@ -70,6 +70,7 @@ private:
   double midpoint() const { return _range._smid; }
   // error fractor
   static double _efac;
+// for assigning this error along two transverse directions.
   // Precision of the field measurement
   static double _berr;
 };
