@@ -23,6 +23,7 @@
 #ifndef TRKHITONTRKITER_HH
 #define TRKHITONTRKITER_HH
 #include <iterator>
+#include <cstddef>
 
 //FIXME: only works on Linux:    class TrkHitOnTrkIter : public std::iterator_traits<TrkHitOnTrk *>
 //FIXME: only works on Linux:    class TrkHitOnTrkIter : public std::random_access_iterator<const TrkHitOnTrk, ptrdiff_t>
@@ -42,7 +43,7 @@ class TrkHitOnTrkIter
 public:
         typedef std::random_access_iterator_tag       iterator_category;
         typedef typename T::iterator_value_type       value_type;
-        typedef ptrdiff_t                             difference_type;
+        typedef std::ptrdiff_t                             difference_type;
         typedef value_type*                           pointer;
         typedef value_type&                           reference;
 
