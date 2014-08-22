@@ -15,10 +15,7 @@ Import('mu2e_helper')
 
 helper=mu2e_helper();
 
-mainlib = helper.make_mainlib ( [ 'art_Framework_Core',
-                                  'mu2e_GeometryService',
-                                  'mu2e_GeneralUtilities',
-                                  'CLHEP',
+mainlib = helper.make_mainlib ( [ 'CLHEP',
                                 ] )
 
 helper.make_plugins( [ mainlib,
