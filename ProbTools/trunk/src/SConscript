@@ -15,8 +15,8 @@ Import('mu2e_helper')
 
 helper=mu2e_helper();
 
-mainlib = helper.make_mainlib ( [ 'CLHEP',
-                                ] )
+mainlib = helper.make_mainlib ( [ 'mu2e_BaBar_BaBar',
+    'CLHEP'] )
 
 helper.make_plugins( [ mainlib,
                      ] )
