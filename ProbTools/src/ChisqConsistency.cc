@@ -49,8 +49,8 @@ ChisqConsistency::ChisqConsistency(double chisq, double nDof) :
   double n2 = 0.5*_nDof;
   
   if (n2<=0 || z2<0) { 
-    ErrMsg(warning) << " Got unphysical values: chisq = " << chisq 
-		    << " #dof = " << nDof << endmsg;
+//    ErrMsg(warning) << " Got unphysical values: chisq = " << chisq 
+//		    << " #dof = " << nDof << endmsg;
     _value=0;
     _likelihood=0; _logLikelihood = -999.;
     setStatus(Consistency::unPhysical);
