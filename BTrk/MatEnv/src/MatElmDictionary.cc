@@ -26,6 +26,8 @@
 #include <vector>
 #include <algorithm>
 #include "BaBar/BbrCollectionUtils.hh"
+#include "BaBar/ExternalInfo.hh"
+#include "BaBar/FileFinderInterface.hh"
 using babar::Collection::DeleteObject;
 
 //----------------------
@@ -42,12 +44,7 @@ using babar::Collection::DeleteObject;
 #include "ErrLogger/ErrLog.hh"
 using std::fstream;
 
-//-------------------------------
-// Collaborating Class Headers --
-//-------------------------------
-#include "ConfigTools/inc/ConfigFileLookupPolicy.hh"
-
-// Create Constructor 
+// Create Constructor
 
 MatElmDictionary::MatElmDictionary()
 {
@@ -62,7 +59,7 @@ MatElmDictionary::MatElmDictionary()
 		    << *toUse << endmsg;
   } else {
     toUse = new BdbTime; // current program time
-    ErrMsg(error) 
+    ErrMsg(error)
       << "BdbTime not in Env. Elements are being fetched using BdbTime 'now' ("
       << *toUse << ")" << endmsg;
   }
@@ -73,13 +70,12 @@ MatElmDictionary::MatElmDictionary()
   if ( elmList == 0 ) {
     ErrMsg(fatal)
       << "MatEnv/MatElmDictionary: No access to the list of elements"
-      << endmsg; 
+      << endmsg;
   }
-  
+
   FillElmDict(elmList);
   delete toUse;*/
-  mu2e::ConfigFileLookupPolicy findFile;
-  std::string fullPath = findFile("BaBar/MatEnv/ElementsList.data");
+  std::string fullPath = ExternalInfo::fileFinderInstance()->matElmDictionaryFileName();
   MatElementList* elmList = new MatElementList(fullPath);
   FillElmDict(elmList);
 }
@@ -87,7 +83,7 @@ MatElmDictionary::MatElmDictionary()
 void MatElmDictionary::FillElmDict(MatElementList* elmList)
 {
   std::vector<MatElementObj*>* elmVec = elmList->getElementVector();
-  size_t nelement = elmVec->size();        
+  size_t nelement = elmVec->size();
   for (size_t ie=0; ie<nelement; ie++) {
     //
     // copy the object into the dictionary. The disctionary now has
@@ -96,7 +92,7 @@ void MatElmDictionary::FillElmDict(MatElementList* elmList)
     MatElementObj* Obj = new MatElementObj(*(*elmVec)[ie]);
     std::string* key = new std::string(Obj->getName());
     (*this)[key] = Obj;
-  }   
+  }
 }
 MatElmDictionary::~MatElmDictionary()
 {
