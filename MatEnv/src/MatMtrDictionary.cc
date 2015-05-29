@@ -35,6 +35,8 @@
 //#include "GenEnv/GenEnv.hh"
 //#include "EidData/EidCondKeyTriplet.hh"
 #include "MatEnv/MatMtrDictionary.hh"
+#include "BaBar/ExternalInfo.hh"
+#include "BaBar/FileFinderInterface.hh"
 //#include "BdbTime/BdbTime.hh"
 //#include "ProxyDict/AbsArgVal.hh"
 //#include "ProxyDict/Ifd.hh"
@@ -43,12 +45,7 @@
 
 using std::fstream;
 
-//-------------------------------
-// Collaborating Class Headers --
-//-------------------------------
-#include "ConfigTools/inc/ConfigFileLookupPolicy.hh"
-
-// Create Constructor 
+// Create Constructor
 
 MatMtrDictionary::MatMtrDictionary()
 {
@@ -63,22 +60,21 @@ MatMtrDictionary::MatMtrDictionary()
 		    << *toUse << endmsg;
   } else {
     toUse = new BdbTime; // current program time
-    ErrMsg(error) 
+    ErrMsg(error)
       << "MatMtrDictionary: BdbTime not in Env. Materials are being fetched using BdbTime 'now' ("
       << *toUse << ")" << endmsg;
   }
 
   AbsArgVal<BdbTime> aarg(*toUse);
   mtrList = Ifd< MatMaterialList >::get( gblPEnv, aarg);
-  
+
   if ( mtrList == 0 ) {
     ErrMsg(fatal)
       << "MatMtrDictionary: No access to the list of materials"
-      << endmsg; 
+      << endmsg;
   }
   */
-  mu2e::ConfigFileLookupPolicy findFile;
-  std::string fullPath = findFile("BaBar/MatEnv/MaterialsList.data");
+  std::string fullPath = ExternalInfo::fileFinderInstance()->matMtrDictionaryFileName();
   MatMaterialList* mtrList = new MatMaterialList(fullPath);
   FillMtrDict(mtrList);
 }
@@ -86,7 +82,7 @@ MatMtrDictionary::MatMtrDictionary()
 void MatMtrDictionary::FillMtrDict(MatMaterialList* mtrList)
 {
   std::vector<MatMaterialObj*>* mtrVec = mtrList->getMaterialVector();
-  size_t nmaterial = mtrVec->size();        
+  size_t nmaterial = mtrVec->size();
   for (size_t im=0; im<nmaterial; im++){
     //
     // copy the object into the dictionary. The disctionary now has
@@ -96,12 +92,12 @@ void MatMtrDictionary::FillMtrDict(MatMaterialList* mtrList)
     std::string* key = new std::string(Obj->getName());
     (*this)[key] = Obj;
     ErrMsg(routine) << "MatMtrDictionary: Inserted Material " << *key << endmsg;
-    }   
+    }
 }
 
 MatMtrDictionary::~MatMtrDictionary()
 {
-  std::map<std::string*, MatMaterialObj*, babar::Collection::PtrLess>::iterator 
+  std::map<std::string*, MatMaterialObj*, babar::Collection::PtrLess>::iterator
     iter = begin();
   for (; iter != end(); ++iter) {
     delete iter->first;

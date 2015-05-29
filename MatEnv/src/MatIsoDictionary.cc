@@ -36,15 +36,12 @@
 //#include "ProxyDict/AbsArgVal.hh"
 //#include "ProxyDict/Ifd.hh"
 //#include "ProxyDict/IfdStrKey.hh"
+#include "BaBar/ExternalInfo.hh"
+#include "BaBar/FileFinderInterface.hh"
 #include "ErrLogger/ErrLog.hh"
 using std::fstream;
 
-//-------------------------------
-// Collaborating Class Headers --
-//-------------------------------
-#include "ConfigTools/inc/ConfigFileLookupPolicy.hh"
-
-// Create Constructor 
+// Create Constructor
 
 MatIsoDictionary::MatIsoDictionary()
 {
@@ -59,7 +56,7 @@ MatIsoDictionary::MatIsoDictionary()
 		    << *toUse << endmsg;
   } else {
     toUse = new BdbTime; // current program time
-    ErrMsg(error) 
+    ErrMsg(error)
       << "BdbTime not in Env. Isotopes are being fetched using BdbTime 'now' ("
       << *toUse << ")" << endmsg;
   }
@@ -75,8 +72,7 @@ MatIsoDictionary::MatIsoDictionary()
 
   FillIsoDict(isoList);
   delete toUse;*/
-  mu2e::ConfigFileLookupPolicy findFile;
-  std::string fullPath = findFile("BaBar/MatEnv/IsotopesList.data");
+  std::string fullPath = ExternalInfo::fileFinderInstance()->matIsoDictionaryFileName();
   MatIsotopeList* mtrList = new MatIsotopeList(fullPath);
   FillIsoDict(mtrList);
 
@@ -85,7 +81,7 @@ MatIsoDictionary::MatIsoDictionary()
 void MatIsoDictionary::FillIsoDict(MatIsotopeList* isoList)
 {
   std::vector<MatIsotopeObj*>* isoVec = isoList->getIsotopeVector();
-  size_t nisotope = isoVec->size();        
+  size_t nisotope = isoVec->size();
   for (size_t is=0; is<nisotope; is++)
     {
       // copy the object into the dictionary. The disctionary now has
@@ -94,7 +90,7 @@ void MatIsoDictionary::FillIsoDict(MatIsotopeList* isoList)
       MatIsotopeObj* Obj = new MatIsotopeObj(*(*isoVec)[is]);
       std::string* key = new std::string(Obj->getName());
       (*this)[key] = Obj;
-    }   
+    }
 }
 
 MatIsoDictionary::~MatIsoDictionary()
