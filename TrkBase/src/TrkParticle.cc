@@ -2,12 +2,10 @@
 // the implementation depends on the mu2e conditions service, but
 // not the interface
 #include "TrkBase/TrkParticle.hh"
-#include "ConditionsService/inc/ConditionsHandle.hh"
-#include "ConditionsService/inc/GlobalConstantsHandle.hh"
-#include "ConditionsService/inc/ParticleDataTable.hh"
-#include "MCDataProducts/inc/PDGCode.hh"
+#include "BaBar/ExternalInfo.hh"
+#include "BaBar/ParticleInfoInterface.hh"
 
-using namespace mu2e;
+#include <cmath>
 
 TrkParticle::TrkParticle(TrkParticle::type ptype) : _type(ptype)
 {}
@@ -28,32 +26,31 @@ TrkParticle::operator =(TrkParticle const& other) {
 
 double
 TrkParticle::mass() const {
-// avoid calling the ConditionsService each call by buffering results in statics
+// avoid calling the Particle Data table on each call by buffering results in statics
   double retval(-1.0);
-  static GlobalConstantsHandle<ParticleDataTable> pdt;
   switch (_type) {
     case e_minus: case e_plus: {
-      static double e_mass = pdt->particle(PDGCode::e_minus).ref().mass().value();
+      static double e_mass = ExternalInfo::particleInfoInstance()->mass( e_plus );
       return e_mass;
     }
 
     case mu_minus: case mu_plus: {
-      static double mu_mass = pdt->particle(PDGCode::mu_minus).ref().mass().value();
+      static double mu_mass = ExternalInfo::particleInfoInstance()->mass( mu_plus );
       return mu_mass;
     }
 
     case pi_minus: case pi_plus: {
-      static double pi_mass = pdt->particle(PDGCode::pi_minus).ref().mass().value();
+      static double pi_mass = ExternalInfo::particleInfoInstance()->mass( pi_plus );
       return pi_mass;
     }
 
     case K_minus: case K_plus: {
-      static double K_mass = pdt->particle(PDGCode::K_minus).ref().mass().value();
+      static double K_mass = ExternalInfo::particleInfoInstance()->mass( K_plus );
       return K_mass;
     }
 
     case anti_p_minus: case p_plus: {
-      static double p_mass = pdt->particle(PDGCode::p_plus).ref().mass().value();
+      static double p_mass = ExternalInfo::particleInfoInstance()->mass( p_plus );
       return p_mass;
     }
 
@@ -65,17 +62,16 @@ TrkParticle::mass() const {
 
 double
 TrkParticle::charge() const {
-// avoid calling the ConditionsService each call by buffering results in statics
+// avoid calling the Particle Data table on each call by buffering results in statics
   double retval(0.0);
-  static GlobalConstantsHandle<ParticleDataTable> pdt;
   switch (_type) {
     case e_minus: case mu_minus: case pi_minus: case K_minus: case anti_p_minus: {
-      static double minus_charge = pdt->particle(PDGCode::e_minus).ref().charge();
+      static double minus_charge = ExternalInfo::particleInfoInstance()->charge( e_minus );
       return minus_charge;
     }
 
     case e_plus: case mu_plus: case pi_plus: case K_plus: case p_plus: {
-      static double plus_charge = pdt->particle(PDGCode::e_plus).ref().charge();
+      static double plus_charge = ExternalInfo::particleInfoInstance()->charge( e_plus );
       return plus_charge;
     }
 
@@ -88,7 +84,6 @@ TrkParticle::charge() const {
 
 std::string const&
 TrkParticle::name() const {
-// avoid calling the ConditionsService each call by buffering results in statics
 // I can't use HepPDT for the names as those include Latex characters and so conflict
 // with many standard software lexicons (like root).
   switch (_type) {
@@ -97,15 +92,15 @@ TrkParticle::name() const {
       return e_minus_name;
     }
     case e_plus: {
-      static std::string e_plus_name = "ePlus"; 
+      static std::string e_plus_name = "ePlus";
       return e_plus_name;
     }
     case mu_minus: {
-      static std::string mu_minus_name = "muMinus"; 
+      static std::string mu_minus_name = "muMinus";
       return mu_minus_name;
     }
     case mu_plus: {
-      static std::string mu_plus_name = "muPlus"; 
+      static std::string mu_plus_name = "muPlus";
       return mu_plus_name;
     }
     case pi_minus: {
@@ -113,7 +108,7 @@ TrkParticle::name() const {
       return pi_minus_name;
     }
     case pi_plus: {
-      static std::string pi_plus_name = "piPlus"; 
+      static std::string pi_plus_name = "piPlus";
       return pi_plus_name;
     }
     case K_minus: {
