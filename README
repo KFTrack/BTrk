@@ -83,7 +83,7 @@ Building Mu2e Offline:
 Running art:
 
 1) Add the following line to the services block of any fcl file that you use:
-     BtrkHelper : @local::BtrkHelperDefault
+     BTrkHelper : @local::BTrkHelperDefault
 
 What did I change:
 
@@ -103,15 +103,15 @@ In Offline:
 2) SConstruct
     - Use the BTrk ups product
 3) Remove the BaBar directory
-4) BtrkHelper/src/BtrkHelper_service.cc
+4) BTrkHelper/src/BTrkHelper_service.cc
      - fixed typo
-5) Put copies of material description files into BtrkHelper/data
+5) Put copies of material description files into BTrkHelper/data
      ElementsList.data
      IsotopesList.data
      MaterialsList.data
-   Edit BtrkHelper/fcl/prolog.fcl to use these files
+   Edit BTrkHelper/fcl/prolog.fcl to use these files
 6) Analyses/test/genReco.fcl
-     - add configuration for the BtrkHelper service
+     - add configuration for the BTrkHelper service
 
 When it comes time to make a new version of BTrk, some hand maintence is needed.
 We can improve this as we move forward.
