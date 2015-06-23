@@ -1,0 +1,26 @@
+#ifndef PacSimHitInfo_HH
+#define PacSimHitInfo_HH
+
+#include <Rtypes.h>
+
+struct PacSimHitInfo {
+  Int_t shi, sheffect,shelemnum,shtypenum, shmeastype, shnhot, ihot, hview, hlay;
+  Float_t shgloblen, shpathlen, sdot, shradlen, shintlen, shradlenint, shintlenint;
+  Float_t shx, shy, shz, shmomin, shmomout, sheinfrac, shtime, shdel;
+  Float_t resid, tresid, hresid, mdot, herr, serr, xresid, xerr;
+  Bool_t active;
+  
+  virtual ~PacSimHitInfo() {}
+  PacSimHitInfo() : shi(-1),sheffect(-1),shelemnum(-1),shtypenum(-1),shmeastype(-1),shnhot(0),ihot(0),hview(-1),hlay(-1),shgloblen(-1.),shpathlen(-1.),sdot(0),shradlen(-1.),shintlen(-1.),shradlenint(-1.),shintlenint(-1.),shx(0.),shy(0.),shz(0.),shmomin(0.),shmomout(0.),sheinfrac(-1.),shtime(-1.),shdel(-1.),resid(-1.),tresid(-1.),hresid(-1.),mdot(-1),herr(-1.),serr(-1.),xresid(-1.),xerr(-1.),active(false)
+  {}
+
+  PacSimHitInfo(const PacSimHitInfo& other) : shi(other.shi),sheffect(other.sheffect),shelemnum(other.shelemnum),shtypenum(other.shtypenum),shmeastype(other.shmeastype),shnhot(other.shnhot),ihot(other.ihot),hview(other.hview),hlay(other.hlay),shgloblen(other.shgloblen),shpathlen(other.shpathlen),sdot(other.sdot),shradlen(other.shradlen),shintlen(other.shintlen),shradlenint(other.shradlenint),shintlenint(other.shintlenint),shx(other.shx),shy(other.shy),shz(other.shz),shmomin(other.shmomin),shmomout(other.shmomout),sheinfrac(other.sheinfrac),shtime(other.shtime),shdel(other.shdel),resid(other.resid),tresid(other.tresid),hresid(other.hresid),mdot(other.mdot),herr(other.herr),serr(other.serr),xresid(other.xresid),xerr(other.xerr),active(other.active)
+  {}
+  
+  static const char* rootnames() {
+    return "shi/I:sheffect/I:shelemnum/I:shtypenum/I:shmeastype/I:shnhot/I:ihot/I:hview/I:hlay/I:shgloblen/F:shpathlen/F:sdot/F:shradlen/F:shintlen/F:shradlenint/F:shintlenint/F:shx/F:shy/F:shz/F:shmomin/F:shmomout/F:sheinfrac/F:shtime/F:shdel/F:resid/F:tresid/F:hresid/F:mdot/F:herr/F:serr/F:xresid/F:xerr/F:active/B"; }
+    
+    ClassDef(PacSimHitInfo,1)
+};
+
+#endif

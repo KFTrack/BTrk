@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <detector name="Mu2e">
+            <volume name="Absorber">
+                <cone name="ProtonAbsorber" id="0" rho1="33.5" z1="-389" rho2="38.0" z2="-149" thick="0.05" mat="absmat"  />                
+            </volume>
+        </detector>
+        <!-- now define the voxelization -->
+        <config>
+            <sect name="Absorber">
+                <param name="rbounds"    type="vector"        >
+                    -1 33.0 39.0 150.0
+                </param>
+                <param name="nphivoxels"    type="vector"         >
+                    1 1 1
+                </param>
+                <param name="zbounds"   type="vector"         >
+                    -389.5 -369 -349 -329 -309 -289 -269 -249 -229 -209 -189 -169 -148.5
+                </param>
+            </sect>
+        </config>
+    </included>
+</edml>

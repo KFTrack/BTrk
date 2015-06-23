@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <include file="PacSim/Material_simulation.xml" />
+    
+    <define>
+        <constant name="planethickness" value="0.005"></constant>
+        <constant name="planesize" value="20"></constant>
+    </define>
+    <config>
+
+        <sect name="PacField">
+            <param name="B_nom"    type="float"         > 0.0</param>
+            <param name="DeltaB"   type="vector_double" > 0.0, 0.0, 0.0</param>
+            <param name="B_radius" type="float"         > 153.0</param>
+            <param name="B_zlow"   type="float"         > -500</param>
+            <param name="B_zhi"    type="float"         > 500 </param>
+        </sect>
+
+        <!-- ROOT file to save results to -->
+        <param name="outputfile" type="string"> mu2e_1plane.root</param> 
+        <param name="hittuple" type="bool"> false </param>
+
+        <!-- Print event number for every printfreq -->
+        <param name="printfreq" type="long"> 1000</param>
+
+        <!-- Prints out Positon/Momentum/Parameter Info (make sure numtracks isn't large!!) -->
+        <param name="verbose" type="bool"> false</param>
+
+        <!-- Number of tracks to generate -->
+        <param name="numtracks" type="long"> 100000</param>
+
+        <!-- Initial distance from z axis (phi symmetric) -->
+        <param name="r0_mean" type="double"> 0.0</param>
+        <param name="r0_sigma" type="double"> 0.0</param>
+        <!-- Initial distance from z=0 -->
+        <param name="z0_mean" type="double"> -10</param>
+        <param name="z0_sigma" type="double"> 0</param>
+
+        <!-- momentum range-->
+        <param name="p_min"  type="double"> 0.1051</param>
+        <param name="p_max" type="double"> 0.1051 </param>
+
+        <!-- polar angle range -->
+        <param name="cost_min"  type="double"> 1.0 </param>
+        <param name="cost_max" type="double"> 1.0 </param>
+
+        <!-- positive electron -->
+        <param name="PdtPdg" type="long"> -11</param>
+
+        <sect name="PacSimulate">
+            <param name="maxgap" type="float" > 1000.0 </param> <!-- this is the maximum gap allowed between hits-->               
+        </sect>
+
+        <sect name="DetectorVolume">
+            <param name="rmax"    type="float"        >  200</param>
+            <param name="zmin"   type="float"         > -100</param>
+            <param name="zmax"    type="float"         >  100</param>
+        </sect>        
+        <sect name="General">
+            <param name="ConfigKey" type="int" > 1 </param>
+            <param name="ConfigName" type="string"> 1Plane </param>
+        </sect>
+
+        <param name="displaytrack" type="bool"> true</param>
+        <param name="printtrack" type="bool"> true</param>
+
+        <param name="displayfile" type="string" > mu2e_disp1plane.root</param>
+        <param name="displayresolution" type="int" > 2000</param>
+
+        <!-- Helix parameters -->
+        <param name="initpos" type="vector_double" >   0 0 0 </param>
+        <param name="initmom" type="vector_double" >   0 0 0.1051 </param>
+
+    </config>
+
+    <detector name="Mu2e">
+        <volume name="Tracker">
+            <rect name="straw" id="1" orientation="0" centerrho="0" centerz="10" centerphi="0" axisphi="0" usize="planesize" vsize="planesize" thick="planethickness" mat="svt-Kapton" />
+            
+            <rect name="empty" id="2" orientation="0" centerrho="0" centerz="20" centerphi="0" axisphi="0" usize="planesize" vsize="planesize" thick="planethickness" />
+            
+        </volume>
+    </detector>
+
+</edml>

@@ -1,0 +1,44 @@
+File    = table
+Product = btrk
+
+#*************************************************
+# Starting Group definition
+Group:
+
+Flavor     = ANY
+Qualifiers = "e7:debug"
+
+  Action = GetFQDir
+      envSet (BTRK_FQ, ${UPS_PROD_FLAVOR}-e7-debug)
+      setupRequired( clhep v2_2_0_5 -q +e7:+debug )
+      setupRequired( root  v5_34_25 -q +e7:+debug )
+
+Flavor     = ANY
+Qualifiers = "e7:prof"
+
+  Action = GetFQDir
+      envSet (BTRK_FQ, ${UPS_PROD_FLAVOR}-e7-prof)
+      setupRequired( clhep v2_2_0_5 -q +e7:+prof )
+      setupRequired( root  v5_34_25 -q +e7:+prof )
+
+Common:
+  Action = setup
+    prodDir()
+    setupEnv()
+    envSet (BTRK_INC, ${BTRK_DIR}/include )
+
+    exeActionRequired(GetFQDir)
+    envSet (BTRK_LIB, ${BTRK_DIR}/${BTRK_FQ}/lib )
+
+    setupRequired( gcc   v4_9_2 )
+    setupRequired( scons v2_3_4 )
+
+    if ( test `uname` = "Darwin" )
+      pathPrepend(DYLD_LIBRARY_PATH, ${${UPS_PROD_NAME_UC}_LIB})
+    else()
+      pathPrepend(LD_LIBRARY_PATH, ${${UPS_PROD_NAME_UC}_LIB})
+    endif ( test `uname` = "Darwin" )
+
+End:
+# End Group definition
+#*************************************************

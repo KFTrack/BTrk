@@ -1,0 +1,22 @@
+#ifndef PacSimTrkSummary_HH
+#define PacSimTrkSummary_HH
+
+#include <Rtypes.h>
+#define STRINGSIZE 200
+
+struct PacSimTrkSummary {
+  Int_t nsimhit, nwiremeas, npadmeas, nstraw, ngas, nwire, nother, nscatter, nbrems, nshower, ifirsthit, ilasthit;
+  Float_t radlenint, dmom, ddir, ddirphi, pathlen, binttru, bintrec;
+  
+  virtual ~PacSimTrkSummary() {}
+  PacSimTrkSummary() : nsimhit(0), nwiremeas(0), npadmeas(0), nstraw(0), ngas(0), nwire(0), nother(0),
+  nscatter(0), nbrems(0), nshower(0), ifirsthit(0), ilasthit(0), radlenint(0.0),dmom(0.0), ddir(0.0), ddirphi(0.0), pathlen(0.0), binttru(0.0), bintrec(0.0)
+  {}
+  
+  static const char* rootnames() {
+    return "nsimhit/I:nwiremeas/I:npadmeas/I:nstraw/I:ngas/I:nwire/I:nother/I:nscatter/I:nbrems/I:nshower/I:ifirsthit/I:ilasthit/I:radlenint/F:dmom/F:ddir/F:ddirphi/F:pathlen/F:binttru/F:bintrec/F"; }
+    
+  ClassDef(PacSimTrkSummary,1)
+};
+
+#endif

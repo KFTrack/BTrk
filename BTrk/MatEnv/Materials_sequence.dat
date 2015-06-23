@@ -1,0 +1,11 @@
+#
+#  List of materials for entry in the Conditions DB
+#  The date/time at which it is to be stored 
+#  is followed by the file name which actually defines the materials
+#
+#  There are now separate materials for MC and real data
+#
+Zone UTC
+01Jan1971 00:00:01  MatEnv/MaterialsList_IR2.data
++Infinity
+

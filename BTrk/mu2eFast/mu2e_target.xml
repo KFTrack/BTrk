@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <define>            
+            <constant name="diskthickness" value="0.02"></constant>
+            <constant name="diskr1" value="10.0000"></constant>
+            <constant name="diskr2" value="8.2168"></constant>
+            <constant name="diskr3" value="8.1288"></constant>
+            <constant name="diskr4" value="8.0378"></constant>
+            <constant name="diskr5" value="7.9438"></constant>
+            <constant name="diskr6" value="7.8467"></constant>
+            <constant name="diskr7" value="7.7463"></constant>
+            <constant name="diskr8" value="7.6425"></constant>
+            <constant name="diskr9" value="7.5352"></constant>
+            <constant name="diskr10" value="7.4241"></constant>
+            <constant name="diskr11" value="7.3093"></constant>
+            <constant name="diskr12" value="7.1904"></constant>
+            <constant name="diskr13" value="7.0674"></constant>
+            <constant name="diskr14" value="6.9401"></constant>
+            <constant name="diskr15" value="6.8082"></constant>
+            <constant name="diskr16" value="6.6716"></constant>
+            <constant name="diskr17" value="6.5300"></constant>
+
+            <constant name="zdisk1" value="-470"></constant>
+            <constant name="zdisk2" value="-465"></constant>
+            <constant name="zdisk3" value="-460"></constant>
+            <constant name="zdisk4" value="-455"></constant>
+            <constant name="zdisk5" value="-450"></constant>
+            <constant name="zdisk6" value="-445"></constant>
+            <constant name="zdisk7" value="-440"></constant>
+            <constant name="zdisk8" value="-435"></constant>
+            <constant name="zdisk9" value="-430"></constant>
+            <constant name="zdisk10" value="-425"></constant>
+            <constant name="zdisk11" value="-420"></constant>
+            <constant name="zdisk12" value="-415"></constant>
+            <constant name="zdisk13" value="-410"></constant>
+            <constant name="zdisk14" value="-405"></constant>
+            <constant name="zdisk15" value="-400"></constant>
+            <constant name="zdisk16" value="-395"></constant>
+            <constant name="zdisk17" value="-390"></constant>
+        </define>
+        
+        
+
+        <detector name="Mu2e">
+            <volume name="Collimator">
+                <ring name="Coll5" id="11" z="-677" lowradius="12.8" hiradius="24" thick="10" mat="TargetCu"/>
+                <ring name="Cryo" id="11" z="-677" lowradius="24" hiradius="70" thick="10" mat="TargetAl"/>                
+            </volume>
+            
+            
+            <volume name="Target">                
+                <ring name="TargetD1" id="1" z="zdisk1" lowradius="0" hiradius="diskr1" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD2" id="1" z="zdisk2" lowradius="0" hiradius="diskr2" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD3" id="1" z="zdisk3" lowradius="0" hiradius="diskr3" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD4" id="1" z="zdisk4" lowradius="0" hiradius="diskr4" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD5" id="1" z="zdisk5" lowradius="0" hiradius="diskr5" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD6" id="1" z="zdisk6" lowradius="0" hiradius="diskr6" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD7" id="1" z="zdisk7" lowradius="0" hiradius="diskr7" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD8" id="1" z="zdisk8" lowradius="0" hiradius="diskr8" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD9" id="1" z="zdisk9" lowradius="0" hiradius="diskr9" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD10" id="1" z="zdisk10" lowradius="0" hiradius="diskr10" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD11" id="1" z="zdisk11" lowradius="0" hiradius="diskr11" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD12" id="1" z="zdisk12" lowradius="0" hiradius="diskr12" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD13" id="1" z="zdisk13" lowradius="0" hiradius="diskr13" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD14" id="1" z="zdisk14" lowradius="0" hiradius="diskr14" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD15" id="1" z="zdisk15" lowradius="0" hiradius="diskr15" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD16" id="1" z="zdisk16" lowradius="0" hiradius="diskr16" thick="diskthickness" mat="tarmat"/>
+                <ring name="TargetD17" id="1" z="zdisk17" lowradius="0" hiradius="diskr17" thick="diskthickness" mat="tarmat"/>
+            </volume>
+        </detector>
+        <!-- now define the voxelization -->
+        <config>
+            <sect name="Target">
+                <param name="rbounds"    type="vector"        >
+                    -1 10.5 150.0
+                </param>
+                <param name="nphivoxels"    type="vector"         >
+                    1 1
+                </param>
+                <param name="zbounds"   type="vector"         >
+                    -600 -472.5 -467.5 -462.5 -457.5 -452.5 -447.5 -442.5 -437.5 -432.5 -427.5 -422.5 -417.5 -412.5  -407.5 -402.5 -397.5 -392.5 -387.5   
+                </param>
+            </sect>
+            
+            <sect name="Collimator">
+                <param name="rbounds"    type="vector"        >
+                    -1 12 23 150.0
+                </param>
+                <param name="nphivoxels"    type="vector"         >
+                    1 1 1 
+                </param>
+                <param name="zbounds"   type="vector"         >
+                    -800 -620 -600.1
+                </param>
+            </sect>
+            
+        </config>
+    </included>
+</edml>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- target geometry is obtained from the 'Target' volume detector elements -->
+<edml>
+    <included>
+        <config>
+            <sect name="TargetInput">
+                <!-- negative electron -->
+                <param name="PdtPdg" type="long"> 11</param>
+                <param name="rndseed" type="long"> 123499821</param>
+                <param name="nevents" type="long"> 10000</param>
+                <!-- The xy beamspread is assumed Gaussian, symmetric-->
+                <param name="beamxsigma"  type="double"> 5.0 </param>
+                <!-- beam spread parameter -->
+                <param name="beamthetasigma"  type="double"> 0.0 </param>
+                <!-- the following is the exponential decay constant for the muon flux as a function of z (cm) -->
+                <param name="beamzlambda"  type="double"> 57.5 </param>
+                <!-- spectrum type = 0 means a flat spectrum, 
+                change spectrum type to 1 to read spectrum from a file -->
+                <param name="spectrumtype" type="int"> 0 </param>
+                <param name="spectrumscale" type="float"> 0.001 </param>
+                <param name="spectrumfile" type="string">mu2eFast/dio_spectrum.csv</param>
+                <param name="cost_min"  type="double"> -1 </param>
+                <param name="cost_max" type="double"> 1 </param>
+                <!-- the following are used only if no spectrum is supplied -->
+                <param name="p_min"  type="double"> 0.1051</param>
+                <param name="p_max" type="double"> 0.1051 </param>
+                <!-- bunch parameters-->
+                <param name="bunchtime" type="float"> 1.7e-6 </param>
+                <!-- stopped muon lifetime -->
+                <param name="lifetime" type="float"> 0.86e-6 </param>
+                <!-- the following describe the timing of the muon stops, as a log normal -->
+                <param name="lnsigma"  type="float"> 0.3791</param>
+                <param name="lntheta"  type="float"> 3.581e-8</param>
+                <param name="lnscale"  type="float"> 2.191e-7</param>
+            </sect>            
+        </config>
+    </included>
+</edml>

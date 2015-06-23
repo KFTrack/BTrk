@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <define>
+            <constant name="strawthickness" value="0.3942"></constant>
+            <constant name="wirethickness" value="0.001964"></constant>
+            <constant name="usize" value="126.2261"></constant>
+            <constant name="vsize" value="30.0"></constant>
+            <constant name="centerrho" value="53.0"></constant>
+            <constant name="wiregap" value="0.99583"></constant>
+            <constant name="strawgap" value="0.0"></constant>
+            <constant name="strawoverlap" value="0.66666"></constant>
+
+            <variable name="zvar" type="int"></variable>
+            <variable name="cvar" type="int"></variable>
+            <variable name="svar" type="int"></variable>
+            <variable name="bvar" type="int"></variable>
+            
+            <formula name="planestraw" par0="zvar" par1="svar" formula="-144.5+[0]*17.0-2.7+[1]*1.666"></formula>
+            <formula name="planewire" par0="zvar" par1="svar" formula="-144.5+[0]*17.0-2.3+[1]*1.666"></formula>
+
+            <formula name="zring1" par0="zvar" formula="-144.5+[0]*17.0-1.5"></formula>
+            <formula name="zring2" par0="zvar" formula="-144.5+[0]*17.0+1.5"></formula>
+            <formula name="elemnum" par0="zvar" formula="[0]+10"></formula>
+
+            <formula name="cenphi" par0="zvar" par1="cvar" par2="svar" formula="(50*[2]^3-225*[2]^2+235*[2]+30)*0.017453 +[1]*2.094395"></formula>
+
+            <formula name="aphi" par0="zvar" par1="cvar" par2="svar" formula="(50*[2]^3-225*[2]^2+235*[2]+300)*0.017453+[1]*2.094395"></formula>
+
+            <formula name="index" par0="zvar" par1="cvar" par2="svar" formula="100*(3*[2]+[1])+[0]+10"></formula>
+
+        </define>
+<!-- resolution parameters are set according to NA62 prototype measurements, scaled by 10%-
+Note that the straws are oriented along the u direction (v is default) -->
+        <measures>
+            <device name="Straw"
+                type="DriftChamber"
+                sensitiveTimeWindow="1e-5"
+                rms_par0="0.0234823 "
+                rms_par1="-0.033552"
+                rms_par2="0.0190677"
+                rms_par3="-0.0036372"
+                rms_par4="0"
+                rms_par5="0"
+                ngFrac="0.02"
+                ngFactor="5.0"
+                eff_par0="0.99"
+                eff_par1="1.00"	
+                cell_size="0.5"
+                trunc_frac="0.8"
+                dedx_par1="0.0013202"
+                dedx_par2="1"
+                dedx_par3="-0.5"
+                angle="1.57079633"  />
+        </measures>
+        
+        <detector name="Mu2e">
+            <volume name="Tracker">
+                <ring name="Entrance" id="2" z="-149" lowradius="-1" hiradius="90" thick="0.001" mat="vacuum" />
+                
+                <loop variable="zvar" count="18" startvalue="0" stepvalue="1">
+                    <ring name="C1" id="elemnum" z="zring1" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
+                    <ring name="C2" id="elemnum" z="zring2" lowradius="70" hiradius="80" thick="1.0" mat="TRing" />
+                    <loop variable="svar" count="4" startvalue="0" stepvalue="1">
+                        <loop variable="cvar" count="3" startvalue="0" stepvalue="1">
+                            <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="straw_15um" gap="strawgap" overlap="strawoverlap" meas="Straw"/>
+                            <rect name="wire" id="index" orientation="0" centerrho="centerrho" centerz="planewire" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="wirethickness" mat="straw-wire" gap="wiregap" /> 
+                        </loop>
+                    </loop>
+                </loop>
+            </volume>
+        </detector>
+<!-- now define the voxelization -->
+        <config>
+            <sect name="Tracker">
+                <param name="rbounds"    type="vector"        >
+                    -1 37 53 69 85 101
+                </param>
+                <param name="nphivoxels"    type="vector"         >
+                    1 6 6 6 6
+                </param>
+                <param name="zbounds"   type="vector"         >
+                    -150 -148 -140 -123 -106 -89 -72 -55 -38 -21 -4 13 30 47 64 81 98 115 132 149 166 
+                </param>
+            </sect>
+        </config>
+    </included>
+</edml>

@@ -1,0 +1,118 @@
+# $Id: History 92 2010-01-14 12:38:30Z stroili $
+
+14 Jan 2010: R. Stroili
+	split code in src and include directories
+
+V00-03-06  ==================================================================
+
+24 Sep 2007: I. Gaponenko
+	CLHEP migration: replaced forward declarations for CLHEP classes with
+	direct includes of the corresponding header files. The modification
+	is backward compatible with the old version of CLHEP.
+
+V00-03-05 ==================================================================
+
+06 Jun 2007: M. Kelsey
+	DchAlignElem.hh:  Replace BdbODMGTypes.hh with BaBarODMGTypes.hh
+	link_DchGeomBase.mk:  Regenerate with current dependences.
+
+[ No documentation for tags V00-03-03 or -04 ]
+
+V00-03-02 ==================================================================
+
+29 Oct 2004: M. Kelsey
+	DchGDch:  Eliminate some ctor initializer warnings.
+	DchDbioParser.cc:  Add a couple of debugging failure messages.
+	DchGFileParser.cc:  Add debugging message in ctor.
+	DchGFileParser.hh:  Fix fileRewind() for IOStreams migration.
+
+[ V00-03-00: Framework and IOStreams migrations ]
+
+V00-02-07 ==================================================================
+
+12 Apr 2004:  M. Kelsey
+	Bug fix for DchDbioParser to avoid infinite loop in seek().
+	Bug fix for DchGDch to remove executable code from asert().
+
+[ Modifications from V00-02-02 through V00-02-06 not documented here. ]
+
+V00-02-01 ==================================================================
+
+8 Apr 02: R. Stroili
+	fix compilation on SUN
+
+V00-02-00 ==================================================================
+
+15 Mar 02: R. Stroili
+	RogueWave migration
+
+V00-01-01 ==================================================================
+
+29 Jun 00: R. Stroili
+	reduce verbosity of file parser, some minor fixes to optimize loading 
+	of the DCH Proto II geometry
+
+V00-01-00 ==================================================================
+
+19 Jun 00: R. Stroili
+	remove >> operator from class DchGDch
+
+17 Jun 00: R. Stroili
+	fix a bug in getting the constants for cell structure, remove all 
+	dependencies from dbin and gnbase
+
+16 Jun 00: R. Stroili
+	Remove use of dbin structure to bootstrap Dch geometry
+
+07 Jun 00: R. Stroili
+	
+	add parser to read file dch.db directy instead of using dbio
+	generated structures
+
+V00-00-07 ==================================================================
+
+16 Dec 99: R. Stroili
+	
+	Add class DchCellAddr to break circular dependency between DchGeom
+	and DchMaps
+
+30 Nov 99: R. Stroili
+
+	Fix bugs introduced in dbin migration.
+	ErrLogger migration
+
+
+V00-00-05 =================================================================
+
+        Official tag Ryd.
+
+
+23-Nov-99: S. Sen
+	fixed DchVol.xyz and DchVol.par in DchGDch.cc to agree with the new 
+	variable names x,y,z,par1,par2,par3,par4 that were introduced by the 
+	dbio->dbin migration of DchSimGeom.
+
+
+V00-00-03 =================================================================
+
+24 Dec 98: B. Jacobsen
+	
+	CLHEP migration (DchAlignElem)
+
+V00-00-02 =================================================================
+
+06 Oct 98: R. Stroili
+
+	Cleaned link_DchGeomBase.mk
+
+V00-00-01 =================================================================
+
+05 Oct 98: R. Stroili
+
+	First implementation, moved some classes from DchGeom and DchGeomP
+
+V00-00-00 =================================================================
+	
+01 Oct 98: R. Stroili
+	
+	Dummy class DchGeomBaseFoo just to add the package in the nightly
