@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Parameter definitions are mostly the same as for root file input -->
+<!-- This simulates the overlay of multiple tracks from a time slice
+around a presumed 'signal' track -->
+<edml>
+    <included>
+        <config>
+            <sect name="BkgInput">
+                <param name="inputfile" type="string">$SBROOT/data/DioOutput_merged.root</param>
+                <param name="firstevent" type="long"> 0</param>
+                <param name="nevents" type="long"> -1</param>
+                <param name="timescale" type="float"> 1 </param>
+                <param name="timeoffset" type="float"> 0 </param>
+                <!-- bunch parameters-->
+                <param name="bunchtime" type="float"> 1.7e-6 </param>
+                <!-- average # of stopped muons/bunch-->
+                <param name="nstopped" type="float"> 8.45e4 </param>
+                <!-- bunch-bunch fractional spread -->
+                <param name="nbunchspread" type="float"> 0.5 </param>
+                <!-- BF of stopped muon into this background mode -->
+                <param name="bkgBF" type="float"> 0.39 </param>
+                <!-- fraction of stopped muons in this mode generating the specified background type.  This
+                factor should include the selection efficiency of all cuts used when creating the output file -->
+                <param name="bkgeff" type="float"> 6.92e-5 </param>
+                <!-- by default, don't reconstruct background tracks -->
+                <param name="fitbkg" type="bool"> false </param>
+            </sect>            
+        </config>
+    </included>
+</edml>

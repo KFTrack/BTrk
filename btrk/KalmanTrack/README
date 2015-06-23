@@ -1,0 +1,31 @@
+This package holds the code used to create the Kalman track
+fit.  It includes a standalone module KalFit which can fit
+all the tracks on a list (NOTE: KalFit makes no attempt to
+determine whether a particular track on a fit already has a
+Kalman Rep, instead it just refits all Tracks).  Kalman fits
+can also be generated directly by other modules using the
+KalMaker interface.  Kalman track information may be accessed
+via the KalInterface and KalPairVisitor classes.
+
+The basic Kalman fit now includes several types of 'sites':
+KalMaterialSite.  This models energy loss and multiple scattering
+  in materials.  It's connected to DetectorModel.
+KalHitSite.  This is the Kalman wrapper to a TrkHitOnTrk.
+KalBend.  This models the inhomogeneity of the BField.
+  It's connected to BField and BFieldIntegrator.
+KalConstraintSite.  This allows a (potentially partial) set of
+  direct constraints on the tracking parameters to be modeled.
+  It functions identically to a hit.
+KalPairSite.  Used by KalPairRep to model the kinematic constraint
+  at the juncture of the 2 tracks (see KalPairRep below).
+
+This package also contains a few extensions to the basic Kalman
+fit such as:
+KalStub.  This is a special partial Kalman fit used in pattern
+  recognition.
+KalPairRep.  This is a special Kalman fit that can be applied
+  to pairs of tracks having a known relative momentum coming
+  from a common production point.  KalPairRep provides fully
+  constrained information all along the full trajectory of the
+  pair fit (IE much more information than a constrained vertex
+  fit), and thus is appropriate for alignment studies.

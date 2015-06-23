@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <define>
+            <constant name="calothickness" value="14"></constant>
+            <constant name="calofz" value="173.0"></constant>
+            <constant name="caloz" value="250"></constant>
+            <constant name="calozsize" value="154"></constant>
+            <constant name="calorho" value="54"></constant>
+            <constant name="calofrho" value="36"></constant>
+            <constant name="calorhosize" value="36"></constant>
+            <variable name="pvar" type="int"></variable>
+<!-- offset the phi slightly to keep elements off voxel boundaries -->
+            <formula name="calophi" par0="pvar" formula="1.047197*[0] + 0.01"></formula>
+            <formula name="calorphi" par0="pvar" formula="1.047197*[0] + 1.570596 + 0.01"></formula>
+            <formula name="calofid" par0="pvar" formula="10000+[0]"></formula>
+            <formula name="calorid" par0="pvar" formula="9990+[0]"></formula>
+            <formula name="caloid" par0="pvar" formula="10010+[0]"></formula>
+        </define>
+
+        <measures>
+            
+            <device name="Calo"
+                type="DoubleSideSiStrips"
+                sensitiveTimeWindow="0.4e-6"
+                phiResModel="0."
+                phiResPar0="2.0"
+                phiPTRatio="0.18"
+                phingFrac="0.0"
+                phingFactor="2.5"
+                phiEff="1.0"
+                zResModel="0."
+                zResPar0="2.0"
+                zPTRatio="0.18"
+                zngFrac="0.0"
+                zngFactor="2.0"
+                zEff="1.0"
+                NormRes="0.000"
+                trunc_frac=".8"
+                dedx_par1="0.00038"
+                dedx_par2="1.18"
+                dedx_par3="-0.2"
+                svt_thresh="0.25"
+                svt_fit_p0="1.546e-3"
+                svt_fit_p1="5.921e-1"
+                svt_fit_p2="155.6"
+                svt_fit_p3="-0.1357"
+                svt_fit_p4="2.43e-3"
+                />
+                
+        </measures>
+                
+        <detector name="Mu2e">
+            <volume name="Calo">
+                <loop variable="pvar" count="6" startvalue="0" stepvalue="1">
+                    <rect name="calo_F" id="calofid" orientation="0" centerrho="calorho" centerz="calofz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calothickness" thick="10" mat="LYSO"  meas="Calo"/>
+                    <rect name="calo_R" id="calorid" orientation="1" centerrho="calofrho" centerz="caloz" centerphi="calophi" axisphi="calorphi" usize="calothickness" vsize="calozsize" thick="10" mat="LYSO"  meas="Calo"/>
+                    <rect name="calo" id="caloid" orientation="1" centerrho="calorho" centerz="caloz" centerphi="calophi" axisphi="calophi" usize="calorhosize" vsize="calozsize" thick="calothickness" mat="LYSO" meas="Calo"/>
+                </loop>         
+            </volume>
+        </detector>
+        <!-- now define the voxelization -->
+        <config>
+            <sect name="Calo">
+                <param name="rbounds"    type="vector"        > 35  76  </param>
+                <param name="nphivoxels"    type="vector"         >  6  </param>
+                <param name="zbounds"   type="vector"         > 172 175 330 </param>
+                <param name="phioffset"   type="double"         > 0.5236 </param>
+            </sect>
+        </config>
+    </included>
+</edml>

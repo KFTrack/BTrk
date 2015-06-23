@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+<!-- by default, absorber and target material are set to vacuum.  Change these if you want 
+ those materials -->
+ <define>        
+     <constant name="absmat" value="vacuum"></constant>
+     <!-- uncomment the following to put in the absorber -->
+     <!--     <constant name="absmat" value="MDPE"></constant> -->
+     <constant name="tarmat" value="vacuum"></constant>
+     <!-- target material set to vacuum by default, change to TargetAl below to change to Al -->
+     <!--            <constant name="tarmat" value="TargetAl"></constant> -->
+ </define>
+
+ <include file="PacSim/Material_simulation.xml" />
+ <include file="mu2eFast/mu2e_config.xml" />
+ <include file="mu2eFast/mu2e_target.xml" />
+ <include file="mu2eFast/mu2e_absorber.xml" />
+ <include file="mu2eFast/mu2e_Ttracker.xml" />
+ <include file="mu2eFast/mu2e_calo.xml" />
+ <!-- <include file="mu2eFast/mu2e_Ltracker.xml" /> -->
+ <!-- <include file="mu2eFast/mu2e_Itracker.xml" /> -->
+
+</edml>

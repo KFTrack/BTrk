@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- target geometry is obtained from the 'Target' volume detector elements -->
+<edml>
+    <included>
+        <config>
+            <sect name="BeamInput">
+                <!-- negative electron -->
+                <param name="PdtPdg" type="long"> 11</param>
+                <param name="rndseed" type="long"> 123499821</param>
+                <param name="nevents" type="long"> 1000</param>
+                <!-- lifetime of stopped particle: default is muonic Al-->
+                <param name="lifetime" type="float"> 0.86e-6  </param>
+                <!-- spectrum type = 0 means a flat spectrum, 
+                change spectrum type to 1 to read spectrum from a file -->
+                <param name="spectrumtype" type="int"> 0 </param>
+                <param name="spectrumscale" type="float"> 0.001 </param>
+                <param name="spectrumfile" type="string">mu2eFast/dio_spectrum.csv</param>
+                <param name="cost_min"  type="double"> -1 </param>
+                <param name="cost_max" type="double"> 1 </param>
+                <!-- the following are used only if no spectrum is supplied -->
+                <param name="p_min"  type="double"> 0.1051</param>
+                <param name="p_max" type="double"> 0.1051 </param>
+                <!-- Geant time is in nsec, FastSim is in sec -->
+                <sect name="Beam">
+                    <param name="inputfile" type="string">Coll5_OUT_0.root</param>
+                    <param name="timescale" type="float"> 1e-9 </param>
+                    <param name="timeoffset" type="float"> 0 </param>
+                </sect>
+            </sect>            
+        </config>
+    </included>
+</edml>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <detector name="Mu2e">
+            <volume name="Tracker">
+
+                <cyl name="dch-InnerCyl" id="230" zmin="-50.000000" zmax="50.000000" radius="37.883900" thick="0.026600" mat="IT-Graphite"  />
+                <cyl name="dch-inner-field-wires" id="0" zmin="-50.000000" zmax="50.000000" radius="37.899200" thick="0.003142" mat="IT-Fwire" gap="0.973333"  />
+                <cyl name="dch-Gas_down" id="40" zmin="-50.000000" zmax="50.000000" radius="38.047200" thick="0.300000" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="1" zmin="-50.000000" zmax="50.000000" radius="38.197200" thick="0.600000" meas="Stereo1-"  />
+                <cyl name="dch-Gas_up" id="78" zmin="-50.000000" zmax="50.000000" radius="38.347200" thick="0.300000" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="116" zmin="-50.000000" zmax="50.000000" radius="38.187200" thick="0.003142" mat="IT-Fwire" gap="0.993333"  />
+                <cyl name="dch-sense-wires" id="154" zmin="-50.000000" zmax="50.000000" radius="38.207200" thick="0.001571" mat="IT-Swire" gap="0.996667"  />
+                <cyl name="dch-out-field-wires" id="192" zmin="-50.000000" zmax="50.000000" radius="38.495200" thick="0.003142" mat="IT-Fwire" gap="0.973333"  />
+                <cyl name="dch-Gas_down" id="41" zmin="-50.000000" zmax="50.000000" radius="38.649575" thick="0.304750" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="2" zmin="-50.000000" zmax="50.000000" radius="38.801950" thick="0.609499" meas="Stereo2+"  />
+                <cyl name="dch-Gas_up" id="79" zmin="-50.000000" zmax="50.000000" radius="38.954325" thick="0.304750" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="117" zmin="-50.000000" zmax="50.000000" radius="38.791950" thick="0.003142" mat="IT-Fwire" gap="0.993437"  />
+                <cyl name="dch-sense-wires" id="155" zmin="-50.000000" zmax="50.000000" radius="38.811950" thick="0.001571" mat="IT-Swire" gap="0.996719"  />
+                <cyl name="dch-out-field-wires" id="193" zmin="-50.000000" zmax="50.000000" radius="39.104699" thick="0.003142" mat="IT-Fwire" gap="0.973749"  />
+                <cyl name="dch-Gas_down" id="42" zmin="-50.000000" zmax="50.000000" radius="39.261487" thick="0.309575" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="3" zmin="-50.000000" zmax="50.000000" radius="39.416274" thick="0.619149" meas="Stereo3-"  />
+                <cyl name="dch-Gas_up" id="80" zmin="-50.000000" zmax="50.000000" radius="39.571061" thick="0.309575" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="118" zmin="-50.000000" zmax="50.000000" radius="39.406274" thick="0.003142" mat="IT-Fwire" gap="0.993540"  />
+                <cyl name="dch-sense-wires" id="156" zmin="-50.000000" zmax="50.000000" radius="39.426274" thick="0.001571" mat="IT-Swire" gap="0.996770"  />
+                <cyl name="dch-out-field-wires" id="194" zmin="-50.000000" zmax="50.000000" radius="39.723849" thick="0.003142" mat="IT-Fwire" gap="0.974158"  />
+                <cyl name="dch-Gas_down" id="43" zmin="-50.000000" zmax="50.000000" radius="39.883086" thick="0.314476" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="4" zmin="-50.000000" zmax="50.000000" radius="40.040324" thick="0.628952" meas="Stereo4+"  />
+                <cyl name="dch-Gas_up" id="81" zmin="-50.000000" zmax="50.000000" radius="40.197562" thick="0.314476" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="119" zmin="-50.000000" zmax="50.000000" radius="40.030324" thick="0.003142" mat="IT-Fwire" gap="0.993640"  />
+                <cyl name="dch-sense-wires" id="157" zmin="-50.000000" zmax="50.000000" radius="40.050324" thick="0.001571" mat="IT-Swire" gap="0.996820"  />
+                <cyl name="dch-out-field-wires" id="195" zmin="-50.000000" zmax="50.000000" radius="40.352800" thick="0.003142" mat="IT-Fwire" gap="0.974561"  />
+                <cyl name="dch-Gas_down" id="44" zmin="-50.000000" zmax="50.000000" radius="40.514528" thick="0.319455" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="5" zmin="-50.000000" zmax="50.000000" radius="40.674255" thick="0.638909" meas="Stereo5-"  />
+                <cyl name="dch-Gas_up" id="82" zmin="-50.000000" zmax="50.000000" radius="40.833982" thick="0.319455" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="120" zmin="-50.000000" zmax="50.000000" radius="40.664255" thick="0.003142" mat="IT-Fwire" gap="0.993739"  />
+                <cyl name="dch-sense-wires" id="158" zmin="-50.000000" zmax="50.000000" radius="40.684255" thick="0.001571" mat="IT-Swire" gap="0.996870"  />
+                <cyl name="dch-out-field-wires" id="196" zmin="-50.000000" zmax="50.000000" radius="40.991710" thick="0.003142" mat="IT-Fwire" gap="0.974957"  />
+                <cyl name="dch-Gas_down" id="45" zmin="-50.000000" zmax="50.000000" radius="41.155966" thick="0.324512" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="6" zmin="-50.000000" zmax="50.000000" radius="41.318222" thick="0.649025" meas="Stereo6+"  />
+                <cyl name="dch-Gas_up" id="83" zmin="-50.000000" zmax="50.000000" radius="41.480478" thick="0.324512" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="121" zmin="-50.000000" zmax="50.000000" radius="41.308222" thick="0.003142" mat="IT-Fwire" gap="0.993837"  />
+                <cyl name="dch-sense-wires" id="159" zmin="-50.000000" zmax="50.000000" radius="41.328222" thick="0.001571" mat="IT-Swire" gap="0.996918"  />
+                <cyl name="dch-out-field-wires" id="197" zmin="-50.000000" zmax="50.000000" radius="41.640735" thick="0.003142" mat="IT-Fwire" gap="0.975348"  />
+                <cyl name="dch-Gas_down" id="46" zmin="-50.000000" zmax="50.000000" radius="41.807560" thick="0.329650" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="7" zmin="-50.000000" zmax="50.000000" radius="41.972385" thick="0.659300" meas="Stereo7-"  />
+                <cyl name="dch-Gas_up" id="84" zmin="-50.000000" zmax="50.000000" radius="42.137210" thick="0.329650" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="122" zmin="-50.000000" zmax="50.000000" radius="41.962385" thick="0.003142" mat="IT-Fwire" gap="0.993933"  />
+                <cyl name="dch-sense-wires" id="160" zmin="-50.000000" zmax="50.000000" radius="41.982385" thick="0.001571" mat="IT-Swire" gap="0.996966"  />
+                <cyl name="dch-out-field-wires" id="198" zmin="-50.000000" zmax="50.000000" radius="42.300035" thick="0.003142" mat="IT-Fwire" gap="0.975732"  />
+                <cyl name="dch-Gas_down" id="47" zmin="-50.000000" zmax="50.000000" radius="42.469470" thick="0.334869" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="8" zmin="-50.000000" zmax="50.000000" radius="42.636904" thick="0.669739" meas="Stereo8+"  />
+                <cyl name="dch-Gas_up" id="85" zmin="-50.000000" zmax="50.000000" radius="42.804339" thick="0.334869" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="123" zmin="-50.000000" zmax="50.000000" radius="42.626904" thick="0.003142" mat="IT-Fwire" gap="0.994028"  />
+                <cyl name="dch-sense-wires" id="161" zmin="-50.000000" zmax="50.000000" radius="42.646904" thick="0.001571" mat="IT-Swire" gap="0.997014"  />
+                <cyl name="dch-out-field-wires" id="199" zmin="-50.000000" zmax="50.000000" radius="42.969774" thick="0.003142" mat="IT-Fwire" gap="0.976110"  />
+                <cyl name="dch-Gas_down" id="48" zmin="-50.000000" zmax="50.000000" radius="43.141859" thick="0.340171" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="9" zmin="-50.000000" zmax="50.000000" radius="43.311945" thick="0.680342" meas="Stereo9-"  />
+                <cyl name="dch-Gas_up" id="86" zmin="-50.000000" zmax="50.000000" radius="43.482030" thick="0.340171" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="124" zmin="-50.000000" zmax="50.000000" radius="43.301945" thick="0.003142" mat="IT-Fwire" gap="0.994121"  />
+                <cyl name="dch-sense-wires" id="162" zmin="-50.000000" zmax="50.000000" radius="43.321945" thick="0.001571" mat="IT-Swire" gap="0.997060"  />
+                <cyl name="dch-out-field-wires" id="200" zmin="-50.000000" zmax="50.000000" radius="43.650116" thick="0.003142" mat="IT-Fwire" gap="0.976482"  />
+                <cyl name="dch-Gas_down" id="49" zmin="-50.000000" zmax="50.000000" radius="43.824894" thick="0.345557" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="10" zmin="-50.000000" zmax="50.000000" radius="43.997673" thick="0.691114" meas="Stereo10+"  />
+                <cyl name="dch-Gas_up" id="87" zmin="-50.000000" zmax="50.000000" radius="44.170451" thick="0.345557" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="125" zmin="-50.000000" zmax="50.000000" radius="43.987673" thick="0.003142" mat="IT-Fwire" gap="0.994212"  />
+                <cyl name="dch-sense-wires" id="163" zmin="-50.000000" zmax="50.000000" radius="44.007673" thick="0.001571" mat="IT-Swire" gap="0.997106"  />
+                <cyl name="dch-out-field-wires" id="201" zmin="-50.000000" zmax="50.000000" radius="44.341230" thick="0.003142" mat="IT-Fwire" gap="0.976849"  />
+                <cyl name="dch-Gas_down" id="50" zmin="-50.000000" zmax="50.000000" radius="44.518743" thick="0.351028" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="11" zmin="-50.000000" zmax="50.000000" radius="44.694257" thick="0.702056" meas="Stereo11-"  />
+                <cyl name="dch-Gas_up" id="88" zmin="-50.000000" zmax="50.000000" radius="44.869771" thick="0.351028" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="126" zmin="-50.000000" zmax="50.000000" radius="44.684257" thick="0.003142" mat="IT-Fwire" gap="0.994302"  />
+                <cyl name="dch-sense-wires" id="164" zmin="-50.000000" zmax="50.000000" radius="44.704257" thick="0.001571" mat="IT-Swire" gap="0.997151"  />
+                <cyl name="dch-out-field-wires" id="202" zmin="-50.000000" zmax="50.000000" radius="45.043285" thick="0.003142" mat="IT-Fwire" gap="0.977210"  />
+                <cyl name="dch-Gas_down" id="51" zmin="-50.000000" zmax="50.000000" radius="45.223578" thick="0.356585" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="12" zmin="-50.000000" zmax="50.000000" radius="45.401870" thick="0.713171" meas="Stereo12+"  />
+                <cyl name="dch-Gas_up" id="89" zmin="-50.000000" zmax="50.000000" radius="45.580163" thick="0.356585" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="127" zmin="-50.000000" zmax="50.000000" radius="45.391870" thick="0.003142" mat="IT-Fwire" gap="0.994391"  />
+                <cyl name="dch-sense-wires" id="165" zmin="-50.000000" zmax="50.000000" radius="45.411870" thick="0.001571" mat="IT-Swire" gap="0.997196"  />
+                <cyl name="dch-out-field-wires" id="203" zmin="-50.000000" zmax="50.000000" radius="45.756456" thick="0.003142" mat="IT-Fwire" gap="0.977565"  />
+                <cyl name="dch-Gas_down" id="52" zmin="-50.000000" zmax="50.000000" radius="45.939571" thick="0.362231" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="13" zmin="-50.000000" zmax="50.000000" radius="46.120687" thick="0.724462" meas="Stereo13-"  />
+                <cyl name="dch-Gas_up" id="90" zmin="-50.000000" zmax="50.000000" radius="46.301802" thick="0.362231" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="128" zmin="-50.000000" zmax="50.000000" radius="46.110687" thick="0.003142" mat="IT-Fwire" gap="0.994479"  />
+                <cyl name="dch-sense-wires" id="166" zmin="-50.000000" zmax="50.000000" radius="46.130687" thick="0.001571" mat="IT-Swire" gap="0.997239"  />
+                <cyl name="dch-out-field-wires" id="204" zmin="-50.000000" zmax="50.000000" radius="46.480917" thick="0.003142" mat="IT-Fwire" gap="0.977915"  />
+                <cyl name="dch-Gas_down" id="53" zmin="-50.000000" zmax="50.000000" radius="46.666900" thick="0.367966" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="14" zmin="-50.000000" zmax="50.000000" radius="46.850883" thick="0.735932" meas="Stereo14+"  />
+                <cyl name="dch-Gas_up" id="91" zmin="-50.000000" zmax="50.000000" radius="47.034866" thick="0.367966" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="129" zmin="-50.000000" zmax="50.000000" radius="46.840883" thick="0.003142" mat="IT-Fwire" gap="0.994565"  />
+                <cyl name="dch-sense-wires" id="167" zmin="-50.000000" zmax="50.000000" radius="46.860883" thick="0.001571" mat="IT-Swire" gap="0.997282"  />
+                <cyl name="dch-out-field-wires" id="205" zmin="-50.000000" zmax="50.000000" radius="47.216849" thick="0.003142" mat="IT-Fwire" gap="0.978259"  />
+                <cyl name="dch-Gas_down" id="54" zmin="-50.000000" zmax="50.000000" radius="47.405745" thick="0.373792" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="15" zmin="-50.000000" zmax="50.000000" radius="47.592641" thick="0.747583" meas="Stereo15-"  />
+                <cyl name="dch-Gas_up" id="92" zmin="-50.000000" zmax="50.000000" radius="47.779537" thick="0.373792" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="130" zmin="-50.000000" zmax="50.000000" radius="47.582641" thick="0.003142" mat="IT-Fwire" gap="0.994649"  />
+                <cyl name="dch-sense-wires" id="168" zmin="-50.000000" zmax="50.000000" radius="47.602641" thick="0.001571" mat="IT-Swire" gap="0.997325"  />
+                <cyl name="dch-out-field-wires" id="206" zmin="-50.000000" zmax="50.000000" radius="47.964432" thick="0.003142" mat="IT-Fwire" gap="0.978598"  />
+                <cyl name="dch-Gas_down" id="55" zmin="-50.000000" zmax="50.000000" radius="48.156287" thick="0.379710" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="16" zmin="-50.000000" zmax="50.000000" radius="48.346142" thick="0.759419" meas="Stereo16+"  />
+                <cyl name="dch-Gas_up" id="93" zmin="-50.000000" zmax="50.000000" radius="48.535997" thick="0.379710" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="131" zmin="-50.000000" zmax="50.000000" radius="48.336142" thick="0.003142" mat="IT-Fwire" gap="0.994733"  />
+                <cyl name="dch-sense-wires" id="169" zmin="-50.000000" zmax="50.000000" radius="48.356142" thick="0.001571" mat="IT-Swire" gap="0.997366"  />
+                <cyl name="dch-out-field-wires" id="207" zmin="-50.000000" zmax="50.000000" radius="48.723852" thick="0.003142" mat="IT-Fwire" gap="0.978931"  />
+                <cyl name="dch-Gas_down" id="56" zmin="-50.000000" zmax="50.000000" radius="48.918712" thick="0.385721" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="17" zmin="-50.000000" zmax="50.000000" radius="49.111573" thick="0.771443" meas="Stereo17-"  />
+                <cyl name="dch-Gas_up" id="94" zmin="-50.000000" zmax="50.000000" radius="49.304433" thick="0.385721" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="132" zmin="-50.000000" zmax="50.000000" radius="49.101573" thick="0.003142" mat="IT-Fwire" gap="0.994815"  />
+                <cyl name="dch-sense-wires" id="170" zmin="-50.000000" zmax="50.000000" radius="49.121573" thick="0.001571" mat="IT-Swire" gap="0.997407"  />
+                <cyl name="dch-out-field-wires" id="208" zmin="-50.000000" zmax="50.000000" radius="49.495294" thick="0.003142" mat="IT-Fwire" gap="0.979260"  />
+                <cyl name="dch-Gas_down" id="57" zmin="-50.000000" zmax="50.000000" radius="49.693208" thick="0.391828" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="18" zmin="-50.000000" zmax="50.000000" radius="49.889122" thick="0.783656" meas="Stereo18+"  />
+                <cyl name="dch-Gas_up" id="95" zmin="-50.000000" zmax="50.000000" radius="50.085036" thick="0.391828" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="133" zmin="-50.000000" zmax="50.000000" radius="49.879122" thick="0.003142" mat="IT-Fwire" gap="0.994896"  />
+                <cyl name="dch-sense-wires" id="171" zmin="-50.000000" zmax="50.000000" radius="49.899122" thick="0.001571" mat="IT-Swire" gap="0.997448"  />
+                <cyl name="dch-out-field-wires" id="209" zmin="-50.000000" zmax="50.000000" radius="50.278950" thick="0.003142" mat="IT-Fwire" gap="0.979583"  />
+                <cyl name="dch-Gas_down" id="58" zmin="-50.000000" zmax="50.000000" radius="50.479966" thick="0.398032" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="19" zmin="-50.000000" zmax="50.000000" radius="50.678982" thick="0.796063" meas="Stereo19-"  />
+                <cyl name="dch-Gas_up" id="96" zmin="-50.000000" zmax="50.000000" radius="50.877998" thick="0.398032" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="134" zmin="-50.000000" zmax="50.000000" radius="50.668982" thick="0.003142" mat="IT-Fwire" gap="0.994975"  />
+                <cyl name="dch-sense-wires" id="172" zmin="-50.000000" zmax="50.000000" radius="50.688982" thick="0.001571" mat="IT-Swire" gap="0.997488"  />
+                <cyl name="dch-out-field-wires" id="210" zmin="-50.000000" zmax="50.000000" radius="51.075014" thick="0.003142" mat="IT-Fwire" gap="0.979901"  />
+                <cyl name="dch-Gas_down" id="59" zmin="-50.000000" zmax="50.000000" radius="51.279180" thick="0.404333" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="20" zmin="-50.000000" zmax="50.000000" radius="51.481347" thick="0.808667" meas="Stereo20+"  />
+                <cyl name="dch-Gas_up" id="97" zmin="-50.000000" zmax="50.000000" radius="51.683514" thick="0.404333" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="135" zmin="-50.000000" zmax="50.000000" radius="51.471347" thick="0.003142" mat="IT-Fwire" gap="0.995054"  />
+                <cyl name="dch-sense-wires" id="173" zmin="-50.000000" zmax="50.000000" radius="51.491347" thick="0.001571" mat="IT-Swire" gap="0.997527"  />
+                <cyl name="dch-out-field-wires" id="211" zmin="-50.000000" zmax="50.000000" radius="51.883680" thick="0.003142" mat="IT-Fwire" gap="0.980214"  />
+                <cyl name="dch-Gas_down" id="60" zmin="-50.000000" zmax="50.000000" radius="52.091048" thick="0.410735" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="21" zmin="-50.000000" zmax="50.000000" radius="52.296415" thick="0.821470" meas="Stereo21-"  />
+                <cyl name="dch-Gas_up" id="98" zmin="-50.000000" zmax="50.000000" radius="52.501783" thick="0.410735" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="136" zmin="-50.000000" zmax="50.000000" radius="52.286415" thick="0.003142" mat="IT-Fwire" gap="0.995131"  />
+                <cyl name="dch-sense-wires" id="174" zmin="-50.000000" zmax="50.000000" radius="52.306415" thick="0.001571" mat="IT-Swire" gap="0.997565"  />
+                <cyl name="dch-out-field-wires" id="212" zmin="-50.000000" zmax="50.000000" radius="52.705150" thick="0.003142" mat="IT-Fwire" gap="0.980523"  />
+                <cyl name="dch-Gas_down" id="61" zmin="-50.000000" zmax="50.000000" radius="52.915769" thick="0.417238" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="22" zmin="-50.000000" zmax="50.000000" radius="53.124388" thick="0.834476" meas="Stereo22+"  />
+                <cyl name="dch-Gas_up" id="99" zmin="-50.000000" zmax="50.000000" radius="53.333007" thick="0.417238" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="137" zmin="-50.000000" zmax="50.000000" radius="53.114388" thick="0.003142" mat="IT-Fwire" gap="0.995207"  />
+                <cyl name="dch-sense-wires" id="175" zmin="-50.000000" zmax="50.000000" radius="53.134388" thick="0.001571" mat="IT-Swire" gap="0.997603"  />
+                <cyl name="dch-out-field-wires" id="213" zmin="-50.000000" zmax="50.000000" radius="53.539626" thick="0.003142" mat="IT-Fwire" gap="0.980826"  />
+                <cyl name="dch-Gas_down" id="62" zmin="-50.000000" zmax="50.000000" radius="53.753548" thick="0.423844" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="23" zmin="-50.000000" zmax="50.000000" radius="53.965470" thick="0.847687" meas="Stereo23-"  />
+                <cyl name="dch-Gas_up" id="100" zmin="-50.000000" zmax="50.000000" radius="54.177391" thick="0.423844" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="138" zmin="-50.000000" zmax="50.000000" radius="53.955470" thick="0.003142" mat="IT-Fwire" gap="0.995281"  />
+                <cyl name="dch-sense-wires" id="176" zmin="-50.000000" zmax="50.000000" radius="53.975470" thick="0.001571" mat="IT-Swire" gap="0.997641"  />
+                <cyl name="dch-out-field-wires" id="214" zmin="-50.000000" zmax="50.000000" radius="54.387313" thick="0.003142" mat="IT-Fwire" gap="0.981125"  />
+                <cyl name="dch-Gas_down" id="63" zmin="-50.000000" zmax="50.000000" radius="54.604590" thick="0.430554" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="24" zmin="-50.000000" zmax="50.000000" radius="54.819867" thick="0.861108" meas="Stereo24+"  />
+                <cyl name="dch-Gas_up" id="101" zmin="-50.000000" zmax="50.000000" radius="55.035144" thick="0.430554" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="139" zmin="-50.000000" zmax="50.000000" radius="54.809867" thick="0.003142" mat="IT-Fwire" gap="0.995355"  />
+                <cyl name="dch-sense-wires" id="177" zmin="-50.000000" zmax="50.000000" radius="54.829867" thick="0.001571" mat="IT-Swire" gap="0.997677"  />
+                <cyl name="dch-out-field-wires" id="215" zmin="-50.000000" zmax="50.000000" radius="55.248421" thick="0.003142" mat="IT-Fwire" gap="0.981419"  />
+                <cyl name="dch-Gas_down" id="64" zmin="-50.000000" zmax="50.000000" radius="55.469107" thick="0.437371" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="25" zmin="-50.000000" zmax="50.000000" radius="55.687792" thick="0.874741" meas="Stereo25-"  />
+                <cyl name="dch-Gas_up" id="102" zmin="-50.000000" zmax="50.000000" radius="55.906477" thick="0.437371" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="140" zmin="-50.000000" zmax="50.000000" radius="55.677792" thick="0.003142" mat="IT-Fwire" gap="0.995427"  />
+                <cyl name="dch-sense-wires" id="178" zmin="-50.000000" zmax="50.000000" radius="55.697792" thick="0.001571" mat="IT-Swire" gap="0.997714"  />
+                <cyl name="dch-out-field-wires" id="216" zmin="-50.000000" zmax="50.000000" radius="56.123163" thick="0.003142" mat="IT-Fwire" gap="0.981709"  />
+                <cyl name="dch-Gas_down" id="65" zmin="-50.000000" zmax="50.000000" radius="56.347310" thick="0.444295" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="26" zmin="-50.000000" zmax="50.000000" radius="56.569458" thick="0.888591" meas="Stereo26+"  />
+                <cyl name="dch-Gas_up" id="103" zmin="-50.000000" zmax="50.000000" radius="56.791606" thick="0.444295" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="141" zmin="-50.000000" zmax="50.000000" radius="56.559458" thick="0.003142" mat="IT-Fwire" gap="0.995498"  />
+                <cyl name="dch-sense-wires" id="179" zmin="-50.000000" zmax="50.000000" radius="56.579458" thick="0.001571" mat="IT-Swire" gap="0.997749"  />
+                <cyl name="dch-out-field-wires" id="217" zmin="-50.000000" zmax="50.000000" radius="57.011753" thick="0.003142" mat="IT-Fwire" gap="0.981994"  />
+                <cyl name="dch-Gas_down" id="66" zmin="-50.000000" zmax="50.000000" radius="57.239418" thick="0.451330" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="27" zmin="-50.000000" zmax="50.000000" radius="57.465083" thick="0.902659" meas="Stereo27-"  />
+                <cyl name="dch-Gas_up" id="104" zmin="-50.000000" zmax="50.000000" radius="57.690748" thick="0.451330" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="142" zmin="-50.000000" zmax="50.000000" radius="57.455083" thick="0.003142" mat="IT-Fwire" gap="0.995569"  />
+                <cyl name="dch-sense-wires" id="180" zmin="-50.000000" zmax="50.000000" radius="57.475083" thick="0.001571" mat="IT-Swire" gap="0.997784"  />
+                <cyl name="dch-out-field-wires" id="218" zmin="-50.000000" zmax="50.000000" radius="57.914413" thick="0.003142" mat="IT-Fwire" gap="0.982275"  />
+                <cyl name="dch-Gas_down" id="67" zmin="-50.000000" zmax="50.000000" radius="58.145650" thick="0.458475" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="28" zmin="-50.000000" zmax="50.000000" radius="58.374888" thick="0.916950" meas="Stereo28+"  />
+                <cyl name="dch-Gas_up" id="105" zmin="-50.000000" zmax="50.000000" radius="58.604125" thick="0.458475" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="143" zmin="-50.000000" zmax="50.000000" radius="58.364888" thick="0.003142" mat="IT-Fwire" gap="0.995638"  />
+                <cyl name="dch-sense-wires" id="181" zmin="-50.000000" zmax="50.000000" radius="58.384888" thick="0.001571" mat="IT-Swire" gap="0.997819"  />
+                <cyl name="dch-out-field-wires" id="219" zmin="-50.000000" zmax="50.000000" radius="58.831363" thick="0.003142" mat="IT-Fwire" gap="0.982551"  />
+                <cyl name="dch-Gas_down" id="68" zmin="-50.000000" zmax="50.000000" radius="59.066230" thick="0.465734" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="29" zmin="-50.000000" zmax="50.000000" radius="59.299097" thick="0.931468" meas="Stereo29-"  />
+                <cyl name="dch-Gas_up" id="106" zmin="-50.000000" zmax="50.000000" radius="59.531964" thick="0.465734" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="144" zmin="-50.000000" zmax="50.000000" radius="59.289097" thick="0.003142" mat="IT-Fwire" gap="0.995706"  />
+                <cyl name="dch-sense-wires" id="182" zmin="-50.000000" zmax="50.000000" radius="59.309097" thick="0.001571" mat="IT-Swire" gap="0.997853"  />
+                <cyl name="dch-out-field-wires" id="220" zmin="-50.000000" zmax="50.000000" radius="59.762831" thick="0.003142" mat="IT-Fwire" gap="0.982823"  />
+                <cyl name="dch-Gas_down" id="69" zmin="-50.000000" zmax="50.000000" radius="60.001384" thick="0.473107" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="30" zmin="-50.000000" zmax="50.000000" radius="60.237938" thick="0.946215" meas="Stereo30+"  />
+                <cyl name="dch-Gas_up" id="107" zmin="-50.000000" zmax="50.000000" radius="60.474492" thick="0.473107" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="145" zmin="-50.000000" zmax="50.000000" radius="60.227938" thick="0.003142" mat="IT-Fwire" gap="0.995773"  />
+                <cyl name="dch-sense-wires" id="183" zmin="-50.000000" zmax="50.000000" radius="60.247938" thick="0.001571" mat="IT-Swire" gap="0.997886"  />
+                <cyl name="dch-out-field-wires" id="221" zmin="-50.000000" zmax="50.000000" radius="60.709045" thick="0.003142" mat="IT-Fwire" gap="0.983091"  />
+                <cyl name="dch-Gas_down" id="70" zmin="-50.000000" zmax="50.000000" radius="60.951344" thick="0.480598" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="31" zmin="-50.000000" zmax="50.000000" radius="61.191643" thick="0.961196" meas="Stereo31-"  />
+                <cyl name="dch-Gas_up" id="108" zmin="-50.000000" zmax="50.000000" radius="61.431942" thick="0.480598" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="146" zmin="-50.000000" zmax="50.000000" radius="61.181643" thick="0.003142" mat="IT-Fwire" gap="0.995839"  />
+                <cyl name="dch-sense-wires" id="184" zmin="-50.000000" zmax="50.000000" radius="61.201643" thick="0.001571" mat="IT-Swire" gap="0.997919"  />
+                <cyl name="dch-out-field-wires" id="222" zmin="-50.000000" zmax="50.000000" radius="61.670241" thick="0.003142" mat="IT-Fwire" gap="0.983354"  />
+                <cyl name="dch-Gas_down" id="71" zmin="-50.000000" zmax="50.000000" radius="61.916345" thick="0.488207" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="32" zmin="-50.000000" zmax="50.000000" radius="62.160448" thick="0.976414" meas="Stereo32+"  />
+                <cyl name="dch-Gas_up" id="109" zmin="-50.000000" zmax="50.000000" radius="62.404551" thick="0.488207" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="147" zmin="-50.000000" zmax="50.000000" radius="62.150448" thick="0.003142" mat="IT-Fwire" gap="0.995903"  />
+                <cyl name="dch-sense-wires" id="185" zmin="-50.000000" zmax="50.000000" radius="62.170448" thick="0.001571" mat="IT-Swire" gap="0.997952"  />
+                <cyl name="dch-out-field-wires" id="223" zmin="-50.000000" zmax="50.000000" radius="62.646655" thick="0.003142" mat="IT-Fwire" gap="0.983614"  />
+                <cyl name="dch-Gas_down" id="72" zmin="-50.000000" zmax="50.000000" radius="62.896623" thick="0.495936" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="33" zmin="-50.000000" zmax="50.000000" radius="63.144591" thick="0.991873" meas="Stereo33-"  />
+                <cyl name="dch-Gas_up" id="110" zmin="-50.000000" zmax="50.000000" radius="63.392559" thick="0.495936" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="148" zmin="-50.000000" zmax="50.000000" radius="63.134591" thick="0.003142" mat="IT-Fwire" gap="0.995967"  />
+                <cyl name="dch-sense-wires" id="186" zmin="-50.000000" zmax="50.000000" radius="63.154591" thick="0.001571" mat="IT-Swire" gap="0.997984"  />
+                <cyl name="dch-out-field-wires" id="224" zmin="-50.000000" zmax="50.000000" radius="63.638527" thick="0.003142" mat="IT-Fwire" gap="0.983869"  />
+                <cyl name="dch-Gas_down" id="73" zmin="-50.000000" zmax="50.000000" radius="63.892422" thick="0.503788" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="34" zmin="-50.000000" zmax="50.000000" radius="64.144316" thick="1.007576" meas="Stereo34+"  />
+                <cyl name="dch-Gas_up" id="111" zmin="-50.000000" zmax="50.000000" radius="64.396210" thick="0.503788" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="149" zmin="-50.000000" zmax="50.000000" radius="64.134316" thick="0.003142" mat="IT-Fwire" gap="0.996030"  />
+                <cyl name="dch-sense-wires" id="187" zmin="-50.000000" zmax="50.000000" radius="64.154316" thick="0.001571" mat="IT-Swire" gap="0.998015"  />
+                <cyl name="dch-out-field-wires" id="225" zmin="-50.000000" zmax="50.000000" radius="64.646104" thick="0.003142" mat="IT-Fwire" gap="0.984120"  />
+                <cyl name="dch-Gas_down" id="74" zmin="-50.000000" zmax="50.000000" radius="64.903986" thick="0.511764" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="35" zmin="-50.000000" zmax="50.000000" radius="65.159868" thick="1.023528" meas="Stereo35-"  />
+                <cyl name="dch-Gas_up" id="112" zmin="-50.000000" zmax="50.000000" radius="65.415750" thick="0.511764" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="150" zmin="-50.000000" zmax="50.000000" radius="65.149868" thick="0.003142" mat="IT-Fwire" gap="0.996092"  />
+                <cyl name="dch-sense-wires" id="188" zmin="-50.000000" zmax="50.000000" radius="65.169868" thick="0.001571" mat="IT-Swire" gap="0.998046"  />
+                <cyl name="dch-out-field-wires" id="226" zmin="-50.000000" zmax="50.000000" radius="65.669632" thick="0.003142" mat="IT-Fwire" gap="0.984368"  />
+                <cyl name="dch-Gas_down" id="75" zmin="-50.000000" zmax="50.000000" radius="65.931565" thick="0.519867" mat="IT-gas1"  />
+                <cyl name="dch-meas" id="36" zmin="-50.000000" zmax="50.000000" radius="66.191499" thick="1.039733" meas="Stereo36+"  />
+                <cyl name="dch-Gas_up" id="113" zmin="-50.000000" zmax="50.000000" radius="66.451432" thick="0.519867" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="151" zmin="-50.000000" zmax="50.000000" radius="66.181499" thick="0.003142" mat="IT-Fwire" gap="0.996153"  />
+                <cyl name="dch-sense-wires" id="189" zmin="-50.000000" zmax="50.000000" radius="66.201499" thick="0.001571" mat="IT-Swire" gap="0.998076"  />
+                <cyl name="dch-out-field-wires" id="227" zmin="-50.000000" zmax="50.000000" radius="66.709365" thick="0.003142" mat="IT-Fwire" gap="0.984611"  />
+                <cyl name="dch-Gas_down" id="76" zmin="-50.000000" zmax="50.000000" radius="66.975414" thick="0.528097" mat="IT-gas1"  />
+                <!-- <cyl name="dch-meas" id="37" zmin="-50.000000" zmax="50.000000" radius="67.239463" thick="1.056195" meas="Stereo37-"  /> -->
+                <cyl name="dch-Gas_up" id="114" zmin="-50.000000" zmax="50.000000" radius="67.503511" thick="0.528097" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="152" zmin="-50.000000" zmax="50.000000" radius="67.229463" thick="0.003142" mat="IT-Fwire" gap="0.996213"  />
+                <cyl name="dch-sense-wires" id="190" zmin="-50.000000" zmax="50.000000" radius="67.249463" thick="0.001571" mat="IT-Swire" gap="0.998106"  />
+                <cyl name="dch-out-field-wires" id="228" zmin="-50.000000" zmax="50.000000" radius="67.765560" thick="0.003142" mat="IT-Fwire" gap="0.984851"  />
+                <cyl name="dch-Gas_down" id="77" zmin="-50.000000" zmax="50.000000" radius="68.035789" thick="0.536458" mat="IT-gas1"  />
+                <!-- <cyl name="dch-meas" id="38" zmin="-50.000000" zmax="50.000000" radius="68.304018" thick="1.072917" meas="Stereo38+"  /> -->
+                <cyl name="dch-Gas_up" id="115" zmin="-50.000000" zmax="50.000000" radius="68.572247" thick="0.536458" mat="IT-gas1"  />
+                <cyl name="dch-center-field-wires" id="153" zmin="-50.000000" zmax="50.000000" radius="68.294018" thick="0.003142" mat="IT-Fwire" gap="0.996272"  />
+                <cyl name="dch-sense-wires" id="191" zmin="-50.000000" zmax="50.000000" radius="68.314018" thick="0.001571" mat="IT-Swire" gap="0.998136"  />
+                <cyl name="dch-out-field-wires" id="229" zmin="-50.000000" zmax="50.000000" radius="68.838477" thick="0.003142" mat="IT-Fwire" gap="0.985087"  />
+                <cyl name="dch-OuterCyl" id="231" zmin="-50.000000" zmax="50.000000" radius="69.876935" thick="1.000000" mat="CFiber"  />
+                <ring name="dch-Endplate" id="232" z="-50.044500" lowradius="37.870600" hiradius="70.376935" thick="0.044500" mat="IT-Aluminum"  />
+                <ring name="dch-Endplate" id="233" z="50.044500" lowradius="37.870600" hiradius="70.376935" thick="0.044500" mat="IT-Aluminum"  />
+
+            </volume>
+        </detector>
+<!-- now define the voxelization -->
+        <config>
+            <sect name="Tracker">
+                <param name="rbounds"    type="vector"        >
+                    -1
+                    37.870600 37.897200 38.797200 39.411449 40.035423 40.669276 41.313164 41.967247 42.631685 43.306643 43.992287 44.688786 45.396313 46.115041 46.845148 47.586815 48.340224 49.105561 49.883015 50.672778 51.475045 52.290014 53.117885 53.958864 54.813157 55.680975 56.562534 57.458049 58.367742 59.291838 60.230564 61.184153 62.152839 63.136862 64.136464 65.151892 66.183396 67.231232 68.295657 69.376935 70.4
+                </param>
+                <param name="nphivoxels"    type="vector"        >
+                    1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+                </param>
+                <param name="zbounds"    type="vector"        >
+                    -50.089000 -50.010000 50.010000 50.089000
+                </param>
+
+            </sect>
+        </config>
+
+    </included>
+</edml>

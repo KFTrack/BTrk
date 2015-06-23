@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+
+        <include file="mu2eFast/mu2e_Itracker_Measures_v4_0.xml"  />
+        <include file="mu2eFast/mu2e_Itracker_Geom_v4_0.xml"  />
+
+    </included>
+</edml>

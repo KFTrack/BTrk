@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <define>
+            <constant name="sensewirethickness" value="0.001571"></constant>
+            <constant name="fieldwirethickness" value="0.003142"></constant>
+            <constant name="kapthickness" value="0.0025"></constant>
+            <constant name="sensewiregap" value="0.998"></constant>
+            <constant name="fieldwiregap" value="0.98"></constant>
+            <constant name="wirezmin" value="-50"></constant>
+            <constant name="wirezmax" value="50"></constant>
+            <constant name="innerrad" value="38"></constant>
+            <constant name="outerrad" value="68"></constant>
+            
+
+            <variable name="islay" type="int"></variable>
+            <variable name="ilay" type="int"></variable>
+
+            <formula name="senserad" par0="islay" par1="ilay" formula="38.2+0.822*(2*[0]+[1])"></formula>
+            <formula name="fieldrad" par0="islay" par1="ilay" formula="38.4+0.822*(2*[0]+[1])"></formula>
+            <formula name="splusrad" par0="islay" formula="38.6+0.822*(2*[0])"></formula>
+            <formula name="sminusrad" par0="islay" formula="38.6+0.822*(2*[0]+1)"></formula>
+            <formula name="index" par0="islay" par1="ilay" formula="100+(2*[0]+[1])"></formula>
+
+        </define>
+
+        <measures>
+            <device name="Stereo+"
+                type="DriftChamber"
+                sensitiveTimeWindow="0.5e-6"
+                rms_par0="0.01"
+                rms_par1="0"
+                rms_par2="0"
+                rms_par3="0"
+                rms_par4="0"
+                rms_par5="0"
+                eff_par0="0.99"
+                eff_par1="1.00"	
+                cell_size="0.8"
+                trunc_frac="0.8"
+                dedx_par1="0.0013202"
+                dedx_par2="1"
+                dedx_par3="-0.5"
+                angle="0.15"  />
+            <device name="Stereo-"
+                type="DriftChamber"
+                sensitiveTimeWindow="0.5e-6"
+                rms_par0="0.01"
+                rms_par1="0"
+                rms_par2="0"
+                rms_par3="0"
+                rms_par4="0"
+                rms_par5="0"
+                eff_par0="0.99"
+                eff_par1="1.00"	
+                cell_size="0.8"
+                trunc_frac="0.8"
+                dedx_par1="0.0013202"
+                dedx_par2="1"
+                dedx_par3="-0.5"
+                angle="-0.15"  />
+                
+            </measures>
+
+                <detector name="Mu2e">
+                    <volume name="Tracker">
+                        <cyl name="CylWall" id="230" zmin="wirezmin" zmax="wirezmax" radius="innerrad" thick="0.04" mat="CFiber" />
+                        <ring name="Endplate" id="232" z="wirezmin" lowradius="innerrad" hiradius="outerrad" thick="0.061" mat="CFiber" />
+                        
+<!--                        <cyl name="CylWall" id="230" zmin="wirezmin" zmax="wirezmax" radius="innerrad" thick="0.0266" mat="IT-Graphite" />
+                        <ring name="Endplate" id="232," z="wirezmin" lowradius="innerrad" hiradius="outerrad" thick="0.0445" mat="IT-Aluminum" /> -->
+                        <loop variable="islay" count="18" startvalue="0" stepvalue="1">
+                            <loop variable="ilay" count="2" startvalue="0" stepvalue="1">
+                                <cyl name="SenseWire" id="index" zmin="wirezmin" zmax="wirezmax" radius="senserad" thick="0.001571" gap="0.998" mat="IT-Swire" />
+                                <cyl name="FieldWire" id="index" zmin="wirezmin" zmax="wirezmax" radius="fieldrad" thick="0.003141" gap="0.98" mat="IT-Fwire" />
+                            </loop>
+                            <cyl name="Stereo+" id="index" zmin="wirezmin" zmax="wirezmax" radius="splusrad" thick="0.822" mat="IT-gas1" meas="Stereo+"/>
+                            <cyl name="Stereo-" id="index" zmin="wirezmin" zmax="wirezmax" radius="sminusrad" thick="0.822" mat="IT-gas1" meas="Stereo-"/>
+                        </loop>
+                        <cyl name="CylWall" id="231" zmin="wirezmin" zmax="wirezmax" radius="outerrad" thick="0.04" mat="CFiber" />
+                        <ring name="Endplate" id="233" z="wirezmax" lowradius="innerrad" hiradius="outerrad" thick="0.061" mat="CFiber" />
+                        
+<!--                        <cyl name="CylWall" id="231" zmin="wirezmin" zmax="wirezmax" radius="outerrad" thick="0.0266" mat="IT-Graphite" />
+                        <ring name="Endplate" id="233" z="wirezmax" lowradius="innerrad" hiradius="outerrad" thick="0.0445" mat="IT-Aluminum" /> -->
+                    </volume>
+                </detector>
+                <!-- now define the voxelization -->
+                <config>
+                    <sect name="Tracker">
+                        <param name="rbounds"    type="vector"        >
+                            -1
+                            37 38.1 38.822 39.644 40.466 41.288 42.1142.932 43.754 44.576 45.398 46.22 47.042 47.864 48.686 49.508 50.33 51.152 51.974 52.796 53.618 54.44 55.262 56.084 56.906 57.728 58.55 59.372 60.194 61.016 61.838 62.66 63.482 64.304 65.126 65.948 66.77 67.592 67.9 69
+                        </param>
+                        <param name="nphivoxels"    type="vector"         >
+                            1
+                            1 1 1 1 1 1 1 1 1 1
+                            1 1 1 1 1 1 1 1 1 1
+                            1 1 1 1 1 1 1 1 1 1
+                            1 1 1 1 1 1 1 1
+                        </param>
+                        <param name="zbounds"   type="vector"         >
+                            -51 -49.9 49.4 51 
+                        </param>
+                    </sect>
+                </config>        
+            </included>
+        </edml>

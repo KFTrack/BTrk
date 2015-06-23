@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <define>
+            <constant name="strawthickness" value="0.00781510"></constant>
+            <constant name="gasthickness" value="0.392689"></constant>
+            <constant name="wirethickness" value="0.001963"></constant>
+            <constant name="usize" value="126.2261"></constant>
+            <constant name="vsize" value="30.0"></constant>
+            <constant name="centerrho" value="53.0"></constant>
+            <constant name="wiregap" value="0.995050"></constant>
+            <constant name="gasgap" value="0.009901"></constant>
+
+            <variable name="zvar" type="int"></variable>
+            <variable name="cvar" type="int"></variable>
+            <variable name="svar" type="int"></variable>
+
+            <formula name="planestraw" par0="zvar" par1="svar" formula="[0]*[0]+3*[0]+1.25-3.0+[1]*1"></formula>
+            <formula name="planegas" par0="zvar" par1="svar" formula="[0]*[0]+3*[0]+1.5-3.0+[1]*1"></formula>
+            <formula name="planewire" par0="zvar" par1="svar" formula="[0]*[0]+3*[0]+1.75-3.0+[1]*1"></formula>
+
+            <formula name="zring1" par0="zvar" formula="[0]*[0]+3*[0]-1"></formula>
+            <formula name="zring2" par0="zvar" formula="[0]*[0]+3*[0]+1"></formula>
+
+            <formula name="cenphi" par0="zvar" par1="cvar" par2="svar" formula="(50*[2]^3-225*[2]^2+235*[2]+30)*0.017453 +[1]*2.094395"></formula>
+
+            <formula name="aphi" par0="zvar" par1="cvar" par2="svar" formula="(50*[2]^3-225*[2]^2+235*[2]+300)*0.017453+[1]*2.0943955"></formula>
+
+            <formula name="index" par0="zvar" par1="cvar" par2="svar" formula="100*[0]+10*[1]+[2]"></formula>
+        </define>
+
+        <measures>
+            <device name="MWPC1"
+                type="DriftChamber"
+                sensitiveTimeWindow="0.5e-6"
+                rms_par0="0.01"
+                rms_par1="0"
+                rms_par2="0"
+                rms_par3="0"
+                rms_par4="0"
+                rms_par5="0"
+                eff_par0="0.99"
+                eff_par1="1.00"	
+                cell_size="1.8"
+                trunc_frac="0.8"
+                dedx_par1="0.0013202"
+                dedx_par2="1"
+                dedx_par3="-0.5"
+                angle="0"  />
+        </measures>
+        
+        <detector name="Mu2e">
+            <volume name="Tracker">
+                <loop variable="zvar" count="18" startvalue="0" stepvalue="1">
+                    <ring name="C1" id="zvar" z="zring1" lowradius="70" hiradius="80" thick="0.5" mat="svt-CFiber" />
+                    <ring name="C2" id="zvar" z="zring2" lowradius="70" hiradius="80" thick="0.5" mat="svt-CFiber" />
+                    <loop variable="svar" count="4" startvalue="0" stepvalue="1">
+                        <loop variable="cvar" count="3" startvalue="0" stepvalue="1">
+                            <rect name="straw" id="index" orientation="0" centerrho="centerrho" centerz="planestraw" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="strawthickness" mat="svt-Kapton" />
+                            <rect name="gas" id="index" orientation="0" centerrho="centerrho" centerz="planegas" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="gasthickness" mat="dch-He-Ibu" meas="MWPC1" gap="gasgap" />
+                            <rect name="wire" id="index" orientation="0" centerrho="centerrho" centerz="planewire" centerphi="cenphi" axisphi="aphi" usize="usize" vsize="vsize" thick="wirethickness" mat="dch-Wires" gap="wiregap" />
+                        </loop>
+                    </loop>
+                </loop>
+            </volume>
+        </detector>
+    </included>
+</edml>

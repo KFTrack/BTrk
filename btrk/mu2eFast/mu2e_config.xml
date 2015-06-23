@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<edml>
+    <included>
+        <config>
+            <sect name="TrackReconstructor">
+                <param name="bend_sites"     type="bool"  > false</param>
+                <param name="material_sites" type="bool"  > true</param>
+                <param name="fastfit"       type="bool"  > false</param>
+                <param name="minsimhit"       type="int"  > 5</param>
+                <param name="minsvthit"       type="int"  > 0</param>
+                <param name="mindchhit"       type="int"  > 0</param>
+                <param name="minpt"       type="float"    > 0.02</param>
+                <param name="hitchicut"     type="float" >   5. </param>
+                <param name="trkchicut"     type="float" >   5. </param>
+                <param name="weedhits"      type="bool"  > true </param>
+                <param name="domerge"       type="bool"  > true </param>
+                <param name="dopatrec"       type="bool"  > true </param>
+                <param name="maxweed"       type="int"   >   10  </param>
+                <param name="seedsmear"       type="float"   >   1.0  </param>
+                <param name="momupdatefactor"       type="float"   >   1.0  </param>
+                <param name="maxiterations" type="int" > 3</param>
+                <param name="smearfactor" type="float"> 1e4</param>
+                <param name="minxydof" type="int" > 0</param>
+                <param name="minzdof" type="int" > 0</param>
+                <param name="mindof" type="int" > 5</param>
+                <param name="maxgap" type="float" > 0.98 </param>
+                <param name="default_pdgid" type="int" > 11 </param>
+                <param name="scatterfraction" type="float" > 0.9999 </param>
+            </sect>
+
+            <sect name="DetectorVolume">
+                <param name="rmax"    type="float"        >  150</param>
+                <param name="zmin"   type="float"         > -1000</param>
+                <param name="zmax"    type="float"         >  1000</param>
+            </sect>        
+            <sect name="General">
+                <param name="ConfigKey" type="int" > 1 </param>
+                <param name="ConfigName" type="string"> Test </param>
+            </sect>
+            <sect name="PacField">
+                <!-- gradient field configuration -->
+                <!-- field center is a -438.5cm -->
+                <param name="B_nom"    type="float"         > 1.0</param>
+                <param name="gradient"    type="float"         > -0.002597</param>
+                <param name="zg1"    type="float"         > -638.5</param>
+                <param name="zg2"    type="float"         > -238.5</param>
+                <param name="DeltaB"   type="vector_double" > 0.0, 0.0, 0.0</param>
+                <param name="B_radius" type="float"         > 153.0</param>
+                <param name="B_zlow"   type="float"         > -1000</param>
+                <param name="B_zhi"    type="float"         > 1000 </param>
+            </sect>
+            
+            <sect name="Materials">
+                <param name="materials" type="string" > mu2eFast/MaterialsList.data</param>
+            </sect>
+            
+            <sect name="PacBrems">
+                <param name="min_egamma" type="float" > 0.002 </param> <!-- Minimum brems photon energy (in GeV) to explicitly simulate-->
+            </sect>
+            <sect name="PacShower">
+                <param name="nshower" type="int" > 20 </param> <!-- this is the maximum number of discrete (brems, etc.) EM interactions in a material before the interaction is consider to have initiated a shower -->
+            </sect>            
+        </config>
+    </included>
+</edml>

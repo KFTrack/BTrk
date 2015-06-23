@@ -1,0 +1,30 @@
+// struct to compare trajectories
+
+#ifndef TrajDiff_HH
+#define TrajDiff_HH
+
+#include <Rtypes.h>
+#define STRINGSIZE 200
+
+struct TrajDiff {
+  Int_t shi,shj;
+  Float_t startglen, endglen, ddiff, truedp, truedpp, recodp, recodpp, deltadp;
+  Float_t startrho,startz,endrho,endz;
+  
+  virtual ~TrajDiff() {}
+  TrajDiff() : shi(-1),shj(-1),startglen(-1.0),endglen(-1.0),ddiff(-1.0),truedp(-1.0),truedpp(-1.0),recodp(-1.0),recodpp(-1.0),deltadp(-1.0),
+  startrho(-1),startz(-1),endrho(-1),endz(-1)
+  {}
+
+  TrajDiff(const TrajDiff& other) : shi(other.shi),shj(other.shj),startglen(other.startglen),endglen(other.endglen),ddiff(other.ddiff),
+  truedp(other.truedp),truedpp(other.truedpp),recodp(other.recodp),recodpp(other.recodpp),deltadp(other.deltadp),
+  startrho(other.startrho),startz(other.startz),endrho(other.endrho),endz(other.endz)
+  {}
+  
+  static const char* rootnames() {
+    return "shi/I:shj/I:sheffect/startglen/F:endglen/F:ddiff/F:truedp/F:truedpp/F:recodp/F:recodpp/F:deltadp/F:startrho/F:startz/F:endrho/F:endz/F";}
+    
+    ClassDef(TrajDiff,1)
+};
+
+#endif
