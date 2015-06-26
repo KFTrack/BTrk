@@ -93,8 +93,8 @@ public:
   virtual int applyLocal(const std::vector<DetAlignElem>&);
   virtual int removeLocal(const std::vector<DetAlignElem>&);
 // the following are deprecated
-  virtual int applyLocal(const DetAlignElem*,int nelem);
-  virtual int removeLocal(const DetAlignElem*,int nelem);
+  virtual int applyLocal(const DetAlignElem*,unsigned nelem);
+  virtual int removeLocal(const DetAlignElem*,unsigned nelem);
 //
 //  Recursively select elements according to input functions, returning
 //  a list of selected element pointers.  The user must supply the

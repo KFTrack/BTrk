@@ -136,7 +136,6 @@ DetMaterial::scatterAngleRMS(double mom, double pathlen,double mass) const {
 // protect against underflow
     double sigdl = sqrt(std::max(0.0,sig2));
 // check
-    double sigh = highlandSigma(mom,pathlen,mass);
     return sigdl;
   } else
     return 1.0; // 'infinite' scattering

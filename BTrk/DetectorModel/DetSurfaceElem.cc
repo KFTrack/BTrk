@@ -23,9 +23,8 @@ using namespace CLHEP;
 static const double _epsilon = 1.0e-3;
 
 DetSurfaceElem::DetSurfaceElem(DetSurfaceType* type,const char* oname,int id,
-			       const DetSurface& surf) :
-  _osurf(surf.copyOf()),DetElem(type,oname,id)
-{
+			       const DetSurface& surf) : DetElem(type,oname,id),
+  _osurf(surf.copyOf()){
   _etrans = _osurf->transform();
 
 }
@@ -99,7 +98,7 @@ DetSurfaceElem::physicalOutline(std::vector<HepPoint>& pvec) const {
 //
   const std::vector< TypeCoord* >* outline = _dtype->outline();
 //  Loop over the outline
-  for(int icorn=0;icorn<outline->size();icorn++){
+  for(unsigned icorn=0;icorn<outline->size();icorn++){
 //  Turn them into space points, and add them to the vector
     pvec.push_back(_osurf->spacePoint((*outline)[icorn]->array()));
   }
@@ -114,7 +113,7 @@ DetSurfaceElem::material(const DetIntersection& dinter) const {
 //
   HepPoint spacepoint = dinter.trajet->position(dinter.pathlen);
   SurfacePoint surfpoint;
-  int iflag = _osurf->surfacePoint(spacepoint,surfpoint,0.2);
+  _osurf->surfacePoint(spacepoint,surfpoint,0.2);
 //
 //  From the position on the wafer, ask the type how what material was traversed
 //

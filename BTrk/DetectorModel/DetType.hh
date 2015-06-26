@@ -74,8 +74,8 @@ protected:
   virtual std::vector< TypeCoord* >* myOutline();
   virtual std::vector< TypeCoord* >* myPointStore();
 private:
-  int _itype; // unique identifier for each type (defined during creation)
   std::string _tname; // helpful name
+  int _itype; // unique identifier for each type (defined during creation)
   // This contains the information to draw elements, with null pointers
   // to define end of line segments. This one is for drawings.
   std::vector< TypeCoord* >* _outline;

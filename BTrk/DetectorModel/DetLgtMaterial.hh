@@ -28,7 +28,7 @@ class DetLgtMaterial : public DetMaterial {
     // new style
     DetLgtMaterial(const char* detName, const DetMtrProp* detMtrProp);
 
-    ~DetLgtMaterial();
+    virtual ~DetLgtMaterial();
 
     virtual double energyLoss(double mom,double pathlen,double mass) const;
 

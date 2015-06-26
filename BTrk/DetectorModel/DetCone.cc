@@ -205,7 +205,7 @@ double DetCone::normTo( const HepPoint& thePoint, Hep3Vector& theNormal) const {
   HepPoint localpoint(x,y,z);
   SurfacePoint uv;
   int ierr = surfacePoint( gotoGlobal(localpoint), uv );
-  assert( ierr == 0);
+  if(ierr !=0)assert(false);
   theNormal = normal(uv);
   return difference;
 }

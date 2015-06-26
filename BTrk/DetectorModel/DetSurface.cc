@@ -126,8 +126,8 @@ DetSurface::normalTo( const HepPoint& point,Hep3Vector& norm,
 		      SurfacePoint& uv) const {
   double dist = normTo(point,norm);
   HepPoint onsurf = point+dist*norm;
-  int isonsurf = surfacePoint(onsurf,uv);
-  assert(isonsurf == 0);
+  int ierr = surfacePoint(onsurf,uv);
+  if(ierr != 0)assert(false);
   return dist;
 }
 
@@ -139,8 +139,8 @@ DetSurface::distanceTo( const HepPoint& point,const Hep3Vector& dir,
   if(retval == intersect){
     Hep3Vector direction = dir.unit();
     HepPoint onsurf = point+dist*direction;
-    int isonsurf = surfacePoint(onsurf,uv);
-    assert(isonsurf == 0);
+    int ierr = surfacePoint(onsurf,uv);
+    if(ierr != 0)assert(false);
   }
   return retval;
 }

@@ -396,7 +396,7 @@ MtrPropObj::AddElement(ElmPropObj* element, double fraction)
 // filled.
   if (_numberOfComponents == _maxNbComponents) {
 // check sum of weights -- OK?
-    int i;
+    size_t i;
     double wtSum(0.0);
     for (i=0;i<_numberOfElements;i++) { wtSum +=  (*_massFractionVector)[i]; }
     if (fabs(1.-wtSum) > 0.001) {
@@ -433,7 +433,7 @@ MtrPropObj::AddMaterial(MtrPropObj* material, double fraction)
 
 // filling ...
   if (_numberOfComponents < _maxNbComponents) {
-    for (int elm=0; elm < material->getNumberOfElements(); elm++)
+    for (size_t elm=0; elm < material->getNumberOfElements(); elm++)
       { 
 	ElmPropObj* element = (*(material->getElementVector()))[elm];
 	size_t el = 0;
@@ -456,7 +456,7 @@ MtrPropObj::AddMaterial(MtrPropObj* material, double fraction)
 // filled.
   if (_numberOfComponents == _maxNbComponents) {
 // check sum of weights -- OK?
-    int i;
+    size_t i;
     double wtSum(0.0);
     for (i=0;i<_numberOfElements;i++) { wtSum +=  (*_massFractionVector)[i]; }
     if (fabs(1.-wtSum) > 0.001) {
@@ -485,7 +485,7 @@ MtrPropObj::ComputeDerivedQuantities()
   _totNbOfAtomsPerVolume = 0.;
   _vecNbOfAtomsPerVolume = new std::vector< double >( _numberOfElements );
   _totNbOfElectPerVolume = 0.;
-  for (int i=0;i<_numberOfElements;i++) 
+  for (size_t i=0;i<_numberOfElements;i++) 
     {
     Zi = (*_theElementVector)[i]->getZ();
     Ai = (*_theElementVector)[i]->getA();
@@ -534,7 +534,7 @@ MtrPropObj::ComputeDerivedQuantities()
 void MtrPropObj::ComputeRadiationLength()
 {
   double radinv = 0.0 ;
-  for (int i=0;i<_numberOfElements;i++) {
+  for (size_t i=0;i<_numberOfElements;i++) {
     radinv += (*_vecNbOfAtomsPerVolume)[i]*((*_theElementVector)[i]->getRadTsai()); 
    }
   _radLength = (radinv <= 0.0 ? DBL_MAX : 1./radinv);
@@ -548,7 +548,7 @@ void MtrPropObj::ComputeInteractionLength()
 {
   double A;
   double sigmaSum = 0.0;
-  for (int i=0;i<_numberOfElements;i++) {
+  for (size_t i=0;i<_numberOfElements;i++) {
     A = (*_theElementVector)[i]->getA();
     sigmaSum += (*_vecNbOfAtomsPerVolume)[i] * (0.0245264 * pow(A, 0.7098081));
    }
@@ -583,7 +583,7 @@ MtrPropObj::ComputeIonisationParam()
   _taul = (*_theElementVector)[0]->getTaul();
   double logMeanExciEnergy = 0.;
 
-  for (int i=0; i<_numberOfElements; i++)
+  for (size_t i=0; i<_numberOfElements; i++)
     {
       logMeanExciEnergy += (*_vecNbOfAtomsPerVolume)[i]
        	*((*_theElementVector)[i]->getZ())
@@ -595,7 +595,7 @@ MtrPropObj::ComputeIonisationParam()
   for (int j=0; j<=2; j++)
     {
       (*_shellCorrectionVector)[j] = 0.;
-      for (int k=0; k<_numberOfElements; k++)
+      for (size_t k=0; k<_numberOfElements; k++)
 	{
 	  (*_shellCorrectionVector)[j] += (*_vecNbOfAtomsPerVolume)[k] 
 	    *((*_theElementVector)[k]->getShellCorrectionVector()[j]);
@@ -701,7 +701,7 @@ MtrPropObj::getZ() const
     //  << "WARNING in getZ. The material: " << *_matName << " is a mixture." 
     //  <<" the Atomic number is not well defined." << endmsg; 
     double Zsum = 0.0;
-    for (int i = 0; i<_numberOfElements; i++)
+    for (size_t i = 0; i<_numberOfElements; i++)
       Zsum += (*_vecNbOfAtomsPerVolume)[i]/_totNbOfAtomsPerVolume * 
     	((*_theElementVector)[i]->getZ());
     return Zsum;
@@ -718,7 +718,7 @@ MtrPropObj::getA() const
     //  << "WARNING in getA. The material: " << *_matName << " is a mixture." 
     //  <<" the Atomic mass is not well defined." << endmsg; 
     double Asum = 0.0;
-    for (int i = 0; i<_numberOfElements; i++)
+    for (size_t i = 0; i<_numberOfElements; i++)
       Asum += (*_vecNbOfAtomsPerVolume)[i]/_totNbOfAtomsPerVolume * 
     	((*_theElementVector)[i]->getA());
     return Asum;

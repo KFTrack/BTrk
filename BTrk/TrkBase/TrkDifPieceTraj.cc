@@ -325,7 +325,7 @@ TrkDifPieceTraj::append(double glen,const TrkDifPieceTraj& other,double& gap)
   double piecegap;
 // loop over segments in the other trajectory
   for(int itraj = other.trajIndex(otherlen,loclen);
-      itraj < other._localtraj.size();itraj++){
+      itraj < static_cast<int>(other._localtraj.size());itraj++){
 // append the piece from the other trajectory
     retval = append(mylen,*(other._localtraj[itraj]),piecegap);
     if(retval.failure())
@@ -406,7 +406,7 @@ TrkDifPieceTraj::trajIndex(const double& flightdist,double& localflight) const
   if (_localtraj.size() > 1) {
     if(validFlightDistance(flightdist)){
 //   explicitly check cached value from last call
-      if ( _lastIndex >= 0 && _lastIndex <  _localtraj.size()-1 &&
+      if ( _lastIndex >= 0 && _lastIndex <  static_cast<int>(_localtraj.size())-1 &&
            flightdist > _globalrange[_lastIndex] && flightdist <
            _globalrange[_lastIndex+1] ) {
         index = _lastIndex;
@@ -415,7 +415,7 @@ TrkDifPieceTraj::trajIndex(const double& flightdist,double& localflight) const
 //  simple binary search algorithm
 //
 	index = std::upper_bound(_globalrange.begin(), _globalrange.end(), flightdist) - _globalrange.begin() -1;
-	if(index>=_localtraj.size()) index=_localtraj.size()-1;
+	if(index>=static_cast<int>(_localtraj.size())) index=static_cast<int>(_localtraj.size())-1;
       }
     } else {
 //
@@ -520,7 +520,7 @@ TrkDifPieceTraj::distTo1stError(double flightdist,double tol,int dir) const
 //  Take the minimum of this distance and the distance to the next trajectory
   double dist = localdist;
   if (dir > 0){
-    if(index < _localtraj.size()-1)
+    if(index < static_cast<int>(_localtraj.size())-1)
       dist = std::min(localdist,_globalrange[index+1]-flightdist) + _STEPEPSILON;
   } else {
     if(index > 0)
@@ -547,7 +547,7 @@ TrkDifPieceTraj::distTo2ndError(double flightdist,double tol,int dir) const
 //  Take the minimum of this distance and the distance to the next trajectory
   double dist = localdist;
   if (dir > 0){
-    if(index < _localtraj.size()-1)
+    if(index < static_cast<int>(_localtraj.size())-1)
       dist = std::min(localdist,_globalrange[index+1]-flightdist) + _STEPEPSILON;
   } else {
     if(index > 0)
@@ -574,7 +574,7 @@ TrkDifPieceTraj::resize(double len,trkDirection tdir)
 {
   int nremoved(0);
   TrkSimpTraj* trajpiece;
-  double oldend,locdist;
+  double locdist;
   double lrange[2];
   int ipiece = trajIndex(len,locdist);
   switch(tdir) {
@@ -588,7 +588,7 @@ TrkDifPieceTraj::resize(double len,trkDirection tdir)
       nremoved++;
       trajpiece = _localtraj.front(); _localtraj.pop_front();
       delete trajpiece;
-      oldend = _globalrange.front(); _globalrange.pop_front();
+      _globalrange.pop_front();
       ipiece = trajIndex(len,locdist);
     }
 //  reset the global range
@@ -600,11 +600,11 @@ TrkDifPieceTraj::resize(double len,trkDirection tdir)
     _localtraj[ipiece]->setFlightRange(lrange);
     break;
   case trkOut:
-    while(ipiece < _localtraj.size() - 1){
+    while(ipiece < static_cast<int>(_localtraj.size()) - 1){
       nremoved++;
       trajpiece = _localtraj.back(); _localtraj.pop_back();
       delete trajpiece;
-      oldend = _globalrange.back(); _globalrange.pop_back();
+      _globalrange.pop_back();
       ipiece = trajIndex(len,locdist);
     }
     flightrange[1] = len;
@@ -632,7 +632,7 @@ TrkDifPieceTraj::printAll(ostream& os) const
   os << "TrkDifPieceTraj has " << _localtraj.size() << " pieces "
     << ", total flight range from "
      << lowRange() << " to " << hiRange() << endl;
-  for(int ipiece=0;ipiece<_localtraj.size();ipiece++){
+  for(int ipiece=0;ipiece<static_cast<int>(_localtraj.size());ipiece++){
     TrkSimpTraj* tpiece = _localtraj[ipiece];
     double plow = tpiece->lowRange();
     double phi = tpiece->hiRange();
@@ -657,7 +657,6 @@ TrkDifPieceTraj::printAll(ostream& os) const
 void
 TrkDifPieceTraj::setFlightRange(double newrange[2])
 {
-  double oldend;
   double lrange[2];
   TrkSimpTraj* trajpiece;
 //
@@ -680,13 +679,13 @@ TrkDifPieceTraj::setFlightRange(double newrange[2])
       while(_localtraj.size()>1){
         trajpiece = _localtraj.front(); _localtraj.pop_front();
         delete trajpiece;
-        oldend = _globalrange.front(); _globalrange.pop_front();
+        _globalrange.pop_front();
       }
     } else {
       while(_localtraj.size()>1){
         trajpiece = _localtraj.back(); _localtraj.pop_back();
         delete trajpiece;
-        oldend = _globalrange.back(); _globalrange.pop_back();
+        _globalrange.pop_back();
       }
     }
     lrange[0] = localDist(0,newrange[0]);
@@ -738,7 +737,7 @@ TrkDifPieceTraj::append(TrkSimpTraj* newtraj,double& gap)
     double local;
     int index = trajIndex(endpoca.flt1(),local);
 // Make sure we're at or beyond the end of the existing trajectory
-    if( index == _localtraj.size()-1){
+    if( index == static_cast<int>(_localtraj.size())-1){
       if(endpoca.flt1() - hiRange() > _SMALLGAP ){
 // Fill the gap between the traj pieces with a 0-length copy of the new traj; this
 // keeps the bookkeeping straight, provides 'correct' parameters everywhere, 
@@ -848,7 +847,7 @@ TrkDifPieceTraj::locallyValid(double glen,double tol) const
   double localflight(0.0);
   const TrkSimpTraj* loctraj = localTrajectory(glen,localflight);
   return loctraj != 0 &&
-    localflight-tol <= loctraj->hiRange()  &
+    localflight-tol <= loctraj->hiRange()  &&
     localflight+tol >= loctraj->lowRange();
 }
 

@@ -365,14 +365,15 @@ DetSurfaceSet::withinRange(const SurfacePoint& spoint) const {
   double coordvalue;
   for(int icoord=0;icoord<2;icoord++){
     coordvalue = spoint[icoord];
-    if(_wrapped[icoord])
-//
-//  Try to push the point into range
-//
+    if(_wrapped[icoord]){
+      //
+      //  Try to push the point into range
+      //
       if(coordvalue < _limits[0][icoord])
 	coordvalue += Constants::twoPi;
       else if(coordvalue > _limits[1][icoord])
 	coordvalue -= Constants::twoPi;
+    }
     within &= coordvalue >= _limits[0][icoord] &&
       coordvalue <= _limits[1][icoord];
   }
@@ -432,10 +433,9 @@ DetSurfaceSet::elemSurfaceOutline(std::vector<HepPoint>& hpvec,
 //  Convert the first point to surface coordinates; this initializes
 //  the 'reference point' for getting the coordinate wrapping right.
 //
-  double sdist;
   SurfacePoint refsurf,surf;
   Hep3Vector norm;
-  sdist = project(hpvec[0],norm,refsurf);
+  project(hpvec[0],norm,refsurf);
 //
 //  Loop over the points in pairs (edge segments)
 //
@@ -453,7 +453,7 @@ DetSurfaceSet::elemSurfaceOutline(std::vector<HepPoint>& hpvec,
 //
 //  Get the surface coordinate of this point
 //
-    sdist = project(hpvec[ipoint],norm,surf);
+    project(hpvec[ipoint],norm,surf);
 //
 //  Get the wrapping right.  This assumes that adjacent points
 //  will always be on the same side of 2pi.
@@ -623,8 +623,8 @@ DetSurfaceSet::hashAddElem(DetElem* elem) const {
 //  Center the extrema in the limits for wrapped coordinates
 //
   int icoord;
-  for(icoord=0;icoord<2;icoord++)
-    if(_wrapped[icoord])
+  for(icoord=0;icoord<2;icoord++){
+    if(_wrapped[icoord]){
       if(midsurf[icoord]<_limits[0][icoord]){
 	minsurf[icoord] += Constants::twoPi;
 	maxsurf[icoord] += Constants::twoPi;
@@ -634,6 +634,8 @@ DetSurfaceSet::hashAddElem(DetElem* elem) const {
 	maxsurf[icoord] -= Constants::twoPi;
 	midsurf[icoord] -= Constants::twoPi;
       }
+    }
+  }
 //
 //  Convert the extrema to hash table limits.
 //

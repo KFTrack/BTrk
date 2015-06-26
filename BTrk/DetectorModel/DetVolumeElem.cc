@@ -209,7 +209,6 @@ DetVolumeElem::sideIntersect
     double distance,
     double* range ) const
 {
-  int jflag = 0;
   const double epsilon = 1.0e-05;
   DetVolumeType* volType = (DetVolumeType*) _dtype;
   SurfacePoint surfcoord;

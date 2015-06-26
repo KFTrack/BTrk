@@ -146,7 +146,7 @@ private:
   std::string* _state;
   double _temp;
   double _pressure;
-  int _maxNbComponents;
+  size_t _maxNbComponents;
   size_t _numberOfComponents;
   size_t _numberOfElements;
 

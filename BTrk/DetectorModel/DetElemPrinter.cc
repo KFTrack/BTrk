@@ -83,7 +83,6 @@ DetElemPrinter::print( ostream& o ) const
 	      std::vector< HepPoint > vertexList;
 	      bool move=false;
 
-	      Action firstPoint = iter.next( aVertex );
 	      vertexList.push_back( aVertex );
 
 	      Action whatNext = iter.next( aVertex );

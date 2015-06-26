@@ -149,7 +149,6 @@ BField::curl(const HepPoint &point,double step) const
   Hep3Vector dx(step,0,0);
   Hep3Vector dy(0,step,0);
   Hep3Vector dz(0,0,step);
-  double f=1.0/(2.0*step);
   Hep3Vector dBdX=derivative(point,dx);
   Hep3Vector dBdY=derivative(point,dy);
   Hep3Vector dBdZ=derivative(point,dz);
@@ -206,7 +205,7 @@ BField::pointOk(const HepPoint& aPoint)const
 Hep3Vector
 BField::bFieldVect(const HepPoint& point) const 
 {
-  int YOU_SHOULD_NEVER_CALL_THIS_FUNCTION_DIRECTLY(-1);
-  assert (YOU_SHOULD_NEVER_CALL_THIS_FUNCTION_DIRECTLY == 0);
+  // never call this function directly (???)
+  assert(false);
   return Hep3Vector(0.0,0.0,0.0);
 }

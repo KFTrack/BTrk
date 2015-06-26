@@ -37,7 +37,7 @@ KalConstraint::KalConstraint(const TrkDifPieceTraj* straj,
   _traj(0)
 {
 // Initialize the array: this simply avoids uninitialized memory read
-  for(unsigned ibool=0;ibool<params.parameter().num_row();ibool++)
+  for(int ibool=0;ibool<params.parameter().num_row();ibool++)
     _constrain[ibool]=false;
 // apply the masking.  This creates the weight.
   setConstraint(constrain);
@@ -57,7 +57,7 @@ KalConstraint::KalConstraint(const TrkDifPieceTraj* straj,
   _traj(0)
 {
 // initialize the array
-  for(unsigned ibool=0;ibool<params.parameter().num_row();ibool++)
+  for(int ibool=0;ibool<params.parameter().num_row();ibool++)
     _constrain[ibool]=false;
 // apply the masking.  This creates the weight.
   setConstraint(constrain);
@@ -73,7 +73,7 @@ KalConstraint::KalConstraint(const KalConstraint& other) :
   _traj(other._traj == 0 ? 0 : other._traj->clone())
 {
 // copy the constraint vector
-  for(unsigned iparam=0;iparam<_cparams.parameterVector().num_row();iparam++)
+  for(int iparam=0;iparam<_cparams.parameterVector().num_row();iparam++)
     _constrain[iparam] = other._constrain[iparam];
 }
 // clone function

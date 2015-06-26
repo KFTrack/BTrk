@@ -56,7 +56,6 @@ const int TrkDetElemId::nullElemID(-1);
 
 int TrkDetElemId::calcValue( const int& id, 
 			     TrkDetElemId::systemIndex sysInd ){
-  int retVal(id);
   switch (sysInd) {
   default:
     break;

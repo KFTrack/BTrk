@@ -611,18 +611,18 @@ DetSCone::segmentMinMax(const HepPoint& p1,const HepPoint& p2,
     // the same point, have to check, because we use unit on p1-p2
     const Hep3Vector r = gotoLocal(p1) - HepPoint(0.0,0.0,_z0); 
 
-    DetSCone::coneRegion where = theRegion( r, mindist );
+    theRegion( r, mindist );
     maxdist = mindist;
   } else {
     const Hep3Vector r1 = gotoLocal(p1) - HepPoint(0.0,0.0,_z0); 
     const Hep3Vector r2 = gotoLocal(p2) - HepPoint(0.0,0.0,_z0);
     const Hep3Vector vu = (r2-r1).unit();
 
-    DetSCone::coneRegion where1 = theRegion( r1, mindist );
+    theRegion( r1, mindist );
     maxdist = mindist;
 
     double thedist;
-    DetSCone::coneRegion where2 = theRegion( r2, thedist );
+    theRegion( r2, thedist );
     maxdist = sconeMax(maxdist, thedist);
     mindist = sconeMin(mindist, thedist);
 

@@ -513,7 +513,7 @@ KalRep::hitChi(const TrkHitOnTrk* hot,
       const KalSite* refsite(hitsite);
       KalParams smoothed;
 // merge the sites on either side of the hot (if necessary)
-      if(index > _hitrange[0] && index < _hitrange[1] ){
+      if(static_cast<int>(index) > _hitrange[0] && static_cast<int>(index) < _hitrange[1] ){
 	const KalSite* prevsite(0);
 	const KalSite* nextsite(0);
 	if(exclude){
@@ -527,12 +527,12 @@ KalRep::hitChi(const TrkHitOnTrk* hot,
 // merge the inner and outer parameters
 	if(prevsite != 0 && nextsite != 0)
 	  prevsite->mergeParams(nextsite,smoothed);
-      } else if(index <= _hitrange[0] ) {
+      } else if(static_cast<int>(index) <= _hitrange[0] ) {
 	if(exclude)
 	  refsite = nextActive(index,trkOut);
 	if(refsite != 0)
 	  smoothed = refsite->filterParameters(trkIn);
-      } else if(index >= _hitrange[1] ) {
+      } else if(static_cast<int>(index) >= _hitrange[1] ) {
 	if(exclude)
 	  refsite = nextActive(index,trkIn);
 	if(refsite != 0)
@@ -781,7 +781,7 @@ KalRep::buildTraj(){
   _maxdist = 0.0;
   _maxfltdif = 0.0;
   double oldlen = firstsite->globalLength();
-  unsigned isite = _hitrange[0];
+  int isite = _hitrange[0];
   while(true){
 // find the first active non-hit site that's far enough away from the last one
     do
@@ -1288,7 +1288,7 @@ KalRep::extendSites(int startsite,trkDirection tdir) {
     sitestep = -1;
     nsites = startsite-endsite;
     break;
-  case trkOut:
+  case trkOut: default:
     endsite = _sites.size()-1;
     sitestep = 1;
     nsites = endsite-startsite;
@@ -1367,7 +1367,7 @@ KalRep::buildHitSites() {
 // see if any hots are active
 // sometimes the last hit will move outside the fit range.  This is not really an
 // error, so just adjust the fit range appropriately
-  if( _hitrange[0]<_sites.size() && _hitrange[1]>=0){
+  if( _hitrange[0]<static_cast<int>(_sites.size()) && _hitrange[1]>=0){
     if(_extendable[trkIn] && _fitrange[0] > _sites[_hitrange[0]]->globalLength())
       _fitrange[0] = _sites[_hitrange[0]]->globalLength() - _kalcon.fltEpsilon();
     if(_extendable[trkOut] && _fitrange[1]< _sites[_hitrange[1]]->globalLength())
@@ -1714,7 +1714,7 @@ KalRep::findBoundingSites(double fltlen,
 // preset to failure
   insite = outsite = 0;
   int losite = findNearestSite(fltlen);
-  if(losite >= 0 && losite < _sites.size()-1){
+  if(losite >= 0 && losite < static_cast<int>(_sites.size()-1)){
     insite = _sites[losite];
     outsite = _sites[losite+1];
   }
@@ -1933,7 +1933,7 @@ KalRep::fixupSites() {
   findHitSites();
 // sometimes the last hit will move outside the fit range.  This is not really an
 // error, so just adjust the fit range appropriately
-  if( _hitrange[0]<_sites.size() && _hitrange[1]>0){
+  if( _hitrange[0]<static_cast<int>(_sites.size()) && _hitrange[1]>0){
     if(_extendable[trkIn] && _fitrange[0] > _sites[_hitrange[0]]->globalLength())
       _fitrange[0] = _sites[_hitrange[0]]->globalLength()+_kalcon.fltEpsilon();
     if(_extendable[trkOut] && _fitrange[1]< _sites[_hitrange[1]]->globalLength())
@@ -2357,7 +2357,7 @@ KalRep::updateEndSites(double smear,bool diagonly) {
   double firstlen = _fitrange[0];
   double lastlen = _fitrange[1];
 // use the hits if possible
-  if(_hitrange[0] < _sites.size() && _hitrange[1]> 0){
+  if(_hitrange[0] < static_cast<int>(_sites.size()) && _hitrange[1]> 0){
     firstlen = _sites[_hitrange[0]]->globalLength();
     lastlen = _sites[_hitrange[1]]->globalLength();
   }
@@ -2376,7 +2376,7 @@ KalRep::nextActive(unsigned index,trkDirection tdir) const {
   KalSite* retval(0);
   int step = tdir == trkOut ? 1 : -1;
   int jndex = index+step;
-  while(jndex >= 0 && jndex < _sites.size()){
+  while(jndex >= 0 && jndex < static_cast<int>(_sites.size())){
     if( _sites[jndex]->isActive()){
       retval = _sites[jndex];
       break;

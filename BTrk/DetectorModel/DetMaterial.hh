@@ -35,7 +35,7 @@ class DetMaterial{
     // new style
     DetMaterial(const char* detName, const DetMtrProp* detMtrProp);
 
-    ~DetMaterial();
+    virtual ~DetMaterial();
     //
     //  Access
     //

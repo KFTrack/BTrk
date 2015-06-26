@@ -96,7 +96,7 @@ TrkCentralVolume::extendThrough( const Trajectory* traj,
   double cosDip( vect.perp()/vect.mag() );
   Hep3Vector delDir( traj->delDirect( f ) );
   double curv( delDir.mag() );
-  double maxDeltaF = curv > 0 ? maxDeltaF = 2*Constants::pi*cosDip/curv: 500;
+  double maxDeltaF = curv > 0 ? 2*Constants::pi*cosDip/curv: 500;
 //
 // set the range for intersections
 //

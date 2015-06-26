@@ -144,11 +144,12 @@ private:
   int hashIndex(double val,int icoord) const;
   int iHash(int,int) const;
   int hashBucket(int index,int icoord) const { // assure the index limits
-    if(_wrapped[icoord]) // try to push wrapped coordinates out-of-range back in
+    if(_wrapped[icoord]){ // try to push wrapped coordinates out-of-range back in
       if(index < 0)
 	index += _nwrap[icoord];
       else if(index >= _nbuckets[icoord])
 	index -= _nwrap[icoord];
+    }
     if(index >= 0 && index < _nbuckets[icoord])
       return index;
     else

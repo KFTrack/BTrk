@@ -111,7 +111,7 @@ DifFourVector::boostToMe(std::vector<DifFourVector*>& list)const{
   DifNumber gamma=E/mass();
   DifNumber beta=pMag()/E;
   
-  for(int i=0;i<list.size();i++) {
+  for(size_t i=0;i<list.size();i++) {
     DifFourVector& p4i=*list[i];
     DifNumber px=p4i.P*x;
     DifNumber py=p4i.P*y;
@@ -144,7 +144,7 @@ DifFourVector::boostFromMe(std::vector<DifFourVector*>& list)const{
   DifNumber gamma=E/mass();
   DifNumber beta=pMag()/E;
   
-  for(int i=0;i<list.size();i++) {
+  for(size_t i=0;i<list.size();i++) {
     DifFourVector& p4i=*list[i];
     DifNumber px=p4i.P*x;
     DifNumber py=p4i.P*y;

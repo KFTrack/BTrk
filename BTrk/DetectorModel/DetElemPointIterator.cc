@@ -43,7 +43,7 @@
 // Constructors --
 //----------------
 DetElemPointIterator::DetElemPointIterator( const DetElem& elem )
-  :  _elem( &elem ), _current( 0 ), _vect( _elem->detectorType()->outline() )
+  :  _elem( &elem ), _vect( _elem->detectorType()->outline()), _current( 0 )  
 {
 }
 

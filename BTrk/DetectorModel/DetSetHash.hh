@@ -39,9 +39,9 @@ private:
 //  Array of DetElems indexed by hash function applied to their
 //  ID number
   DetElem** _hashtable;
-  int _nindex;
   int _maxindex;
   int _minindex; // define the index space
+  int _nindex;
   Ehash _ehash; // save a pointer to the hash function
 // prohibit
   DetSetHash& operator = (const DetSetHash&);

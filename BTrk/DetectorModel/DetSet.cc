@@ -466,7 +466,7 @@ DetSet::removeGlobal(const DetAlignElem& glob){
   _ready = false;
 }
 int
-DetSet::applyLocal(const DetAlignElem* alist, int nelem){
+DetSet::applyLocal(const DetAlignElem* alist, unsigned nelem){
   ErrMsg(warning) << "This is an obsolete function: please convert to call " << endl
 		  << "DetSet::applyLocal(std::vector<DetAlignElem>) instead" << endmsg;
   std::vector<DetAlignElem> elems;
@@ -478,7 +478,7 @@ DetSet::applyLocal(const DetAlignElem* alist, int nelem){
 //  Same thing for removeal
 //
 int
-DetSet::removeLocal(const DetAlignElem* alist, int nelem){
+DetSet::removeLocal(const DetAlignElem* alist, unsigned nelem){
   ErrMsg(warning) << "This is an obsolete function: please convert to call " << endl
 		  << "DetSet::removeLocal(std::vector<DetAlignElem>) instead" << endmsg;
   std::vector<DetAlignElem> elems;

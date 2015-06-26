@@ -211,7 +211,7 @@ DetSimpleVolumeType::insideLine( const SurfacePoint& toTest,
   bool answer=false;
   double m=0, c=0;
   double mt=0;
-  double xpt=0, ypt=0;
+  double xpt=0;
 
   // See if p1 and p2 is a vertical line
   if ( p2[0]==p1[0] )

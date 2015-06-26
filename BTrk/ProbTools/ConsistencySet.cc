@@ -258,7 +258,7 @@ ConsistencySet::worstSignificanceIndex_( size_t& index ) const
   double worst( 999. );
   const Consistency* cons;
   size_t i=0;
-  while( cons=getConsistency(i) )
+  while( (cons=getConsistency(i)) )
     {
       double value=cons->significanceLevel();
       if( value<worst )

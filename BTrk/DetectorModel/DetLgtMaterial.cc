@@ -47,6 +47,9 @@ DetLgtMaterial::DetLgtMaterial(const char* detMatName, const DetMtrProp* detMtrP
   _cutOffEnergy = 5.;
 }
 
+DetLgtMaterial::~DetLgtMaterial()
+{}
+
 double DetLgtMaterial::dEdx(double mom,DetMaterial::dedxtype type,
         TrkParticle const& tpart) const {
       return dEdx(mom,type,tpart.mass(),_cutOffEnergy);

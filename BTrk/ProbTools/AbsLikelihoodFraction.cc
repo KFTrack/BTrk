@@ -72,9 +72,12 @@ AbsLikelihoodFraction::operator()( size_t hypo ) const
 double 
 AbsLikelihoodFraction::operator[]( const char* hypoName ) const
 {
-  size_t index;
-  assert( getIndex_(index,hypoName) );
-  return (*this)(index);
+  size_t index(0);
+  if(getIndex_(index,hypoName) )
+    return (*this)(index);
+  else
+    assert(false);
+  return 0.0;
 }
 
 double 
@@ -88,7 +91,7 @@ double
 AbsLikelihoodFraction::jointPdf( size_t hypo ) const
 {
   double result = aPrioriProba( hypo )*conditionalPdf( hypo );
-  if (result > 1.0E-100 & result < 1.0E100) {
+  if (result > 1.0E-100 && result < 1.0E100) {
     myself()->setStatus(AbsLikelihoodFraction::OK);
     return result;
   }
@@ -108,7 +111,7 @@ AbsLikelihoodFraction::marginalPdf( ) const
   double sum(0);
   for( size_t hypo=0; hypo<nHypos(); hypo++ )
     sum += jointPdf( hypo );
-  if (sum > 1.0E-100 & sum < 1.0E100) {
+  if (sum > 1.0E-100 && sum < 1.0E100) {
     myself()->setStatus(AbsLikelihoodFraction::OK);
     return sum;
   }

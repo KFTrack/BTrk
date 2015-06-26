@@ -93,7 +93,7 @@ KalStub::KalStub(KalStub& other,
     sitestep = 1;
     epsilon = -0.0001;
     break;
-  case trkOut:
+  case trkOut: default:
     startsite = other._sites.size()-1;
     endsite = -1;
     sitestep = -1;
@@ -102,7 +102,7 @@ KalStub::KalStub(KalStub& other,
   }
 
   int hitsite = -1;
-  unsigned isite(startsite);
+  int isite(startsite);
   for(isite=startsite;isite!=endsite;isite+=sitestep){
     if( other._sites[isite]->kalHit() == 0 ) continue;
     _lastsite = other._sites[isite]->kalHit();
@@ -121,7 +121,7 @@ KalStub::KalStub(KalStub& other,
   other.process(_lastsite->globalLength() + epsilon);
 
 // deep-copy the remaining non-hit sites
-  for(isite=0;isite<other._sites.size();isite++){
+  for(isite=0;isite<static_cast<int>(other._sites.size());isite++){
     if(other._sites[isite]->kalHit() == 0){
       KalSite* newsite = other._sites[isite]->clone(&_kalrep);
       assert(newsite != 0);
@@ -307,20 +307,21 @@ KalStub::addHit(const TrkHitUse& hituse,bool flushCache) {
     _hitcache.erase(_hitcache.begin()+index);
     KalHit* khit = hitc.kalHit();
 // if we're adding outpwards, push back, otherwards push forwards
-    bool needssort(false);
+    bool needssort(true);
     if(_tdir == trkOut){
 // check explicitly for sorting
-      needssort = _sites.size() != 0 &&
-	*khit < *_sites.back();
+//      needssort = _sites.size() != 0 &&
+//	*khit < *_sites.back();
       _sites.push_back(khit);
     } else {
-      needssort = _sites.size() == 0 &&
-	*_sites.front() < *khit;
+//      needssort = _sites.size() == 0 &&
+//	*_sites.front() < *khit;
       _sites.push_front(khit);
     }
 // for now, always sort.  This class will need to be re-designed to 
 // deal with stl efficiently.
-    std::sort(_sites.begin(),_sites.end(),babar::Collection::PtrLess());
+    if(needssort)
+      std::sort(_sites.begin(),_sites.end(),babar::Collection::PtrLess());
 // delete or clear the cache
     unsigned ncache = _hitcache.size();
     for(unsigned icache=0;icache<ncache;icache++) {
@@ -362,7 +363,7 @@ bool
 KalStub::process(double fltlen) {
   int startsite,endsite,sitestep;
   switch(_tdir){
-  case trkOut:
+  case trkOut: default:
     startsite = 0;
     endsite = _sites.size()-1;
     sitestep = 1;

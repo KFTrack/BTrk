@@ -37,7 +37,7 @@ private:
 
   const DetElem* _elem;
   const std::vector<TypeCoord*>* _vect;
-  int _current;
+  unsigned _current;
 
 };
 
