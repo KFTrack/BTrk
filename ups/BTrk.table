@@ -35,7 +35,6 @@ Common:
     envSet (BTRK_LIB, ${BTRK_DIR}/${BTRK_FQ}/lib )
 
     setupRequired( gcc   v4_9_2 )
-    setupRequired( scons v2_3_4 )
 
     if ( test `uname` = "Darwin" )
       pathPrepend(DYLD_LIBRARY_PATH, ${${UPS_PROD_NAME_UC}_LIB})
