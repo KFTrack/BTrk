@@ -77,7 +77,7 @@ Building Mu2e Offline:
     - You only need to update the definition of PRODUCTS.
     - The definition of PRODUCT_INSTALL is not needed
 3) git clone ssh://p-mu2eofflinesoftwaremu2eoffline@cdcvs.fnal.gov/cvs/projects/mu2eofflinesoftwaremu2eoffline/Offline.git
-4) git checkout use-btrk
+4) git checkout use-Btrk
 5) scons -j 8
 
 Running art:
@@ -113,15 +113,28 @@ In Offline:
 6) Analyses/test/genReco.fcl
      - add configuration for the BTrkHelper service
 
-When it comes time to make a new version of BTrk, some hand maintence is needed.
-We can improve this as we move forward.
+When you wish to make a new version of BTrk, without changing any of
+the products on which it depends:
 
-1) In setup.sh, edit PACKAGE_VERSION to give it the new value
-2) The file BTrk/ups/BTrk.table will need hand editing.
+ 1) In setup.sh, edit PACKAGE_VERSION to give it the new value
+ 2) commmit changes, tag, push changes and tag
+ 3) build and install both debug and prof versions
+ 4) If necessary, edit Offline/setup.sh to use the new version
 
-If you update to a new compiler, or a new version of any of the things on which it depends,
-you need to:
-1) edit setup.sh
-2) edit the lines for other ups products in ups/BTrk.table
-      - this can be automated
 
+If you update to a new compiler, or a new version/qualifier of any of the
+products that BTrk sets up, you need to:
+1) Edit setup.sh
+    a) Change the setup lines as needed.
+    b) If you change the compiler, edit the COMPILER_CODE.
+    c) You should also bump PACKAGE_VERSION.  For now, if you want to
+       change any UPS dependencies, you need a new version of BTrk. We
+       have not yet establish a policy to maintain this bookkeeping
+       using UPS qualifiers.
+2) Edit ups/BTrk.table
+    a) For each line in 1a), change the corresponding setupRequired line.
+       Note that BTrk.table does not need setupRequired lines for UPS
+       products such as scons and cetpkgsupport that are only needed
+       at build-time.
+    b) If necessary, change the compiler code (e7) to its new value.
+3) If we define new UPS qualifiers, then add the appropriate sections for these.
