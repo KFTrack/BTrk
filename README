@@ -131,10 +131,9 @@ products that BTrk sets up, you need to:
        change any UPS dependencies, you need a new version of BTrk. We
        have not yet establish a policy to maintain this bookkeeping
        using UPS qualifiers.
-2) Edit ups/BTrk.table
-    a) For each line in 1a), change the corresponding setupRequired line.
-       Note that BTrk.table does not need setupRequired lines for UPS
-       products such as scons and cetpkgsupport that are only needed
-       at build-time.
-    b) If necessary, change the compiler code (e7) to its new value.
-3) If we define new UPS qualifiers, then add the appropriate sections for these.
+2) Edit installTableFile.sh
+    a) The following are dealt with automatically by installTableFile.sh
+          - the version of each ups product
+          - the compiler code qualfiier, which is common to all products
+    b) If you add other qualifers in step 1), update the variables
+       colon_qualifiers, dot_qualifiers, plus_qualifiers
