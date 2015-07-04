@@ -200,7 +200,7 @@ void MatMaterialList::print(std::ostream& out)
 	Compflag.resize(abs(nbrcomp));
 	Compweight.resize(abs(nbrcomp));
 	Compname.resize(abs(nbrcomp));
-	for (size_t idx=0; idx<abs(nbrcomp); idx++)
+	for (int idx=0; idx<abs(nbrcomp); idx++)
 	  {
 	    Compflag[idx]  =matObj->getIflg(idx);
 	    Compweight[idx]=matObj->getWeight(idx);
@@ -218,7 +218,7 @@ void MatMaterialList::print(std::ostream& out)
 
 	out<< name;
 	out<<" "<< density <<" "<< zeff <<" "<< aeff <<" "<< nbrcomp;
-	for (unsigned int i=0; i<abs(nbrcomp); i++) 
+	for (int i=0; i<abs(nbrcomp); i++) 
 	  { 
 	    out <<" "<< Compweight[i] <<" "<< Compname[i] <<" "<< Compflag[i];
 	  }

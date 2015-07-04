@@ -100,7 +100,7 @@ RecoMatFactory::GetMtrProperties(const std::string& name)
       int nAtomes;
       double fraction;
       std::string cmpName;
-      for (size_t i=0; i<abs(ncomp); i++) {
+      for (int i=0; i<abs(ncomp); i++) {
 	iflg = theMaterial->getIflg(i);
 	cmpName = theMaterial->getCompName(i);
 	if(iflg == 0) {

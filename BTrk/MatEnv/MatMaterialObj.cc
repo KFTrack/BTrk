@@ -93,7 +93,7 @@ MatMaterialObj::MatMaterialObj(const MatMaterialObj& matcp)
     _matZeff = matcp.getZeff(); 
     _matAeff = matcp.getAeff(); 
     _nbrComp = matcp.getNbrComp();
-    for (size_t index=0; index<abs(_nbrComp); index++)
+    for (int index=0; index<abs(_nbrComp); index++)
     {
       _iflg.push_back(matcp.getIflg(index));   
       _weight.push_back(matcp.getWeight(index));   
@@ -117,7 +117,7 @@ MatMaterialObj& MatMaterialObj::operator= (const MatMaterialObj& matrl)
     _matZeff = matrl.getZeff(); 
     _matAeff = matrl.getAeff(); 
     _nbrComp = matrl.getNbrComp();
-    for (size_t index=0; index<abs(_nbrComp); index++)
+    for (int index=0; index<abs(_nbrComp); index++)
     {
       _iflg.push_back(matrl.getIflg(index));   
       _weight.push_back(matrl.getWeight(index));   
@@ -142,7 +142,7 @@ int MatMaterialObj::operator==(const MatMaterialObj& other) const
       _matZeff != other.getZeff() || 
       _matAeff != other.getAeff() || 
       _nbrComp != other.getNbrComp() ) equal=0; 
-      for (size_t index=0; index<abs(_nbrComp); index++)
+      for (int index=0; index<abs(_nbrComp); index++)
       {
         if(_iflg[index] != other.getIflg(index) ||  
         _weight[index] != other.getWeight(index) ||  
@@ -163,7 +163,7 @@ void MatMaterialObj::print()
   cout << "Name: " << getName() << "  Density: " << getDensity() 
        << " Zeff: " << getZeff() << " Aeff: " << getAeff() 
        << "  NbrComp: " << getNbrComp() << endl; 
-  for (size_t idx=0; idx<abs(getNbrComp()); idx++) {
+  for (int idx=0; idx<abs(getNbrComp()); idx++) {
     cout << "Iflg: " << getIflg(idx) << "  Weight: " 
          << getWeight(idx) << "  CompName: " << getCompName(idx)  << endl;    
   } 
