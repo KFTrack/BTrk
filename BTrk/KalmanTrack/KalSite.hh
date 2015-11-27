@@ -22,7 +22,6 @@
 #include <iostream>
 #include "BTrk/TrkBase/TrkParticle.hh"
 #include "BTrk/TrkBase/TrkDirection.hh"
-#include "BTrk/TrkBase/TrkEnums.hh"
 #include "BTrk/KalmanTrack/KalParams.hh"
 #include "BTrk/KalmanTrack/KalWeight.hh"
 //
@@ -50,8 +49,6 @@ public:
   KalSite(const siteType);
 // copy constructor. 
   KalSite(const KalSite&);
-// clone onto a new rep
-  virtual KalSite* clone(const KalRep*) const = 0;
 // destructor
   virtual ~KalSite();
 //  Fit functions
@@ -72,7 +69,7 @@ public:
 // does the site carry information?  If so, how much.  Boolean indicates
 // whether the site contributed at all to chisq in the fit
   virtual bool chisquared(double& chsiq,const KalSite*,trkDirection) const;
-  virtual unsigned nDof(TrkEnums::TrkViewInfo view=TrkEnums::bothView) const;
+  virtual unsigned nDof() const;
 // activity of the site (ie, does it have any impact on the fit)
   virtual bool isActive() const;
 //  Filtering results: these just return the data member if it's been built,

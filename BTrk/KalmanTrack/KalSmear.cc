@@ -13,9 +13,13 @@
 #include "BTrk/KalmanTrack/KalRep.hh"
 #include "BTrk/TrkBase/TrkDifPieceTraj.hh"
 #include "BTrk/TrkBase/TrkParams.hh"
+
+#include "CLHEP/Matrix/SymMatrix.h"
 #include <assert.h>
 using std::endl;
 using std::ostream;
+using namespace CLHEP;
+
 //
 KalSmear::KalSmear(const HepSymMatrix& smear,
 		   const TrkDifPieceTraj* ptraj,
@@ -44,18 +48,6 @@ KalSmear::KalSmear(const TrkDifPieceTraj* ptraj,
   _transport *= smearfac;
 // 'diagonalize' it too
   _transport.diagonalize();
-}
-//
-//  copy constructor
-//
-KalSmear::KalSmear(const KalSmear& other) :
-  KalSite(other),
-  _transport(other._transport)
-{}
-// clone function
-KalSite*
-KalSmear::clone(const KalRep* krep) const {
-  return new KalSmear(*this);
 }
 //
 KalSmear::~KalSmear(){;}

@@ -15,8 +15,6 @@
 
 #include "BTrk/BaBar/BaBar.hh"
 #include "BTrk/BaBar/BbrCollectionUtils.hh"
-#include <math.h>
-#include <algorithm>
 #include "BTrk/KalmanTrack/KalRep.hh"
 #include "BTrk/KalmanTrack/KalHit.hh"
 #include "BTrk/KalmanTrack/KalMaterial.hh"
@@ -24,26 +22,23 @@
 #include "BTrk/KalmanTrack/KalBend.hh"
 #include "BTrk/KalmanTrack/KalSmear.hh"
 #include "BTrk/KalmanTrack/KalConstraint.hh"
-#include "BTrk/KalmanTrack/KalStub.hh"
 #include "BTrk/KalmanTrack/KalCodes.hh"
 #include "BTrk/DetectorModel/DetSet.hh"
 #include "BTrk/DetectorModel/DetMaterial.hh"
-#include "BTrk/TrkBase/TrkHitOnTrk.hh"
-#include "BTrk/TrkBase/TrkHotList.hh"
+#include "BTrk/TrkBase/TrkHit.hh"
 #include "BTrk/TrkBase/TrkDifTraj.hh"
 #include "BTrk/TrkBase/HelixParams.hh"
 #include "BTrk/TrkBase/TrkVolume.hh"
 #include "BTrk/TrkBase/TrkSimpTraj.hh"
 #include "BTrk/TrkBase/HelixTraj.hh"
-#include "CLHEP/Vector/ThreeVector.h"
 #include "BTrk/TrkBase/TrkMomCalculator.hh"
 #include "BTrk/TrkBase/TrkSimpTraj.hh"
-#include "BTrk/TrkBase/TrkHotListFull.hh"
-#include "BTrk/TrkBase/TrkHotList.hh"
-#include "BTrk/TrkBase/TrkHitUse.hh"
 #include "BTrk/BaBar/ErrLog.hh"
-//#include "DchGeom/DchDetector.hh"
+#include "BTrk/BbrGeom/BbrVectorErr.hh"
 
+#include "CLHEP/Vector/ThreeVector.h"
+
+#include <math.h>
 #include <algorithm>
 #include <vector>
 #include <deque>
@@ -51,7 +46,7 @@ using std::endl;
 using std::ostream;
 using std::min;
 using std::max;
-
+using namespace CLHEP;
 // predicates for site updating
 
 struct FindMatBendSites {
@@ -78,19 +73,19 @@ KalRep::initFromSeed() {
 
 void
 KalRep::initRep() {
-// sort the hots
-  hotList()->sort();
+// sort the hits
+  sortHits();
 // reserve a nominal size for sites
   _sites.reserve(128);
   setMultScat(true);   // in TrkFitStatus
   _siteflag[trkIn] = _siteflag[trkOut] = false;
   _chisq[trkIn] = _chisq[trkOut] = -1.;
-// set the initial fitrange according to the hots
-  if(hotList()->nActive() > 0){
-    _fitrange[0] = hotList()->startFoundRange()-_kalcon.fltEpsilon();
-    _fitrange[1] = hotList()->endFoundRange()+_kalcon.fltEpsilon();
+// set the initial fitrange according to the hits
+  if(nActive() > 0){
+    _fitrange[0] = startFoundRange()-_kalcon.fltEpsilon();
+    _fitrange[1] = endFoundRange()+_kalcon.fltEpsilon();
   } else {
-// not hots! set a small but non-null range
+// not hits! set a small but non-null range
     _fitrange[0] = 0.0;
     _fitrange[1] = 1.0;
   }
@@ -129,59 +124,19 @@ KalRep::initSites() {
 //  On construction, the track is neither current or valid
 }
 
-// construct from hots and intersections
-KalRep::KalRep(const TrkSimpTraj& seed, TrkHotList* hotl,
-	const std::vector<DetIntersection>& dinters,
-	const KalContext& context,
-	TrkParticle const& tpart) : TrkRep(hotl,tpart,true), _maxdist(0),_maxfltdif(0),
-	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),
-	_kalcon(context),
-	_seedtraj((TrkSimpTraj*)(seed.clone())),
-	_stopsite(0)
+// construct from hits and intersections
+KalRep::KalRep(TrkSimpTraj const& seed,
+    TrkHitList const& hitl,
+    std::vector<DetIntersection> const& dinters,
+    KalContext const& context,
+    TrkParticle const& tpart) :
+  TrkRep(hitl,tpart), _maxdist(0),_maxfltdif(0),
+  _niter(0),_ninter(0),_ptraj(0),_reftraj(0),
+  _kalcon(context),
+  _seedtraj((TrkSimpTraj*)(seed.clone())),
+  _stopsite(0)
 {
-// basic initialization
-  initRep();
-// build the hit sites
-  buildHitSites();
-// build the KalMaterial sites
-  if(_kalcon.materialSites()){
-// convert the intersections to use the new reftraj;
-		std::vector<DetIntersection> tlist(dinters);
-		for(std::vector<DetIntersection>::iterator iinter = tlist.begin();iinter!= tlist.end();iinter++)
-			iinter->trajet = _reftraj;
-		buildMaterialSites(_fitrange,tlist);
-  }
-// build the bend sites
-  if(_kalcon.bendSites()){
-    buildBendSites(_fitrange);
-  }
-// re-find hit sites
-  findHitSites();
-// create the end sites from the helix.  increase the smearing
-  updateEndSites(_kalcon.smearFactor(),true);
-//  On construction, the track is neither current or valid
-}
-
-// construct from hots and intersections and reference trajectory
-KalRep::KalRep(const TrkDifPieceTraj* rtraj, TrkHotList* hotl,
-	const std::vector<DetIntersection>& dinters,
-	const KalContext& context,
-	TrkParticle const& tpart) : TrkRep(hotl,tpart,true), _maxdist(0),_maxfltdif(0),
-	_niter(0),_ninter(0),_ptraj(0),_reftraj(0),
-	_kalcon(context),
-	_seedtraj(0),
-	_stopsite(0)
-{
-// clone the ref traj
-  _reftraj = rtraj->clone();
-  assert(_reftraj != 0);
-// create the seed from a piece of the piecetraj
-  double locflt;
-  double midflt = 0.5*(_reftraj->lowRange() + _reftraj->hiRange());
-  const TrkSimpTraj* loctraj = _reftraj->localTrajectory(midflt, locflt);
-  if(loctraj != 0)_seedtraj = loctraj->clone();
-  assert(_seedtraj != 0);
-// basic initialization
+  // basic initialization
   initRep();
 // build the hit sites
   buildHitSites();
@@ -204,106 +159,6 @@ KalRep::KalRep(const TrkDifPieceTraj* rtraj, TrkHotList* hotl,
 //  On construction, the track is neither current or valid
 }
 
-
-
-//
-//  Copy constructor to change mass tpart. Note that the copy is ALWAYS invalid and
-//  must be fit.  No protection is provided against copying to the same mass tpart,
-//  this is provided by the 'cloneNewHypo' function.
-//
-KalRep::KalRep(const KalRep& other,TrkParticle const& tpart) :
-  TrkRep(other,tpart),
-  _maxdist(0),_maxfltdif(0),  _niter(0), _ninter(0),
-  _ptraj(0),
-  _reftraj(other._reftraj->clone()),
-  _kalcon(other._kalcon),
-  _seedtraj(other._seedtraj->clone()),
-  _stopsite(0),
-  _refmom(1.0),
-  _refmomfltlen(other._refmomfltlen),_charge(other._charge)
-{
-  _sites.reserve(128);
-// create a new hotlist
-  _hotList.reset( new TrkHotListFull );
-  setValid(false);
-  setMultScat(true);   // in TrkFitStatus
-//  set direction-dependent information 
-  for(int idir=0;idir<2;idir++){
-    _siteflag[idir] = false;
-    _extendable[idir] = other._extendable[idir];
-    _chisq[idir] = -1.0;
-    _fitrange[idir] = other._fitrange[idir];
-  }
-// remove any effect of truncation due to energy loss in the previous fit
-  if(other._stopsite != 0)
-    _extendable[trkOut] = true;
-// Initialize _ptraj to _reftraj
-  _ptraj = _reftraj;
-// reset the initial momentum to the seed value: this makes sure lower-mass states aren't
-// found to 'stop'
-  Hep3Vector momvec = TrkMomCalculator::vecMom(*_seedtraj,_kalcon.bField(),_refmomfltlen);
-  _refmom = momvec.mag();
-// clone-Copy the sites
-  for(unsigned isite=0;isite<other._sites.size();isite++){
-    KalSite* newsite = other._sites[isite]->clone(this);
-    assert(newsite != 0);
-    _sites.push_back(newsite);
-// append the HOTS to the hotlist
-    if(newsite->kalHit() != 0)
-      hotList()->append(newsite->kalHit()->hitOnTrack());
-  }
-// Locate the first and last hit site
-  findHitSites();
-  updateEndSites(_kalcon.smearFactor(),true);
-}
-//
-//  Copy constructor to move rep to a new track.
-//
-KalRep::KalRep(const KalRep& other ) : 
-  TrkRep(other,other.particleType()),
-  _maxdist(other._maxdist),
-  _maxfltdif(other._maxfltdif),
-  _niter(other._niter),
-  _ninter(other._ninter),
-  _ptraj(0),
-  _reftraj(other._reftraj->clone()),
-  _kalcon(other._kalcon),
-  _seedtraj( other._seedtraj->clone()),
-  _stopsite(0),
-  _refmom(other._refmom),
-  _refmomfltlen(other._refmomfltlen),_charge(other._charge)
-{
-  setMultScat(true);   // in TrkFitStatus
-// if a piecetraj exists, clone it
-  if(other._ptraj == other._reftraj)
-    _ptraj = _reftraj;
-  else if(other._ptraj != 0)
-    _ptraj = other._ptraj->clone();
-// create a new hotlist
-  _hotList.reset( new TrkHotListFull );
-//  Copy direction-dependent information 
-  for(int idir=0;idir<2;idir++){
-    _siteflag[idir] = other._siteflag[idir];
-    _extendable[idir] = other._extendable[idir];
-    _chisq[idir] = other._chisq[idir];
-    _hitrange[idir] = other._hitrange[idir];
-    _fitrange[idir] = other._fitrange[idir];
-  }
-// clone-Copy the sites
-  for(unsigned isite=0;isite<other._sites.size();isite++){
-    KalSite* oldsite = other._sites[isite];
-    KalSite* newsite = oldsite->clone(this);
-    assert(newsite != 0);
-    _sites.push_back(newsite);
-// append the HOTS to the hotlist
-    if(newsite->kalHit() != 0)
-      hotList()->append(newsite->kalHit()->hitOnTrack());
-  }
-// Locate the first and last hit site
-  findHitSites();
-// create end sites
-  updateEndSites(_kalcon.smearFactor());
-}
 //  Destructor
 KalRep::~KalRep(){
 //  Delete all the KalSites
@@ -314,24 +169,6 @@ KalRep::~KalRep(){
   if(_reftraj != _ptraj)
     delete _ptraj;
 // delete integrator
-}
-//
-//  Clone operator
-//
-KalRep*
-KalRep::clone() const {
-  return new KalRep(*this);
-}
-
-TrkRep*
-KalRep::cloneNewHypo(TrkParticle const& tpart) {
-  if(tpart != particleType()) {
-    KalRep* newrep = new KalRep(*this, tpart);
-    newrep->setValid(false);
-    return newrep;
-  }
-  else
-    return this;
 }
 
 //
@@ -373,7 +210,7 @@ KalRep::chisquared(trkDirection tdir) const {
 //  See if the cache is valid (it's self-flagging)
   if(_chisq[tdir] < 0.0) {
     if(hasFit(tdir)){
-      int nsites = _sites.size();
+int nsites = _sites.size();
       int startsite = tdir==trkOut ? 0 : nsites-1;
 //    must cast-off const to use the cache
       double& chisum = (double&)_chisq[tdir];
@@ -414,11 +251,6 @@ KalRep::chisquared(double fltlen,trkDirection tdir) const {
 }
 
 int
-KalRep::nDof() const{
-  return nDof(TrkEnums::bothView);
-}
-
-int
 KalRep::nDof(double fltlen,trkDirection tdir) const {
 // first, find the sites; I really want 1 past the one found by this function
   int nearest = findNearestSite(fltlen) + 1;
@@ -438,81 +270,44 @@ KalRep::nDof(double fltlen,trkDirection tdir) const {
 }
 
 int 
-KalRep::nDof(TrkEnums::TrkViewInfo view) const {
+KalRep::nDof() const {
   int dof(0);
   for(unsigned isite= 0;isite<_sites.size();isite++)
-    dof += _sites[isite]->nDof(view);
+    dof += _sites[isite]->nDof();
 // subtract the parameters (for overall DOFs)
-  if(view == TrkEnums::bothView)
-    dof -= _seedtraj->parameters()->parameter().num_row();
+  dof -= _seedtraj->parameters()->parameter().num_row();
   return dof;
 }
 
 bool
 KalRep::enoughDofs() const {
-// initialize separate counting in each view
-  int dof(-_seedtraj->parameters()->parameter().num_row());
-// TrkSimpTraj doesn't know how to provide this for different
-// views; too bad
-  int xydof(0);
-  int zdof(0);
-  unsigned isite(0);
-  unsigned nsites(_sites.size());
-  bool retval(false);
-  while(isite<nsites && !retval) {
-    dof += _sites[isite]->nDof(TrkEnums::bothView);
-    xydof += _sites[isite]->nDof(TrkEnums::xyView);
-    zdof += _sites[isite]->nDof(TrkEnums::zView);
-    isite++;
-    retval = 
-      dof >= (int)_kalcon.minDOF(TrkEnums::bothView) &&
-      xydof >= (int)_kalcon.minDOF(TrkEnums::xyView) &&
-      zdof >= (int)_kalcon.minDOF(TrkEnums::zView);
-  }
+  bool retval = nDof() >= (int)_kalcon.minDOF();
   return retval;
 }
 
 double
-KalRep::hitChisq(const TrkHitUse& hituse) const {
-  double chisq = -1.0;
-  if(fitValid()){
-// create an 'end site' from the trajectory
-    KalEndSite trajsite(_ptraj,hituse.fltLen(),trkIn,1.0,false);
-// create a HOT for this hit usage
-    TrkHitOnTrk* hot = hituse.createHitOnTrk(*this);
-    if(hot != 0) {
-      KalHit kalhit(_ptraj,hot);
-// compute the chisquared using this hit
-      kalhit.chisquared(chisq,&trajsite,trkIn);
-      kalhit.deleteHOT();
-    }
-  }
-  return chisq;
-}
-
-double
-KalRep::hitChisq(const TrkHitOnTrk* hot,bool exclude) const {
+KalRep::hitChisq(const TrkHit* hit,bool exclude) const {
   double chisq = -1.0;
   double chival,chierr2;
-  if(hitChi(hot,chival,chierr2,exclude))
+  if(hitChi(hit,chival,chierr2,exclude))
     chisq = chival*chival/chierr2;
   return chisq;
 }
 
 bool
-KalRep::hitChi(const TrkHitOnTrk* hot,
+KalRep::hitChi(const TrkHit* hit,
 	       double& chival,
 	       double& chierr2,
 	       bool exclude) const {
   bool retval(false);
   if(fitValid()){
-// find the hot site
+// find the hit site
     unsigned index;
-    const KalHit* hitsite = findHotSite(hot,index);
+    const KalHit* hitsite = findHitSite(hit,index);
     if(hitsite != 0){
       const KalSite* refsite(hitsite);
       KalParams smoothed;
-// merge the sites on either side of the hot (if necessary)
+// merge the sites on either side of the hit (if necessary)
       if(static_cast<int>(index) > _hitrange[0] && static_cast<int>(index) < _hitrange[1] ){
 	const KalSite* prevsite(0);
 	const KalSite* nextsite(0);
@@ -548,12 +343,12 @@ KalRep::hitChi(const TrkHitOnTrk* hot,
 }
 
 double
-KalRep::hitChisq(const TrkHitOnTrk* hot,trkDirection tdir) const {
+KalRep::hitChisq(const TrkHit* hit,trkDirection tdir) const {
   double chisq = -1.0;
   if(!needsFit(tdir)){
-// find the hot site
+// find the hit site
     unsigned index;
-    const KalHit* hitsite = findHotSite(hot,index);
+    const KalHit* hitsite = findHitSite(hit,index);
     if(hitsite != 0 && ( (tdir == trkIn && index < _sites.size()-1) ||
 			 (tdir == trkOut && index > 0 ))){
       trkDirection odir = tdir == trkIn ? trkOut : trkIn;
@@ -578,15 +373,15 @@ KalRep::matchChisq(double fltlen,bool* tparams) const {
 }
 
 bool
-KalRep::resid(const TrkHitOnTrk *hot, 
+KalRep::resid(const TrkHit *hit, 
               double& resval, double& reserr,
               bool exclude) const
 {
    double chival,chierr2;
-   bool b=hitChi(hot,chival,chierr2,exclude); 
+   bool b=hitChi(hit,chival,chierr2,exclude); 
    if (b) {
-     resval=chival*hot->hitRms();
-     reserr=sqrt(chierr2)*hot->hitRms();
+     resval=chival*hit->hitRms();
+     reserr=sqrt(chierr2)*hit->hitRms();
    }
    return b;
 }
@@ -707,8 +502,7 @@ KalRep::iterateFit(){
   }
   return fiterr;
 }
-// 'fit' a single direction.  No trajectory is produced.  This function is only useful
-// for creating KalStubs
+// 'fit' a single direction.  No trajectory is produced.
 TrkErrCode
 KalRep::fit(trkDirection tdir){
   TrkErrCode retval;
@@ -879,45 +673,45 @@ KalRep::process(KalSite* psite,int startindex,int endindex,trkDirection fdir) {
   return status;
 }
 //
-//  Hot functions
+//  Hit functions
 //
 KalHit*
-KalRep::findHotSite(const TrkHitOnTrk* thehot,unsigned& siteindex) const {
-//  Find the hot; exhaustive search for now
-  KalHit* returnhot(0);
+KalRep::findHitSite(const TrkHit* thehit,unsigned& siteindex) const {
+//  Find the hit; exhaustive search for now
+  KalHit* returnhit(0);
   for(unsigned isite=0;isite<_sites.size();isite++)
     if(_sites[isite]->kalHit() != 0) {
-      if(_sites[isite]->kalHit()->hitOnTrack() == thehot){
-	returnhot = _sites[isite]->kalHit();
+      if(_sites[isite]->kalHit()->hit() == thehit){
+	returnhit = _sites[isite]->kalHit();
 	siteindex = isite;
 	break;
       }
     }
-  return returnhot;
+  return returnhit;
 }
 
 const KalHit*
-KalRep::findHotSite(const TrkHitOnTrk* thehot) const {
-  KalHit* returnhot(0);
+KalRep::findHitSite(const TrkHit* thehit) const {
+  KalHit* returnhit(0);
   for(unsigned isite=0;isite<_sites.size();isite++)
     if(_sites[isite]->kalHit() != 0) {
-      if(_sites[isite]->kalHit()->hitOnTrack() == thehot){
-	returnhot = _sites[isite]->kalHit();
+      if(_sites[isite]->kalHit()->hit() == thehit){
+	returnhit = _sites[isite]->kalHit();
 	break;
       }
     }
-  return returnhot;
+  return returnhit;
 }
 
 //
 void
-KalRep::activateHot(TrkHitOnTrk* thehot) {
-// action only necessary if the hot isn't already active
-  if( (! thehot->isActive()) && thehot->isUsable()){
-    TrkRep::activateHot(thehot);
-// Require the HOT be useable and associated with a KalHit site
+KalRep::activateHit(TrkHit* thehit) {
+// action only necessary if the hit isn't already active
+  if( (! thehit->isActive())){
+    TrkRep::activateHit(thehit);
+// Require the TrkHit be useable and associated with a KalHit site
     unsigned index;
-    KalHit* thesite = findHotSite(thehot,index);
+    KalHit* thesite = findHitSite(thehit,index);
     if(thesite != 0 ){
       resetFit(); // force refitting
       thesite->setActivity(true);
@@ -927,11 +721,11 @@ KalRep::activateHot(TrkHitOnTrk* thehot) {
 }
 //
 void
-KalRep::deactivateHot(TrkHitOnTrk* thehot) {
-  if(thehot->isActive()){
-    TrkRep::deactivateHot(thehot);
+KalRep::deactivateHit(TrkHit* thehit) {
+  if(thehit->isActive()){
+    TrkRep::deactivateHit(thehit);
     unsigned index;
-    KalHit* thesite = findHotSite(thehot,index);
+    KalHit* thesite = findHitSite(thehit,index);
     if(thesite != 0){
       resetFit(); // force refitting
       thesite->setActivity(false);
@@ -941,42 +735,42 @@ KalRep::deactivateHot(TrkHitOnTrk* thehot) {
 }
 //
 void
-KalRep::updateHot(TrkHitOnTrk* thehot) {
-// Require the HOT be useable and associated with a KalHit site
+KalRep::updateHit(TrkHit* thehit) {
+// Require the TrkHit be useable and associated with a KalHit site
   unsigned index;
-  KalHit* thesite = findHotSite(thehot,index);
-  if(thesite != 0 && thehot->isUsable()){
+  KalHit* thesite = findHitSite(thehit,index);
+  if(thesite != 0 ){
     resetFit(); // force refitting
     thesite->update(_reftraj,_refmom); // note, hit sites don't care about momentum,
   }
 }
 //
 void
-KalRep::addHot(TrkHitOnTrk* thehot) {
-// try to find the HOT in the existing track
+KalRep::addHit(TrkHit* thehit) {
+// try to find the TrkHit in the existing track
   unsigned index;
-  KalHit* thesite = findHotSite(thehot,index);
+  KalHit* thesite = findHitSite(thehit,index);
   if(thesite == 0){
-    TrkRep::addHot(thehot);
-// create a new KalHit from this hot
-    thesite = new KalHit(_reftraj,thehot);
+    TrkRep::addHit(thehit);
+// create a new KalHit from this hit
+    thesite = new KalHit(_reftraj,thehit);
     _sites.push_back(thesite);
 // refind the hit sites
     findHitSites();
 // update hit site limits
-    if(thehot->isActive()){
+    if(thehit->isActive()){
       resetFit(); // force refitting
     } else {
-// find the hot we just inserted, so we have its index
-      KalHit* thesite = findHotSite(thehot,index);
+// find the hit we just inserted, so we have its index
+      KalHit* thesite = findHitSite(thehit,index);
       assert(thesite != 0);
-// if there's a valid outward fit, process the inactive hot.  This doesn't change
+// if there's a valid outward fit, process the inactive hit.  This doesn't change
 // the fit, but it makes sure the sitelist remains internally self-consistent (no gaps)
       if(hasFit(trkOut)){
 	if(index > 0)
 	  thesite->process(_sites[index-1],trkOut);
 	else {
-// have to use end site to handle an inactive hot on the end of a rep
+// have to use end site to handle an inactive hit on the end of a rep
 	  thesite->process(&_endsites[trkIn],trkOut);
 	}
       }
@@ -989,22 +783,22 @@ KalRep::addHot(TrkHitOnTrk* thehot) {
 	}
       }
     }
-// add the hot to the rep.  This will reset the current flag as needed
-//    TrkRep::addHot(thehot);
+// add the hit to the rep.  This will reset the current flag as needed
+//    TrkRep::addHit(thehit);
   } else
-    ErrMsg(error) << "cannot add HOT already on this rep" << endmsg;
+    ErrMsg(error) << "cannot add TrkHit already on this rep" << endmsg;
 }
 //
 void
-KalRep::removeHot(TrkHitOnTrk* thehot) {
-// try to find the HOT in the existing track
+KalRep::removeHit(TrkHit* thehit) {
+// try to find the TrkHit in the existing track
   unsigned index;
-  KalHit* thesite = findHotSite(thehot,index);
+  KalHit* thesite = findHitSite(thehit,index);
   if(thesite != 0){
 // Go to the sites on either side of the one to be removed and invalidate them
     if(index > 0)_sites[index-1]->invalidateSite(trkOut);
     if(index < _sites.size()-2)_sites[index+1]->invalidateSite(trkIn);
-// remove and delete the site; note that the HOT must be deleted elsewhere!
+// remove and delete the site; note that the TrkHit must be deleted elsewhere!
     KalSite* rmsite = _sites[index];
     _sites.erase(_sites.begin()+index);
     resetFit(); // force refitting
@@ -1012,15 +806,15 @@ KalRep::removeHot(TrkHitOnTrk* thehot) {
       delete thesite;
 // update hit sites
       findHitSites();
-// if the hot wasn't active, it doesn't change the fit
-      if(thehot->isActive())
+// if the hit wasn't active, it doesn't change the fit
+      if(thehit->isActive())
 	resetFit();
     } else
-      ErrMsg(error) << "Error removing HOT" << endmsg;
+      ErrMsg(error) << "Error removing TrkHit" << endmsg;
   } else
-    ErrMsg(error) << "Error, requested HOT not found" << endmsg;
-// remove the hot from the rep hotlist, no matter what
-  TrkRep::removeHot(thehot);
+    ErrMsg(error) << "Error, requested TrkHit not found" << endmsg;
+// remove the hit from the rep hitlist, no matter what
+  TrkRep::removeHit(thehit);
 }
 // add intersection to the track
 void
@@ -1205,7 +999,7 @@ KalRep::updateSites() {
 //
 TrkErrCode
 KalRep::fitSites() {
-// perform any fixups necessary for the hots moving around
+// perform any fixups necessary for the hits moving around
   fixupSites();
 // check that the track is fitable
   TrkErrCode retval;
@@ -1260,7 +1054,7 @@ void
 KalRep::findHitSites() {
 // sort the vector
   std::sort(_sites.begin(),_sites.end(),babar::Collection::PtrLess());
-// find the first and last hot sites
+// find the first and last hit sites
   _hitrange[0] = _sites.size()+1;
   _hitrange[1] = -1;
   for(unsigned isite=0;isite<_sites.size();isite++)
@@ -1350,21 +1144,16 @@ KalRep::buildMaterialSites(double range[2],std::vector<DetIntersection>& tlist) 
 // same thing for hits
 void
 KalRep::buildHitSites() {
-// intialize some HOT stuff
-//  Loop over the hots, and create KalHit sites for them, and add them to the site list
-  TrkHotList* hots = hotList();
-  TrkHotList::nc_hot_iterator end = hots->end();
-  for(TrkHotList::nc_hot_iterator ihit=hots->begin();ihit!=end;ihit++){
-//  Only 'useable' hots should be made into sites
-    if(ihit->isUsable()){
-      KalHit* newhit = new KalHit(_reftraj,ihit.get());
-      assert(newhit != 0);
-      _sites.push_back(newhit);
-    }
+// intialize some TrkHit stuff
+//  Loop over the hits, and create KalHit sites for them, and add them to the site list
+  for(auto ihit = _hitList.begin();ihit < _hitList.end();++ihit) {
+    KalHit* newhit = new KalHit(_reftraj,*ihit);
+    assert(newhit != 0);
+    _sites.push_back(newhit);
   }
 // Locate the first and last hit site
   findHitSites();
-// see if any hots are active
+// see if any hits are active
 // sometimes the last hit will move outside the fit range.  This is not really an
 // error, so just adjust the fit range appropriately
   if( _hitrange[0]<static_cast<int>(_sites.size()) && _hitrange[1]>=0){
@@ -1438,7 +1227,7 @@ KalRep::momentumErr(double fltL) const {
 
 
 void
-KalRep::updateHots() {
+KalRep::updateHits() {
 //  update the KalHit sites
   for(unsigned isite=0;isite<_sites.size();isite++){
     KalSite* thesite = _sites[isite];
@@ -1446,7 +1235,7 @@ KalRep::updateHots() {
       thesite->update(_reftraj,_refmom); // note, hit sites don't care about momentum,
 // so the seed value is OK here
   }
-// perform any fixups necessary for the hots moving around
+// perform any fixups necessary for the hits moving around
   fixupSites();
 // reset the fit and make sure everyone knows about the change
   resetFit();
@@ -1517,44 +1306,6 @@ KalRep::getAllWeights(double fltL,
   TrkMomCalculator::getAllWeights(*locTraj, theField, localFlt,
 			      pos,mom,xxWeight,ppWeight,xpWeight); 
 
-}
-
-TrkErrCode
-KalRep::append(KalStub& stub) {
-// make sure this stub belongs to this rep!!!
-  if(stub.sameRep(*this) ){
-// set fit not current
-    setCurrent(false);
-// reset iterations (if necessary)
-    _niter = 0;
-// Append or prepend the stub sites, as appropriate
-    std::deque<KalSite*>& stubsites = stub.sites();
-    for(std::deque<KalSite*>::iterator siter = stubsites.begin();
-	siter!= stubsites.end();siter++){
-// NB: we should be using the 'insert' command here to put all the stub sites
-// in at the same time, however the Sun compiler doesn't currently support this,
-// so the sites are added one at a time (out of order).
-      _sites.push_back(*siter);
-// we also have to append the HOTs to the hot list
-      if((*siter)->kalHit() != 0)
-	TrkRep::addHot((*siter)->kalHit()->hitOnTrack());
-    }
-// sort the hotlist
-    hotList()->sort();
-// now remove the sites from the stub (so they won't be deleted when it is)
-    stubsites.clear();
-// extend the track range
-    if(stub.direction() == trkOut)
-      _fitrange[1] = std::max(_fitrange[1],stub.hitRange(trkOut)+_kalcon.fltEpsilon());
-    else
-      _fitrange[0] = std::min(_fitrange[0],stub.hitRange(trkIn)-_kalcon.fltEpsilon());
-// find the new hits
-    findHitSites();
-// User is responsable for the refit
-    return TrkErrCode();
-  } else
-    return TrkErrCode(TrkErrCode::fail,KalCodes::stubmatch,
-		      "KalRep error: KalStub doesn't match KalRep or is not a primary stub!");
 }
 
 double
@@ -1659,19 +1410,16 @@ bool
 KalRep::converged() const {
 // convergence requres both directions to have been processed
   bool converged = hasFit(trkIn) && hasFit(trkOut);
-// only reps with hits benifit from iteration
-  if(hotList()->hitCapable()){
 // several convergence tests, do them roughly in order of importance.
 // trajectory convergence  
-    if(converged) converged = _maxdist < _kalcon.distanceTolerance();
-// momentum convergence
-    if(converged) converged = fabs(estimatedMomDiff()) < _kalcon.maxMomDiff();
-//  Parameter convergence; if the parameter differences tolerance is set < 0.0  skip the test
-    if(converged) converged = _kalcon.maxParamDiff(trkOut) < 0.0 ||
-		    parameterDifference(trkOut) < _kalcon.maxParamDiff(trkOut);
-    if(converged) converged = _kalcon.maxParamDiff(trkIn) < 0.0 ||
-		    parameterDifference(trkIn) < _kalcon.maxParamDiff(trkIn);
-  }
+  if(converged) converged = _maxdist < _kalcon.distanceTolerance();
+  // momentum convergence
+  if(converged) converged = fabs(estimatedMomDiff()) < _kalcon.maxMomDiff();
+  //  Parameter convergence; if the parameter differences tolerance is set < 0.0  skip the test
+  if(converged) converged = _kalcon.maxParamDiff(trkOut) < 0.0 ||
+    parameterDifference(trkOut) < _kalcon.maxParamDiff(trkOut);
+  if(converged) converged = _kalcon.maxParamDiff(trkIn) < 0.0 ||
+    parameterDifference(trkIn) < _kalcon.maxParamDiff(trkIn);
   if(_niter<=1) converged=false;
   //std::cout<<"converged "<<converged<<" "<<_niter<<std::endl;
 
@@ -1911,7 +1659,7 @@ KalRep::updateSites( int startindex,int endindex,
         sitemom += thesite->momentumChange(dedxdir);
         sitemom = std::max(sitemom,_kalcon.minMom());
     }
-// check hot sites for flightlenght changes
+// check hit sites for flightlenght changes
       if(thesite->kalHit() != 0 && thesite->isActive())
 	_maxfltdif = std::max(_maxfltdif,thesite->kalHit()->flightLengthChange());
     }
@@ -1927,8 +1675,8 @@ KalRep::fixupSites() {
   std::sort(_sites.begin(),
 	    _sites.end(),
 	    babar::Collection::PtrLess());
-// sort the hotlist too
-  hotList()->sort();
+// sort the hitlist too
+  sortHits();
 // find the extreme hit sites again, in case they've moved
   findHitSites();
 // sometimes the last hit will move outside the fit range.  This is not really an
@@ -1941,63 +1689,6 @@ KalRep::fixupSites() {
   }
 }
 
-
-KalStub*
-KalRep::createStub(const TrkVolume& extendvolume,
-		   trkDirection extenddir,double tolerance,
-		   const KalContext* kalcon) {
-// preset to failure
-  KalStub* retval(0);
-// the rep must have been fit in the direction specified and be extendable in that direction
-  if( hasFit(extenddir)){
-// sites in both directions  need re-processing
-    trkDirection odir = extenddir==trkOut ? trkIn : trkOut;
-    _siteflag[odir] = false;
-// invalidate all the sites in the other direction
-    unsigned nsites = _sites.size();
-    for(unsigned isite=0;isite<nsites;isite++)
-      _sites[isite]->invalidateSite(odir);
-// create a list for holding the sites
-    std::deque<KalSite*> sites;
-// Extend the trajectory through volume
-    extendThrough(extendvolume,extenddir);
-// set the range
-    double xrange[2];
-    xrange[0] = xrange[1] = extenddir == trkIn ?
-      _ptraj->lowRange() : _ptraj->hiRange();
-// give away the non-hit sites before the 'first' hit to the stub
-// be careful of inactive hots and constraints!
-    KalSite* firsthit = extenddir==trkIn ? _sites[_hitrange[0]] :
-      _sites[_hitrange[1]];
-    KalSite* willremove = extenddir==trkIn ? _sites.front() : _sites.back();
-    while(willremove != firsthit && willremove->kalHit()==0 
-	  && willremove->nDof() == 0){
-// update the range
-      xrange[0] = std::min(xrange[0],willremove->globalLength());
-      xrange[1] = std::max(xrange[1],willremove->globalLength());
-// check if we've given away the stopping site, and if so, unset it
-      if(willremove == _stopsite)
-	_stopsite = 0;
-
-      if(extenddir==trkIn){
-	_sites.erase(_sites.begin());
-	sites.push_front(willremove);
-	willremove = _sites.front();
-      } else {
-	_sites.pop_back();
-	sites.push_back(willremove);
-	willremove = _sites.back();
-      }
-    }
-// explicitly sort the sites
-    std::sort(sites.begin(),sites.end(),babar::Collection::PtrLess());
-// create the KalStub from these
-    retval = new KalStub(*this,extenddir,tolerance,xrange,sites,_kalcon);
-// cleanup
-    findHitSites();
-  }
-  return retval;
-}
 
 double
 KalRep::estimatedMomDiff() const {
@@ -2016,7 +1707,6 @@ KalRep::estimatedMomDiff() const {
     sqr(sqr(avgmom));
   return ddmom;
 }
-
 
 bool 
 KalRep::isFitable(TrkErrCode& err) const {
@@ -2052,7 +1742,7 @@ KalRep::isFitable(TrkErrCode& err) const {
   return fitable;
 }
 // reset the state to allow 'fit' to work properly when the
-// hots have changed
+// hits have changed
 void
 KalRep::resetFit() {
   _niter = 0; // allow iterations to start again
@@ -2074,7 +1764,7 @@ KalRep::resetFit() {
 TrkErrCode
 KalRep::resetAll(bool invert) {
   if(invert){
-// loop over all sites and invert them.  This also inverts the hots
+// loop over all sites and invert them.  This also inverts the hits
     unsigned nsites = _sites.size();
     for(unsigned isite=0;isite<nsites;isite++)
       _sites[isite]->invert();
@@ -2109,7 +1799,7 @@ KalRep::addConstraint(const TrkSimpTraj* traj,double cfltlen,bool* cparams) {
 					   cfltlen);
   if(csite != 0){
     _sites.push_back(csite);
-    findHitSites(); // find the new range (constraint is counted as a HOT)
+    findHitSites(); // find the new range (constraint is counted as a TrkHit)
     resetFit(); // force refitting
   } else
     ErrMsg(error) << "cannot create constraint site" << endmsg;
@@ -2119,7 +1809,7 @@ void
 KalRep::addSite(KalSite* site) {
   if(site != 0){
     _sites.push_back(site);
-    findHitSites(); // find the new range (constraint is counted as a HOT)
+    findHitSites(); // find the new range (constraint is counted as a TrkHit)
     resetFit(); // force refitting
   } else
     ErrMsg(error) << "cannot add null site" << endmsg;
@@ -2311,7 +2001,7 @@ KalRep::validFlightLength(double fltL,double tolerance) const {
   bool retval = _ptraj != 0 && 
     fltL >= _ptraj->lowRange()-tolerance &&
     fltL <= _ptraj->hiRange()+tolerance;
-// if there are no hots, include test on found range
+// if there are no hits, include test on found range
   return retval;
 }
 
@@ -2339,8 +2029,8 @@ KalRep::reIntersect() {
   std::for_each(mid,_sites.end(),babar::Collection::DeleteObject());
   _sites.erase(mid,_sites.end());
 // re-calculate the fitrange
-  _fitrange[0] = hotList()->startFoundRange()-_kalcon.fltEpsilon();
-  _fitrange[1] = hotList()->endFoundRange()+_kalcon.fltEpsilon();
+  _fitrange[0] = startFoundRange()-_kalcon.fltEpsilon();
+  _fitrange[1] = endFoundRange()+_kalcon.fltEpsilon();
   setFitRange(_reftraj);
 // re-make materials and bends using current ref traj
 	std::vector<DetIntersection> tlist; tlist.reserve(64);

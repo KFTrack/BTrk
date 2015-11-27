@@ -10,21 +10,17 @@
 // Authors: Steve Schaffner
 //
 // Revision History (started 2002/05/22)
-//	20020522  M. Kelsey -- Remove assert() from resid(HOT*...).  Replace
-//		  with sanity checks on HOT/Rep association and whether HOT
+//	20020522  M. Kelsey -- Remove assert() from resid(TrkHit*...).  Replace
+//		  with sanity checks on TrkHit/Rep association and whether TrkHit
 //		  has already-computed residual.  Return value used to
 //		  flag sanity checks and "trustworthiness" of results.
 //------------------------------------------------------------------------
 #include "BTrk/BaBar/BaBar.hh"
 #include "BTrk/BaBar/Constants.hh"
 #include "BTrk/BField/BFieldFixed.hh"
-#include <assert.h>
-#include <algorithm>
-#include <iostream>
 #include "BTrk/TrkBase/TrkRep.hh"
 #include "BTrk/TrkBase/TrkDifTraj.hh"
-#include "BTrk/TrkBase/TrkHotListFull.hh"
-#include "BTrk/TrkBase/TrkHitOnTrk.hh"
+#include "BTrk/TrkBase/TrkHit.hh"
 #include "BTrk/TrkBase/TrkFunctors.hh"
 #include "BTrk/TrkBase/TrkErrCode.hh"
 #include "BTrk/difAlgebra/DifPoint.hh"
@@ -32,75 +28,34 @@
 #include "BTrk/difAlgebra/DifIndepPar.hh"
 #include "BTrk/ProbTools/ChisqConsistency.hh"
 #include "BTrk/BaBar/ErrLog.hh"
+#include "BTrk/BbrGeom/BbrPointErr.hh"
 #include "BTrk/TrkBase/HelixParams.hh"
+
+#include "CLHEP/Vector/ThreeVector.h"
+#include "CLHEP/Matrix/Matrix.h"
+
+#include <assert.h>
+#include <algorithm>
+#include <iostream>
+
 using std::cout;
 using std::endl;
+using namespace CLHEP;
 
-TrkRep::TrkRep(TrkParticle const& hypo,bool createHotList)
-  : _tpart(hypo),
-    _hotList( createHotList?new TrkHotListFull:0 )
+TrkRep::TrkRep(const TrkHitList& hitlist, TrkParticle const& hypo)
+  : _tpart(hypo), _hitList( hitlist)
 {
-}
-
-TrkRep::TrkRep(const TrkHotList& hotlist, 
-               TrkParticle const& hypo)
-  : _tpart(hypo),
-    _hotList( hotlist.clone(TrkBase::Functors::cloneHot(this)) )
-{
-}
-
-TrkRep::TrkRep(TrkHotList& hotlist, 
-               TrkParticle const& hypo, bool stealHots)
-  : _tpart(hypo),
-    _hotList( stealHots? new TrkHotListFull(hotlist,setParent(this))
-                       : hotlist.clone(TrkBase::Functors::cloneHot(this)) )
-{
-}
-
-TrkRep::TrkRep(const TrkHotList* hotlist, 
-               TrkParticle const& hypo)
-  : _tpart(hypo),
-    _hotList( hotlist!=0?
-                  hotlist->clone(TrkBase::Functors::cloneHot(this)):
-                  new TrkHotListFull )
-{
-}
-
-TrkRep::TrkRep(TrkHotList* hotlist, 
-               TrkParticle const& hypo,bool takeownership)
-  : _tpart(hypo)
-{
-  if (!takeownership) {
-    _hotList.reset( hotlist!=0?
-                    hotlist->clone(TrkBase::Functors::cloneHot(this)):
-                    new TrkHotListFull );
-  } else {
-    assert(hotlist!=0);
-    _hotList.reset( hotlist->resetParent(setParent(this)) );
-  }
-}
-
-// copy ctor
-TrkRep::TrkRep(const TrkRep& oldRep,  TrkParticle const& hypo) :
-  TrkFitStatus(oldRep),
-    _tpart(hypo)
-{
-  // Hots and hotlist have to be cloned in the derived classes
-}
-
-TrkRep&
-TrkRep::operator= (const TrkRep& right)
-{
-  if(&right != this){
-    _tpart=right._tpart;
-    _hotList.reset( right._hotList->clone(this) );
-    TrkFitStatus::operator=(right);
-  }
-  return *this;
+  sortHits();
 }
 
 TrkRep::~TrkRep()
 {
+}
+
+void
+TrkRep::sortHits() {
+// sort hits by flightlength
+ std::sort(_hitList.begin(),_hitList.end(),hitsort());
 }
 
 bool
@@ -110,42 +65,46 @@ TrkRep::operator== (const TrkRep& rhs)
 }
 
 void
-TrkRep::addHot(TrkHitOnTrk *newHot)
+TrkRep::addHit(TrkHit *newTrkHit)
 {
-  newHot->setParent(this);
-  if (newHot->isActive()) setCurrent(false);
-  hotList()->append(newHot);
+  newTrkHit->setParent(this);
+  if (newTrkHit->isActive()) setCurrent(false);
+  _hitList.push_back(newTrkHit);
+  sortHits();
 }
 
 void
-TrkRep::removeHot(TrkHitOnTrk *theHot)
+TrkRep::removeHit(TrkHit *theTrkHit)
 {
-  if(theHot->isActive()) setCurrent(false);     // fit no longer current
-  hotList()->remove(theHot);
+  if(theTrkHit->isActive()) setCurrent(false);     // fit no longer current
+  auto ifnd = std::find(_hitList.begin(),_hitList.end(),theTrkHit);
+  if(ifnd != _hitList.end())
+    _hitList.erase(ifnd);
+
 }
 
 void
-TrkRep::activateHot(TrkHitOnTrk* hot)
+TrkRep::activateHit(TrkHit* thit)
 {
-  if(!hot->isActive()){
-// make sure this is my hot we're talking about
-    if(this == hot->getParentRep()){
+  if(!thit->isActive()){
+// make sure this is my thit we're talking about
+    if(this == thit->getParentRep()){
       setCurrent(false);
-// actually activate the hot; this is now the rep's job
-      hot->setActive(true);
+// actually activate the thit; this is now the rep's job
+      thit->setActive(true);
     }
   }
 }
 
 void
-TrkRep::deactivateHot(TrkHitOnTrk* hot)
+TrkRep::deactivateHit(TrkHit* thit)
 {
-  if(hot->isActive()){
-// make sure this is my hot we're talking about
-    if(this == hot->getParentRep()){
+  if(thit->isActive()){
+// make sure this is my thit we're talking about
+    if(this == thit->getParentRep()){
       setCurrent(false);
-// actually deactivate the hot; this is now the rep's job
-      hot->setActive(false);
+// actually deactivate the thit; this is now the rep's job
+      thit->setActive(false);
     }
   }
 }
@@ -255,37 +214,34 @@ TrkRep::endValidRange() const
 double
 TrkRep::startFoundRange() const
 {
-  return hotList()->startFoundRange();
+  return _hitList.front()->fltLen();
 }
 
 double
 TrkRep::endFoundRange() const
 {
-  return hotList()->endFoundRange();
-}
-
-void
-TrkRep::updateHots()
-{
-  setCurrent(false);
-  hotList()->updateHots();
+  return _hitList.back()->fltLen();
 }
 
 int
 TrkRep::nActive() const
 {
-  return hotList()->nActive();
+  int retval(0);
+  for(auto ihit=_hitList.begin();ihit!=_hitList.end();++ihit){
+    if((*ihit)->isActive())++retval;
+  }
+  return retval;
 }
 
 bool
-TrkRep::resid(const TrkHitOnTrk *h,
+TrkRep::resid(const TrkHit *h,
               double& residual, double& residErr,
               bool exclude) const
 {
   assert (h != 0);
-  if (h->parentRep() != this) return false;	// HOT must belong to Rep
+  if (h->parentRep() != this) return false;	// TrkHit must belong to Rep
   if (!h->hasResidual()) return false;		// Residual must be available
-  if (exclude) return false;  			// FIXME: Can't do unbiased residuals (yet!)
+  if (exclude) return false;  			// Can't do unbiased residual in base class
 
   residual=h->residual();
   residErr=h->hitRms();

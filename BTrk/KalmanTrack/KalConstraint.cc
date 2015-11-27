@@ -23,6 +23,7 @@
 #include <assert.h>
 using std::endl;
 using std::ostream;
+using namespace CLHEP;
 //
 //  Constructor
 //
@@ -63,27 +64,6 @@ KalConstraint::KalConstraint(const TrkDifPieceTraj* straj,
   setConstraint(constrain);
 // set the trajectory
   setTraj(straj,fltlen);
-}
-//
-//  copy constructor
-//
-KalConstraint::KalConstraint(const KalConstraint& other) :
-  KalSite(other),_cweight(other._cweight),_cparams(other._cparams),
-  _constrain(new bool[other._cparams.parameterVector().num_row()]),
-  _traj(other._traj == 0 ? 0 : other._traj->clone())
-{
-// copy the constraint vector
-  for(int iparam=0;iparam<_cparams.parameterVector().num_row();iparam++)
-    _constrain[iparam] = other._constrain[iparam];
-}
-// clone function
-KalConstraint*
-KalConstraint::clone(const KalRep* krep) const {
-  KalConstraint* newconstraint = new KalConstraint(*this);
-// set the trajectory to the new rep's reference trajectory
-// For now, assume the length doesn't change
-  newconstraint->setTraj(krep->referenceTraj(),globalLength());
-  return newconstraint;
 }
 //
 KalConstraint::~KalConstraint(){
@@ -149,9 +129,7 @@ KalConstraint::chisquared(double& chisq,const KalParams& params) const {
 }
 
 unsigned
-KalConstraint::nDof(TrkEnums::TrkViewInfo) const {
-//
-// view info can't be used since TrksimpTraj doesn't provide it
+KalConstraint::nDof() const {
   unsigned ndof(0);
   unsigned npar = _cparams.parameterVector().num_row();
   for(unsigned ipar=0;ipar<npar;++ipar)

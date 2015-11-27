@@ -25,10 +25,6 @@ class KalScatter : public KalSite {
 public:
 //  Construct from KalMaterial, with scattering factor
   KalScatter(const KalMaterial& km,double factor);
-// copy constructor
-  KalScatter(const KalScatter&);
-// clone operator
-  KalScatter* clone(const KalRep*) const;
 //  destructor
   virtual ~KalScatter();
 //  Fit function

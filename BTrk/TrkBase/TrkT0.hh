@@ -9,7 +9,7 @@ struct TrkT0 {
   double t0() const { return _t0; }
   double t0Err() const { return _t0err; }
   void setT0(double t0, double t0err) { _t0 = t0; _t0err = t0err; }
-  double _t0; // estimate of t0 value, defined when the track reaches z=0;
+  double _t0; // estimate of t0 value.  Convention is implementation-specific
   double _t0err; // estimate of t0 error
 };
 

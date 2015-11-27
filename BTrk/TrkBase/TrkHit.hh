@@ -1,10 +1,10 @@
 //--------------------------------------------------------------------------
 // File and Version Information:
-//      $Id: TrkHitOnTrk.hh,v 1.50 2007/09/24 21:56:27 gapon Exp $
+//      $Id: TrkHit.hh,v 1.50 2007/09/24 21:56:27 gapon Exp $
 //
 // Description:
 //  Abstract base class for reconstruction.  Provides common interface 
-//   for any tracking hit (e.g. SVT or DCH) for fitters, etc.   
+//   for any tracking hit for fitters, etc.   
 //   Stable and semi-stable quantities are cached: weight, flight and 
 //   length.  Residual, deltaChi (normalized resid), and derivs of delChi 
 //   w/r/t track params.  The flight and hit lengths
@@ -25,7 +25,7 @@
 #ifndef TRKHITONTRK_HH
 #define TRKHITONTRK_HH
 #include "BTrk/TrkBase/TrkParticle.hh"
-#include "BTrk/TrkBase/TrkEnums.hh"
+#include "BTrk/TrkBase/TrkPoca.hh"
 #include <iostream>
 #include <functional>
 
@@ -37,27 +37,23 @@ class TrkErrCode;
 class TrkDifPoca;
 class TrkPoca;
 
-class TrkHitOnTrkUpdater;
+class TrkHitUpdater;
 namespace TrkBase { namespace Functors {
    class updateMeasurement;
    class setActive;
    class setParent;
 } };
 
-class TrkHitOnTrk {
-  friend class TrkHotList;
+class TrkHit {
 // allow TrkRep to set activity
   friend class TrkRep;
 public:
-  typedef std::unary_function<TrkHitOnTrk,bool> predicate_type;
+  typedef std::unary_function<TrkHit,bool> predicate_type;
   //****************
   // Constructors and such
   //****************
-  TrkHitOnTrk(double tolerance); 
-  virtual ~TrkHitOnTrk();
-  virtual TrkHitOnTrk* clone(TrkRep* parentRep, const TrkDifTraj* trkTraj=0) const = 0;
-protected:
-  TrkHitOnTrk(const TrkHitOnTrk& hitToBeCopied, TrkRep* newRep, const TrkDifTraj* trkTraj=0 );
+  TrkHit(); 
+  virtual ~TrkHit();
 public:
 
   //****************
@@ -67,33 +63,23 @@ public:
   TrkParticle const& particleType() const;
   const TrkDifTraj* trkTraj() const { return _trkTraj;}
 
-
-
   inline bool isActive() const;    // false => leave out of current fit calc
-  inline bool isUsable() const;    // false => cannot be made active
-  inline int usability() const { return _isUsable;}
-  inline bool mustUse() const;     // true => cannot be made inactive
-  virtual TrkEnums::TrkViewInfo whatView() const = 0;
-  virtual unsigned layerNumber() const = 0;
   double hitRms() const                                    {return _hitRms;}
   double weight() const;  
   double fltLen() const                                     {return _trkLen;}
   double hitLen() const                                     {return _hitLen;}
 // ambiguity functions.  These are implemented here as no-ops, and
-// are overridden where necessary in DchHot
   virtual int ambig() const;
   virtual void setAmbig(int newambig);
 
-  bool operator==(const TrkHitOnTrk&) const;
-  bool operator< (const TrkHitOnTrk& rhs) const { return fltLen()<rhs.fltLen();}
+  bool operator==(const TrkHit&) const;
+  bool operator< (const TrkHit& rhs) const { return fltLen()<rhs.fltLen();}
 
   virtual const Trajectory* hitTraj() const = 0;
 
 // test whether residual information is present
-  bool hasResidual() const { return _poca != 0; }
-// poca STATUS
-  TrkErrCode pocaStatus() const;
-  const TrkPoca* poca() const { return _poca; }
+  bool hasResidual() const { return _poca.status().success(); }
+  TrkPoca const& poca() const { return _poca; }
 
   //getFitStuff: returns derivs and deltaChi (based on current state of track)
   //updateMeasurement: update internal representation, weight/sigma
@@ -124,12 +110,6 @@ public:
   // return the *internal* residual (used to satisfy getFitStuff)
   double residual() const;
 
-  // timing information; note that this returns in units of SECONDS!!!
-  // First, relative to the track time
-  virtual bool timeResid(double& resid, double& error) const = 0; 
-  // then, in 'absolute' units (relative to the trigger time)
-  virtual bool timeAbsolute(double& time,double& error) const = 0;
-
   //****************
   // Set values
   //****************
@@ -137,8 +117,6 @@ public:
   void setActivity(bool turnOn);   // this is the other function that directly calls
                                    // non-const members of TrkRep, and as such the
                                    // reason we need a non-const TrkRep *
-  void setUsability(int usability);         // 0=unusable; 1=usable; 2=must use
-                                            // setUsability will call setActivity
   void setFltLen(double f)                                      {_trkLen = f;}
   void setHitLen(double h)                               {_hitLen = h;}
 
@@ -158,40 +136,38 @@ public:
 protected:
   TrkRep* _parentRep;
   bool _isActive;
-  int  _isUsable;
   double _hitRms;
   double _trkLen;
   double _hitLen;
   double _resid;
   const TrkDifTraj *_trkTraj;
-  TrkPoca *_poca;
-  double _tolerance;
+  TrkPoca _poca;
+  // define tolerance for POCA
+  static double _tolerance;
+  void setTolerance(double newtol);
 
 protected:
   void setHitResid(double newResid)                        {_resid = newResid;}
   TrkRep* parentRep() const { return _parentRep;}
-  void setUsedHit();               // tell underlying hit 
-  void setUnusedHit(); 
   virtual TrkErrCode updateMeasurement(const TrkDifTraj* traj) = 0;
 private:
-  TrkHitOnTrk&   operator= (const TrkHitOnTrk&);    // Preempt 
-  TrkHitOnTrk(const TrkHitOnTrk& hit);  // preempt; use 1st protected ctor
+  TrkHit&   operator= (const TrkHit&);    // Preempt 
+  TrkHit(const TrkHit& hit);  // preempt; use 1st protected ctor
   // FIXME: have special 'friend' functors for each operation
   //        that requires friendship which are friends, and then
   //        arrange it such that only the "allowed" classes can
   //        create one of those functors. 
-  friend class TrkHitOnTrkUpdater;
+  friend class TrkHitUpdater;
   friend class TrkBase::Functors::updateMeasurement;
   friend class TrkBase::Functors::setActive;
   friend class TrkBase::Functors::setParent;
 // allow friends (essentially reps) to change the activity directly
-  TrkHitOnTrk *setActive(bool active) { _isActive = active; return this; }
-  TrkHitOnTrk *setParent(TrkRep* rep) { _parentRep = rep; return this; }
+  TrkHit *setActive(bool active) { _isActive = active; return this; }
+  TrkHit *setParent(TrkRep* rep) { _parentRep = rep; return this; }
 };
 
 // Inline functions
-inline bool TrkHitOnTrk::isActive() const {return _isActive;}
-inline bool TrkHitOnTrk::isUsable() const {return (_isUsable > 0);}
+inline bool TrkHit::isActive() const {return _isActive;}
 
-std::ostream& operator<<(std::ostream& o, const TrkHitOnTrk& x) ;
+std::ostream& operator<<(std::ostream& o, const TrkHit& x) ;
 #endif

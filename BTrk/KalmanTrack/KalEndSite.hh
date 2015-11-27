@@ -28,10 +28,6 @@ public:
 	     const TrkDifPieceTraj* ptraj,
 	     double fltlen,trkDirection,
 	     double smearfactor=1.0,bool diagonly=false);
-// copy constructor
-  KalEndSite(const KalEndSite&);
-// clone operator
-  KalSite* clone(const KalRep*) const;
   virtual ~KalEndSite() {;}
 // allow a null constructor
   KalEndSite();

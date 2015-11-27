@@ -33,8 +33,6 @@ public:
 	      double momentum,TrkParticle const& tpart);
 // copy constructor
   KalMaterial(const KalMaterial&);
-// clone operator
-  KalMaterial* clone(const KalRep*) const;
 //  destructor
   virtual ~KalMaterial();
 //  Fit function

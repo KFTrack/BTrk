@@ -15,9 +15,8 @@
 #define KALHIT_HH
 #include <assert.h>
 #include "BTrk/KalmanTrack/KalSite.hh"
-#include "BTrk/TrkBase/TrkHitOnTrk.hh"
-#include "BTrk/TrkBase/TrkHitOnTrkUpdater.hh"
-#include "BTrk/TrkBase/TrkEnums.hh"
+#include "BTrk/TrkBase/TrkHit.hh"
+#include "BTrk/TrkBase/TrkHitUpdater.hh"
 #include "BTrk/KalmanTrack/KalWeight.hh"
 #include "CLHEP/Matrix/SymMatrix.h"
 #include "CLHEP/Matrix/Matrix.h"
@@ -29,14 +28,10 @@ class TrkRep;
 //
 //  Define the class
 //
-class KalHit : public KalSite, TrkHitOnTrkUpdater {
+class KalHit : public KalSite, TrkHitUpdater {
 public:
 //  Constructors
-  KalHit(const TrkDifPieceTraj*,TrkHitOnTrk*);
-// copy constructor
-  KalHit(const KalHit&);
-// clone function
-  KalSite* clone(const KalRep*) const;
+  KalHit(const TrkDifPieceTraj*,TrkHit*);
 //
   virtual ~KalHit();
 //
@@ -44,14 +39,14 @@ public:
 //
   bool process(const KalSite*,trkDirection idir);
   bool update(const TrkDifPieceTraj*,double);
-// override needsFit, to be able to follow HOT state changes
+// override needsFit, to be able to follow TrkHit state changes
   virtual bool needsFit(trkDirection idir) const;
 //
 //  Access
 //
   void printAll(std::ostream& os = std::cout) const;
-  const TrkHitOnTrk* hitOnTrack() const { return _hot; }
-  TrkHitOnTrk* hitOnTrack() { return _hot; }
+  const TrkHit* hit() const { return _hit; }
+  TrkHit* hit() { return _hit; }
 // the following are now deprecated
   double chisquared(const KalSite*, trkDirection) const;
   double chisquared(const KalParams& params) const;
@@ -60,7 +55,7 @@ public:
 // can also compute the chi (signed) of the hit, and the total error (squared!!!)
 // on this residual (including the parameter errors). 
 // return value is true for OK, false if the calculation fails.
-//  The activity state of the hot can optionally be ignored.
+//  The activity state of the hit can optionally be ignored.
   bool chi(const KalParams& params,double& chival,double& chierr2,
 	   bool ignoreactive=true) const;
 // same as above, except just computing chisquared.
@@ -68,10 +63,10 @@ public:
 		  bool ignoreactive=true) const;
 // compute the uncorrected residual (chi) relative to the reference trajectory
   double referenceChi() const { return _residual; }
-  virtual unsigned nDof(TrkEnums::TrkViewInfo view=TrkEnums::bothView) const;
-  virtual bool isActive() const { return _hot!=0 ? _hot->isActive() : false; }
-// delete the hot; normally this is owned outside
-  void deleteHOT() { delete _hot; }
+  virtual unsigned nDof() const;
+  virtual bool isActive() const { return _hit!=0 ? _hit->isActive() : false; }
+// delete the hit; normally this is owned outside
+  void deleteTrkHit() { delete _hit; }
   void setActivity(bool turnOn);
 // return the flight length change since last update.  This can be useful
 // for identifying POCA failures
@@ -79,17 +74,15 @@ public:
 // override invert
   void invert();
 private:
-  TrkHitOnTrk* _hot; // hot for thqis site
+  TrkHit* _hit; // hit for this site
   KalWeight _hitweight; // hit parameters/weight
   double _residual; // residual vector
   CLHEP::HepVector _linrel; // hit derrivatives
-  bool _hotstate; // record the state of the HOT
+  bool _hitstate; // record the state of the TrkHit
   double _fltdif; // flightlength difference since last iteration
 // private functions
   bool updateCache(const TrkDifPieceTraj*); // update the above elements when necessary
   const CLHEP::HepVector& refvec() const { return
 				      localTrajectory()->parameters()->parameter(); }
-// clone the hot
-  void cloneHot(const KalRep* newrep);
 };
 #endif

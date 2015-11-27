@@ -23,6 +23,7 @@
 #include <assert.h>
 using std::endl;
 using std::ostream;
+using namespace CLHEP;
 //
 
 KalMaterial::KalMaterial(const DetIntersection& dinter,const TrkDifPieceTraj* reftraj,
@@ -54,25 +55,6 @@ KalMaterial::KalMaterial(const KalMaterial& other) :
   _pfractrms(other._pfractrms),
   _deflectrms(other._deflectrms)
 {}
-// clone function
-KalMaterial*
-KalMaterial::clone(const KalRep* krep) const {
-  KalMaterial* newmat = new KalMaterial(*this);
-  // see if the PID has changed: if not, we can reset the traj
-  // and use the existing cache
-  if(newmat->_tpart == krep->particleType()){
-    // set the trajectory to the new rep's reference trajectory
-    // For now, assume the length doesn't change
-    newmat->setTraj(krep->referenceTraj(),globalLength());
-  } else {
-    //  If the PID has changed, we need to re-compute the cache
-    newmat->setParticle(krep->particleType());
-    newmat->update(krep->referenceTraj(),krep->refMomentum());
-    // activate the new material
-    newmat->setActivity(true);
-  }
-  return newmat;
-}
 // override setTraj function
 bool
 KalMaterial::setTraj(const TrkDifPieceTraj* reftraj,double globlen) {

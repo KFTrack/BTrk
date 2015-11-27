@@ -19,65 +19,53 @@
 #define TRKFUNCTORS_HH
 #include <functional>
 
-#include "BTrk/TrkBase/TrkHitOnTrk.hh"
+#include "BTrk/TrkBase/TrkHit.hh"
 #include "BTrk/TrkBase/TrkErrCode.hh"
-class TrkHitOnTrkUpdater;
+class TrkHitUpdater;
 class TrkRep;
 
 namespace TrkBase { namespace Functors {
 
-
-
-        class cloneHot : public std::unary_function<TrkHitOnTrk,TrkHitOnTrk*> {
-        public:
-                cloneHot(TrkRep *parentRep, const TrkDifTraj* trkTraj=0) : _r(parentRep), _t(trkTraj) {}
-
-                TrkHitOnTrk *operator()(const TrkHitOnTrk& h) const 
-                { return h.clone(_r,_t); }
-        private:
-                TrkRep *_r;
-                const TrkDifTraj* _t;
-        };
 
         template <class T> struct takeAddress : std::unary_function<T,T*> {
                 T* operator()(T& t) { return &t; }
         };
 
 
-        // Functors which are only accessible by inheriting from TrkHitOnTrkUpdater
-        // FIXME: maybe these should live in the TrkHitOnTrkUpdater namespace instead???
+        // Functors which are only accessible by inheriting from TrkHitUpdater
+        // FIXME: maybe these should live in the TrkHitUpdater namespace instead???
 
-        class updateMeasurement : public std::unary_function<TrkHitOnTrk,TrkErrCode> {
+        class updateMeasurement : public std::unary_function<TrkHit,TrkErrCode> {
         public:
-                TrkErrCode operator()(TrkHitOnTrk& h) const
+                TrkErrCode operator()(TrkHit& h) const
                 { return h.updateMeasurement(_t); }
         private:
-                // Only TrkHitOnTrkUpdater can create one of these...
-                friend class ::TrkHitOnTrkUpdater;
+                // Only TrkHitUpdater can create one of these...
+                friend class ::TrkHitUpdater;
                 updateMeasurement(const TrkDifTraj* traj=0) : _t(traj) {}
                 const TrkDifTraj *_t;
         };
 
-        class setActive : public std::unary_function<TrkHitOnTrk,void> {
+        class setActive : public std::unary_function<TrkHit,void> {
         public:
-                TrkHitOnTrk* operator()(TrkHitOnTrk& h) const
+                TrkHit* operator()(TrkHit& h) const
                 { return h.setActive(_a); }
-                TrkHitOnTrk* operator()(TrkHitOnTrk*& h) const
+                TrkHit* operator()(TrkHit*& h) const
                 { return h->setActive(_a); }
         private:
-                // Only TrkHitOnTrkUpdater can create one of these...
-                friend class ::TrkHitOnTrkUpdater;
+                // Only TrkHitUpdater can create one of these...
+                friend class ::TrkHitUpdater;
                 setActive(bool active) : _a(active){}
                 bool _a;
         };
 
-        class setParent : public std::unary_function<TrkHitOnTrk,void> {
+        class setParent : public std::unary_function<TrkHit,void> {
         public:
-                TrkHitOnTrk* operator()(TrkHitOnTrk& h) const
+                TrkHit* operator()(TrkHit& h) const
                 { return h.setParent(_p); }
         private:
-                // Only TrkHitOnTrkUpdater can create one of these...
-                friend class ::TrkHitOnTrkUpdater;
+                // Only TrkHitUpdater can create one of these...
+                friend class ::TrkHitUpdater;
                 setParent(TrkRep* parent) : _p(parent){}
                 TrkRep* _p;
         };

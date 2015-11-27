@@ -29,10 +29,6 @@ public:
   KalSmear(const TrkDifPieceTraj* ptraj,
 	   double glen,
 	   double smearfac);
-// copy constructor
-  KalSmear(const KalSmear&);
-// clone operator
-  KalSite* clone(const KalRep*) const;
 //  destructor
   virtual ~KalSmear();
 //  Fit function

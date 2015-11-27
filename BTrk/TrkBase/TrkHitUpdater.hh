@@ -12,14 +12,14 @@
 //
 //------------------------------------------------------------------------
 
-#include "BTrk/TrkBase/TrkHitOnTrk.hh"
+#include "BTrk/TrkBase/TrkHit.hh"
 #include "BTrk/TrkBase/TrkErrCode.hh"
 
 /**
- *  TrkHitOnTrkUpdater. 
+ *  TrkHitUpdater. 
  *     this class regulates access to some protected functions
- *     in TrkHitOnTrk: only classes inheriting from this one can 
- *     modify the status of a TrkHitOnTrk
+ *     in TrkHit: only classes inheriting from this one can 
+ *     modify the status of a TrkHit
  *
  *
  *  This software was developed for the BaBar collaboration.  If you
@@ -27,25 +27,25 @@
  *
  *  Copyright (C) 2000 University of California, San Diego
  *
- *  @version $Id: TrkHitOnTrkUpdater.hh,v 1.5 2002/04/22 00:44:23 raven Exp $
+ *  @version $Id: TrkHitUpdater.hh,v 1.5 2002/04/22 00:44:23 raven Exp $
  *
  *  @author (Gerhard Raven)           (based on an idea of Steve Schaffner)
  */
 #include "BTrk/TrkBase/TrkFunctors.hh"
 
-class TrkHitOnTrkUpdater
+class TrkHitUpdater
 {
 public:
-  virtual ~TrkHitOnTrkUpdater() = 0;
+  virtual ~TrkHitUpdater() = 0;
 protected:
-  TrkErrCode updateMeasurement(TrkHitOnTrk &hot, const TrkDifTraj* traj=0) const
-    { return hot.updateMeasurement(traj);}
-// allow subclasses (essentially TrkReps) to set hot activity directly
-  void setActivity(TrkHitOnTrk& hot,bool active) const {
-    hot.setActive(active); }
-// allow changing the parent to which a hot is assigned
-  void setParent(TrkHitOnTrk& hot,TrkRep* parent) const {
-    hot._parentRep = parent;
+  TrkErrCode updateMeasurement(TrkHit &thit, const TrkDifTraj* traj=0) const
+    { return thit.updateMeasurement(traj);}
+// allow subclasses (essentially TrkReps) to set thit activity directly
+  void setActivity(TrkHit& thit,bool active) const {
+    thit.setActive(active); }
+// allow changing the parent to which a thit is assigned
+  void setParent(TrkHit& thit,TrkRep* parent) const {
+    thit._parentRep = parent;
   }
 
   TrkBase::Functors::updateMeasurement updateMeasurement( const TrkDifTraj* traj=0) const 

@@ -53,15 +53,6 @@ KalEndSite::KalEndSite(const KalParams& param,
   setFit(tdir);
 }
 
-KalEndSite::KalEndSite(const KalEndSite& other) :
-  KalSite(other)
-{;}
-
-KalSite*
-KalEndSite::clone(const KalRep* ) const {
-  return new KalEndSite(*this);
-}
-
 KalEndSite::KalEndSite() : KalSite(endSite)
 {}
 

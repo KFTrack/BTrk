@@ -27,10 +27,6 @@ public:
   KalBend(const BFieldIntegrator&,
 	  const TrkDifPieceTraj*,BFieldIntRange const& range,
 	  double momentum, int charge);
-// copy constructor
-  KalBend(const KalBend& other);
-// clone operator
-  KalBend* clone(const KalRep*) const;
 // destructor
   virtual ~KalBend();
 // fit processing
@@ -59,14 +55,14 @@ private:
   BFieldIntRange _range; // integral range
   double _momentum; // momentum magnitude (unsigned)
   int _charge; // particle charge
-  Hep3Vector _delmom; // momentum change
+  CLHEP::Hep3Vector _delmom; // momentum change
   KalParams _transport; // transport vector (no process noise)
 // update the cache
   void updateCache(const TrkDifPieceTraj*);
 // unit vectors, derived from the momentum direction
-  Hep3Vector _momhat;
-  Hep3Vector _thetahat;
-  Hep3Vector _phihat;
+  CLHEP::Hep3Vector _momhat;
+  CLHEP::Hep3Vector _thetahat;
+  CLHEP::Hep3Vector _phihat;
   double midpoint() const { return _range._smid; }
   // error fractor
   static double _efac;

@@ -16,9 +16,13 @@
 #include "BTrk/DetectorModel/DetMaterial.hh"
 #include "BTrk/TrkBase/TrkDifPieceTraj.hh"
 #include "BTrk/TrkBase/TrkParams.hh"
+
+#include "CLHEP/Matrix/Matrix.h"
+
 #include <assert.h>
 using std::endl;
 using std::ostream;
+using namespace CLHEP;
 
 KalScatter::KalScatter(const KalMaterial& km,double factor) :
   KalSite(scatterSite),
@@ -28,23 +32,6 @@ KalScatter::KalScatter(const KalMaterial& km,double factor) :
   updateCache(static_cast<const TrkDifPieceTraj*>(km.detIntersection().trajet),km.globalLength());
 }
 
-//
-//  copy constructor
-//
-KalScatter::KalScatter(const KalScatter& other) :
-  KalSite(other),
-  _transport(other._transport),
-  _deflectrms(other._deflectrms),
-  _pfractrms(other._pfractrms),
-  _scatter(other._scatter)
-{}
-// clone function
-KalScatter*
-KalScatter::clone(const KalRep* krep) const {
-  KalScatter* newscat = new KalScatter(*this);
-  return newscat;
-}
-//
 KalScatter::~KalScatter(){;}
 //
 //  Update the site for a new intersection.

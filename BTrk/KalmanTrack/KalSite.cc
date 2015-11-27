@@ -270,7 +270,7 @@ KalSite::setTrajState(trkDirection tdir, TrkSimpTraj* straj) const {
 }
 
 unsigned
-KalSite::nDof( TrkEnums::TrkViewInfo view) const {
+KalSite::nDof( ) const {
   return 0;
 }
 

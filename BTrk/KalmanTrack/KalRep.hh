@@ -27,21 +27,24 @@
 #include "BTrk/TrkBase/TrkDirection.hh"
 #include "BTrk/TrkBase/TrkDifPieceTraj.hh"
 #include "BTrk/DetectorModel/DetIntersection.hh"
+
+#include "CLHEP/Vector/ThreeVector.h"
+#include "CLHEP/Matrix/Vector.h"
+#include "CLHEP/Matrix/Matrix.h"
+#include "CLHEP/Matrix/SymMatrix.h"
+
 #include <iostream>
 
-class TrkHotList;
 class TrkDifTraj;
 class HelixParams;
-class TrkHitOnTrk;
+class TrkHit;
 class TrkFundHit;
 class TrkVolume;
 class TrkSimpTraj;
 class KalMaterial;
 class KalHit;
-class KalStub;
 class KalEndSite;
 class BField;
-class TrkHitUse;
 #include <vector>
 
 class KalRep : public TrkRep {
@@ -63,15 +66,15 @@ public:
 // momentum information
 //******************************************
   virtual int charge() const { return _charge; }
-  virtual Hep3Vector        momentum(double fltL=0.)      const;
+  virtual CLHEP::Hep3Vector        momentum(double fltL=0.)      const;
   virtual double            pt(double fltL=0.)            const;
   virtual BbrVectorErr      momentumErr(double fltL)      const;
 // covariance matrices of the track at fixed flight length 
-  virtual HepMatrix         posmomCov(double fltL)            const;
+  virtual CLHEP::HepMatrix         posmomCov(double fltL)            const;
   virtual void              getAllCovs(double fltL,
-				       HepSymMatrix& xxCov,
-				       HepSymMatrix& ppCov,
-				       HepMatrix& xpCov)      const;
+				       CLHEP::HepSymMatrix& xxCov,
+				       CLHEP::HepSymMatrix& ppCov,
+				       CLHEP::HepMatrix& xpCov)      const;
 // accessors to 2nd derivative of chi2 wrt x and p.
 // x0 and p0 are filled with the pos and 3mom around which expansion 
 // takes place, whilst Weights are filled with the 2nd deriv of chi2.
@@ -84,11 +87,11 @@ public:
 //  xxWeight ppWeight and xpWeight are 3 by 3 matrices
 //
   virtual void              getAllWeights(double fltL,
-					  HepVector& pos,
-					  HepVector& mom,
-					  HepSymMatrix& xxWeight,
-					  HepSymMatrix& ppWeight,
-					  HepMatrix&    xpWeight) const;
+					  CLHEP::HepVector& pos,
+					  CLHEP::HepVector& mom,
+					  CLHEP::HepSymMatrix& xxWeight,
+					  CLHEP::HepSymMatrix& ppWeight,
+					  CLHEP::HepMatrix&    xpWeight) const;
 // override the definition of the valid flightlength. 
   virtual bool validFlightLength(double fltL,double tolerance=0.0)      const;
 //******************************************
@@ -97,28 +100,19 @@ public:
   double chisq() const;
 // simply count Degrees of freedom
   virtual int nDof() const;
-// number of DOFs for specified view; this currently only counts the number
-// hits providing information in the specified view, as the underlying
-// tracking classes are incapable of providing their parameter information
-// in terms of view
-  virtual int nDof(TrkEnums::TrkViewInfo view) const;
 // nDof for a part of a track, up to the given flight length in the given direction
   virtual int nDof(double fltlen,trkDirection tdir) const;
 //******************************************
 // Special chi(squared) information, mostly for hits
 //******************************************
-// hit chisquared functions: these require the rep to have already been
-// fit (fitValid) in both directions
-//  Chisquared change for adding a hit
-  double hitChisq(const TrkHitUse& hituse) const;
-// same for a hit which already is on a track.  Note that the effect of
+// hit chisquared functions: these require the rep to have already been fit.
 // the hot itself on the fit can be optionally excluded.  The activity state
 // of the hot is ignored (ie the user should test on it before calling this function)
-  double hitChisq(const TrkHitOnTrk* hot,bool exclude=true) const;
+  double hitChisq(const TrkHit* hot,bool exclude=true) const;
 // same as above, except returning chi (=residual/error).  Since this
 // is signed, the return value indicates success separately.  The returned
 // error includes the track error and the hit error (squared!!) (in chi space).
-  bool hitChi(const TrkHitOnTrk* hot,
+  bool hitChi(const TrkHit* hot,
 	      double& chival,
 	      double& chierr2,
 	      bool exclude=true) const;
@@ -127,14 +121,14 @@ public:
 // only a _partial_ consistency test (the hits beyond the one under
 // test in the specified direction are not taken into account).  The hit
 // is always excluded in this case
-  double hitChisq(const TrkHitOnTrk* hot,trkDirection tdir) const;
+  double hitChisq(const TrkHit* hot,trkDirection tdir) const;
 // Compute the chisquared consistency of the forward and backward fits, at the
 // specified flight length.  Optionally specify a vector of masks which specify
 // which parameters to compare (default=all).
   double matchChisq(double fltlen,bool* tparams = 0) const;
 // physical-dimension residual; this uses the above.  Note the different default
 // value for 'exclude' compared to hitChi!!!!!
-  bool resid(const TrkHitOnTrk *hot,
+  bool resid(const TrkHit *hot,
              double& residual, double& residErr,
              bool exclude=false) const;
 //******************************************
@@ -161,21 +155,12 @@ public:
 //******************************************
 // Constructors and such
 //******************************************
-// fast constructor taking DetIntersections from outside.
- KalRep(const TrkSimpTraj&,TrkHotList* hots,const std::vector<DetIntersection>& dlist,
- 	const KalContext& context,TrkParticle const& tpart);
-// same, supplying also piecetraj as initial ref traj.
- KalRep(const TrkDifPieceTraj*,TrkHotList* hots,const std::vector<DetIntersection>& dlist,
-     const KalContext& context,TrkParticle const& tpart);
-// copy constructor to move rep to a new track
-  KalRep(const KalRep& );
-// copy constructor to add new mass hypo to existing track
-  KalRep(const KalRep& other,TrkParticle const& tpart);
+// constructor
+ KalRep(TrkSimpTraj const&,TrkHitList const& hots,
+	std::vector<DetIntersection> const& dlist,
+ 	KalContext const& context,TrkParticle const& tpart);
 // destructor
   virtual ~KalRep();
-// specific clone operation for this class
-  KalRep* clone() const; // covariant return
-  TrkRep* cloneNewHypo(TrkParticle const& tpart);
 //******************************************
 // Fitting and such
 //******************************************
@@ -193,28 +178,14 @@ public:
 // optionally invert the direction of the fit
   TrkErrCode resetAll(bool invert=false);
 //******************************************
-// KalStub interface
+// Hit manipulation
 //******************************************
-// create a KalStub on this KalRep.  This function _RETURNS OWNERSHIP_
-// DNB 3/13/01 This function now gives all non-hit sites on the KalRep
-// before the 'first' 'hit' to the KalStub.  Thus you MUST ALWAYS
-// APPEND THE STUB back onto the KalRep when you are done, regardless of whether
-// you've actually added hits, in order to keep from distorting the KalRep.
-  KalStub* createStub(const TrkVolume& extendvolume,
-		      trkDirection extenddir,double tolerance=0.1,
-		      const KalContext* context =0);
-// append a KalStub back on this rep.  Ths stub must have been created by this rep, or
-// cloned off a stub created by this rep.
-  TrkErrCode append(KalStub& stub);
-//******************************************
-// Hot manipulation
-//******************************************
-  void addHot(TrkHitOnTrk *);
-  void removeHot(TrkHitOnTrk *);
-  void activateHot(TrkHitOnTrk *);
-  void deactivateHot(TrkHitOnTrk *);
-  void updateHot(TrkHitOnTrk *);
-  void updateHots();
+  void addHit(TrkHit *);
+  void removeHit(TrkHit *);
+  void activateHit(TrkHit *);
+  void deactivateHit(TrkHit *);
+  void updateHit(TrkHit *);
+  void updateHits();
   //  Use the current output trajectory to update the KalSites.
   //  This removes fitCurrent, but not fitValid.
   TrkErrCode updateSites();
@@ -325,8 +296,8 @@ public:
   const KalSite* lastHit() const {
     return _hitrange[1] < int(_sites.size()) ? 
       _sites[_hitrange[1]] : 0; }
-// find hit site give the HOT0
-  const KalHit* findHotSite(const TrkHitOnTrk*) const;
+// find hit site give the hit
+  const KalHit* findHitSite(const TrkHit*) const;
 // fill vectors of trajectories corresponding to fit requests and constraints
   void fitTrajectories(std::vector<TrkSimpTraj*>& fits,const char* stream="Default") const;
   void constraintTrajectories(std::vector<TrkSimpTraj*>& fits) const;
@@ -393,7 +364,7 @@ private:
 // similarly extend the piecewiset trajectory.
   TrkErrCode extendTraj(int isite,trkDirection);
 // helper function for hot manipulations
-  KalHit* findHotSite(const TrkHitOnTrk*,unsigned& isite) const;
+  KalHit* findHitSite(const TrkHit*,unsigned& isite) const;
 // underlying chisquared function
   double chisquared(int startsite,int nsites,trkDirection tdir) const;
 // direct manipulation, for convenience

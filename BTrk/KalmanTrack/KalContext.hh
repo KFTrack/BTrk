@@ -19,7 +19,6 @@
 #define KALCONTEXT_HH
 
 #include <math.h>
-#include "BTrk/TrkBase/TrkEnums.hh"
 #include "BTrk/TrkBase/TrkParticle.hh"
 #include "BTrk/TrkBase/TrkDirection.hh"
 #include "BTrk/BField/BFieldIntegrator.hh"
@@ -45,9 +44,7 @@ public:
   double smearFactor() const { return _smearfactor; }
   double maxSiteDMom() const { return _sitethresh; }
   double maxDMom() const { return _momthresh; }
-// minimum DOFs required for each view.  bothview means 'overall DOFs'
-  unsigned minDOF(TrkEnums::TrkViewInfo view=TrkEnums::bothView) const { 
-    return _mindof[view]; }
+  unsigned minDOF() const { return _mindof; }
   double maxMomDiff() const { return _maxmomdiff; }
   double momUpdateFactor() const { return _momfac; }
   const BFieldIntConfig& bFieldIntConfig() const { return _bintconfig; }
@@ -79,7 +76,7 @@ protected:
   double _fltepsilon; // small flight length buffer
   double _divergeflt; // flight length change to signify a diverging fit
   double _mindot;  // minimum direction dot product change for a traj to be 'reasonable'
-  ulong _mindof[3]; // minimum number of DOFs to allow fit to succeed (can be 0)
+  ulong _mindof; // minimum number of DOFs to allow fit to succeed (can be 0)
   double _maxmomdiff; // maximum momentum difference before forcing iteration
   double _momfac; // factor for updating momentum on iteration; 0=full update,
 // infinity = don't update at all.  Scale is set by track momentum

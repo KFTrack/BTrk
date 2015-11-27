@@ -17,6 +17,7 @@
 #include "BTrk/TrkBase/TrkParams.hh"
 using std::endl;
 using std::ostream;
+using namespace CLHEP;
 
 double KalBend::_efac(0.0);
 double KalBend::_berr(0.0);
@@ -31,28 +32,7 @@ KalBend::KalBend(const BFieldIntegrator& integrator,
   updateCache(reftraj);
 }
 //
-KalBend::KalBend(const KalBend& other) :
-  KalSite(other),
-  _integrator(other._integrator),
-  _range(other._range),
-  _momentum(other._momentum),
-  _charge(other._charge),
-  _delmom(other._delmom),
-  _transport(other._transport),
-  _momhat(other._momhat),
-  _thetahat(other._thetahat),
-  _phihat(other._phihat)
-{
-}
-//
 KalBend::~KalBend() {;}
-//
-KalBend*
-KalBend::clone(const KalRep* newrep) const {
-  KalBend* newbend = new KalBend(*this);
-  newbend->setTraj(newrep->referenceTraj(),globalLength());
-  return newbend;
-}
 //
 // process; this is identical to KalMaterial
 bool

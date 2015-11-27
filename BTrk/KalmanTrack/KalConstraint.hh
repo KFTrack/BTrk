@@ -33,11 +33,6 @@ public:
 //
   KalConstraint(const TrkDifPieceTraj*,const TrkParams&,
 		bool* constrainParams, double fltlen);
-// copy constructor
-  KalConstraint(const KalConstraint&);
-// clone function
-  KalConstraint* clone(const KalRep*) const;
-//
   virtual ~KalConstraint();
 //
 //  Fit functions
@@ -48,7 +43,7 @@ public:
   bool chisquared(double& chisq,const KalSite*,trkDirection) const;
 // direct chisquared calculation
   bool chisquared(double& chisq,const KalParams& params) const;
-  unsigned nDof(TrkEnums::TrkViewInfo view=TrkEnums::bothView) const;
+  unsigned nDof() const;
 //  Access
   void printAll(std::ostream& os = std::cout) const;
 // KalConstraint specific

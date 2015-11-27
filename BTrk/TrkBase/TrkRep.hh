@@ -3,7 +3,7 @@
 //      $Id: TrkRep.hh,v 1.69 2007/09/24 21:56:27 gapon Exp $
 //
 // Description: Base class for internal track representation classes -- e.g. 
-//   HelixRep, KalRep.  Owns and maintains a TrkHotList; and keeps a 
+//   HelixRep, KalRep.  Owns and maintains a TrkHitList; and keeps a 
 //   pointer to the track that owns the Rep.
 //
 // Environment:
@@ -15,58 +15,45 @@
 
 #ifndef TRKREP_HH
 #define TRKREP_HH
-#include <memory>
+// BTrk includes
 #include "BTrk/TrkBase/TrkDirection.hh"
 #include "BTrk/TrkBase/TrkFitStatus.hh"
 #include "BTrk/TrkBase/TrkFit.hh"
-#include "BTrk/TrkBase/TrkHotList.hh"
-#include "BTrk/TrkBase/TrkHitOnTrkUpdater.hh"
+#include "BTrk/TrkBase/TrkHitUpdater.hh"
+#include "BTrk/TrkBase/TrkHit.hh"
 #include "BTrk/TrkBase/TrkT0.hh"
-#include "BTrk/TrkBase/TrkId.hh"
-// These 3 are needed for the OSF compiler:
-#include "BTrk/BbrGeom/BbrVectorErr.hh"
-#include "BTrk/BbrGeom/BbrPointErr.hh"
+#include "BTrk/TrkBase/TrkParticle.hh"
+// general includes
 #include "CLHEP/Vector/ThreeVector.h"
-// the following is needed by the Sun compiler
-#include "BTrk/ProbTools/ChisqConsistency.hh"
-
-class TrkHitOnTrk;
+#include <memory>
+#include <vector>
+#include <functional>
 #include <iosfwd>
-class TrkDifTraj;
+
 class TrkErrCode;
-class HelixParams;
-#include "CLHEP/Vector/ThreeVector.h"
 class HepPoint;
-class TrkVolume;
-class BField;
+class ChisqConsistency;
+class BbrPointErr;
+class BbrVectorErr;
+
+//namespace BTrk {
+// A TrkHitList is just a vector of pointers to hits.  The rep will own the hits passed to it on consruction.
+typedef std::vector<TrkHit*> TrkHitList;
+// hits are sorted by flightlength
+struct hitsort : public std::binary_function<TrkHit*, TrkHit*, bool> {
+  bool operator()(TrkHit* x, TrkHit* y) { 
+    return  x->fltLen() < y->fltLen();
+  }
+};
 
 // Class interface //
-class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitOnTrkUpdater {
+class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitUpdater {
 
   public:
-    //******************************************
-    // Constructors and such
-    //******************************************
-    // construct from a hotlist -- The rep will not take ownership of anything passed
-    //                          -- it will _clone_ the hots passed on inHots
-    TrkRep(const TrkHotList& inHots, 
-	TrkParticle const& tpart);
-    TrkRep(TrkHotList& inHots, 
-	TrkParticle const& tpart, bool stealHots=false);
-    // construct from a hotlist -- The rep will always _TAKE OWNERSHIP_ of the hots
-    //                             and if takeownership==true, ALSO of the list.
-    TrkRep(const TrkHotList* inHots, 
-	TrkParticle const& tpart);
-    TrkRep(TrkHotList* inHots, 
-	TrkParticle const& tpart, bool takeownership=false);
-    // rep without explicit hotlist
-    TrkRep(TrkParticle const& tpart, bool createHotList=false);
-    // copy ctor
-    TrkRep(const TrkRep& oldRep, TrkParticle const& tpart);
+    // construct from a hitlist; the rep takes ownership of the hits
+    TrkRep(TrkHitList const& inTrkHits, TrkParticle const& tpart );
     virtual ~TrkRep();
-    // clone() used to copy tracks; cloneNewHypo() for new hypos within track
-    virtual TrkRep* clone() const = 0;
-    virtual TrkRep* cloneNewHypo(TrkParticle const& tpart) = 0;
+    TrkRep&   operator = (const TrkRep&) = delete;
     bool operator== (const TrkRep&);
 
     //******************************************
@@ -100,41 +87,29 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitOnTrkUpdater {
     //******************************************
     // Simple implementations of these are present in the base class; 
     //   complicated reps (e.g. Kalman) may wish to override.
-    virtual void            addHot(TrkHitOnTrk *theHot);
-    virtual void            removeHot(TrkHitOnTrk *theHot);
-    virtual void            activateHot(TrkHitOnTrk *theHot);
-    virtual void            deactivateHot(TrkHitOnTrk *theHot);
-    virtual TrkHotList*             hotList()                 {return _hotList.get();}
-    virtual const TrkHotList*       hotList() const           {return _hotList.get();}
-    virtual void            updateHots();
-    virtual bool            resid(const TrkHitOnTrk *theHot,
+    virtual void		    addHit(TrkHit *theTrkHit);
+    virtual void		    removeHit(TrkHit *theTrkHit);
+    virtual void		    activateHit(TrkHit *theTrkHit);
+    virtual void		    deactivateHit(TrkHit *theTrkHit);
+    virtual TrkHitList const&       hitList() const           {return _hitList;}
+    virtual TrkHitList&		    hitList() {return _hitList;}
+    virtual void		    updateTrkHits();
+    virtual bool		    resid(const TrkHit *theTrkHit,
 	double &residual, double &residErr,
 	bool exclude=false) const;
-
-    // Distinguishes hotLists that actually hold hits from those that just hold 
-    //   info (e.g. nActive) about the hits used to create the fit
-    bool hitCapable() const                     {return hotList()->hitCapable();}
-
 
     //****************************************** 
     // Fitting stuff
     //******************************************
     virtual TrkErrCode fit() = 0;
 
-    TrkId const& id() const { return _id; }
   protected:
-    TrkRep&   operator= (const TrkRep&);
-  private:
     // new data members for mu2e
     TrkT0 _trkt0; // t0 value
     double _flt0; // flightlength associated with t=t0.
-    TrkParticle _tpart;
-    TrkId _id;  // track identifier
-  protected:
-    //protected, not private, so derived classes can create in copy ctor
-    // note: cloning a hotlist requires parentRep to be set first, so
-    // this must be declared _after _parentRep
-    std::auto_ptr<TrkHotList>  _hotList;
+    TrkParticle _tpart; // particle type of this rep
+    TrkHitList  _hitList; // hits used in this rep
+    void sortHits(); // allow subclasses to sort hits
 };
 
 #endif
