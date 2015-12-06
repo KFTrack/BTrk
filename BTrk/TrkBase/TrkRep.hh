@@ -3,7 +3,7 @@
 //      $Id: TrkRep.hh,v 1.69 2007/09/24 21:56:27 gapon Exp $
 //
 // Description: Base class for internal track representation classes -- e.g. 
-//   HelixRep, KalRep.  Owns and maintains a TrkHitList; and keeps a 
+//   HelixRep, KalRep.  Owns and maintains a TrkHitVector; and keeps a 
 //   pointer to the track that owns the Rep.
 //
 // Environment:
@@ -29,6 +29,7 @@
 #include <vector>
 #include <functional>
 #include <iosfwd>
+#include <memory>
 
 class TrkErrCode;
 class HepPoint;
@@ -37,8 +38,8 @@ class BbrPointErr;
 class BbrVectorErr;
 
 //namespace BTrk {
-// A TrkHitList is just a vector of pointers to hits.  The rep will own the hits passed to it on consruction.
-typedef std::vector<TrkHit*> TrkHitList;
+// A TrkHitVector is just a vector of pointers to hits.
+typedef std::vector<TrkHit*> TrkHitVector;
 // hits are sorted by flightlength
 struct hitsort : public std::binary_function<TrkHit*, TrkHit*, bool> {
   bool operator()(TrkHit* x, TrkHit* y) { 
@@ -51,7 +52,7 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitUpdater {
 
   public:
     // construct from a hitlist; the rep takes ownership of the hits
-    TrkRep(TrkHitList const& inTrkHits, TrkParticle const& tpart );
+    TrkRep(TrkHitVector const& inTrkHits, TrkParticle const& tpart );
     virtual ~TrkRep();
     TrkRep&   operator = (const TrkRep&) = delete;
     bool operator== (const TrkRep&);
@@ -91,8 +92,8 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitUpdater {
     virtual void		    removeHit(TrkHit *theTrkHit);
     virtual void		    activateHit(TrkHit *theTrkHit);
     virtual void		    deactivateHit(TrkHit *theTrkHit);
-    virtual TrkHitList const&       hitList() const           {return _hitList;}
-    virtual TrkHitList&		    hitList() {return _hitList;}
+    virtual TrkHitVector const&     hitVector() const {return _hitvec;}
+    virtual TrkHitVector&	    hitVector() {return _hitvec;}
     virtual void		    updateTrkHits();
     virtual bool		    resid(const TrkHit *theTrkHit,
 	double &residual, double &residErr,
@@ -108,7 +109,7 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitUpdater {
     TrkT0 _trkt0; // t0 value
     double _flt0; // flightlength associated with t=t0.
     TrkParticle _tpart; // particle type of this rep
-    TrkHitList  _hitList; // hits used in this rep
+    TrkHitVector  _hitvec; // hits used in this rep
     void sortHits(); // allow subclasses to sort hits
 };
 

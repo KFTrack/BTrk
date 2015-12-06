@@ -135,12 +135,12 @@ public:
 
 protected:
   TrkRep* _parentRep;
+  const TrkDifTraj *_trkTraj;
   bool _isActive;
   double _hitRms;
   double _trkLen;
   double _hitLen;
   double _resid;
-  const TrkDifTraj *_trkTraj;
   TrkPoca _poca;
   // define tolerance for POCA
   static double _tolerance;
@@ -150,13 +150,8 @@ protected:
   void setHitResid(double newResid)                        {_resid = newResid;}
   TrkRep* parentRep() const { return _parentRep;}
   virtual TrkErrCode updateMeasurement(const TrkDifTraj* traj) = 0;
-private:
-  TrkHit&   operator= (const TrkHit&);    // Preempt 
-  TrkHit(const TrkHit& hit);  // preempt; use 1st protected ctor
-  // FIXME: have special 'friend' functors for each operation
-  //        that requires friendship which are friends, and then
-  //        arrange it such that only the "allowed" classes can
-  //        create one of those functors. 
+  TrkHit&   operator= (const TrkHit&);
+  TrkHit(const TrkHit& hit);
   friend class TrkHitUpdater;
   friend class TrkBase::Functors::updateMeasurement;
   friend class TrkBase::Functors::setActive;

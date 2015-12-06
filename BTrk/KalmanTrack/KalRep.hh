@@ -156,7 +156,7 @@ public:
 // Constructors and such
 //******************************************
 // constructor
- KalRep(TrkSimpTraj const&,TrkHitList const& hots,
+ KalRep(TrkSimpTraj const&,TrkHitVector const& hots,
 	std::vector<DetIntersection> const& dlist,
  	KalContext const& context,TrkParticle const& tpart);
 // destructor

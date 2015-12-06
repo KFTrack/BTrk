@@ -32,13 +32,13 @@ void TrkHit::setTolerance(double tol) { _tolerance = tol; }
 
 TrkHit::TrkHit() :
   _parentRep(0),
+  _trkTraj(0),
   _isActive(false),
   //make caches invalid
   _hitRms(-1.0),
   _trkLen(0.0),
   _hitLen(0.0),
-  _resid(-1.0),
-  _trkTraj(0)
+  _resid(-1.0)
 {  }
 
 TrkHit::~TrkHit()

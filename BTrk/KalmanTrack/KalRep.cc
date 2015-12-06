@@ -126,7 +126,7 @@ KalRep::initSites() {
 
 // construct from hits and intersections
 KalRep::KalRep(TrkSimpTraj const& seed,
-    TrkHitList const& hitl,
+    TrkHitVector const& hitl,
     std::vector<DetIntersection> const& dinters,
     KalContext const& context,
     TrkParticle const& tpart) :
@@ -1146,7 +1146,7 @@ void
 KalRep::buildHitSites() {
 // intialize some TrkHit stuff
 //  Loop over the hits, and create KalHit sites for them, and add them to the site list
-  for(auto ihit = _hitList.begin();ihit < _hitList.end();++ihit) {
+  for(auto ihit = hitVector().begin();ihit < hitVector().end();++ihit) {
     KalHit* newhit = new KalHit(_reftraj,*ihit);
     assert(newhit != 0);
     _sites.push_back(newhit);

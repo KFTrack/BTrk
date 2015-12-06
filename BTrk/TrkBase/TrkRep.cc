@@ -42,20 +42,23 @@ using std::cout;
 using std::endl;
 using namespace CLHEP;
 
-TrkRep::TrkRep(const TrkHitList& hitlist, TrkParticle const& hypo)
-  : _tpart(hypo), _hitList( hitlist)
+TrkRep::TrkRep(const TrkHitVector& hitlist, TrkParticle const& hypo)
+  : _tpart(hypo), _hitvec( hitlist)
 {
   sortHits();
 }
 
+// cleanup TrkHits
 TrkRep::~TrkRep()
 {
+  for(auto ihit=_hitvec.begin();ihit!=_hitvec.end();++ihit)
+    delete *ihit;
 }
 
 void
 TrkRep::sortHits() {
 // sort hits by flightlength
- std::sort(_hitList.begin(),_hitList.end(),hitsort());
+ std::sort(_hitvec.begin(),_hitvec.end(),hitsort());
 }
 
 bool
@@ -65,21 +68,21 @@ TrkRep::operator== (const TrkRep& rhs)
 }
 
 void
-TrkRep::addHit(TrkHit *newTrkHit)
+TrkRep::addHit(TrkHit* newTrkHit)
 {
   newTrkHit->setParent(this);
   if (newTrkHit->isActive()) setCurrent(false);
-  _hitList.push_back(newTrkHit);
+  _hitvec.push_back(newTrkHit);
   sortHits();
 }
 
 void
-TrkRep::removeHit(TrkHit *theTrkHit)
+TrkRep::removeHit(TrkHit* theTrkHit)
 {
   if(theTrkHit->isActive()) setCurrent(false);     // fit no longer current
-  auto ifnd = std::find(_hitList.begin(),_hitList.end(),theTrkHit);
-  if(ifnd != _hitList.end())
-    _hitList.erase(ifnd);
+  auto ifnd = std::find(_hitvec.begin(),_hitvec.end(),theTrkHit);
+  if(ifnd != _hitvec.end())
+    _hitvec.erase(ifnd);
 
 }
 
@@ -214,27 +217,27 @@ TrkRep::endValidRange() const
 double
 TrkRep::startFoundRange() const
 {
-  return _hitList.front()->fltLen();
+  return _hitvec.front()->fltLen();
 }
 
 double
 TrkRep::endFoundRange() const
 {
-  return _hitList.back()->fltLen();
+  return _hitvec.back()->fltLen();
 }
 
 int
 TrkRep::nActive() const
 {
   int retval(0);
-  for(auto ihit=_hitList.begin();ihit!=_hitList.end();++ihit){
+  for(auto ihit=_hitvec.begin();ihit!=_hitvec.end();++ihit){
     if((*ihit)->isActive())++retval;
   }
   return retval;
 }
 
 bool
-TrkRep::resid(const TrkHit *h,
+TrkRep::resid(const TrkHit* h,
               double& residual, double& residErr,
               bool exclude) const
 {
