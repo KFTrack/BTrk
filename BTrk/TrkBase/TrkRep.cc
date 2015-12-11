@@ -61,6 +61,13 @@ TrkRep::sortHits() {
  std::sort(_hitvec.begin(),_hitvec.end(),hitsort());
 }
 
+// disallow
+TrkRep&
+TrkRep::operator = (const TrkRep& rhs) {
+  assert(false);
+  return *this;
+}
+
 bool
 TrkRep::operator== (const TrkRep& rhs)
 {
