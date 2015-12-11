@@ -38,8 +38,6 @@ class BbrPointErr;
 class BbrVectorErr;
 
 //namespace BTrk {
-// A TrkHitVector is just a vector of pointers to hits.
-typedef std::vector<TrkHit*> TrkHitVector;
 // hits are sorted by flightlength
 struct hitsort : public std::binary_function<TrkHit*, TrkHit*, bool> {
   bool operator()(TrkHit* x, TrkHit* y) { 
@@ -62,6 +60,7 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitUpdater {
     //******************************************
     virtual ChisqConsistency    chisqConsistency() const;
     virtual int               nActive()      const;
+    virtual int               nHits()      const;
     double                    startValidRange() const;
     double                    endValidRange()   const;
     virtual double            startFoundRange() const;

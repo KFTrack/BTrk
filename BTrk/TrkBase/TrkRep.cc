@@ -236,6 +236,11 @@ TrkRep::nActive() const
   return retval;
 }
 
+int
+TrkRep::nHits() const {
+  return _hitvec.size();
+}
+
 bool
 TrkRep::resid(const TrkHit* h,
               double& residual, double& residErr,
