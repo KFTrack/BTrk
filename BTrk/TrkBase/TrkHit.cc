@@ -88,15 +88,12 @@ bool TrkHit::operator==(const TrkHit &rhs) const
   return this == &rhs;
 }
 
-int
-TrkHit::ambig() const
-{
-  return 0;// by default no ambiguity
-}
-
 void
-TrkHit::setAmbig(int newambig)
-{} // by default nothing to set
+TrkHit::invert()
+{
+// reverse the flightlength
+  setFltLen(-1.0*fltLen());
+}
 
 double
 TrkHit::resid(bool exclude) const
@@ -129,6 +126,8 @@ TrkHit::updatePoca(const TrkDifTraj* trkTraj)
     if (trkTraj==0)trkTraj = &getParentRep()->traj();
     _poca = TrkPoca(*trkTraj,fltLen(),*hitTraj(), hitLen(),_tolerance);
     if(_poca.status().success()){
+    // update cache of track trajectory.  This is needed when moving POCA to DifPOCA.
+      _trkTraj = trkTraj;
     // this copying of flightlens between poca and TrkHit is error-prone
     //  and risks cache inconsistency, FIXME!!!
       _trkLen = _poca.flt1();

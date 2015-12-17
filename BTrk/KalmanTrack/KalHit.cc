@@ -183,10 +183,8 @@ KalHit::nDof( ) const {
 
 void
 KalHit::invert() {
-// Need to invert lengths for Hit, too.
-  _hit->setFltLen(-1*_hit->fltLen());
-// we also need to flip the ambiguity state
-  _hit->setAmbig( -1*_hit->ambig() );
+// Need to invert the hit
+  _hit->invert();
  KalSite::invert();
 }
 

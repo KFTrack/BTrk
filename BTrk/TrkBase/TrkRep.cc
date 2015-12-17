@@ -42,10 +42,12 @@ using std::cout;
 using std::endl;
 using namespace CLHEP;
 
-TrkRep::TrkRep(const TrkHitVector& hitlist, TrkParticle const& hypo)
+TrkRep::TrkRep(TrkHitVector const& hitlist, TrkParticle const& hypo)
   : _tpart(hypo), _hitvec( hitlist)
 {
   sortHits();
+  for(auto ihit=_hitvec.begin();ihit!=_hitvec.end();++ihit)
+    (*ihit)->setParent(this);
 }
 
 // cleanup TrkHits

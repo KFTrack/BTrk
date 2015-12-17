@@ -69,9 +69,6 @@ public:
   double weight() const;  
   double fltLen() const                                     {return _trkLen;}
   double hitLen() const                                     {return _hitLen;}
-// ambiguity functions.  These are implemented here as no-ops, and
-  virtual int ambig() const;
-  virtual void setAmbig(int newambig);
 
   bool operator==(const TrkHit&) const;
   bool operator< (const TrkHit& rhs) const { return fltLen()<rhs.fltLen();}
@@ -111,8 +108,11 @@ public:
   // return the *internal* residual (used to satisfy getFitStuff)
   double residual() const;
 
+  // allow reversing the track.  The base class implementation does nothing
+  virtual void invert();
+
   //****************
-  // Set values
+  // Set values. 
   //****************
   // 
   void setActivity(bool turnOn);   // this is the other function that directly calls
