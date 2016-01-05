@@ -45,7 +45,8 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitUpdater {
     // construct from a hitlist; the rep takes ownership of the hits
     TrkRep(TrkHitVector const& inTrkHits, TrkParticle const& tpart );
     virtual ~TrkRep();
-    TrkRep&   operator = (const TrkRep&) = delete;
+//    TrkRep&   operator = (const TrkRep&) = delete;
+    TrkRep&   operator = (const TrkRep&);
     bool operator== (const TrkRep&);
 
     //******************************************
@@ -53,6 +54,7 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitUpdater {
     //******************************************
     virtual ChisqConsistency    chisqConsistency() const;
     virtual int               nActive()      const;
+    virtual int               nHits()      const;
     double                    startValidRange() const;
     double                    endValidRange()   const;
     virtual double            startFoundRange() const;
@@ -85,7 +87,6 @@ class TrkRep : public TrkFitStatus, public TrkFit, public TrkHitUpdater {
     virtual void		    deactivateHit(TrkHit *theTrkHit);
     virtual TrkHitVector const&     hitVector() const {return _hitvec;}
     virtual TrkHitVector&	    hitVector() {return _hitvec;}
-    virtual void		    updateTrkHits();
     virtual bool		    resid(const TrkHit *theTrkHit,
 	double &residual, double &residErr,
 	bool exclude=false) const;

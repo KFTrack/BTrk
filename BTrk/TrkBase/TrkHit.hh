@@ -22,8 +22,8 @@
 // Roguewave Sorted Vector
 //------------------------------------------------------------------------
 
-#ifndef TRKHITONTRK_HH
-#define TRKHITONTRK_HH
+#ifndef TrkHit_HH
+#define TrkHit_HH
 #include "BTrk/TrkBase/TrkParticle.hh"
 #include "BTrk/TrkBase/TrkPoca.hh"
 #include <iostream>
@@ -64,13 +64,11 @@ public:
   const TrkDifTraj* trkTraj() const { return _trkTraj;}
 
   inline bool isActive() const;    // false => leave out of current fit calc
+  int hitFlag() const { return _flag; } // generic flag
   double hitRms() const                                    {return _hitRms;}
   double weight() const;  
   double fltLen() const                                     {return _trkLen;}
   double hitLen() const                                     {return _hitLen;}
-// ambiguity functions.  These are implemented here as no-ops, and
-  virtual int ambig() const;
-  virtual void setAmbig(int newambig);
 
   bool operator==(const TrkHit&) const;
   bool operator< (const TrkHit& rhs) const { return fltLen()<rhs.fltLen();}
@@ -110,8 +108,11 @@ public:
   // return the *internal* residual (used to satisfy getFitStuff)
   double residual() const;
 
+  // allow reversing the track.  The base class implementation does nothing
+  virtual void invert();
+
   //****************
-  // Set values
+  // Set values. 
   //****************
   // 
   void setActivity(bool turnOn);   // this is the other function that directly calls
@@ -133,10 +134,13 @@ public:
   virtual void print(std::ostream& ) const;
   virtual void printAll(std::ostream& ) const;
 
+  void setFlag(int flag) { _flag = flag; }
+
 protected:
   TrkRep* _parentRep;
   const TrkDifTraj *_trkTraj;
   bool _isActive;
+  int _flag;
   double _hitRms;
   double _trkLen;
   double _hitLen;
@@ -145,8 +149,6 @@ protected:
   // define tolerance for POCA
   static double _tolerance;
   void setTolerance(double newtol);
-
-protected:
   void setHitResid(double newResid)                        {_resid = newResid;}
   TrkRep* parentRep() const { return _parentRep;}
   virtual TrkErrCode updateMeasurement(const TrkDifTraj* traj) = 0;
@@ -172,6 +174,8 @@ struct hitsort : public std::binary_function<TrkHit*, TrkHit*, bool> {
 
 // Inline functions
 inline bool TrkHit::isActive() const {return _isActive;}
-
 std::ostream& operator<<(std::ostream& o, const TrkHit& x) ;
+// typedef
+  typedef std::vector<TrkHit*> TrkHitVector;
+
 #endif

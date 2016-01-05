@@ -42,10 +42,12 @@ using std::cout;
 using std::endl;
 using namespace CLHEP;
 
-TrkRep::TrkRep(const TrkHitVector& hitlist, TrkParticle const& hypo)
+TrkRep::TrkRep(TrkHitVector const& hitlist, TrkParticle const& hypo)
   : _tpart(hypo), _hitvec( hitlist)
 {
   sortHits();
+  for(auto ihit=_hitvec.begin();ihit!=_hitvec.end();++ihit)
+    (*ihit)->setParent(this);
 }
 
 // cleanup TrkHits
@@ -59,6 +61,13 @@ void
 TrkRep::sortHits() {
 // sort hits by flightlength
  std::sort(_hitvec.begin(),_hitvec.end(),hitsort());
+}
+
+// disallow
+TrkRep&
+TrkRep::operator = (const TrkRep& rhs) {
+  assert(false);
+  return *this;
 }
 
 bool
@@ -234,6 +243,11 @@ TrkRep::nActive() const
     if((*ihit)->isActive())++retval;
   }
   return retval;
+}
+
+int
+TrkRep::nHits() const {
+  return _hitvec.size();
 }
 
 bool
