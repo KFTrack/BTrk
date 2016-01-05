@@ -24,6 +24,7 @@
 #include "BTrk/KalmanTrack/KalConstraint.hh"
 #include "BTrk/KalmanTrack/KalCodes.hh"
 #include "BTrk/DetectorModel/DetSet.hh"
+#include "BTrk/DetectorModel/DetElem.hh"
 #include "BTrk/DetectorModel/DetMaterial.hh"
 #include "BTrk/TrkBase/TrkHit.hh"
 #include "BTrk/TrkBase/TrkDifTraj.hh"

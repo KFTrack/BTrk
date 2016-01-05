@@ -128,8 +128,16 @@ public:
   virtual void physicalOutline(std::vector<HepPoint>&) const;
   virtual void gnuPlot( GnuPlot* ) const;
 protected:
+  void materialInfo( DetMaterial const& mat,
+      double thickness,
+      double momentum,
+      TrkParticle const& tpart,
+      double& deflectRMS,
+      double& pFractionRMS,
+      double& pFraction,
+      trkDirection dedxdir) const;
   virtual HepPoint coordToPoint( const TypeCoord* aCoord ) const = 0;
-  // the ElemPointIterator class must be able to access coordToPoint function
+    // the ElemPointIterator class must be able to access coordToPoint function
   friend class DetElemPointIterator;  
   // Following is so derived classes can set transform through method
   HepTransformation*& myTransf() { return _etrans; }

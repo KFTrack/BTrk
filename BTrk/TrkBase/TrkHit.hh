@@ -161,6 +161,15 @@ protected:
   TrkHit *setParent(TrkRep* rep) { _parentRep = rep; return this; }
 };
 
+// A TrkHitVector is just a vector of pointers to hits.
+typedef std::vector<TrkHit*> TrkHitVector;
+// hits are sorted by flightlength
+struct hitsort : public std::binary_function<TrkHit*, TrkHit*, bool> {
+  bool operator()(TrkHit* x, TrkHit* y) { 
+    return  x->fltLen() < y->fltLen();
+  }
+};
+
 // Inline functions
 inline bool TrkHit::isActive() const {return _isActive;}
 

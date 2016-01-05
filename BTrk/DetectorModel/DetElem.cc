@@ -124,13 +124,25 @@ DetElem::materialInfo(const DetIntersection& dinter,
 		      double& pFractionRMS,
 		      double& pFraction,
 		      trkDirection dedxdir) const {
+  //  Get the material
+  const DetMaterial& mat = material(dinter);
+  //
+  //  The path length gives the effective thickness through the material
+  //
+  double thickness = dinter.pathLength();
+  materialInfo(mat,thickness,momentum,tpart,deflectRMS,pFractionRMS,pFraction,dedxdir);
+}
+
+void
+DetElem::materialInfo( DetMaterial const& mat,
+		      double thickness,
+		      double momentum,
+		      TrkParticle const& tpart,
+		      double& deflectRMS,
+		      double& pFractionRMS,
+		      double& pFraction,
+		      trkDirection dedxdir) const {
   if(momentum>0.0){
-//  Get the material
-    const DetMaterial& mat = material(dinter);
-//
-//  The path length gives the effective thickness through the material
-//
-    double thickness = dinter.pathLength();
 //
 //  Pass everything to the material, to get the answers
 //

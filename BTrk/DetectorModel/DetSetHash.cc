@@ -15,6 +15,7 @@
 #include "BTrk/BaBar/ErrLog.hh"
 #include "BTrk/DetectorModel/DetSetHash.hh"
 #include "BTrk/DetectorModel/DetSet.hh"
+#include "BTrk/DetectorModel/DetElem.hh"
 #include <assert.h>
 #include <iostream>
 

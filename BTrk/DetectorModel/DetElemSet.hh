@@ -42,6 +42,7 @@
 //-------------------------------
 #include "BTrk/BbrGeom/Transformation.h"
 #include "BTrk/DetectorModel/DetSet.hh"
+#include "BTrk/DetectorModel/DetElem.hh"
 class DetAlignElem;
 
 //		---------------------

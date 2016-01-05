@@ -14,14 +14,17 @@
 #ifndef DETECTORINTERSECTION_HH
 #define DETECTORINTERSECTION_HH
 #define EPSILON 1.0e-3 // test value for intersections
-#include "BTrk/DetectorModel/DetElem.hh"
-#include "BTrk/BbrGeom/Trajectory.hh"
+class DetElem;
+class TrkHit;
+class Trajectory;
 //
 struct DetIntersection{
   const DetElem* delem; // the concerned detector element
   const Trajectory* trajet; // the concerned trajectory
+  const TrkHit* thit; // optional hit associated with this element
   double pathlen; // path length at intersection (typically the average of the range)
   double pathrange[2]; // path length at entrance and exit (can be equal, = pathlen)
+  double dist; // distance to element
   int flag[2]; // flag describing entrance and exit.
   DetIntersection();
   DetIntersection(const DetIntersection&);
@@ -31,7 +34,7 @@ struct DetIntersection{
   DetIntersection(const DetElem*,const Trajectory*,double,double,double);
   ~DetIntersection(){;}
   bool operator == (const DetIntersection& other) const {
-    return (delem == other.delem) && (trajet == other.trajet) &&
+    return (delem == other.delem) && (trajet == other.trajet) && (thit == other.thit) &&
       fabs(pathlen - other.pathlen) < EPSILON; }
 //  Comparison use only path length, to enable sorts of heterogeneous lists
   int operator < (const DetIntersection& other) const {
@@ -41,9 +44,11 @@ struct DetIntersection{
   DetIntersection& operator = (const DetIntersection& other){
     delem = other.delem;
     trajet = other.trajet;
+    thit = other.thit;
     pathlen = other.pathlen;
     pathrange[0] = other.pathrange[0];
     pathrange[1] = other.pathrange[1];
+    dist = other.dist;
     flag[0] = other.flag[0];
     flag[1] = other.flag[1];
     return *this;
