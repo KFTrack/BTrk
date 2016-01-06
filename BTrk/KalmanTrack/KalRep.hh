@@ -298,6 +298,8 @@ public:
       _sites[_hitrange[1]] : 0; }
 // find hit site give the hit
   const KalHit* findHitSite(const TrkHit*) const;
+// find material site(s) given an element
+  void findMaterialSites(const DetElem*,std::vector<const KalMaterial*>& matsites) const;
 // fill vectors of trajectories corresponding to fit requests and constraints
   void fitTrajectories(std::vector<TrkSimpTraj*>& fits,const char* stream="Default") const;
   void constraintTrajectories(std::vector<TrkSimpTraj*>& fits) const;

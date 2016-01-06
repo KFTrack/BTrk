@@ -704,6 +704,14 @@ KalRep::findHitSite(const TrkHit* thehit) const {
   return returnhit;
 }
 
+void KalRep::findMaterialSites(const DetElem* delem,std::vector<const KalMaterial*>& matsites) const {
+  matsites.clear();
+  for(auto site : _sites) {
+    if(site->kalMaterial() != 0 && site->kalMaterial()->detElem() == delem)
+      matsites.push_back(site->kalMaterial());
+  }
+}
+
 //
 void
 KalRep::activateHit(TrkHit* thehit) {
