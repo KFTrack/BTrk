@@ -140,13 +140,12 @@ KalMaterial::printAll(ostream& os) const {
 //
 void
 KalMaterial::updateCache(const TrkDifPieceTraj* reftraj){
-  //  Get the material interaction information from the element.  By convention the momentum
-  // provided is outwards of this site
-  detElem()->materialInfo(_dinter,_momentum,_tpart,
-      _deflectrms,_pfractrms,_pfract,trkIn);
   // Set the trajectory parameters
   // only update derivatives if the parameters have changed
   if(setTraj(reftraj,_dinter.pathlen)){
+    //  Get the material interaction information from the element.  By convention the momentum
+    // provided is outwards of this site
+    detElem()->materialInfo(_dinter,_momentum,_tpart,_deflectrms,_pfractrms,_pfract,trkIn);
     //  compute the (orthogonal) effects of scattering in the 2 directions
     //  on the covariance matrix.
     HepMatrix t1deflect = localTrajectory()->derivDeflect(localLength(),theta1);
