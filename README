@@ -24,6 +24,11 @@ Setting up the source directory:
 3) cd to a clean directory
 4) git clone https://github.com/KFTrack/BTrk.git
     - This will make a subdirectory BTrk
+5) If you wish to build the head of BTrk, proceed to the
+   next section. If you wish to build a tag of BTrk, then
+      git checkout -b work tag_name
+   Here work is an arbitrary name for your working branch
+   and tag_name is the name of the tag you wish to build.
 
 Making a prof build
 1) cd to a clean directory that must be outside of the source directory tree.
@@ -77,8 +82,7 @@ Building Mu2e Offline:
     - You only need to update the definition of PRODUCTS.
     - The definition of PRODUCT_INSTALL is not needed
 3) git clone ssh://p-mu2eofflinesoftwaremu2eoffline@cdcvs.fnal.gov/cvs/projects/mu2eofflinesoftwaremu2eoffline/Offline.git
-4) git checkout use-Btrk
-5) scons -j 8
+4) scons -j 8
 
 Running art:
 
