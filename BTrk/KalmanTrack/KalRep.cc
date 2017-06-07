@@ -127,16 +127,21 @@ KalRep::initSites() {
 
 // construct from hits and intersections
 KalRep::KalRep(TrkSimpTraj const& seed,
-    TrkHitVector const& hitl,
-    std::vector<DetIntersection> const& dinters,
-    KalContext const& context,
-    TrkParticle const& tpart) :
+	       TrkHitVector const& hitl,
+	       std::vector<DetIntersection> const& dinters,
+	       KalContext const& context,
+	       TrkParticle const& tpart,
+	       TrkT0 const& t0,double flt0) :
   TrkRep(hitl,tpart), _maxdist(0),_maxfltdif(0),
   _niter(0),_ninter(0),_ptraj(0),_reftraj(0),
   _kalcon(context),
   _seedtraj((TrkSimpTraj*)(seed.clone())),
   _stopsite(0)
-{
+{ 
+  //set T0 and flt0
+  _trkt0 = t0; 
+  _flt0  = flt0;
+
   // basic initialization
   initRep();
 // build the hit sites
@@ -1399,6 +1404,40 @@ KalRep::phiBend(double* range) const {
       bend += site->kalBend()->deltaPhi();
   }
   return bend;
+}
+
+double
+KalRep::transitTime(double flt0, double flt1) const {
+  double   tflt(0);
+  unsigned nsites = _sites.size();
+  KalSite* site;
+  double   minlen(flt0);
+  double   maxlen(flt1);
+  double   reflen(flt0);
+  double   sign(1);
+  if (flt1 < flt0){
+    minlen  = flt1;
+    maxlen  = flt0;
+    reflen  = flt1;
+    sign    = -1.;
+  }
+
+  double   beta(0);
+  double   mom(0);
+  double   len(0);
+  for(unsigned isite= 0;isite<nsites-1;isite++){
+    site    = _sites[isite];
+    len     = site->globalLength();
+    if(site->kalMaterial() != 0 && 
+       len >= minlen && 
+       len <= maxlen){
+      mom    = momentum(len).mag();
+      beta   = particleType().beta(mom);
+      tflt  += (len - reflen)/(beta*CLHEP::c_light);
+      reflen = len;
+    }
+  }
+  return tflt*sign;
 }
 
 const TrkSimpTraj*
