@@ -3,7 +3,7 @@
 // 	$Id: BbrVectorErr.hh 491 2010-01-13 16:59:16Z stroili $
 //
 // Description:
-//	Add errors to a vector.  Used for direction errors 
+//	Add errors to a vector.  Used for direction errors
 //      BaBar native class
 //
 // Environment:
@@ -27,130 +27,111 @@
 #define BBRVECTORERR_HH
 
 #include <iosfwd>
-#include <iosfwd>
 #include "BTrk/BaBar/BaBar.hh"
 #include "BTrk/BbrGeom/BbrError.hh"
 #include "CLHEP/Vector/Rotation.h"
-#include "BTrk/BbrGeom/Translation.h"
-#include "BTrk/BbrGeom/Transformation.h"
+#include "CLHEP/Vector/ThreeVector.h"
+// #include "BTrk/BbrGeom/Translation.h"
+// #include "BTrk/BbrGeom/Transformation.h"
+using namespace CLHEP;
 
 class BbrVectorErr : public Hep3Vector {
-  
-public:
-  // polar coordinates
-  enum PolarCoordinateIndex {   
-    Rho = 0, 
-    Theta = 1, 
-    Phi = 2,
-    NUM_PCOORDINATES = 3
-  };
-  
-  enum CylindricalCoordinateIndex {   
-    C_Rho = 0, 
-    C_Zeta = 1, 
-    C_Phi = 2,
-    NUM_CCOORDINATES = 3
-  };
-  // argumentless constructor:
-  BbrVectorErr() : Hep3Vector(), _covMatrix(NUM_COORDINATES) {}
-  
-  // auto casting constructor
-  BbrVectorErr(const Hep3Vector &p) : Hep3Vector(p), _covMatrix(NUM_COORDINATES)	{}
-  BbrVectorErr(const Hep3Vector &p, const BbrError& covMat) : Hep3Vector(p),
-  _covMatrix(NUM_COORDINATES)				{ _covMatrix=covMat; }
+   public:
+    // polar coordinates
+    enum PolarCoordinateIndex { Rho = 0, Theta = 1, Phi = 2, NUM_PCOORDINATES = 3 };
 
-  // copy constructor:
-  BbrVectorErr(const BbrVectorErr& v) : Hep3Vector(v),
-    _covMatrix(v.covMatrix())	{}
+    enum CylindricalCoordinateIndex { C_Rho = 0, C_Zeta = 1, C_Phi = 2, NUM_CCOORDINATES = 3 };
+    // argumentless constructor:
+    BbrVectorErr() : Hep3Vector(), _covMatrix(NUM_COORDINATES) {}
 
-  // destructor MAY be needed later
-  // virtual ~BbrVectorErr() {};
-
-  // assignment operator:
-  BbrVectorErr& operator=(const BbrVectorErr& v)
-    {
-      if (this != &v) {
-	Hep3Vector::operator=(v);
-	_covMatrix = v.covMatrix();
-      }
-      return *this;
+    // auto casting constructor
+    BbrVectorErr(const Hep3Vector& p) : Hep3Vector(p), _covMatrix(NUM_COORDINATES) {}
+    BbrVectorErr(const Hep3Vector& p, const BbrError& covMat)
+        : Hep3Vector(p), _covMatrix(NUM_COORDINATES) {
+        _covMatrix = covMat;
     }
 
-  BbrVectorErr operator - () {
-      Hep3Vector t = *this;
-      return BbrVectorErr( -t, _covMatrix);  // _covMatrix remains unaltered
-  }
+    // copy constructor:
+    BbrVectorErr(const BbrVectorErr& v) : Hep3Vector(v), _covMatrix(v.covMatrix()) {}
 
-  BbrVectorErr& operator += (const BbrVectorErr& v){
-      Hep3Vector::operator+=(v);
-      _covMatrix += v.covMatrix();
-      return *this;
-  }
-  
-  BbrVectorErr& operator -= (const BbrVectorErr& v){
-      Hep3Vector::operator-=(v);
-      _covMatrix += v.covMatrix();
-      return *this;
-  }
+    // destructor MAY be needed later
+    // virtual ~BbrVectorErr() {};
 
-  BbrVectorErr& transform(const HepTranslation& trans){
-      trans.transform(*this);
-      return *this;
-  }
+    // assignment operator:
+    BbrVectorErr& operator=(const BbrVectorErr& v) {
+        if (this != &v) {
+            Hep3Vector::operator=(v);
+            _covMatrix = v.covMatrix();
+        }
+        return *this;
+    }
 
-  BbrVectorErr& transform(const HepRotation& rot){
-      Hep3Vector::transform(rot);
-      _covMatrix = _covMatrix.similarity(rot);
-      return *this;
-  }
+    BbrVectorErr operator-() {
+        Hep3Vector t = *this;
+        return BbrVectorErr(-t, _covMatrix);  // _covMatrix remains unaltered
+    }
 
-  BbrVectorErr& transform(const HepTransformation& transf){
-      transf.transform(*this);
-      _covMatrix = _covMatrix.similarity(transf.rot_mat());
-      return *this;
-  }
+    BbrVectorErr& operator+=(const BbrVectorErr& v) {
+        Hep3Vector::operator+=(v);
+        _covMatrix += v.covMatrix();
+        return *this;
+    }
 
-  double determineChisq(const Hep3Vector& refVector) const;   
-  // returns Chisquare
-  // refVector refers to the same origin as the Hep3Vector of this
-  // ie refVector is not relative to this Vector
+    BbrVectorErr& operator-=(const BbrVectorErr& v) {
+        Hep3Vector::operator-=(v);
+        _covMatrix += v.covMatrix();
+        return *this;
+    }
 
+    BbrVectorErr& transform(const HepTranslation& trans) {
+        trans.transform(*this);
+        return *this;
+    }
 
-  inline const BbrError & covMatrix() const		{ return _covMatrix; }
+    BbrVectorErr& transform(const HepRotation& rot) {
+        Hep3Vector::transform(rot);
+        _covMatrix = _covMatrix.similarity(rot);
+        return *this;
+    }
 
-  BbrError covRTPMatrix() const;
-  // returns the covariance Matrix in spherical coordinate
-  // use   PolarCoordinateIndex enum to get the components
+    BbrVectorErr& transform(const HepTransformation& transf) {
+        transf.transform(*this);
+        _covMatrix = _covMatrix.similarity(transf.rot_mat());
+        return *this;
+    }
 
-  BbrError covRZPMatrix() const;
-  // returns the covariance Matrix in cylindrical coordinate
-  // use   CylindricalCoordinateIndex enum to get the components
+    double determineChisq(const Hep3Vector& refVector) const;
+    // returns Chisquare
+    // refVector refers to the same origin as the Hep3Vector of this
+    // ie refVector is not relative to this Vector
 
-  inline void setCovMatrix(const BbrError& v)		{ _covMatrix = v; }
+    inline const BbrError& covMatrix() const { return _covMatrix; }
 
-//  void printOn(ostream& out=cout) const;
+    BbrError covRTPMatrix() const;
+    // returns the covariance Matrix in spherical coordinate
+    // use   PolarCoordinateIndex enum to get the components
 
-private:
-  
-  BbrError _covMatrix;
+    BbrError covRZPMatrix() const;
+    // returns the covariance Matrix in cylindrical coordinate
+    // use   CylindricalCoordinateIndex enum to get the components
+
+    inline void setCovMatrix(const BbrError& v) { _covMatrix = v; }
+
+    //  void printOn(ostream& out=cout) const;
+
+   private:
+    BbrError _covMatrix;
 };
 
+BbrVectorErr operator+(const BbrVectorErr&, const BbrVectorErr&);
 
-BbrVectorErr operator + (const BbrVectorErr&, const BbrVectorErr&);
-
-BbrVectorErr operator - (const BbrVectorErr&, const BbrVectorErr&);
+BbrVectorErr operator-(const BbrVectorErr&, const BbrVectorErr&);
 
 // Added by Sasha Telnov
-BbrVectorErr operator * (const BbrVectorErr &, HepDouble a);
-BbrVectorErr operator * (HepDouble a, const BbrVectorErr &);
+BbrVectorErr operator*(const BbrVectorErr&, HepDouble a);
+BbrVectorErr operator*(HepDouble a, const BbrVectorErr&);
 
-std::ostream & operator<<(std::ostream & stream, const BbrVectorErr & verr);
-std::istream & operator>>(std::istream & stream, BbrVectorErr & verr);
+std::ostream& operator<<(std::ostream& stream, const BbrVectorErr& verr);
+std::istream& operator>>(std::istream& stream, BbrVectorErr& verr);
 
 #endif
-
-
-
-
-
-
