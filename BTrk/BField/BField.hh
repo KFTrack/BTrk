@@ -30,7 +30,7 @@
 
 #include "BTrk/BaBar/Constants.hh"
 #include "BTrk/BbrGeom/HepPoint.h"
-class HepPoint;
+// class HepPoint;
 #include "CLHEP/Vector/ThreeVector.h"
 class DifVector;
 class DifPoint;
@@ -38,77 +38,66 @@ class DifNumber;
 class Code;
 
 class BField {
+   public:
+    BField();
+    virtual ~BField() = 0;  // make sure this class is never instantiated
 
+    // return the momentum implicit for a given point, direction, and curvature
+    // Note that all the functions below which return momenta assume the Kalman track
+    // fit convention that curvature be interpreted in terms of the nominal field.
+    // If a different physical interpretation of curvature is being used, these
+    // functions will NOT BE CORRECT.  Conversely, any use of the raw BField
+    // accesors (bFieldVect in particular) to compute the momentum of a Kalman fit
+    // given its direction and curvature will NOT BE CORRECT.
+    double momentum(const HepPoint& position,
+                    const CLHEP::Hep3Vector& direction,
+                    double curvature) const;
 
-public:
+    CLHEP::Hep3Vector momentumVector(const HepPoint&,
+                                     const CLHEP::Hep3Vector&,
+                                     double curvature) const;
+    // Differential number version
+    DifVector momentumDfVector(const HepPoint&, const DifVector&, DifNumber curvature) const;
+    //  Invert the above
+    double curvature(const HepPoint&,
+                     const CLHEP::Hep3Vector& momentum,
+                     const double& charge) const;
 
-  BField();
-  virtual ~BField() = 0;  // make sure this class is never instantiated
+    // return the magnetic field vector at a point
+    virtual CLHEP::Hep3Vector bFieldVect(const HepPoint& point = HepPoint(0, 0, 0)) const = 0;
 
-// return the momentum implicit for a given point, direction, and curvature
-// Note that all the functions below which return momenta assume the Kalman track
-// fit convention that curvature be interpreted in terms of the nominal field.
-// If a different physical interpretation of curvature is being used, these
-// functions will NOT BE CORRECT.  Conversely, any use of the raw BField
-// accesors (bFieldVect in particular) to compute the momentum of a Kalman fit
-// given its direction and curvature will NOT BE CORRECT.
-  double momentum
-  (const HepPoint &position,
-   const CLHEP::Hep3Vector &direction,
-   double curvature) const;
-  
-  CLHEP::Hep3Vector momentumVector(const HepPoint&,const CLHEP::Hep3Vector&,
-			  double curvature) const;
-  // Differential number version
-  DifVector momentumDfVector(const HepPoint&,const DifVector&,
-			  DifNumber curvature) const;
-  //  Invert the above
-  double curvature(const HepPoint&,const CLHEP::Hep3Vector& momentum,
-			   const double& charge) const;
+    // check if a point is ok
+    virtual Code pointOk(const HepPoint& point) const;
 
-  // return the magnetic field vector at a point
-  virtual CLHEP::Hep3Vector bFieldVect
-  (const HepPoint& point = HepPoint(0,0,0)) const = 0;
+    // return divergence of field at a point
+    double divergence(const HepPoint& point = HepPoint(0, 0, 0), double step = 0.01) const;
 
-  //check if a point is ok 
-  virtual Code pointOk(const HepPoint& point)const;
- 
-  //return divergence of field at a point
-  double divergence
-  (const HepPoint &point = HepPoint(0,0,0),double step=0.01)const;
+    // return curl of field at a point
+    CLHEP::Hep3Vector curl(const HepPoint& point = HepPoint(0, 0, 0), double step = 0.01) const;
 
-  //return curl of field at a point
-  CLHEP::Hep3Vector curl
-  (const HepPoint &point = HepPoint(0,0,0),double step=0.01)const;
+    // derivative of field along direction of del
+    CLHEP::Hep3Vector derivative(const HepPoint& point, CLHEP::Hep3Vector& del) const;
 
-  //derivative of field along direction of del
-  CLHEP::Hep3Vector derivative
-  (const HepPoint& point,
-   CLHEP::Hep3Vector& del)const;
+    // return the Z component of the magnetic field at a point
+    double bFieldZ(const HepPoint& point = HepPoint(0, 0, 0)) const;
 
-  // return the Z component of the magnetic field at a point
-  double bFieldZ(const HepPoint& point = HepPoint(0,0,0)) const;
+    // return nominal field
+    virtual double bFieldNominal() const;
 
-  // return nominal field
-  virtual double bFieldNominal()const;
+    // print
+    virtual void print(std::ostream& o) const;
 
-  //print 
-  virtual void print(std::ostream& o)const;
+    // for converting radius*field to GeV/c of transverse momentum
+    static const double mmTeslaToMeVc;
 
-  // for converting radius*field to GeV/c of transverse momentum
-  static const double mmTeslaToMeVc;
+   private:
+    // momentum can be defined without knowledge of the position since the
+    // Kalman correction implies curvature be interpreted in terms of the
+    // nominal field only
+    double momentum(const CLHEP::Hep3Vector& direction, double curvature) const;
 
-private:
-// momentum can be defined without knowledge of the position since the
-// Kalman correction implies curvature be interpreted in terms of the
-// nominal field only
-  double momentum
-  (const CLHEP::Hep3Vector& direction,
-   double curvature) const;
-
-  bool _cacheHot;
-  double _nom;
+    bool _cacheHot;
+    double _nom;
 };
 
 #endif
-
