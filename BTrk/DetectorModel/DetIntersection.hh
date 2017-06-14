@@ -13,6 +13,7 @@
 //------------------------------------------------------------------------------
 #ifndef DETECTORINTERSECTION_HH
 #define DETECTORINTERSECTION_HH
+#include <cmath>
 #define EPSILON 1.0e-3 // test value for intersections
 class DetElem;
 class TrkHit;
