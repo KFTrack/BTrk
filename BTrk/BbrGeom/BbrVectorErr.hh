@@ -29,10 +29,10 @@
 #include <iosfwd>
 #include "BTrk/BaBar/BaBar.hh"
 #include "BTrk/BbrGeom/BbrError.hh"
+#include "BTrk/BbrGeom/Transformation.h"
+#include "BTrk/BbrGeom/Translation.h"
 #include "CLHEP/Vector/Rotation.h"
 #include "CLHEP/Vector/ThreeVector.h"
-// #include "BTrk/BbrGeom/Translation.h"
-// #include "BTrk/BbrGeom/Transformation.h"
 using namespace CLHEP;
 
 class BbrVectorErr : public Hep3Vector {
@@ -83,22 +83,22 @@ class BbrVectorErr : public Hep3Vector {
         return *this;
     }
 
-    BbrVectorErr& transform(const HepTranslation& trans) {
-        trans.transform(*this);
-        return *this;
-    }
+    // BbrVectorErr& transform(const HepTranslation& trans) {
+    //    trans.transform(*this);
+    //    return *this;
+    //}
 
-    BbrVectorErr& transform(const HepRotation& rot) {
-        Hep3Vector::transform(rot);
-        _covMatrix = _covMatrix.similarity(rot);
-        return *this;
-    }
+    // BbrVectorErr& transform(const HepRotation& rot) {
+    //    Hep3Vector::transform(rot);
+    //    _covMatrix = _covMatrix.similarity(rot);
+    //    return *this;
+    //}
 
-    BbrVectorErr& transform(const HepTransformation& transf) {
-        transf.transform(*this);
-        _covMatrix = _covMatrix.similarity(transf.rot_mat());
-        return *this;
-    }
+    // BbrVectorErr& transform(const HepTransformation& transf) {
+    //    transf.transform(*this);
+    //    _covMatrix = _covMatrix.similarity(transf.rot_mat());
+    //    return *this;
+    //}
 
     double determineChisq(const Hep3Vector& refVector) const;
     // returns Chisquare
