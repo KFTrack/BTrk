@@ -1414,30 +1414,45 @@ KalRep::transitTime(double flt0, double flt1) const {
   double   minlen(flt0);
   double   maxlen(flt1);
   double   reflen(flt0);
-  double   sign(1);
+  double   dir(1);
   if (flt1 < flt0){
     minlen  = flt1;
     maxlen  = flt0;
     reflen  = flt1;
-    sign    = -1.;
+    dir     = -1.;
   }
 
   double   beta(0);
   double   mom(0);
-  double   len(0);
+  double   len(minlen), lenFirstKalSite(minlen);
+  bool     isFirst(true);
   for(unsigned isite= 0;isite<nsites-1;isite++){
     site    = _sites[isite];
     len     = site->globalLength();
     if(site->kalMaterial() != 0 && 
        len >= minlen && 
        len <= maxlen){
+      if (isFirst) {
+	lenFirstKalSite = len;
+	isFirst         = false;
+      }
       mom    = momentum(len).mag();
       beta   = particleType().beta(mom);
       tflt  += (len - reflen)/(beta*CLHEP::c_light);
       reflen = len;
     }
   }
-  return tflt*sign;
+  //add the time from minlen to the first KalSite
+  mom  = momentum(minlen).mag();
+  beta = particleType().beta(mom);
+  tflt += (lenFirstKalSite - minlen)/(beta*CLHEP::c_light);
+ 
+  //add the time from the last KalSite to maxlen
+  mom  = momentum(reflen).mag();
+  beta = particleType().beta(mom);
+  tflt += (maxlen - reflen)/(beta*CLHEP::c_light);
+
+  return tflt*dir;
 }
 
 const TrkSimpTraj*
