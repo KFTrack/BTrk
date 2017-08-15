@@ -1413,33 +1413,43 @@ KalRep::transitTime(double flt0, double flt1) const {
   KalSite* site;
   double   minlen(flt0);
   double   maxlen(flt1);
-  double   reflen(flt0);
+  double   lenLastKalSite(flt0);
   double   dir(1);
   if (flt1 < flt0){
-    minlen  = flt1;
-    maxlen  = flt0;
-    reflen  = flt1;
-    dir     = -1.;
+    minlen          = flt1;
+    maxlen          = flt0;
+    lenLastKalSite  = flt1;
+    dir             = -1.;
   }
 
   double   beta(0);
   double   mom(0);
   double   len(minlen), lenFirstKalSite(minlen);
-  bool     isFirst(true);
+  unsigned indexFirstKalSite(0);
+  //search the first KalSite
   for(unsigned isite= 0;isite<nsites-1;isite++){
     site    = _sites[isite];
     len     = site->globalLength();
     if(site->kalMaterial() != 0 && 
        len >= minlen && 
        len <= maxlen){
-      if (isFirst) {
-	lenFirstKalSite = len;
-	isFirst         = false;
-      }
-      mom    = momentum(len).mag();
-      beta   = particleType().beta(mom);
-      tflt  += (len - reflen)/(beta*CLHEP::c_light);
-      reflen = len;
+      lenFirstKalSite   = len;
+      lenLastKalSite    = len;
+      indexFirstKalSite = isite;
+    }
+  }
+
+  //now loop pver the kalSites
+  for(unsigned isite=indexFirstKalSite+1;isite<nsites;isite++){
+    site    = _sites[isite];
+    len     = site->globalLength();
+    if(site->kalMaterial() != 0 && 
+       len >= minlen && 
+       len <= maxlen){
+      mom            = momentum(lenLastKalSite).mag();
+      beta           = particleType().beta(mom);
+      tflt          += (len - lenLastKalSite)/(beta*CLHEP::c_light);
+      lenLastKalSite = len;
     }
   }
   //add the time from minlen to the first KalSite
@@ -1448,9 +1458,9 @@ KalRep::transitTime(double flt0, double flt1) const {
   tflt += (lenFirstKalSite - minlen)/(beta*CLHEP::c_light);
  
   //add the time from the last KalSite to maxlen
-  mom  = momentum(reflen).mag();
+  mom  = momentum(lenLastKalSite).mag();
   beta = particleType().beta(mom);
-  tflt += (maxlen - reflen)/(beta*CLHEP::c_light);
+  tflt += (maxlen - lenLastKalSite)/(beta*CLHEP::c_light);
 
   return tflt*dir;
 }
