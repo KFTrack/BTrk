@@ -84,7 +84,7 @@ public:
   bool hasResidual() const { return _poca.status().success(); }
   TrkPoca const& poca() const { return _poca; }
   
-  TrkT0 trkT0() const {return _trkT0;}
+  TrkT0 hitT0() const {return _hitT0;}
 
   //getFitStuff: returns derivs and deltaChi (based on current state of track)
   //updateMeasurement: update internal representation, weight/sigma
@@ -152,7 +152,7 @@ public:
   void setHitLen(double h)                                      {_hitLen = h;}
   void setTemperature(double timeExtErr)                        {_temperature = timeExtErr;}
   void sett0Weight(double t0weight)                             {_timeWeight  = t0weight;}
-  void setTrkT0(TrkT0 t0)                                       {_trkT0.setT0(t0.t0(), t0.t0Err());}
+  void setHitT0(TrkT0 t0)                                       {_hitT0.setT0(t0.t0(), t0.t0Err());}
   //****************
   // Set values that shouldn't normally be set
   //****************
@@ -180,7 +180,7 @@ protected:
   double _timeWeight;// this is a weight used for the initial estiamte of the track t0
   double _temperature;// this is an external error associated to the reconstructed time (ns). It is used in the track fit 
   TrkPoca _poca;
-  TrkT0   _trkT0;
+  TrkT0   _hitT0; // time the partcle comes closest to this hit's sensor (not including signal effects)
   // define tolerance for POCA
   static double _tolerance;
   void setTolerance(double newtol);
