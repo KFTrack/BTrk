@@ -29,6 +29,7 @@
 //
 #include "BTrk/BaBar/Constants.hh"
 #include <string>
+#include <cmath>
 
 class BbrAngle
 {

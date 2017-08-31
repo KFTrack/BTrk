@@ -14,6 +14,7 @@
 #ifndef DETECTORINTERSECTION_HH
 #define DETECTORINTERSECTION_HH
 #define EPSILON 1.0e-3 // test value for intersections
+#include <cmath>
 class DetElem;
 class TrkHit;
 class Trajectory;
