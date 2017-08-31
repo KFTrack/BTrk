@@ -141,6 +141,10 @@ public:
   double thetaBend(double* range=0) const;
   double phiBend(double* range=0) const;
 //******************************************
+// cinematic info
+//******************************************
+  double transitTime(double flt0, double flt1) const;
+//******************************************
 // Printing; these can produce a _lot_ of output, so be careful!
 //******************************************
   void printAll(std::ostream& ostr = std::cout) const;
@@ -158,7 +162,8 @@ public:
 // constructor
  KalRep(TrkSimpTraj const&,TrkHitVector const& hots,
 	std::vector<DetIntersection> const& dlist,
- 	KalContext const& context,TrkParticle const& tpart);
+ 	KalContext const& context,TrkParticle const& tpart,
+	TrkT0 const& t0,double flt0);
 // destructor
   virtual ~KalRep();
 //******************************************

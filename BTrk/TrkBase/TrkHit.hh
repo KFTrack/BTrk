@@ -26,12 +26,15 @@
 #define TrkHit_HH
 #include "BTrk/TrkBase/TrkParticle.hh"
 #include "BTrk/TrkBase/TrkPoca.hh"
+#include "BTrk/TrkBase/TrkT0.hh"
+#include "BTrk/TrkBase/HelixTraj.hh"
 #include <iostream>
 #include <functional>
 
 #include "CLHEP/Matrix/Vector.h"
 class TrkRep;
 class TrkDifTraj;
+class TrkDifPieceTraj;
 class Trajectory;
 class TrkErrCode;
 class TrkDifPoca;
@@ -49,6 +52,8 @@ class TrkHit {
   friend class TrkRep;
 public:
   typedef std::unary_function<TrkHit,bool> predicate_type;
+  enum TrkHitFlag {weededHit=-5, driftFail=-3, updateFail=-1,addedHit=3,unweededHit=4};
+
   //****************
   // Constructors and such
   //****************
@@ -78,6 +83,8 @@ public:
 // test whether residual information is present
   bool hasResidual() const { return _poca.status().success(); }
   TrkPoca const& poca() const { return _poca; }
+  
+  TrkT0 hitT0() const {return _hitT0;}
 
   //getFitStuff: returns derivs and deltaChi (based on current state of track)
   //updateMeasurement: update internal representation, weight/sigma
@@ -108,8 +115,31 @@ public:
   // return the *internal* residual (used to satisfy getFitStuff)
   double residual() const;
 
+  // return the weight used for the estiamte of the initial track-t0
+  double t0Weight() const {return _timeWeight; }
+
+  // return the external error addeed to the reconstructed time
+  double temperature() const {return _temperature;}
   // allow reversing the track.  The base class implementation does nothing
   virtual void invert();
+  
+  virtual double time () const = 0;
+  //calculate the signal propagation time using the info from residual and local track direction
+  virtual bool signalPropagationTime(double &propTime, double&Doca, 
+				     double resid, double &residErr, 
+				     CLHEP::Hep3Vector trajDirection) = 0;
+  
+  //calculate the transit time of the particle from a given poin-of-reference to the TrkHit
+  // in principle we could set the _parent and get the ptraj and vflt from the TrkRep
+  // FIX ME!
+  virtual void trackT0Time(double& htime, double t0flt, const TrkDifPieceTraj* ptraj, double vflt) = 0;
+  
+  //we need  base function that tells if the reconsturcted info have physical sense
+  // for example, the drift radius of a straw-tube HAS to be less than the radius (+/- resolution)
+  virtual double physicalTime() const = 0;
+  
+  //we also need a function that tells if the reconstructed position is within the straw/calorimeter
+  virtual double physicalPosition() const = 0;
 
   //****************
   // Set values. 
@@ -119,8 +149,10 @@ public:
                                    // non-const members of TrkRep, and as such the
                                    // reason we need a non-const TrkRep *
   void setFltLen(double f)                                      {_trkLen = f;}
-  void setHitLen(double h)                               {_hitLen = h;}
-
+  void setHitLen(double h)                                      {_hitLen = h;}
+  void setTemperature(double timeExtErr)                        {_temperature = timeExtErr;}
+  void sett0Weight(double t0weight)                             {_timeWeight  = t0weight;}
+  void setHitT0(TrkT0 t0)                                       {_hitT0.setT0(t0.t0(), t0.t0Err());}
   //****************
   // Set values that shouldn't normally be set
   //****************
@@ -145,7 +177,10 @@ protected:
   double _trkLen;
   double _hitLen;
   double _resid;
+  double _timeWeight;// this is a weight used for the initial estiamte of the track t0
+  double _temperature;// this is an external error associated to the reconstructed time (ns). It is used in the track fit 
   TrkPoca _poca;
+  TrkT0   _hitT0; // time the partcle comes closest to this hit's sensor (not including signal effects)
   // define tolerance for POCA
   static double _tolerance;
   void setTolerance(double newtol);

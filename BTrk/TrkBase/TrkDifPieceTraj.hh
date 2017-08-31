@@ -19,6 +19,7 @@
 #include "BTrk/TrkBase/TrkSimpTraj.hh"
 #include "BTrk/TrkBase/TrkKalDeriv.hh"
 #include "BTrk/TrkBase/TrkDirection.hh"
+#include "BTrk/TrkBase/HelixTraj.hh"
 #include <vector>
 #include <deque>
 
@@ -124,6 +125,10 @@ public:
   CLHEP::HepMatrix derivDisplace(double fltlen,deflectDirection idir) const;
 
   CLHEP::HepMatrix derivPFract(double fltlen) const;
+
+  // compute the flightlength for a given z position
+  double zFlight(double pz) const;
+
 protected:
   int resize(double len,trkDirection); // extend/shorten the trajectory.
 // find the trajectory index given the global flight distance:
@@ -136,6 +141,8 @@ protected:
   double globalDist(int index,double locdist) const {
     return _globalrange[index] + locdist -  _localtraj[index]->lowRange();
   }
+
+
 // Data Members
   std::deque<TrkSimpTraj*> _localtraj; // Ordered vector of simptrajs
   std::deque<double> _globalrange; // local/global flight range conversion

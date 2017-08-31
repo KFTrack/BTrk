@@ -127,16 +127,21 @@ KalRep::initSites() {
 
 // construct from hits and intersections
 KalRep::KalRep(TrkSimpTraj const& seed,
-    TrkHitVector const& hitl,
-    std::vector<DetIntersection> const& dinters,
-    KalContext const& context,
-    TrkParticle const& tpart) :
+	       TrkHitVector const& hitl,
+	       std::vector<DetIntersection> const& dinters,
+	       KalContext const& context,
+	       TrkParticle const& tpart,
+	       TrkT0 const& t0,double flt0) :
   TrkRep(hitl,tpart), _maxdist(0),_maxfltdif(0),
   _niter(0),_ninter(0),_ptraj(0),_reftraj(0),
   _kalcon(context),
   _seedtraj((TrkSimpTraj*)(seed.clone())),
   _stopsite(0)
-{
+{ 
+  //set T0 and flt0
+  _trkt0 = t0; 
+  _flt0  = flt0;
+
   // basic initialization
   initRep();
 // build the hit sites
@@ -1399,6 +1404,65 @@ KalRep::phiBend(double* range) const {
       bend += site->kalBend()->deltaPhi();
   }
   return bend;
+}
+
+double
+KalRep::transitTime(double flt0, double flt1) const {
+  double   tflt(0);
+  unsigned nsites = _sites.size();
+  KalSite* site;
+  double   minlen(flt0);
+  double   maxlen(flt1);
+  double   lenLastKalSite(flt0);
+  double   dir(1);
+  if (flt1 < flt0){
+    minlen          = flt1;
+    maxlen          = flt0;
+    lenLastKalSite  = flt1;
+    dir             = -1.;
+  }
+
+  double   beta(0);
+  double   mom(0);
+  double   len(minlen), lenFirstKalSite(minlen);
+  unsigned indexFirstKalSite(0);
+  //search the first KalSite
+  for(unsigned isite= 0;isite<nsites-1;isite++){
+    site    = _sites[isite];
+    len     = site->globalLength();
+    if(site->kalMaterial() != 0 && 
+       len >= minlen && 
+       len <= maxlen){
+      lenFirstKalSite   = len;
+      lenLastKalSite    = len;
+      indexFirstKalSite = isite;
+    }
+  }
+
+  //now loop pver the kalSites
+  for(unsigned isite=indexFirstKalSite+1;isite<nsites;isite++){
+    site    = _sites[isite];
+    len     = site->globalLength();
+    if(site->kalMaterial() != 0 && 
+       len >= minlen && 
+       len <= maxlen){
+      mom            = momentum(lenLastKalSite).mag();
+      beta           = particleType().beta(mom);
+      tflt          += (len - lenLastKalSite)/(beta*CLHEP::c_light);
+      lenLastKalSite = len;
+    }
+  }
+  //add the time from minlen to the first KalSite
+  mom  = momentum(minlen).mag();
+  beta = particleType().beta(mom);
+  tflt += (lenFirstKalSite - minlen)/(beta*CLHEP::c_light);
+ 
+  //add the time from the last KalSite to maxlen
+  mom  = momentum(lenLastKalSite).mag();
+  beta = particleType().beta(mom);
+  tflt += (maxlen - lenLastKalSite)/(beta*CLHEP::c_light);
+
+  return tflt*dir;
 }
 
 const TrkSimpTraj*

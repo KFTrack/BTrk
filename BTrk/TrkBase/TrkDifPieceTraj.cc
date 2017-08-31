@@ -431,6 +431,28 @@ TrkDifPieceTraj::trajIndex(const double& flightdist,double& localflight) const
   return index;
 }
 
+
+// compute the flightlength for a given z position
+double 
+TrkDifPieceTraj::zFlight(double pz) const {
+  // FIXME!! this algorrithm needs to be refined
+  // get the helix at the middle of the track
+      double loclen;
+      double fltlen(0.0);
+      const HelixTraj* htraj = dynamic_cast<const HelixTraj*>(localTrajectory(fltlen,loclen));
+      // Iterate
+      const HelixTraj* oldtraj;
+      unsigned iter(0);
+      do {
+	// remember old traj
+	oldtraj = htraj;
+	// correct the global fltlen for this difference in local trajectory fltlen at this Z position
+	fltlen += (htraj->zFlight(pz)-loclen);
+	htraj = dynamic_cast<const HelixTraj*>(localTrajectory(fltlen,loclen));
+      } while(oldtraj != htraj && iter++<10);
+      return fltlen;  
+}
+
 HepPoint
 TrkDifPieceTraj::position(double flightdist) const
 {
