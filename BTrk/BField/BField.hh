@@ -30,12 +30,14 @@
 
 #include "BTrk/BaBar/Constants.hh"
 #include "BTrk/BbrGeom/HepPoint.h"
-// class HepPoint;
 #include "CLHEP/Vector/ThreeVector.h"
 class DifVector;
 class DifPoint;
 class DifNumber;
 class Code;
+
+
+
 
 class BField {
    public:
