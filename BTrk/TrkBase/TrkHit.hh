@@ -136,10 +136,7 @@ public:
   
   //we need  base function that tells if the reconsturcted info have physical sense
   // for example, the drift radius of a straw-tube HAS to be less than the radius (+/- resolution)
-  virtual double physicalTime() const = 0;
-  
-  //we also need a function that tells if the reconstructed position is within the straw/calorimeter
-  virtual double physicalPosition() const = 0;
+  virtual bool isPhysical(double maxchi) const = 0;
 
   //****************
   // Set values. 
