@@ -26,6 +26,7 @@
 #include "BTrk/difAlgebra/DifVector.hh"
 #include "CLHEP/Matrix/Matrix.h"
 #include "CLHEP/Vector/ThreeVector.h"
+using std::cout;
 using std::endl;
 using std::ends;
 using std::ostream;
@@ -407,6 +408,27 @@ int TrkDifPieceTraj::trajIndex(const double& flightdist, double& localflight) co
     return index;
 }
 
+// compute the flightlength for a given z position
+double TrkDifPieceTraj::zFlight(double pz) const {
+    // FIXME!! this algorrithm needs to be refined
+    // get the helix at the middle of the track
+    double loclen;
+    double fltlen(0.0);
+    const HelixTraj* htraj = dynamic_cast<const HelixTraj*>(localTrajectory(fltlen, loclen));
+    // Iterate
+    const HelixTraj* oldtraj;
+    unsigned iter(0);
+    do {
+        // remember old traj
+        oldtraj = htraj;
+        // correct the global fltlen for this difference in local trajectory fltlen at this Z
+        // position
+        fltlen += (htraj->zFlight(pz) - loclen);
+        htraj = dynamic_cast<const HelixTraj*>(localTrajectory(fltlen, loclen));
+    } while (oldtraj != htraj && iter++ < 10);
+    return fltlen;
+}
+
 HepPoint TrkDifPieceTraj::position(double flightdist) const {
     //
     //  First, find the right trajectory piece, then give the local position
@@ -486,113 +508,32 @@ double TrkDifPieceTraj::distTo1stError(double flightdist, double tol, int dir) c
         if (index > 0)
             dist = std::min(localdist, flightdist - _globalrange[index]) + _STEPEPSILON;
     }
-//
-//  First, find the right trajectory piece, then give the local position
-//
-  double localflight(0.0);
-  const TrkSimpTraj* loctraj = localTrajectory(flightdist,localflight);
-  return loctraj->position(localflight);
-}
-
-Hep3Vector TrkDifPieceTraj::direction(double flightdist) const {
-//
-//  First, find the right trajectory piece, then give the local direction
-//
-  double localflight(0.0);
-  const TrkSimpTraj* loctraj = localTrajectory(flightdist,localflight);
-  return loctraj->direction(localflight);
-}
-
-double TrkDifPieceTraj::curvature(double flightdist) const {
-//
-//  First, find the right trajectory piece, then give the local curvature
-//
-  double localflight(0.0);
-  const TrkSimpTraj* loctraj = localTrajectory(flightdist,localflight);
-  return loctraj->curvature(localflight);
-}
-
-Hep3Vector TrkDifPieceTraj::delDirect(double flightdist) const {
-//
-//  First, find the right trajectory piece, then give the local value
-//
-  double localflight(0.0);
-  const TrkSimpTraj* loctraj = localTrajectory(flightdist,localflight);
-  return loctraj->delDirect(localflight);
-}
-
-void TrkDifPieceTraj::getInfo(double flightdist, HepPoint& point, Hep3Vector& dir) const {
-//
-//  First, find the right trajectory piece, then call the local function
-//
-  double localflight(0.0);
-  const TrkSimpTraj* loctraj = localTrajectory(flightdist,localflight);
-  loctraj->getInfo(localflight,point,dir);
-}
-
-void TrkDifPieceTraj::getInfo(double flightdist,
-                         HepPoint& point,
-                         Hep3Vector& dir,
-                              Hep3Vector& deldirect) const {
-//
-//  First, find the right trajectory piece, then call the local function
-//
-  double localflight(0.0);
-  const TrkSimpTraj* loctraj = localTrajectory(flightdist,localflight);
-  loctraj->getInfo(localflight,point,dir,deldirect);
-}
-
-double TrkDifPieceTraj::distTo1stError(double flightdist, double tol, int dir) const {
-//
-//  First, find the right trajectory piece
-//
-  double localflight(0.0);
-  int index = trajIndex(flightdist,localflight);
-  const TrkSimpTraj* loctraj = _localtraj[index];
-//
-//  Ask the local piece for it's dist, and take the minimum of this or the
-//  distance to the next trajectory piece
-//
-  double localdist = loctraj->distTo1stError(localflight,tol,dir);
-//
-//  Take the minimum of this distance and the distance to the next trajectory
-  double dist = localdist;
-  if (dir > 0){
-    if(index < static_cast<int>(_localtraj.size())-1)
-      dist = std::min(localdist,_globalrange[index+1]-flightdist) + _STEPEPSILON;
-  } else {
-    if(index > 0)
-      dist = std::min(localdist,flightdist - _globalrange[index]) + _STEPEPSILON;
-  }
-  return dist;
+    return dist;
 }
 
 double TrkDifPieceTraj::distTo2ndError(double flightdist, double tol, int dir) const {
-//
-//  First, find the right trajectory piece
-//
-  double localflight(0.0);
-  int index = trajIndex(flightdist,localflight);
-  const TrkSimpTraj* loctraj = _localtraj[index];
-//
-//  Ask the local piece for it's dist, and take the minimum of this or the
-//  distance to the next trajectory piece
-//
+    //
+    //  First, find the right trajectory piece
+    //
+    double localflight(0.0);
+    int index = trajIndex(flightdist, localflight);
+    const TrkSimpTraj* loctraj = _localtraj[index];
+    //
+    //  Ask the local piece for it's dist, and take the minimum of this or the
+    //  distance to the next trajectory piece
+    //
     double localdist = loctraj->distTo2ndError(localflight, tol, dir);
-//
-//  Take the minimum of this distance and the distance to the next trajectory
-  double dist = localdist;
-  if (dir > 0){
-    if(index < static_cast<int>(_localtraj.size())-1)
-      dist = std::min(localdist,_globalrange[index+1]-flightdist) + _STEPEPSILON;
-  } else {
-    if(index > 0)
-      dist = std::min(localdist,flightdist - _globalrange[index]) + _STEPEPSILON;
-  }
-  return dist;
-}
-
-const TrkSimpTraj* TrkDifPieceTraj::localTrajectory(double flightdist, double& localflight) const {
+    //
+    //  Take the minimum of this distance and the distance to the next trajectory
+    double dist = localdist;
+    if (dir > 0) {
+        if (index < static_cast<int>(_localtraj.size()) - 1)
+            dist = std::min(localdist, _globalrange[index + 1] - flightdist) + _STEPEPSILON;
+    } else {
+        if (index > 0)
+            dist = std::min(localdist, flightdist - _globalrange[index]) + _STEPEPSILON;
+    }
+    return dist;
 }
 
 const TrkSimpTraj* TrkDifPieceTraj::localTrajectory(double flightdist, double& localflight) const {

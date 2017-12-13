@@ -31,6 +31,7 @@ TrkLineTraj::TrkLineTraj(const HepPoint& point,
 
 TrkLineTraj::TrkLineTraj(const HepPoint& point1, const HepPoint& point2)
     : TrkGeomTraj(0.0, point1.distance(point2)), _start(point1) {
+        std::cout<<point1.distance(point2)<<std::endl;
     _direction = point2 - point1;
     _direction.setMag(1.0);
 }
