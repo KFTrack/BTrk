@@ -91,7 +91,7 @@ void MatMtrDictionary::FillMtrDict(MatMaterialList* mtrList)
     MatMaterialObj* Obj = new MatMaterialObj(*(*mtrVec)[im]);
     std::string* key = new std::string(Obj->getName());
     (*this)[key] = Obj;
-    ErrMsg(routine) << "MatMtrDictionary: Inserted Material " << *key << endmsg;
+    //ErrMsg(routine) << "MatMtrDictionary: Inserted Material " << *key << endmsg;
     }
 }
 
