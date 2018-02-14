@@ -501,29 +501,8 @@ MtrPropObj::ComputeDerivedQuantities()
     (*_vecNbOfAtomsPerVolume)[i] = Avogadro*density*(*_massFractionVector)[i]/Ai;
     _totNbOfAtomsPerVolume += (*_vecNbOfAtomsPerVolume)[i];
     _totNbOfElectPerVolume += (*_vecNbOfAtomsPerVolume)[i]*Zi;
-    }
 
-//for gas, check coherence of the state conditions
-  if (*_state == "gas") {
-    double ratio = _totNbOfAtomsPerVolume*k_Boltzmann*_temp/_pressure;
-    if ((ratio<0.5)||(ratio>2.)) {
-      ErrMsg(error)
-	<< "WARNING !! - The state conditions of " << *_matName
-	<< " are not consistent with an ideal gas." << endmsg;
-      if (ErrLogging(trace))
-	ErrMsg(trace)
-	  << "\n rho*(T/P)   = " << ratio
-	  << "\n density     = " << density/(mg/cm3)    << " mg/cm3"
-	  << "\t pressure    = " << _pressure/atmosphere << " atmosphere"
-	  << "\t temperature = " << _temp/kelvin         << " kelvin"
-	  << "\n rho*(T/P) would be of the order of: " 
-	  << (density/(_totNbOfAtomsPerVolume*k_Boltzmann))
-	  /((mg/cm3)*(kelvin/atmosphere))
-	  << " (mg/cm3)*(kelvin/atmosphere)." 
-	  << " The energy loss calculation maybe be affected \n"
-	  << endmsg;
     }
-  }
 
   ComputeOtherParams();
   if(_radLength < 0) { ComputeRadiationLength(); }
