@@ -125,7 +125,7 @@ BbrDoubleErr BbrDoubleErr::operator * (const BbrDoubleErr & bde) {
 
 //--------------------------------------------------------------------
 BbrDoubleErr BbrDoubleErr::operator / (const BbrDoubleErr & bde) {
-  register double bde2 = bde._value * bde._value;
+  double bde2 = bde._value * bde._value;
 
   return BbrDoubleErr(_value / bde._value,
 		      _covariance / bde2 +

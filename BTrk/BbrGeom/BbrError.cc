@@ -93,7 +93,7 @@ BbrError BbrError::similarity(const BbrError& E) {
 BbrError& BbrError::similarityWith(const BbrError& mat, const HepMatrix& m1) {
     assert(num_row() == m1.num_row());
     HepMatrix temp = m1 * mat;
-    register double tmp;
+    double tmp;
 
     for (int r = 0; r < num_row(); r++) {
         for (int c = 0; c <= r; c++) {

@@ -138,7 +138,7 @@ const Hep3Vector& pmom, double sign, double Bval) {
   //  answer when the turning angle from the beginning of the track
   //  and the correct reference point is greater than 90 degree.  
 
-  register double phip,rho,pt;
+  double phip,rho,pt;
   
   double px = pmom.x();
   double py = pmom.y();
