@@ -124,11 +124,6 @@ public:
   virtual void invert();
   
   virtual double time () const = 0;
-  //calculate the signal propagation time using the info from residual and local track direction
-  virtual bool signalPropagationTime(double &propTime, double&Doca, 
-				     double resid, double &residErr, 
-				     CLHEP::Hep3Vector trajDirection) = 0;
-  
   //calculate the transit time of the particle from a given poin-of-reference to the TrkHit
   // in principle we could set the _parent and get the ptraj and vflt from the TrkRep
   // FIX ME!
@@ -150,7 +145,8 @@ public:
   void setTemperature(double timeExtErr)                        {_temperature = timeExtErr;}
   void sett0Weight(double t0weight)                             {_timeWeight  = t0weight;}
   void setHitT0(TrkT0 t0)                                       {_hitT0.setT0(t0.t0(), t0.t0Err());}
-  //****************
+  virtual bool signalPropagationTime( TrkT0& t0) = 0;
+   //****************
   // Set values that shouldn't normally be set
   //****************
   // Use *only* if you want to circumvent the standard 
