@@ -38,9 +38,9 @@ fi
 # They must be maintained by hand.
 # It's OK if EXTRA_ROOT_QUALIFIERS is an empty string
 export PACKAGE_NAME=BTrk
-export PACKAGE_VERSION=v1_02_21
+export PACKAGE_VERSION=v1_02_18d
 export COMPILER_CODE=e19
-export EXTRA_ROOT_QUALIFIERS=""
+export EXTRA_ROOT_QUALIFIERS=":py2"
 
 # Done parsing and checking arguments
 
