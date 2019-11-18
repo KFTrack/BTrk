@@ -61,7 +61,7 @@ extras=`echo ${EXTRA_ROOT_QUALIFIERS} | sed 's/:/:+/g'`
 
 setup -B clhep v2_4_1_2  -q${qualifiers}
 setup -B root  v6_18_04c -q${qualifiers}${extras}
-setup -B scons v3_1_1  -q p372
+setup -B scons v3_1_1  -q p2715a
 
 # Only used inside scripts/install.sh, to get the flavor of the build platform.
 setup cetpkgsupport
