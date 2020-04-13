@@ -71,6 +71,7 @@ Common:
     prodDir()
     setupEnv()
     envSet (BTRK_INC, \${BTRK_DIR}/include )
+    pathPrepend(ROOT_INCLUDE_PATH, ${BTRK_DIR}/include)
 
     exeActionRequired(GetFQDir)
     envSet (BTRK_LIB, \${BTRK_DIR}/\${BTRK_FQ}/lib )
