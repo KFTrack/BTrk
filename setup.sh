@@ -38,9 +38,9 @@ fi
 # They must be maintained by hand.
 # It's OK if EXTRA_ROOT_QUALIFIERS is an empty string
 export PACKAGE_NAME=BTrk
-export PACKAGE_VERSION=v1_02_24
-export COMPILER_CODE=e20
-export EXTRA_ROOT_QUALIFIERS=""
+export PACKAGE_VERSION=v1_02_25
+export COMPILER_CODE=e19
+export EXTRA_ROOT_QUALIFIERS=":p383b"
 
 # Done parsing and checking arguments
 
@@ -53,7 +53,7 @@ echo "Debug level:        " ${DEBUG_LEVEL}
 
 # These are a matched pair and must be kept in sync by hand.
 # See: https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/AboutQualifiers
-setup -B gcc v9_3_0
+setup -B gcc v8_2_0
 
 # Choose versions of the remaining UPS products.
 qualifiers=+${COMPILER_CODE}:+${DEBUG_LEVEL}
