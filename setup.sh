@@ -38,8 +38,8 @@ fi
 # They must be maintained by hand.
 # It's OK if EXTRA_ROOT_QUALIFIERS is an empty string
 export PACKAGE_NAME=BTrk
-export PACKAGE_VERSION=v1_02_26
-export COMPILER_CODE=e20
+export PACKAGE_VERSION=v1_02_27
+export COMPILER_CODE=e19
 export EXTRA_ROOT_QUALIFIERS=":p383b"
 
 # Done parsing and checking arguments
@@ -53,14 +53,15 @@ echo "Debug level:        " ${DEBUG_LEVEL}
 
 # These are a matched pair and must be kept in sync by hand.
 # See: https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/AboutQualifiers
-setup -B gcc v9_3_0
+setup -B gcc v8_2_0
+#setup -B gcc v9_3_0
 
 # Choose versions of the remaining UPS products.
 qualifiers=+${COMPILER_CODE}:+${DEBUG_LEVEL}
 extras=`echo ${EXTRA_ROOT_QUALIFIERS} | sed 's/:/:+/g'`
 
 setup -B clhep v2_4_1_3a  -q${qualifiers}
-setup -B root  v6_20_06 -q${qualifiers}${extras}
+setup -B root  v6_20_08a -q${qualifiers}${extras}
 setup -B scons v3_1_2  -q p383b
 
 # Only used inside scripts/install.sh, to get the flavor of the build platform.
