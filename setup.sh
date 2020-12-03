@@ -38,7 +38,7 @@ fi
 # They must be maintained by hand.
 # It's OK if EXTRA_ROOT_QUALIFIERS is an empty string
 export PACKAGE_NAME=BTrk
-export PACKAGE_VERSION=v1_02_28
+export PACKAGE_VERSION=v1_02_29
 export COMPILER_CODE=e20
 export EXTRA_ROOT_QUALIFIERS=":p383b"
 
@@ -61,7 +61,7 @@ qualifiers=+${COMPILER_CODE}:+${DEBUG_LEVEL}
 extras=`echo ${EXTRA_ROOT_QUALIFIERS} | sed 's/:/:+/g'`
 
 setup -B clhep v2_4_1_3a  -q${qualifiers}
-setup -B root  v6_20_08a -q${qualifiers}${extras}
+setup -B root  v6_22_02 -q${qualifiers}${extras}
 setup -B scons v3_1_2  -q p383b
 
 # Only used inside scripts/install.sh, to get the flavor of the build platform.
