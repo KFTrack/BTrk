@@ -38,9 +38,9 @@ fi
 # They must be maintained by hand.
 # It's OK if EXTRA_ROOT_QUALIFIERS is an empty string
 export PACKAGE_NAME=BTrk
-export PACKAGE_VERSION=v1_02_34
+export PACKAGE_VERSION=v1_02_35
 export COMPILER_CODE=e20
-export EXTRA_ROOT_QUALIFIERS=":p392"
+export EXTRA_ROOT_QUALIFIERS=":p399"
 
 # Done parsing and checking arguments
 
@@ -53,16 +53,15 @@ echo "Debug level:        " ${DEBUG_LEVEL}
 
 # These are a matched pair and must be kept in sync by hand.
 # See: https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/AboutQualifiers
-#setup -B gcc v8_2_0
 setup -B gcc v9_3_0
 
 # Choose versions of the remaining UPS products.
 qualifiers=+${COMPILER_CODE}:+${DEBUG_LEVEL}
 extras=`echo ${EXTRA_ROOT_QUALIFIERS} | sed 's/:/:+/g'`
 
-setup -B clhep v2_4_4_1  -q${qualifiers}
-setup -B root  v6_22_08d -q${qualifiers}${extras}
-setup -B scons v3_1_2a   -q p392
+setup -B clhep v2_4_5_1  -q${qualifiers}
+setup -B root  v6_24_06b -q${qualifiers}${extras}
+setup -B scons v4_2_0a   -q p399
 
 # Only used inside scripts/install.sh, to get the flavor of the build platform.
 setup cetpkgsupport
