@@ -38,9 +38,9 @@ fi
 # They must be maintained by hand.
 # It's OK if EXTRA_ROOT_QUALIFIERS is an empty string
 export PACKAGE_NAME=BTrk
-export PACKAGE_VERSION=v1_02_36
+export PACKAGE_VERSION=v1_02_37
 export COMPILER_CODE=e20
-export EXTRA_ROOT_QUALIFIERS=":p399"
+export EXTRA_ROOT_QUALIFIERS=":p3913"
 
 # Done parsing and checking arguments
 
@@ -59,9 +59,9 @@ setup -B gcc v9_3_0
 qualifiers=+${COMPILER_CODE}:+${DEBUG_LEVEL}
 extras=`echo ${EXTRA_ROOT_QUALIFIERS} | sed 's/:/:+/g'`
 
-setup -B clhep v2_4_5_1  -q${qualifiers}
-setup -B root  v6_26_00  -q${qualifiers}${extras}
-setup -B scons v4_2_0a   -q p399
+setup -B clhep v2_4_5_3a -q${qualifiers}
+setup -B root  v6_26_06  -q${qualifiers}${extras}
+setup -B scons v4_4_0    -q p3913
 
 # Only used inside scripts/install.sh, to get the flavor of the build platform.
 setup cetpkgsupport
