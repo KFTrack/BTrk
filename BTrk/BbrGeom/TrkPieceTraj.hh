@@ -78,11 +78,11 @@ double
 TrkPieceTraj::localDist(TrajIter index,double globdist) const
 {
   return index->second->lowRange() + ( globdist - index->first );
-};
+}
 
 double
 TrkPieceTraj::globalDist(TrajIter index,double locdist) const
 {
   return index->first + ( locdist - index->second->lowRange() );
-};
+}
 #endif

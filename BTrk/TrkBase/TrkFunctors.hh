@@ -69,5 +69,5 @@ namespace TrkBase { namespace Functors {
                 setParent(TrkRep* parent) : _p(parent){}
                 TrkRep* _p;
         };
-}};
+}}
 #endif

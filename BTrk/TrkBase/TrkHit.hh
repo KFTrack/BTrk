@@ -45,7 +45,7 @@ namespace TrkBase { namespace Functors {
    class updateMeasurement;
    class setActive;
    class setParent;
-} };
+} }
 
 class TrkHit {
 // allow TrkRep to set activity
