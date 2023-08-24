@@ -84,9 +84,9 @@ def validateDebugLevel():
 # Define the compiler and linker options.  Scons knows how to sort out which is which.
 # These are given to scons using its Evironment.MergeFlags call.
 def defineMergeFlags( debug_level):
-   commonFlags = [ '-std=c++17', '-rdynamic', '-Wall', '-Wno-unused-local-typedefs', '-g', '-Werror',
+   commonFlags = [ '-std=c++20', '-rdynamic', '-Wall', '-Wno-unused-local-typedefs', '-g', '-Werror',
                    '-gdwarf-2', '-Werror=return-type', '-Winit-self', '-Woverloaded-virtual', '-fPIC',
-                   '-Wpedantic',
+                   '-Wpedantic', '-Wno-deprecated-declarations',
                    # Linker flags
                    #'-Wl,--no-undefined',
                    '-Wl,--as-needed' ]
