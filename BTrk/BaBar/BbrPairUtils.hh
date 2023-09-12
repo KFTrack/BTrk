@@ -22,14 +22,14 @@ namespace babar {
 
         // select1st and select2nd are extensions: they are not part of the standard.
         template <class _Pair>
-        struct _Select1st : public std::unary_function<_Pair, typename _Pair::first_type> {
+        struct _Select1st {
           const typename _Pair::first_type& operator()(const _Pair& __x) const {
             return __x.first;
           }
         };
 
         template <class _Pair>
-        struct _Select2nd : public std::unary_function<_Pair, typename _Pair::second_type>
+        struct _Select2nd
         {
           const typename _Pair::second_type& operator()(const _Pair& __x) const {
             return __x.second;
@@ -41,12 +41,12 @@ namespace babar {
 
         // project1st and project2nd are extensions: they are not part of the standard
         template <class _Arg1, class _Arg2>
-        struct _Project1st : public std::binary_function<_Arg1, _Arg2, _Arg1> {
+        struct _Project1st {
           _Arg1 operator()(const _Arg1& __x, const _Arg2&) const { return __x; }
         };
 
         template <class _Arg1, class _Arg2>
-        struct _Project2nd : public std::binary_function<_Arg1, _Arg2, _Arg2> {
+        struct _Project2nd {
           _Arg2 operator()(const _Arg1&, const _Arg2& __y) const { return __y; }
         };
 

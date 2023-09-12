@@ -37,7 +37,7 @@ static const double _TOL = 1.0e-5;          // poca tolerance
 static const double _SMALLGAP = 0.1;        // negligible trajectory gap
 
 // trajectory comparison object
-struct sortTrajs : std::binary_function<Trajectory*, Trajectory*, bool> {
+struct sortTrajs {
     bool operator()(Trajectory* const& a, Trajectory* const& b) {
         return a->lowRange() < b->lowRange();
     }

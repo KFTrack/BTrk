@@ -28,7 +28,6 @@ class TrkFitStatus {
   typedef std::vector<TrkHistory>::const_reverse_iterator history_riterator;
 
 public:
-  typedef std::unary_function<TrkFitStatus,bool> predicate_type;
   bool is2d()       const      {return _is2d;}
   bool fitCurrent() const      {return _fitCurrent;}
   bool fitValid()   const      {return _fitValid;}

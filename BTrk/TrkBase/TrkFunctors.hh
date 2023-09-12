@@ -5,10 +5,6 @@
 // Description:
 //      general, simple tracking predicates
 //
-//      All classes (or structs) here should inherit from either
-//      unary_function< X, Z> or binary_function<X,Y,Z> and
-//      provide Z operator()(const X&,const Y&) const.
-//
 // Environment:
 //      Software developed for the BaBar Detector at the SLAC B-Factory.
 //
@@ -27,7 +23,7 @@ class TrkRep;
 namespace TrkBase { namespace Functors {
 
 
-        template <class T> struct takeAddress : std::unary_function<T,T*> {
+        template <class T> struct takeAddress {
                 T* operator()(T& t) { return &t; }
         };
 
@@ -35,7 +31,7 @@ namespace TrkBase { namespace Functors {
         // Functors which are only accessible by inheriting from TrkHitUpdater
         // FIXME: maybe these should live in the TrkHitUpdater namespace instead???
 
-        class updateMeasurement : public std::unary_function<TrkHit,TrkErrCode> {
+        class updateMeasurement {
         public:
                 TrkErrCode operator()(TrkHit& h) const
                 { return h.updateMeasurement(_t); }
@@ -46,7 +42,7 @@ namespace TrkBase { namespace Functors {
                 const TrkDifTraj *_t;
         };
 
-        class setActive : public std::unary_function<TrkHit,void> {
+        class setActive {
         public:
                 TrkHit* operator()(TrkHit& h) const
                 { return h.setActive(_a); }
@@ -59,7 +55,7 @@ namespace TrkBase { namespace Functors {
                 bool _a;
         };
 
-        class setParent : public std::unary_function<TrkHit,void> {
+        class setParent {
         public:
                 TrkHit* operator()(TrkHit& h) const
                 { return h.setParent(_p); }

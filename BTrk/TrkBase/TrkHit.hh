@@ -51,7 +51,6 @@ class TrkHit {
 // allow TrkRep to set activity
   friend class TrkRep;
 public:
-  typedef std::unary_function<TrkHit,bool> predicate_type;
   enum TrkHitFlag {weededHit=-5, driftFail=-3, updateFail=-1,addedHit=3,unweededHit=4};
 
   //****************
@@ -194,7 +193,7 @@ protected:
 // A TrkHitVector is just a vector of pointers to hits.
 typedef std::vector<TrkHit*> TrkHitVector;
 // hits are sorted by flightlength
-struct hitsort : public std::binary_function<TrkHit*, TrkHit*, bool> {
+struct hitsort {
   bool operator()(TrkHit* x, TrkHit* y) { 
     return  x->fltLen() < y->fltLen();
   }
